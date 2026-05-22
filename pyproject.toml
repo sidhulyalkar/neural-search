@@ -1,0 +1,96 @@
+[project]
+name = "neural-search"
+version = "0.1.0"
+description = "Experiment-aware semantic discovery for neural and behavioral datasets."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Neural Search Team"}
+]
+keywords = ["neuroscience", "search", "NWB", "BIDS", "DANDI", "OpenNeuro"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+]
+
+dependencies = [
+  "fastapi>=0.104.0",
+  "uvicorn[standard]>=0.24.0",
+  "pydantic>=2.5.0",
+  "pydantic-settings>=2.1.0",
+  "SQLAlchemy>=2.0",
+  "alembic>=1.12.0",
+  "httpx>=0.25.0",
+  "PyYAML>=6.0",
+  "nbformat>=5.9",
+  "pynwb>=2.5.0",
+  "h5py>=3.10.0",
+  "numpy>=1.26.0",
+  "pandas>=2.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "ruff>=0.1.0",
+  "mypy>=1.6.0",
+  "pre-commit>=3.5.0",
+]
+postgres = [
+  "pgvector>=0.3",
+  "psycopg[binary]>=3.1",
+  "asyncpg>=0.29.0",
+]
+redis = [
+  "redis>=5.0.0",
+  "rq>=1.15.0",
+]
+embeddings = [
+  "sentence-transformers>=2.2.0",
+]
+notebooks = [
+  "jupyter>=1.0.0",
+  "matplotlib>=3.8.0",
+]
+all = [
+  "neural-search[dev,postgres,redis,embeddings,notebooks]",
+]
+
+[project.scripts]
+neural-search = "neural_search.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/neural_search"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = ["E", "W", "F", "I", "B", "C4", "UP"]
+ignore = ["E501", "B008"]
+
+[tool.ruff.isort]
+known-first-party = ["neural_search"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+

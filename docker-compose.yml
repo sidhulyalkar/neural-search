@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: neural-search-db
+    environment:
+      POSTGRES_USER: neural_search
+      POSTGRES_PASSWORD: neural_search_dev
+      POSTGRES_DB: neural_search
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U neural_search"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: neural-search-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    container_name: neural-search-api
+    environment:
+      DATABASE_URL: postgresql://neural_search:neural_search_dev@postgres:5432/neural_search
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./packages:/app/packages
+      - ./data:/app/data
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: ../../infra/Dockerfile.web
+    container_name: neural-search-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://api:8000
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    container_name: neural-search-worker
+    command: rq worker --url redis://redis:6379
+    environment:
+      DATABASE_URL: postgresql://neural_search:neural_search_dev@postgres:5432/neural_search
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages:/app/packages
+      - ./data:/app/data
+
+volumes:
+  postgres_data:
+  redis_data:

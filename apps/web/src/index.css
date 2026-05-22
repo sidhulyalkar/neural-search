@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+
+  /* Custom scrollbar for neural aesthetic */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-neural-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neural-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neural-500;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-neural-900 border border-neural-700 rounded-lg p-4;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-neural-500 hover:shadow-lg hover:shadow-neural-900/50;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent-cyan text-neural-950 hover:bg-accent-cyan/90;
+  }
+
+  .btn-secondary {
+    @apply btn bg-neural-700 text-neural-100 hover:bg-neural-600;
+  }
+
+  .input {
+    @apply w-full bg-neural-800 border border-neural-600 rounded-lg px-4 py-2 text-neural-100 placeholder-neural-400 focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .badge-cyan {
+    @apply badge bg-accent-cyan/20 text-accent-cyan;
+  }
+
+  .badge-violet {
+    @apply badge bg-accent-violet/20 text-accent-violet;
+  }
+
+  .badge-emerald {
+    @apply badge bg-accent-emerald/20 text-accent-emerald;
+  }
+
+  .badge-amber {
+    @apply badge bg-accent-amber/20 text-accent-amber;
+  }
+}
