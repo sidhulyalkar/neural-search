@@ -1,4 +1,4 @@
-.PHONY: install dev test lint format api web demo clean docker-up docker-down
+.PHONY: install dev test test-backend lint format api web demo demo-seed clean docker-up docker-down
 
 # Install dependencies
 install:
@@ -11,7 +11,10 @@ dev:
 
 # Run tests
 test:
-	pytest tests/ -v --cov=src --cov-report=term-missing
+	pytest tests/ -v --cov=neural_search --cov-report=term-missing
+
+test-backend:
+	pytest tests/ -q
 
 test-unit:
 	pytest tests/unit -v
@@ -22,7 +25,7 @@ test-integration:
 # Linting and formatting
 lint:
 	ruff check .
-	mypy src/
+	mypy neural_search/
 
 format:
 	ruff check --fix .
@@ -66,6 +69,9 @@ db-revision:
 # Seed data
 seed:
 	python scripts/seed_demo_data.py
+
+demo-seed:
+	python -m neural_search.ingestion.demo_seed
 
 # Clean
 clean:

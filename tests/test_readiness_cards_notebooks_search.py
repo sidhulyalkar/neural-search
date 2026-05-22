@@ -1,7 +1,12 @@
 import nbformat
+from sqlalchemy import create_engine, func, select
+from sqlalchemy.orm import Session
 
 from neural_search.cards import generate_dataset_card_json
+from neural_search.db import Base
 from neural_search.extraction import extract_dataset_labels
+from neural_search.ingestion.demo_seed import build_demo_seed, seed_demo_database
+from neural_search.models import Dataset, DatasetCard, Embedding, Paper
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.readiness import compute_analysis_readiness
 from neural_search.search import parse_query, score_dataset_against_query, search_datasets
@@ -78,5 +83,34 @@ def test_search_datasets_demo_seed_orders_relevant_results():
     response = search_datasets("Find reversal learning datasets with reward omission", {})
 
     assert response.results
-    assert response.results[0].dataset_id == "DEMO"
+    assert response.results[0].dataset_id == "DEMO_REVERSAL_EPHYS"
 
+
+def test_demo_seed_contains_five_fixture_datasets_with_papers():
+    records = build_demo_seed()
+
+    assert len(records) == 5
+    assert {record["dataset"]["source_id"] for record in records} == {
+        "DEMO_GONOGO_CALCIUM",
+        "DEMO_REVERSAL_EPHYS",
+        "DEMO_DELAY_DISCOUNTING",
+        "DEMO_REACHING_ECOG_IEEG",
+        "DEMO_VISUAL_DECISION_NEUROPIXELS",
+    }
+    assert all(record["papers"] for record in records)
+
+
+def test_demo_seed_populates_database(tmp_path):
+    database_url = f"sqlite:///{tmp_path / 'demo_seed.db'}"
+
+    summary = seed_demo_database(database_url)
+
+    assert summary["datasets"] == 5
+    assert summary["papers"] == 5
+    engine = create_engine(database_url)
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        assert session.scalar(select(func.count()).select_from(Dataset)) == 5
+        assert session.scalar(select(func.count()).select_from(Paper)) == 5
+        assert session.scalar(select(func.count()).select_from(DatasetCard)) == 5
+        assert session.scalar(select(func.count()).select_from(Embedding)) == 5

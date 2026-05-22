@@ -78,6 +78,7 @@ Thumbs.db
 # Data (keep structure, ignore large files)
 data/seed/*.nwb
 data/seed/*.json
+!data/seed/demo_fixtures.json
 !data/seed/.gitkeep
 data/eval/results/
 !data/eval/results/.gitkeep

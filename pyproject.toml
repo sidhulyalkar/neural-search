@@ -68,7 +68,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/neural_search"]
+packages = ["neural_search"]
 
 [tool.ruff]
 target-version = "py311"
@@ -87,10 +87,8 @@ warn_return_any = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-asyncio_mode = "auto"
 addopts = "-v --tb=short"
 
 [tool.coverage.run]
-source = ["src"]
+source = ["neural_search"]
 branch = true
-

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ChevronRightIcon, ExternalLinkIcon, WarningIcon } from './Icons'
+import { ChevronRightIcon, WarningIcon } from './Icons'
 import type { SearchResultItem } from '../types'
 
 interface DatasetCardProps {

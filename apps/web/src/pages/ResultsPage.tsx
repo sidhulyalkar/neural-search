@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { SearchIcon, SpinnerIcon, ChevronRightIcon } from '../components/Icons'
+import { SearchIcon, SpinnerIcon } from '../components/Icons'
 import { searchDatasets } from '../api/search'
 import { DatasetCard } from '../components/DatasetCard'
 
