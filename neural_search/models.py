@@ -44,6 +44,7 @@ class Dataset(TimestampMixin, Base):
     has_trials: Mapped[bool] = mapped_column(Boolean, default=False)
     has_raw_data: Mapped[bool] = mapped_column(Boolean, default=False)
     has_processed_data: Mapped[bool] = mapped_column(Boolean, default=False)
+    qa_status: Mapped[str] = mapped_column(String(40), default="auto_generated", nullable=False)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
     assets: Mapped[list["DatasetAsset"]] = relationship(
@@ -119,6 +120,14 @@ class DatasetCard(TimestampMixin, Base):
     suggested_analyses: Mapped[list[str]] = mapped_column(JSONType, default=list)
     provenance_json: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
     card_markdown: Mapped[str] = mapped_column(Text, nullable=False)
+    qa_status: Mapped[str] = mapped_column(String(40), default="auto_generated", nullable=False)
+    task_labels_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    modality_labels_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    behavior_labels_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    brain_regions_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    linked_papers_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    notebook_tested: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    reviewer_notes: Mapped[str] = mapped_column(Text, default="", nullable=False)
 
     dataset: Mapped[Dataset] = relationship(back_populates="cards")
 
@@ -147,4 +156,3 @@ class SearchLog(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-

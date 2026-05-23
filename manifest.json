@@ -1,0 +1,12 @@
+{
+  "project": "Neural Search MVP",
+  "files": [
+    "BUILD_PACKET.md",
+    "behavioral_task_ontology.yaml",
+    "CLAUDE_CODE_MASTER_PROMPT.md",
+    "CODEX_BACKEND_CORE_PROMPT.md",
+    "README_TEMPLATE.md",
+    "benchmark_queries.yaml"
+  ],
+  "product_promise": "Describe the experiment you want. Neural Search finds reusable datasets, papers, and starter analyses."
+}

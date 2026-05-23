@@ -1,0 +1,97 @@
+# Transparent retrieval weights and parser aliases.
+# Scores are combined on a 0-1 scale, then reported as 0-100.
+
+weights:
+  ontology: 0.30
+  behavior: 0.22
+  modality: 0.14
+  metadata: 0.10
+  semantic: 0.10
+  readiness: 0.10
+  paper_confidence: 0.04
+
+penalties:
+  modality_mismatch: 0.18
+  missing_required_field: 0.04
+  max_missing_required_fields: 5
+
+thresholds:
+  high_analysis_readiness: 0.80
+
+required_metadata_fields:
+  - species
+  - modalities
+  - brain_regions
+  - tasks
+  - behaviors
+  - data_standards
+  - license
+
+analysis_required_fields:
+  choice_decoding:
+    - has_trials
+    - has_behavior
+    - behaviors
+    - modalities
+  event_aligned_activity:
+    - has_trials
+    - data_standards
+    - modalities
+  latent_state_modeling:
+    - has_trials
+    - behaviors
+    - tasks
+  motor_imagery_classification:
+    - has_trials
+    - modalities
+    - species
+  seizure_detection:
+    - has_trials
+    - modalities
+    - behaviors
+
+species_aliases:
+  mouse: [mouse, mice, mus musculus]
+  rat: [rat, rats, rattus]
+  human: [human, humans, participant, participants, patient, patients]
+  macaque: [macaque, monkey, nonhuman primate, non-human primate, rhesus]
+  drosophila: [drosophila, fruit fly, fly]
+  zebrafish: [zebrafish, danio rerio]
+
+analysis_intents:
+  choice_decoding:
+    - decode choice
+    - choice decoding
+    - predict choice
+    - classify choice
+    - decision decoding
+  event_aligned_activity:
+    - event alignment
+    - event aligned
+    - align to events
+    - peri event
+    - peri-event
+    - event triggered
+    - event-aligned activity
+  latent_state_modeling:
+    - latent state modeling
+    - latent state model
+    - hidden state
+    - state space model
+    - hmm
+  stimulus_choice_separation:
+    - stimulus choice separation
+    - separate stimulus and choice
+    - disentangle stimulus choice
+  motor_imagery_classification:
+    - motor imagery classification
+    - bci classification
+    - classify motor imagery
+  seizure_detection:
+    - seizure detection
+    - seizure onset detection
+    - detect seizure
+  pupil_neural_correlation:
+    - pupil neural correlation
+    - arousal coupling
+    - pupil arousal

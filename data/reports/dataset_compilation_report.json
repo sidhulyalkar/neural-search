@@ -1,0 +1,182 @@
+{
+  "report_generated_at": "2026-05-23T03:39:39.621584+00:00",
+  "summary": {
+    "total_datasets": 5,
+    "total_papers_linked": 5,
+    "total_dataset_cards": 5,
+    "average_readiness_score": 95.0,
+    "datasets_with_behavior": 5,
+    "datasets_with_trials": 5,
+    "datasets_with_linked_papers": 5
+  },
+  "curated_sources": {
+    "total": 10,
+    "datasets": 8,
+    "papers": 2,
+    "by_source_type": {
+      "dandi": 3,
+      "openneuro": 3,
+      "openalex": 2,
+      "manual": 2
+    },
+    "by_priority": {
+      "high": 7,
+      "medium": 3
+    }
+  },
+  "by_source": {
+    "demo": 5
+  },
+  "by_task": {
+    "go_nogo": 1,
+    "reversal_learning": 1,
+    "delay_discounting": 1,
+    "reaching": 1,
+    "center_out_reaching": 1,
+    "grasping": 1,
+    "visual_decision_making": 1,
+    "visual_discrimination": 1
+  },
+  "by_modality": {
+    "behavior_video": 2,
+    "extracellular_ephys": 2,
+    "calcium_imaging": 1,
+    "fiber_photometry": 1,
+    "ecog": 1,
+    "ieeg": 1,
+    "pose_tracking": 1,
+    "bci": 1,
+    "neuropixels": 1
+  },
+  "by_species": {
+    "mouse": 3,
+    "rat": 1,
+    "human": 1
+  },
+  "by_brain_region": {
+    "mPFC": 2,
+    "OFC": 1,
+    "striatum": 1,
+    "nucleus_accumbens": 1,
+    "motor_cortex": 1,
+    "somatosensory_cortex": 1,
+    "parietal_cortex": 1,
+    "visual_cortex": 1,
+    "PPC": 1
+  },
+  "by_data_standard": {
+    "NWB": 3,
+    "BIDS": 2
+  },
+  "has_behavior": {
+    "true": 5,
+    "false": 0
+  },
+  "has_trials": {
+    "true": 5,
+    "false": 0
+  },
+  "top_20_analysis_readiness": [
+    {
+      "source_id": "DEMO_GONOGO_CALCIUM",
+      "title": "Demo Go/NoGo calcium imaging dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_REVERSAL_EPHYS",
+      "title": "Demo reversal learning electrophysiology dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_DELAY_DISCOUNTING",
+      "title": "Demo delay discounting behavior and neural dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_REACHING_ECOG_IEEG",
+      "title": "Demo reaching ECoG and iEEG dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_VISUAL_DECISION_NEUROPIXELS",
+      "title": "Demo visual decision-making Neuropixels dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    }
+  ],
+  "missing_metadata": {
+    "fields_missing_count": {},
+    "datasets_with_incomplete_metadata": 0,
+    "datasets_by_missing_field_count": {},
+    "incomplete_datasets": []
+  }
+}

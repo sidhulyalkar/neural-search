@@ -11,13 +11,27 @@ from neural_search.ontology.models import BehaviorLabel, LabelMatch, Ontology, T
 
 
 ALIASES: dict[str, list[str]] = {
+    # Recording modalities
     "bci": ["bci", "brain computer interface", "brain-computer interface"],
-    "calcium_imaging": ["calcium imaging", "2 photon", "two photon", "2p"],
-    "extracellular_ephys": ["extracellular electrophysiology", "ephys", "spikes"],
+    "calcium_imaging": [
+        "calcium imaging", "2 photon", "two photon", "2p", "gcamp",
+        "optical imaging",
+    ],
+    "extracellular_ephys": [
+        "extracellular electrophysiology", "ephys", "spikes",
+        "electrophysiology", "single unit", "multi unit", "spike recordings",
+    ],
+    "neuropixels": ["neuropixels", "neuropixel"],
     "fiber_photometry": ["fiber photometry", "photometry"],
-    "behavior_video": ["behavior video", "video tracking"],
-    "pose_tracking": ["pose tracking", "kinematics"],
-    "motor_cortex": ["motor cortex", "m1", "primary motor cortex"],
+    "eeg": ["eeg", "electroencephalography", "scalp eeg"],
+    "ecog": ["ecog", "electrocorticography", "cortical surface"],
+    "ieeg": ["ieeg", "intracranial eeg", "depth electrodes", "stereo eeg", "seeg"],
+    "meg": ["meg", "magnetoencephalography"],
+    "fmri": ["fmri", "functional mri", "bold"],
+    "behavior_video": ["behavior video", "video tracking", "video"],
+    "pose_tracking": ["pose tracking", "kinematics", "dlc", "deeplabcut"],
+    # Brain regions
+    "motor_cortex": ["motor cortex", "m1", "primary motor cortex", "motor control"],
     "visual_cortex": ["visual cortex", "v1", "v2", "v4"],
     "somatosensory_cortex": ["somatosensory cortex", "s1"],
     "parietal_cortex": ["parietal cortex", "ppc"],

@@ -1,0 +1,56 @@
+papers:
+  - id: PAPER_GONOGO_CALCIUM
+    openalex_id: W-DEMO-GONOGO
+    doi: 10.0000/demo.gonogo
+    title: Calcium imaging of response inhibition during Go/NoGo behavior
+    abstract: A fixture paper describing mPFC calcium imaging during a Go/NoGo task with lick events, reward, omission, hits, and false alarms.
+    publication_year: 2024
+    authors_json:
+      - name: Demo Author
+    url: https://example.org/papers/gonogo-calcium
+    concepts: [go_nogo, calcium_imaging, response_inhibition]
+
+  - id: PAPER_REVERSAL_EPHYS
+    openalex_id: W-DEMO-REVERSAL
+    doi: 10.0000/demo.reversal
+    title: Orbitofrontal electrophysiology during reversal learning
+    abstract: A fixture paper describing probabilistic reversal learning, reward omission, choice outcomes, and contingency reversal in mouse OFC and striatum.
+    publication_year: 2024
+    authors_json:
+      - name: Demo Author
+    url: https://example.org/papers/reversal-ephys
+    concepts: [reversal_learning, extracellular_ephys, reward_omission]
+
+  - id: PAPER_DELAY_DISCOUNTING
+    openalex_id: W-DEMO-DELAY
+    doi: 10.0000/demo.delay
+    title: Neural correlates of delay discounting in rodents
+    abstract: A fixture paper describing intertemporal choice, delayed reward choice, reaction time, and mPFC photometry during delay discounting.
+    publication_year: 2023
+    authors_json:
+      - name: Demo Author
+    url: https://example.org/papers/delay-discounting
+    concepts: [delay_discounting, fiber_photometry, choice]
+
+  - id: PAPER_REACHING_ECOG_IEEG
+    openalex_id: W-DEMO-REACHING
+    doi: 10.0000/demo.reaching
+    title: Human ECoG and iEEG recordings during BCI cursor reaching
+    abstract: A fixture paper describing ECoG and iEEG motor cortex recordings during center-out reaching, grasping, movement onset, BCI cursor control, and kinematic decoding.
+    publication_year: 2022
+    authors_json:
+      - name: Demo Author
+    url: https://example.org/papers/reaching-ecog-ieeg
+    concepts: [reaching, ecog, ieeg, bci, motor_control]
+
+  - id: PAPER_VISUAL_DECISION_NEUROPIXELS
+    openalex_id: W-DEMO-VISUAL
+    doi: 10.0000/demo.visual
+    title: Neuropixels recordings during visual decision-making
+    abstract: A fixture paper describing visual decision-making, visual discrimination, stimulus decoding, choice, feedback, and Neuropixels recordings in visual cortex and PPC.
+    publication_year: 2024
+    authors_json:
+      - name: Demo Author
+    url: https://example.org/papers/visual-decision-neuropixels
+    concepts: [visual_decision_making, visual_discrimination, neuropixels]
+

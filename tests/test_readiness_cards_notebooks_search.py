@@ -54,6 +54,45 @@ def test_card_generation_includes_provenance_and_markdown():
     assert "reversal_learning" in card.card_markdown
 
 
+def test_scientific_reuse_card_is_complete():
+    dataset = _dataset()
+    extraction = _extraction()
+    paper = {
+        "id": "P1",
+        "title": "Probabilistic reversal learning in mouse OFC",
+        "abstract": "Choice, reward omission, and OFC activity during reversal learning.",
+        "doi": "10.0000/reversal",
+        "openalex_id": "W123",
+        "authors_json": [{"name": "Demo Author"}],
+        "publication_year": 2024,
+        "concepts": ["reversal_learning", "choice", "OFC"],
+    }
+    asset = {
+        "id": "A1",
+        "path": "sub-01/session.nwb",
+        "asset_type": "nwb",
+        "file_format": "nwb",
+        "modality": "extracellular_ephys",
+    }
+
+    card = generate_dataset_card_json(dataset, extraction, [paper], [asset])
+
+    assert card.summary_details["scientific_use_case"]
+    assert card.summary_details["why_this_dataset_matters"]
+    assert card.experimental_structure["task_labels"]
+    assert "choice" in card.experimental_structure["trial_event_structure"]
+    assert card.neural_data["available_assets"][0]["path"] == "sub-01/session.nwb"
+    assert card.analysis_plan["suggested_first_analysis"]
+    assert card.analysis_plan["suggested_advanced_analysis"]
+    assert card.linked_literature["candidate_papers"][0]["doi"] == "10.0000/reversal"
+    assert card.linked_literature["candidate_papers"][0]["openalex_id"] == "W123"
+    assert card.reuse_instructions["how_to_load"]
+    assert card.provenance["extraction_method"]
+    assert card.provenance["confidence_scores"]["tasks"]
+    assert "## Experimental Structure" in card.card_markdown
+    assert "## Reuse Instructions" in card.card_markdown
+
+
 def test_notebook_generation_writes_valid_ipynb(tmp_path):
     output_path = tmp_path / "starter.ipynb"
     response = generate_nwb_starter_notebook(
@@ -98,6 +137,26 @@ def test_demo_seed_contains_five_fixture_datasets_with_papers():
         "DEMO_VISUAL_DECISION_NEUROPIXELS",
     }
     assert all(record["papers"] for record in records)
+    for record in records:
+        dataset = record["dataset"]
+        for field in [
+            "source",
+            "source_id",
+            "title",
+            "description",
+            "url",
+            "species",
+            "modalities",
+            "brain_regions",
+            "tasks",
+            "behaviors",
+            "data_standards",
+            "has_behavior",
+            "has_trials",
+            "license",
+            "linked_paper_ids",
+        ]:
+            assert field in dataset
 
 
 def test_demo_seed_populates_database(tmp_path):

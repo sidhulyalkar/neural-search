@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid5
 
+import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -19,9 +20,28 @@ from neural_search.extraction import extract_dataset_labels
 from neural_search.models import Dataset, DatasetAsset, DatasetCard, Embedding, Paper
 
 
-FIXTURE_PATH = Path(__file__).resolve().parents[2] / "data" / "seed" / "demo_fixtures.json"
+SEED_DIR = Path(__file__).resolve().parents[2] / "data" / "seed"
+FIXTURE_PATH = SEED_DIR / "demo_datasets.yaml"
+PAPERS_PATH = SEED_DIR / "demo_papers.yaml"
 UUID_NAMESPACE = UUID("5b50ee83-7c12-4d38-94a6-4d7ff7a0f21b")
 DEFAULT_DATABASE_URL = "sqlite:///data/seed/demo_seed.db"
+REQUIRED_DATASET_FIELDS = {
+    "source",
+    "source_id",
+    "title",
+    "description",
+    "url",
+    "species",
+    "modalities",
+    "brain_regions",
+    "tasks",
+    "behaviors",
+    "data_standards",
+    "has_behavior",
+    "has_trials",
+    "license",
+    "linked_paper_ids",
+}
 
 
 def stable_uuid(value: str) -> UUID:
@@ -39,26 +59,106 @@ def deterministic_embedding(text: str, dimensions: int = 16) -> list[float]:
     return values
 
 
-def load_fixture_payload(path: str | Path = FIXTURE_PATH) -> dict[str, Any]:
-    with Path(path).open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+def _load_mapping(path: str | Path) -> dict[str, Any]:
+    fixture_path = Path(path)
+    with fixture_path.open("r", encoding="utf-8") as handle:
+        if fixture_path.suffix in {".yaml", ".yml"}:
+            payload = yaml.safe_load(handle) or {}
+        else:
+            payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise ValueError(f"Fixture root must be a mapping: {fixture_path}")
+    return payload
 
 
-def build_demo_seed() -> list[dict]:
-    payload = load_fixture_payload()
+def load_fixture_payload(
+    datasets_path: str | Path = FIXTURE_PATH,
+    papers_path: str | Path | None = None,
+) -> dict[str, Any]:
+    dataset_payload = _load_mapping(datasets_path)
+    if "datasets" not in dataset_payload:
+        raise ValueError(f"Dataset fixture must contain a datasets list: {datasets_path}")
+    if papers_path is None:
+        candidate = Path(datasets_path).with_name("demo_papers.yaml")
+        papers_path = candidate if candidate.exists() else PAPERS_PATH
+    paper_payload = _load_mapping(papers_path)
+    if "papers" not in paper_payload:
+        raise ValueError(f"Paper fixture must contain a papers list: {papers_path}")
+    return {"datasets": dataset_payload["datasets"], "papers": paper_payload["papers"]}
+
+
+def _validate_dataset_fixture(dataset: dict[str, Any]) -> None:
+    missing = sorted(REQUIRED_DATASET_FIELDS - set(dataset))
+    if missing:
+        source_id = dataset.get("source_id", "<missing source_id>")
+        raise ValueError(f"Dataset fixture {source_id} missing fields: {missing}")
+    for field in [
+        "species",
+        "modalities",
+        "brain_regions",
+        "tasks",
+        "behaviors",
+        "data_standards",
+        "linked_paper_ids",
+    ]:
+        if not isinstance(dataset[field], list):
+            raise ValueError(f"Dataset fixture {dataset['source_id']} field {field} must be a list")
+
+
+def _synthetic_asset(dataset: dict[str, Any]) -> dict[str, Any]:
+    source_id = dataset["source_id"]
+    primary_modality = dataset.get("modalities", ["metadata"])[0]
+    standard = next(iter(dataset.get("data_standards", [])), "metadata")
+    extension = "nwb" if standard == "NWB" else "tsv"
+    asset_type = "nwb" if standard == "NWB" else "events"
+    return {
+        "id": f"ASSET_{source_id}",
+        "dataset_id": source_id,
+        "path": f"data/seed/compiled/{source_id}.{extension}",
+        "asset_type": asset_type,
+        "file_format": extension,
+        "modality": primary_modality,
+    }
+
+
+def build_demo_seed(
+    datasets_path: str | Path = FIXTURE_PATH,
+    papers_path: str | Path | None = None,
+) -> list[dict]:
+    payload = load_fixture_payload(datasets_path, papers_path)
+    papers_by_id = {paper["id"]: paper for paper in payload["papers"]}
     records: list[dict] = []
     for fixture in payload["datasets"]:
+        _validate_dataset_fixture(fixture)
         dataset = {
             key: value
             for key, value in fixture.items()
             if key not in {"assets", "papers"}
         }
+        dataset["id"] = dataset.get("id", dataset["source_id"])
+        dataset["qa_status"] = dataset.get("qa_status", "auto_generated")
+        dataset["has_raw_data"] = dataset.get("has_raw_data", True)
+        dataset["has_processed_data"] = dataset.get("has_processed_data", False)
+        dataset["metadata_json"] = {
+            **dataset.get("metadata_json", {}),
+            "linked_paper_ids": dataset["linked_paper_ids"],
+            "fixture_stage": "A",
+        }
         dataset_assets = [
             {**asset, "dataset_id": dataset["source_id"]} for asset in fixture.get("assets", [])
+        ] or [_synthetic_asset(dataset)]
+        missing_paper_ids = [
+            paper_id
+            for paper_id in dataset["linked_paper_ids"]
+            if paper_id not in papers_by_id
         ]
+        if missing_paper_ids:
+            raise ValueError(
+                f"Dataset fixture {dataset['source_id']} references missing papers: {missing_paper_ids}"
+            )
         linked_papers = [
-            {**paper, "linked_dataset_ids": [dataset["source_id"]]}
-            for paper in fixture.get("papers", [])
+            {**papers_by_id[paper_id], "linked_dataset_ids": [dataset["source_id"]]}
+            for paper_id in dataset["linked_paper_ids"]
         ]
         extraction = extract_dataset_labels(
             title=dataset["title"],
@@ -99,6 +199,7 @@ def _dataset_model(dataset: dict[str, Any]) -> Dataset:
         has_trials=dataset.get("has_trials", False),
         has_raw_data=dataset.get("has_raw_data", False),
         has_processed_data=dataset.get("has_processed_data", False),
+        qa_status=dataset.get("qa_status", "auto_generated"),
         metadata_json=metadata,
     )
 
@@ -150,6 +251,14 @@ def _card_model(record: dict[str, Any], dataset_id: UUID) -> DatasetCard:
         suggested_analyses=card.suggested_analyses,
         provenance_json=card.provenance,
         card_markdown=card.card_markdown or "",
+        qa_status=card.qa_status,
+        task_labels_verified=card.task_labels_verified,
+        modality_labels_verified=card.modality_labels_verified,
+        behavior_labels_verified=card.behavior_labels_verified,
+        brain_regions_verified=card.brain_regions_verified,
+        linked_papers_verified=card.linked_papers_verified,
+        notebook_tested=card.notebook_tested,
+        reviewer_notes=card.reviewer_notes,
     )
 
 
@@ -176,7 +285,11 @@ def _embedding_model(record: dict[str, Any], dataset_id: UUID) -> Embedding:
     )
 
 
-def seed_demo_database(database_url: str = DEFAULT_DATABASE_URL) -> dict[str, int | str]:
+def seed_demo_database(
+    database_url: str = DEFAULT_DATABASE_URL,
+    datasets_path: str | Path = FIXTURE_PATH,
+    papers_path: str | Path | None = None,
+) -> dict[str, int | str]:
     if database_url.startswith("sqlite:///"):
         db_path = Path(database_url.removeprefix("sqlite:///"))
         if db_path.parent != Path("."):
@@ -185,7 +298,7 @@ def seed_demo_database(database_url: str = DEFAULT_DATABASE_URL) -> dict[str, in
     engine = create_engine(database_url)
     Base.metadata.create_all(engine)
     session_factory = sessionmaker(bind=engine)
-    records = build_demo_seed()
+    records = build_demo_seed(datasets_path, papers_path)
 
     with session_factory() as session:
         _merge_records(session, records)
@@ -193,6 +306,8 @@ def seed_demo_database(database_url: str = DEFAULT_DATABASE_URL) -> dict[str, in
 
     return {
         "database_url": database_url,
+        "datasets_path": str(datasets_path),
+        "papers_path": str(papers_path or Path(datasets_path).with_name("demo_papers.yaml")),
         "datasets": len(records),
         "papers": sum(len(record["papers"]) for record in records),
         "cards": len(records),
@@ -220,6 +335,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Database URL to populate. Defaults to a local SQLite fixture DB.",
     )
     parser.add_argument(
+        "--papers-path",
+        default=None,
+        help="Optional paper fixture YAML path. Defaults to demo_papers.yaml next to datasets.",
+    )
+    parser.add_argument(
         "--print-json",
         action="store_true",
         help="Print fixture records instead of seeding the database.",
@@ -230,7 +350,12 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(_serializable_records(), indent=2))
         return 0
 
-    print(json.dumps(seed_demo_database(args.database_url), indent=2))
+    print(
+        json.dumps(
+            seed_demo_database(args.database_url, FIXTURE_PATH, args.papers_path),
+            indent=2,
+        )
+    )
     return 0
 
 

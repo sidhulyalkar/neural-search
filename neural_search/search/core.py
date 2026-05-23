@@ -2,26 +2,116 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
+from copy import deepcopy
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
+
+import yaml
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.ingestion.demo_seed import build_demo_seed
-from neural_search.ontology import expand_query_terms, match_behavior_labels, match_tasks, normalize_text
+from neural_search.ontology import (
+    expand_query_terms,
+    match_behavior_labels,
+    match_brain_regions,
+    match_modalities,
+    match_tasks,
+    normalize_text,
+)
 from neural_search.schemas import DatasetCardRead, SearchResponse, SearchResult
+from neural_search.search.query_builder import (
+    combine_query_and_structured_text,
+    merge_filters,
+)
 
+
+RETRIEVAL_CONFIG_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "config" / "retrieval.yaml"
+)
+
+DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
+    "weights": {
+        "ontology": 0.30,
+        "behavior": 0.22,
+        "modality": 0.14,
+        "metadata": 0.10,
+        "semantic": 0.10,
+        "readiness": 0.10,
+        "paper_confidence": 0.04,
+    },
+    "penalties": {
+        "modality_mismatch": 0.18,
+        "missing_required_field": 0.04,
+        "max_missing_required_fields": 5,
+    },
+    "thresholds": {"high_analysis_readiness": 0.80},
+    "required_metadata_fields": [
+        "species",
+        "modalities",
+        "brain_regions",
+        "tasks",
+        "behaviors",
+        "data_standards",
+        "license",
+    ],
+    "analysis_required_fields": {},
+    "species_aliases": {},
+    "analysis_intents": {},
+}
 
 MODALITY_TERMS: dict[str, list[str]] = {
     "neuropixels": ["neuropixels", "neuropixel"],
-    "calcium_imaging": ["calcium imaging", "two photon", "2p", "gcamp"],
-    "eeg": ["eeg"],
-    "ecog": ["ecog"],
-    "ieeg": ["ieeg", "intracranial eeg"],
-    "meg": ["meg"],
-    "fmri": ["fmri"],
+    "calcium_imaging": ["calcium imaging", "two photon", "2p", "gcamp", "optical imaging"],
+    "extracellular_ephys": ["extracellular ephys", "ephys", "spikes", "electrophysiology"],
+    "eeg": ["eeg", "electroencephalography"],
+    "ecog": ["ecog", "electrocorticography"],
+    "ieeg": ["ieeg", "intracranial eeg", "depth electrode", "seeg"],
+    "meg": ["meg", "magnetoencephalography"],
+    "fmri": ["fmri", "functional mri", "bold"],
+    "fiber_photometry": ["fiber photometry", "photometry"],
     "behavior_video": ["behavior video", "video"],
-    "pose_tracking": ["pose tracking", "kinematics"],
+    "pose_tracking": ["pose tracking", "kinematics", "deeplabcut", "dlc"],
 }
+
+# Generic phrases that expand to multiple modalities
+GENERIC_MODALITY_PHRASES: dict[str, list[str]] = {
+    "neural recordings": [
+        "extracellular_ephys", "calcium_imaging", "neuropixels",
+        "fiber_photometry", "ecog", "ieeg", "eeg",
+    ],
+    "neural activity": [
+        "extracellular_ephys", "calcium_imaging", "neuropixels",
+        "fiber_photometry", "ecog", "ieeg", "eeg", "fmri",
+    ],
+    "electrophysiology": ["extracellular_ephys", "neuropixels", "ecog", "ieeg", "eeg"],
+}
+
+
+def _deep_merge(base: dict[str, Any], override: Mapping[str, Any]) -> dict[str, Any]:
+    merged = deepcopy(base)
+    for key, value in override.items():
+        if isinstance(value, Mapping) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+@lru_cache(maxsize=4)
+def load_retrieval_config(path: str | None = None) -> dict[str, Any]:
+    """Load retrieval settings from YAML, falling back to conservative defaults."""
+
+    config_path = Path(path) if path else RETRIEVAL_CONFIG_PATH
+    if not config_path.exists():
+        return deepcopy(DEFAULT_RETRIEVAL_CONFIG)
+    with config_path.open("r", encoding="utf-8") as handle:
+        loaded = yaml.safe_load(handle) or {}
+    if not isinstance(loaded, Mapping):
+        return deepcopy(DEFAULT_RETRIEVAL_CONFIG)
+    return _deep_merge(DEFAULT_RETRIEVAL_CONFIG, loaded)
 
 
 def _get_value(obj: Any, name: str, default: Any = None) -> Any:
@@ -38,6 +128,14 @@ def _normalize_values(values: Any) -> set[str]:
     return {normalize_text(str(value)) for value in values}
 
 
+def _raw_values(values: Any) -> list[str]:
+    if not values:
+        return []
+    if isinstance(values, str):
+        return [values]
+    return [str(value) for value in values if value is not None]
+
+
 def _text_for_dataset(dataset: Any, card: DatasetCardRead | Mapping[str, Any] | None = None) -> str:
     pieces = [
         _get_value(dataset, "title", ""),
@@ -50,23 +148,150 @@ def _text_for_dataset(dataset: Any, card: DatasetCardRead | Mapping[str, Any] | 
     return normalize_text(" ".join(str(piece) for piece in pieces))
 
 
-def parse_query(query: str) -> dict[str, Any]:
+def _match_aliases(
+    normalized: str,
+    aliases_by_id: Mapping[str, Sequence[str]],
+) -> list[dict[str, Any]]:
+    matches: list[dict[str, Any]] = []
+    for concept_id, aliases in aliases_by_id.items():
+        for alias in aliases:
+            normalized_alias = normalize_text(str(alias))
+            if not normalized_alias:
+                continue
+            if normalized_alias in normalized:
+                matches.append(
+                    {
+                        "id": concept_id,
+                        "label": concept_id.replace("_", " ").title(),
+                        "confidence": 0.95,
+                        "evidence": alias,
+                        "match_type": "alias",
+                    }
+                )
+                break
+    return matches
+
+
+def _contains_normalized_phrase(normalized_text: str, phrase: str) -> bool:
+    normalized_phrase = normalize_text(phrase)
+    if not normalized_phrase:
+        return False
+    return re.search(rf"(?<!\w){re.escape(normalized_phrase)}(?!\w)", normalized_text) is not None
+
+
+def _unique_preserve(values: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for value in values:
+        normalized = normalize_text(value)
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            ordered.append(normalized)
+    return ordered
+
+
+def _match_dumps(matches: Sequence[Any]) -> list[dict[str, Any]]:
+    return [match.model_dump() if hasattr(match, "model_dump") else dict(match) for match in matches]
+
+
+def parse_query(
+    query: str,
+    retrieval_config: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     """Parse search intent with ontology expansion and simple metadata hints."""
 
+    config = dict(retrieval_config or load_retrieval_config())
     task_matches = match_tasks(query)
     behavior_matches = match_behavior_labels(query)
+    brain_region_matches = match_brain_regions(query)
     normalized = normalize_text(query)
-    modalities: list[str] = []
+    modalities: list[str] = [match.id for match in match_modalities(query)]
+
+    # Check specific modality terms
     for modality, terms in MODALITY_TERMS.items():
-        if any(normalize_text(term) in normalized for term in terms):
+        if any(_contains_normalized_phrase(normalized, term) for term in terms):
             modalities.append(modality)
+
+    # Expand generic phrases to multiple modalities
+    for phrase, expanded_mods in GENERIC_MODALITY_PHRASES.items():
+        if normalize_text(phrase) in normalized:
+            modalities.extend(expanded_mods)
+
+    expanded = expand_query_terms(query)
+    analysis_intents = _match_aliases(
+        normalized,
+        config.get("analysis_intents", {}),
+    )
+    analysis_ids = [match["id"] for match in analysis_intents]
+    query_analysis_terms = {
+        normalize_text(value)
+        for value in [
+            *analysis_ids,
+            *expanded.get("suggested_analyses", []),
+        ]
+    }
+    for suggested in expanded.get("suggested_analyses", []):
+        normalized_suggested = normalize_text(suggested)
+        if normalized_suggested in normalized and suggested not in analysis_ids:
+            analysis_intents.append(
+                {
+                    "id": suggested,
+                    "label": suggested.replace("_", " ").title(),
+                    "confidence": 0.90,
+                    "evidence": suggested,
+                    "match_type": "ontology_suggestion",
+                }
+            )
+            analysis_ids.append(suggested)
+
+    species_intents = _match_aliases(
+        normalized,
+        config.get("species_aliases", {}),
+    )
+
     return {
         "query": query,
         "normalized_query": normalized,
         "tasks": [match.id for match in task_matches],
         "behaviors": [match.id for match in behavior_matches],
         "modalities": sorted(set(modalities)),
-        "expanded": expand_query_terms(query),
+        "species": sorted({match["id"] for match in species_intents}),
+        "brain_regions": [match.id for match in brain_region_matches],
+        "analysis": sorted(set(analysis_ids)),
+        "task_intent": _match_dumps(task_matches),
+        "behavior_intent": _match_dumps(behavior_matches),
+        "modality_intent": [
+            *[
+                {
+                    "id": match.id,
+                    "label": match.label,
+                    "confidence": match.confidence,
+                    "evidence": match.evidence,
+                    "match_type": match.match_type,
+                }
+                for match in match_modalities(query)
+            ],
+            *[
+                {
+                    "id": modality,
+                    "label": modality.replace("_", " ").title(),
+                    "confidence": 0.82,
+                    "evidence": "generic neural modality phrase",
+                    "match_type": "expanded",
+                }
+                for phrase, expanded_mods in GENERIC_MODALITY_PHRASES.items()
+                if normalize_text(phrase) in normalized
+                for modality in expanded_mods
+            ],
+        ],
+        "species_intent": species_intents,
+        "brain_region_intent": _match_dumps(brain_region_matches),
+        "analysis_intent": analysis_intents,
+        "inferred_concepts": sorted(
+            query_analysis_terms
+            | {normalize_text(match.category or "") for match in task_matches}
+        ),
+        "expanded": expanded,
     }
 
 
@@ -80,19 +305,109 @@ def _card_labels(card: DatasetCardRead | Mapping[str, Any], group: str) -> set[s
     return {value for value in ids if value}
 
 
+def _linked_paper_score(dataset: Any, card: DatasetCardRead | Mapping[str, Any] | None) -> float:
+    linked_ids = _raw_values(_get_value(dataset, "linked_paper_ids", []))
+    metadata = _get_value(dataset, "metadata_json", {}) or {}
+    if isinstance(metadata, Mapping):
+        linked_ids.extend(_raw_values(metadata.get("linked_paper_ids", [])))
+    count = len({value for value in linked_ids if value})
+    if card:
+        provenance = _get_value(card, "provenance", {}) or {}
+        if isinstance(provenance, Mapping):
+            count = max(count, int(provenance.get("linked_paper_count", 0) or 0))
+    return min(count / 3, 1.0)
+
+
+def _missing_required_fields(
+    dataset: Any,
+    parsed_query: Mapping[str, Any],
+    retrieval_config: Mapping[str, Any],
+) -> list[str]:
+    required = set(retrieval_config.get("required_metadata_fields", []))
+    analysis_required = retrieval_config.get("analysis_required_fields", {})
+    if isinstance(analysis_required, Mapping):
+        for analysis_id in parsed_query.get("analysis", []):
+            required.update(analysis_required.get(analysis_id, []))
+
+    missing: list[str] = []
+    for field in sorted(required):
+        value = _get_value(dataset, field, None)
+        if value in (None, "", [], {}, False):
+            missing.append(field)
+    return missing
+
+
+def _evidence_snippets(text: str, terms: Sequence[str], limit: int = 3) -> list[str]:
+    if not text:
+        return []
+    normalized_text = normalize_text(text)
+    snippets: list[str] = []
+    for term in _unique_preserve(list(terms)):
+        index = normalized_text.find(term)
+        if index == -1:
+            continue
+        start = max(index - 48, 0)
+        end = min(index + len(term) + 72, len(normalized_text))
+        snippet = normalized_text[start:end].strip()
+        if snippet and snippet not in snippets:
+            snippets.append(snippet)
+        if len(snippets) >= limit:
+            break
+    return snippets
+
+
+def _field_score(query_values: set[str], dataset_values: set[str]) -> tuple[float, list[str]]:
+    if not query_values:
+        return (0.5 if dataset_values else 0.0), []
+    matched = sorted(query_values & dataset_values)
+    return len(matched) / len(query_values), matched
+
+
+def _reusable_reason(
+    dataset: Any,
+    readiness_score: float,
+    matched_labels: Sequence[str],
+    paper_score: float,
+) -> str:
+    strengths: list[str] = []
+    standards = ", ".join(_raw_values(_get_value(dataset, "data_standards", []))[:2])
+    if standards:
+        strengths.append(f"standardized {standards} metadata")
+    if _get_value(dataset, "has_trials", False):
+        strengths.append("trial structure")
+    if _get_value(dataset, "has_behavior", False):
+        strengths.append("behavioral annotations")
+    if readiness_score >= 0.8:
+        strengths.append("high analysis readiness")
+    if paper_score > 0:
+        strengths.append("linked paper provenance")
+    if matched_labels:
+        strengths.append("direct scientific label matches")
+    if not strengths:
+        return "Reusable evidence is limited until core metadata and provenance are filled in."
+    return "Scientifically reusable because it has " + ", ".join(strengths[:4]) + "."
+
+
 def score_dataset_against_query(
     dataset: Any,
     card: DatasetCardRead | Mapping[str, Any] | None,
     parsed_query: Mapping[str, Any],
+    retrieval_config: Mapping[str, Any] | None = None,
 ) -> SearchResult:
     """Score one dataset against a parsed query and return explanations."""
 
+    config = dict(retrieval_config or load_retrieval_config())
+    weights = config.get("weights", {})
+    penalties = config.get("penalties", {})
     dataset_id = _get_value(dataset, "id", _get_value(dataset, "source_id", "unknown"))
     text = _text_for_dataset(dataset, card)
     query_terms = set(parsed_query.get("expanded", {}).get("terms", []))
     task_terms = {normalize_text(value) for value in parsed_query.get("tasks", [])}
     behavior_terms = {normalize_text(value) for value in parsed_query.get("behaviors", [])}
     modality_terms = {normalize_text(value) for value in parsed_query.get("modalities", [])}
+    species_terms = {normalize_text(value) for value in parsed_query.get("species", [])}
+    region_terms = {normalize_text(value) for value in parsed_query.get("brain_regions", [])}
+    analysis_terms = {normalize_text(value) for value in parsed_query.get("analysis", [])}
 
     dataset_tasks = _normalize_values(_get_value(dataset, "tasks", [])) | (
         _card_labels(card, "tasks") if card else set()
@@ -103,30 +418,63 @@ def score_dataset_against_query(
     dataset_modalities = _normalize_values(_get_value(dataset, "modalities", [])) | (
         _card_labels(card, "modalities") if card else set()
     )
+    dataset_species = _normalize_values(_get_value(dataset, "species", [])) | (
+        _card_labels(card, "species") if card else set()
+    )
+    dataset_regions = _normalize_values(_get_value(dataset, "brain_regions", [])) | (
+        _card_labels(card, "brain_regions") if card else set()
+    )
+    dataset_analyses = _normalize_values(_get_value(card, "suggested_analyses", [])) if card else set()
 
     keyword_hits = [term for term in query_terms if term and term in text]
     semantic_similarity = min(len(keyword_hits) / max(len(query_terms), 1), 1.0)
-    ontology_match = 0.0
-    metadata_match = 0.0
+    task_score, matched_tasks = _field_score(task_terms, dataset_tasks)
+    behavior_score, matched_behaviors = _field_score(behavior_terms, dataset_behaviors)
+    modality_score, matched_modalities = _field_score(modality_terms, dataset_modalities)
+    species_score, matched_species = _field_score(species_terms, dataset_species)
+    region_score, matched_regions = _field_score(region_terms, dataset_regions)
+    analysis_score, matched_analyses = _field_score(analysis_terms, dataset_analyses)
+
+    ontology_match = task_score if task_terms else 0.0
+    behavior_match = behavior_score if behavior_terms else 0.0
+    metadata_scores = []
+    if species_terms:
+        metadata_scores.append(species_score)
+    if region_terms:
+        metadata_scores.append(region_score)
+    if analysis_terms:
+        metadata_scores.append(analysis_score)
+    metadata_match = sum(metadata_scores) / len(metadata_scores) if metadata_scores else 0.0
+
     why: list[str] = []
     warnings: list[str] = []
+    missing_metadata_warnings: list[str] = []
+    matched_labels = [
+        *matched_tasks,
+        *matched_behaviors,
+        *matched_modalities,
+        *matched_species,
+        *matched_regions,
+        *matched_analyses,
+    ]
 
-    if task_terms:
-        matched = sorted(task_terms & dataset_tasks)
-        ontology_match += len(matched) / len(task_terms)
-        why.extend(f"Task matched: {value}" for value in matched)
-    if behavior_terms:
-        matched = sorted(behavior_terms & dataset_behaviors)
-        ontology_match += len(matched) / len(behavior_terms)
-        why.extend(f"Behavior matched: {value}" for value in matched)
-    ontology_match = min(ontology_match / (2 if behavior_terms and task_terms else 1), 1.0)
+    why.extend(f"Task matched: {value}" for value in matched_tasks)
+    why.extend(f"Behavior matched: {value}" for value in matched_behaviors)
+    why.extend(f"Modality matched: {value}" for value in matched_modalities)
+    why.extend(f"Species matched: {value}" for value in matched_species)
+    why.extend(f"Brain region matched: {value}" for value in matched_regions)
+    why.extend(f"Analysis matched: {value}" for value in matched_analyses)
 
-    if modality_terms:
-        matched_modalities = sorted(modality_terms & dataset_modalities)
-        metadata_match += len(matched_modalities) / len(modality_terms)
-        why.extend(f"Modality matched: {value}" for value in matched_modalities)
-    if not modality_terms:
-        metadata_match = 0.5 if dataset_modalities else 0.0
+    modality_penalty = 0.0
+    if modality_terms and dataset_modalities and not matched_modalities:
+        modality_penalty = float(penalties.get("modality_mismatch", 0.0))
+        warnings.append(
+            "Modality mismatch: query requested "
+            + ", ".join(sorted(modality_terms))
+            + " but dataset lists "
+            + ", ".join(sorted(dataset_modalities))
+            + "."
+        )
 
     readiness_score = 0.0
     if card:
@@ -135,17 +483,45 @@ def score_dataset_against_query(
     else:
         warnings.append("No dataset card supplied; readiness contributes zero.")
 
-    final_score = (
-        0.30 * semantic_similarity
-        + 0.25 * ontology_match
-        + 0.20 * metadata_match
-        + 0.15 * readiness_score
-        + 0.10 * (1.0 if keyword_hits else 0.0)
+    missing_fields = sorted(
+        set(_get_value(card, "missing_fields", []) if card else [])
+        | set(_missing_required_fields(dataset, parsed_query, config))
     )
+    max_missing = max(int(penalties.get("max_missing_required_fields", 5)), 1)
+    missing_penalty = min(
+        len(missing_fields),
+        max_missing,
+    ) * float(penalties.get("missing_required_field", 0.0))
+    for field in missing_fields:
+        missing_metadata_warnings.append(f"Missing metadata field: {field}")
+
+    paper_score = _linked_paper_score(dataset, card)
+    readiness_threshold = float(
+        config.get("thresholds", {}).get("high_analysis_readiness", 0.80)
+    )
+
+    final_score = (
+        float(weights.get("ontology", 0.0)) * ontology_match
+        + float(weights.get("behavior", 0.0)) * behavior_match
+        + float(weights.get("modality", 0.0)) * modality_score
+        + float(weights.get("metadata", 0.0)) * metadata_match
+        + float(weights.get("semantic", 0.0)) * semantic_similarity
+        + float(weights.get("readiness", 0.0)) * readiness_score
+        + float(weights.get("paper_confidence", 0.0)) * paper_score
+        - modality_penalty
+        - missing_penalty
+    )
+    final_score = max(0.0, min(final_score, 1.0))
     if keyword_hits:
-        why.append("Keyword evidence: " + ", ".join(sorted(keyword_hits)[:5]))
+        why.append("Keyword evidence: " + ", ".join(sorted(keyword_hits)[:6]))
+    if readiness_score >= readiness_threshold:
+        why.append(f"High analysis readiness: {int(readiness_score * 100)}/100")
+    if paper_score > 0:
+        why.append("Linked papers increase confidence in provenance.")
     if not why:
         warnings.append("Low explainability: no deterministic task, behavior, or modality match.")
+
+    warnings.extend(missing_metadata_warnings)
 
     preview = {}
     if card:
@@ -153,20 +529,61 @@ def score_dataset_against_query(
             "summary": _get_value(card, "summary", ""),
             "analysis_readiness_score": int(readiness_score * 100),
             "suggested_analyses": _get_value(card, "suggested_analyses", [])[:5],
+            "score_breakdown": {
+                "ontology": round(ontology_match, 3),
+                "behavior": round(behavior_match, 3),
+                "modality": round(modality_score, 3),
+                "metadata": round(metadata_match, 3),
+                "semantic": round(semantic_similarity, 3),
+                "readiness": round(readiness_score, 3),
+                "paper_confidence": round(paper_score, 3),
+                "penalties": round(modality_penalty + missing_penalty, 3),
+            },
         }
+    evidence_text = " ".join(
+        str(part)
+        for part in [
+            _get_value(dataset, "title", ""),
+            _get_value(dataset, "description", ""),
+            _get_value(card, "summary", "") if card else "",
+            _get_value(card, "why_relevant", []) if card else [],
+        ]
+    )
     return SearchResult(
         dataset_id=dataset_id,
         score=round(final_score * 100, 2),
         why_matched=why,
         warnings=warnings,
+        matched_terms=sorted(set(matched_labels) | set(keyword_hits[:8])),
+        inferred_concepts=list(parsed_query.get("inferred_concepts", [])),
+        evidence_snippets=_evidence_snippets(evidence_text, [*matched_labels, *keyword_hits]),
+        missing_metadata_warnings=missing_metadata_warnings,
+        reusable_reason=_reusable_reason(dataset, readiness_score, matched_labels, paper_score),
         dataset_card_preview=preview,
     )
 
 
-def _passes_filters(dataset: Any, filters: Mapping[str, Any]) -> bool:
+def _passes_filters(
+    dataset: Any,
+    filters: Mapping[str, Any],
+    card: DatasetCardRead | Mapping[str, Any] | None = None,
+) -> bool:
     if not filters:
         return True
     for key, expected in filters.items():
+        if key == "min_analysis_readiness_score":
+            readiness = _get_value(card, "analysis_readiness", None)
+            score = int(_get_value(readiness, "score", 0))
+            if score < int(expected):
+                return False
+            continue
+        if key == "reviewed_trusted_only":
+            if expected and _get_value(dataset, "qa_status", "auto_generated") not in {
+                "reviewed",
+                "trusted",
+            }:
+                return False
+            continue
         actual = _get_value(dataset, key, None)
         if isinstance(expected, list):
             if not (_normalize_values(actual) & _normalize_values(expected)):
@@ -179,27 +596,30 @@ def _passes_filters(dataset: Any, filters: Mapping[str, Any]) -> bool:
 def search_datasets(
     query: str,
     filters: Mapping[str, Any] | None = None,
+    structured_query: Mapping[str, Any] | None = None,
     datasets: Sequence[Mapping[str, Any]] | None = None,
     limit: int = 10,
+    retrieval_config: Mapping[str, Any] | None = None,
 ) -> SearchResponse:
     """Search supplied datasets or the built-in demo seed."""
 
-    parsed = parse_query(query)
-    filters = filters or {}
+    config = dict(retrieval_config or load_retrieval_config())
+    combined_query = combine_query_and_structured_text(query, structured_query)
+    parsed = parse_query(combined_query, config)
+    filters = merge_filters(filters, structured_query)
     records = list(datasets) if datasets is not None else build_demo_seed()
     results: list[SearchResult] = []
 
     for record in records:
         dataset = record.get("dataset", record)
-        if not _passes_filters(dataset, filters):
-            continue
         card = record.get("card")
         if card is None and "extraction" in record:
             card = generate_dataset_card_json(
                 dataset, record["extraction"], record.get("papers", [])
             )
-        results.append(score_dataset_against_query(dataset, card, parsed))
+        if not _passes_filters(dataset, filters, card):
+            continue
+        results.append(score_dataset_against_query(dataset, card, parsed, config))
 
     results.sort(key=lambda item: item.score, reverse=True)
-    return SearchResponse(query=query, parsed_query=dict(parsed), results=results[:limit])
-
+    return SearchResponse(query=combined_query, parsed_query=dict(parsed), results=results[:limit])

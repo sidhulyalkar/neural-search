@@ -1,0 +1,81 @@
+datasets:
+  - source: demo
+    source_id: DEMO_GONOGO_CALCIUM
+    title: Demo Go/NoGo calcium imaging dataset
+    description: Mouse mPFC calcium imaging during a Go/NoGo response inhibition task with lick, hit, false alarm, cue onset, reward, and omission events.
+    url: https://example.org/demo/gonogo-calcium
+    species: [mouse]
+    modalities: [calcium_imaging, behavior_video]
+    brain_regions: [mPFC]
+    tasks: [go_nogo]
+    behaviors: [lick, reward, omission, correct]
+    data_standards: [NWB]
+    has_behavior: true
+    has_trials: true
+    license: CC-BY-4.0
+    linked_paper_ids: [PAPER_GONOGO_CALCIUM]
+
+  - source: demo
+    source_id: DEMO_REVERSAL_EPHYS
+    title: Demo reversal learning electrophysiology dataset
+    description: Mouse OFC and striatum extracellular electrophysiology during probabilistic reversal learning with choice, reward omission, reversal points, and trial outcomes.
+    url: https://example.org/demo/reversal-ephys
+    species: [mouse]
+    modalities: [extracellular_ephys]
+    brain_regions: [OFC, striatum]
+    tasks: [reversal_learning]
+    behaviors: [choice, reward, omission, error]
+    data_standards: [NWB]
+    has_behavior: true
+    has_trials: true
+    license: CC-BY-4.0
+    linked_paper_ids: [PAPER_REVERSAL_EPHYS]
+
+  - source: demo
+    source_id: DEMO_DELAY_DISCOUNTING
+    title: Demo delay discounting behavior and neural dataset
+    description: Rat mPFC fiber photometry during delay discounting with intertemporal choice, offer onset, delay period, immediate reward, delayed reward, and reaction time.
+    url: https://example.org/demo/delay-discounting
+    species: [rat]
+    modalities: [fiber_photometry, behavior_video]
+    brain_regions: [mPFC, nucleus_accumbens]
+    tasks: [delay_discounting]
+    behaviors: [choice, reward, reaction_time]
+    data_standards: [BIDS]
+    has_behavior: true
+    has_trials: true
+    license: CC0-1.0
+    linked_paper_ids: [PAPER_DELAY_DISCOUNTING]
+
+  - source: demo
+    source_id: DEMO_REACHING_ECOG_IEEG
+    title: Demo reaching ECoG and iEEG dataset
+    description: Human ECoG and iEEG recordings during center-out reaching and grasping with target onset, movement onset, reach direction, BCI cursor control, and kinematic tracking.
+    url: https://example.org/demo/reaching-ecog-ieeg
+    species: [human]
+    modalities: [ecog, ieeg, pose_tracking, bci]
+    brain_regions: [motor_cortex, somatosensory_cortex, parietal_cortex]
+    tasks: [reaching, center_out_reaching, grasping]
+    behaviors: [movement_onset, choice]
+    data_standards: [BIDS]
+    has_behavior: true
+    has_trials: true
+    license: CC-BY-NC-4.0
+    linked_paper_ids: [PAPER_REACHING_ECOG_IEEG]
+
+  - source: demo
+    source_id: DEMO_VISUAL_DECISION_NEUROPIXELS
+    title: Demo visual decision-making Neuropixels dataset
+    description: Mouse visual cortex and PPC Neuropixels recordings during visual decision-making and visual discrimination with stimulus onset, choice, reward, feedback, and reaction time.
+    url: https://example.org/demo/visual-decision-neuropixels
+    species: [mouse]
+    modalities: [neuropixels, extracellular_ephys]
+    brain_regions: [visual_cortex, PPC]
+    tasks: [visual_decision_making, visual_discrimination]
+    behaviors: [choice, reward, reaction_time, correct, error]
+    data_standards: [NWB]
+    has_behavior: true
+    has_trials: true
+    license: CC-BY-4.0
+    linked_paper_ids: [PAPER_VISUAL_DECISION_NEUROPIXELS]
+

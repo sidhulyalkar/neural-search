@@ -1,0 +1,249 @@
+# Curated Seed Sources for Neural Search
+#
+# This file contains manually verified dataset and paper records for seeding
+# the Neural Search index before full live ingestion pipelines are reliable.
+#
+# Schema:
+#   source_type: dandi | openneuro | openalex | manual
+#   source_id: Unique identifier from the source (e.g., DANDI:000005, ds000001)
+#   title: Human-readable title
+#   url: Canonical URL to the resource
+#   expected_tasks: List of behavioral/cognitive tasks (ontology terms)
+#   expected_modalities: List of recording modalities (ontology terms)
+#   expected_behaviors: List of behavioral events/measures (ontology terms)
+#   expected_species: List of species (ontology terms)
+#   notes: Free-text notes about the dataset or ingestion considerations
+#   priority: high | medium | low (for ingestion ordering)
+#
+# When adding entries:
+#   - Use ontology term IDs where possible (e.g., task:go_nogo, mod:neuropixels)
+#   - If no ontology term exists, use descriptive labels and flag in notes
+#   - Set priority:high for datasets needed for demos or benchmarking
+
+sources:
+  # ============================================================================
+  # DANDI Archive Datasets
+  # ============================================================================
+
+  - source_type: dandi
+    source_id: "DANDI:000005"
+    title: "Electrophysiology data from mouse visual cortex during visual discrimination"
+    url: https://dandiarchive.org/dandiset/000005
+    expected_tasks:
+      - visual_discrimination
+      - decision_making
+    expected_modalities:
+      - extracellular_ephys
+      - neuropixels
+    expected_behaviors:
+      - choice
+      - reaction_time
+      - correct
+      - error
+    expected_species:
+      - mouse
+    notes: |
+      Classic IBL-style visual decision dataset. Good benchmark for
+      visual processing and decision-making queries.
+    priority: high
+
+  - source_type: dandi
+    source_id: "DANDI:000003"
+    title: "Neural population dynamics in motor cortex during reaching"
+    url: https://dandiarchive.org/dandiset/000003
+    expected_tasks:
+      - reaching
+      - center_out_reaching
+    expected_modalities:
+      - extracellular_ephys
+      - utah_array
+    expected_behaviors:
+      - movement_onset
+      - reach_direction
+      - reaction_time
+    expected_species:
+      - monkey
+    notes: |
+      Motor cortex reaching data. Good for motor control and
+      movement decoding benchmarks.
+    priority: high
+
+  - source_type: dandi
+    source_id: "DANDI:000010"
+    title: "Two-photon calcium imaging during Go/NoGo task"
+    url: https://dandiarchive.org/dandiset/000010
+    expected_tasks:
+      - go_nogo
+      - response_inhibition
+    expected_modalities:
+      - calcium_imaging
+      - two_photon
+    expected_behaviors:
+      - lick
+      - hit
+      - false_alarm
+      - correct_rejection
+      - reward
+    expected_species:
+      - mouse
+    notes: |
+      Standard Go/NoGo paradigm with cellular imaging.
+      Good for inhibitory control queries.
+    priority: high
+
+  # ============================================================================
+  # OpenNeuro Datasets
+  # ============================================================================
+
+  - source_type: openneuro
+    source_id: "ds000001"
+    title: "Balloon Analog Risk Task fMRI"
+    url: https://openneuro.org/datasets/ds000001
+    expected_tasks:
+      - balloon_analog_risk_task
+      - risk_taking
+      - decision_making
+    expected_modalities:
+      - fmri
+      - bold
+    expected_behaviors:
+      - choice
+      - reward
+      - loss
+    expected_species:
+      - human
+    notes: |
+      Classic BART paradigm. Risk-taking and reward processing benchmark.
+    priority: medium
+
+  - source_type: openneuro
+    source_id: "ds000030"
+    title: "UCLA Consortium for Neuropsychiatric Phenomics"
+    url: https://openneuro.org/datasets/ds000030
+    expected_tasks:
+      - n_back
+      - stop_signal
+      - task_switching
+    expected_modalities:
+      - fmri
+      - bold
+    expected_behaviors:
+      - reaction_time
+      - correct
+      - error
+      - inhibition
+    expected_species:
+      - human
+    notes: |
+      Large-scale dataset with multiple cognitive tasks.
+      Good for working memory and executive function queries.
+    priority: high
+
+  - source_type: openneuro
+    source_id: "ds000117"
+    title: "MEG/EEG multimodal face processing dataset"
+    url: https://openneuro.org/datasets/ds000117
+    expected_tasks:
+      - face_perception
+      - visual_processing
+    expected_modalities:
+      - meg
+      - eeg
+    expected_behaviors:
+      - stimulus_onset
+      - response
+    expected_species:
+      - human
+    notes: |
+      Multimodal electrophysiology dataset. Good for testing
+      modality-specific search queries.
+    priority: medium
+
+  # ============================================================================
+  # OpenAlex Papers (for paper-dataset linking)
+  # ============================================================================
+
+  - source_type: openalex
+    source_id: "W2741809807"
+    title: "International Brain Laboratory: An Open and Reproducible Neuroscience Collaboration"
+    url: https://openalex.org/W2741809807
+    expected_tasks:
+      - visual_discrimination
+      - decision_making
+    expected_modalities:
+      - neuropixels
+      - extracellular_ephys
+    expected_behaviors:
+      - choice
+      - reaction_time
+      - wheel_movement
+    expected_species:
+      - mouse
+    notes: |
+      IBL flagship paper. Links to multiple DANDI datasets.
+      Priority for establishing paper-dataset connections.
+    priority: high
+
+  - source_type: openalex
+    source_id: "W2963073997"
+    title: "Neuropixels 2.0: A miniaturized high-density probe for stable, long-term brain recordings"
+    url: https://openalex.org/W2963073997
+    expected_tasks: []
+    expected_modalities:
+      - neuropixels
+      - extracellular_ephys
+    expected_behaviors: []
+    expected_species:
+      - mouse
+      - rat
+    notes: |
+      Methods paper for Neuropixels 2.0. Link to relevant datasets
+      using this technology.
+    priority: medium
+
+  # ============================================================================
+  # Manual Entries (datasets not yet in standard archives)
+  # ============================================================================
+
+  - source_type: manual
+    source_id: "MANUAL:steinmetz2019"
+    title: "Steinmetz et al. 2019 Neuropixels Dataset"
+    url: https://figshare.com/articles/dataset/steinmetz/9598406
+    expected_tasks:
+      - visual_discrimination
+      - decision_making
+    expected_modalities:
+      - neuropixels
+      - extracellular_ephys
+    expected_behaviors:
+      - choice
+      - reaction_time
+      - wheel_movement
+      - stimulus_onset
+    expected_species:
+      - mouse
+    notes: |
+      Published on Figshare before DANDI existed. Classic benchmark
+      for Neuropixels analysis pipelines.
+    priority: high
+
+  - source_type: manual
+    source_id: "MANUAL:allen_visual_coding"
+    title: "Allen Institute Visual Coding Neuropixels"
+    url: https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html
+    expected_tasks:
+      - passive_viewing
+      - visual_processing
+    expected_modalities:
+      - neuropixels
+      - extracellular_ephys
+    expected_behaviors:
+      - stimulus_onset
+      - running_speed
+      - pupil_diameter
+    expected_species:
+      - mouse
+    notes: |
+      Accessed via AllenSDK, not DANDI. Large-scale visual cortex
+      recordings during passive viewing.
+    priority: high

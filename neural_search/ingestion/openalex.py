@@ -2,11 +2,33 @@
 
 from __future__ import annotations
 
+import argparse
+import json
 from typing import Any
 
 import httpx
 
+from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
+from neural_search.ingestion.live import (
+    print_normalized_records,
+    print_cli_error,
+    save_paper_records,
+    save_raw_response,
+)
+
 OPENALEX_API_URL = "https://api.openalex.org"
+
+
+def fetch_openalex(query: str, limit: int) -> dict[str, Any]:
+    params = {
+        "search": query,
+        "per_page": limit,
+        "mailto": "neuralsearch@example.com",
+    }
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        response = client.get(f"{OPENALEX_API_URL}/works", params=params)
+        response.raise_for_status()
+        return response.json()
 
 
 async def search_works(
@@ -42,39 +64,7 @@ async def search_works(
         response.raise_for_status()
         data = response.json()
 
-    results = []
-    for work in data.get("results", []):
-        # Extract authors
-        authors = []
-        for authorship in work.get("authorships", []):
-            author = authorship.get("author", {})
-            name = author.get("display_name")
-            if name:
-                authors.append({"name": name, "orcid": author.get("orcid")})
-
-        # Extract concepts
-        concepts = [c.get("display_name") for c in work.get("concepts", [])]
-
-        results.append({
-            "id": work.get("id", "").replace("https://openalex.org/", ""),
-            "source": "openalex",
-            "openalex_id": work.get("id"),
-            "doi": work.get("doi"),
-            "title": work.get("title", ""),
-            "abstract": _get_abstract(work),
-            "publication_year": work.get("publication_year"),
-            "authors_json": authors,
-            "url": work.get("doi") or work.get("id"),
-            "concepts": concepts[:10],
-            "citation_count": work.get("cited_by_count", 0),
-            "metadata_json": {
-                "type": work.get("type"),
-                "is_oa": work.get("open_access", {}).get("is_oa"),
-                "venue": work.get("primary_location", {}).get("source", {}).get("display_name"),
-            },
-        })
-
-    return results
+    return records_from_response(data, limit)
 
 
 def _get_abstract(work: dict[str, Any]) -> str | None:
@@ -117,6 +107,10 @@ async def get_work(work_id: str) -> dict[str, Any] | None:
         response.raise_for_status()
         work = response.json()
 
+    return normalize_work(work)
+
+
+def normalize_work(work: dict[str, Any]) -> dict[str, Any]:
     authors = []
     for authorship in work.get("authorships", []):
         author = authorship.get("author", {})
@@ -126,10 +120,13 @@ async def get_work(work_id: str) -> dict[str, Any] | None:
 
     concepts = [c.get("display_name") for c in work.get("concepts", [])]
 
+    openalex_id = work.get("id")
+    source_id = str(openalex_id or "").replace("https://openalex.org/", "")
     return {
-        "id": work.get("id", "").replace("https://openalex.org/", ""),
+        "id": source_id,
         "source": "openalex",
-        "openalex_id": work.get("id"),
+        "source_id": source_id,
+        "openalex_id": openalex_id,
         "doi": work.get("doi"),
         "title": work.get("title", ""),
         "abstract": _get_abstract(work),
@@ -144,6 +141,10 @@ async def get_work(work_id: str) -> dict[str, Any] | None:
             "venue": work.get("primary_location", {}).get("source", {}).get("display_name"),
         },
     }
+
+
+def records_from_response(data: dict[str, Any], limit: int) -> list[dict[str, Any]]:
+    return [normalize_work(work) for work in data.get("results", [])[:limit]]
 
 
 async def search_papers_for_dataset(
@@ -203,3 +204,34 @@ async def search_papers_for_dataset(
                             break
 
     return results[:limit]
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="python -m neural_search.ingestion.openalex")
+    parser.add_argument("--query", required=True)
+    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--save-raw", action="store_true")
+    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--database-url", default=DEFAULT_DATABASE_URL)
+    args = parser.parse_args(argv)
+
+    try:
+        payload = fetch_openalex(args.query, args.limit)
+        if args.save_raw:
+            raw_path = save_raw_response("openalex", args.query, payload)
+            print(json.dumps({"raw_saved": str(raw_path)}, indent=2))
+        records = records_from_response(payload, args.limit)
+        print_normalized_records(records)
+        if args.dry_run:
+            return 0
+        summary = save_paper_records(records, args.database_url, args.force)
+        print(json.dumps(summary, indent=2))
+        return 0
+    except Exception as exc:
+        print_cli_error("openalex", exc)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

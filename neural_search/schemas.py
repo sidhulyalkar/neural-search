@@ -3,10 +3,20 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+DatasetQAStatus = Literal[
+    "unreviewed",
+    "auto_generated",
+    "needs_review",
+    "reviewed",
+    "trusted",
+    "rejected",
+]
 
 
 class LabelEvidence(BaseModel):
@@ -41,6 +51,7 @@ class DatasetRead(DatasetCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID | str
+    qa_status: DatasetQAStatus = "auto_generated"
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
@@ -109,14 +120,46 @@ class DatasetCardRead(BaseModel):
 
     id: UUID | str | None = None
     dataset_id: UUID | str
+    title: str | None = None
+    source: str | None = None
+    source_id: str | None = None
+    url: str | None = None
+    doi: str | None = None
+    license: str | None = None
+    data_standard: str | None = None
+    species: list[str] = Field(default_factory=list)
+    modalities: list[str] = Field(default_factory=list)
+    brain_regions: list[str] = Field(default_factory=list)
+    tasks: list[str] = Field(default_factory=list)
+    behaviors: list[str] = Field(default_factory=list)
+    assets: list[dict[str, Any]] = Field(default_factory=list)
+    related_papers: list[dict[str, Any]] = Field(default_factory=list)
     summary: str
+    summary_details: dict[str, Any] = Field(default_factory=dict)
+    experimental_structure: dict[str, Any] = Field(default_factory=dict)
+    neural_data: dict[str, Any] = Field(default_factory=dict)
+    analysis_plan: dict[str, Any] = Field(default_factory=dict)
+    linked_literature: dict[str, Any] = Field(default_factory=dict)
+    reuse_instructions: dict[str, Any] = Field(default_factory=dict)
     why_relevant: list[str] = Field(default_factory=list)
     scientific_labels: dict[str, Any] = Field(default_factory=dict)
     analysis_readiness: AnalysisReadiness
+    readiness: dict[str, Any] = Field(default_factory=dict)
     missing_fields: list[str] = Field(default_factory=list)
+    missing_metadata: list[str] = Field(default_factory=list)
     suggested_analyses: list[str] = Field(default_factory=list)
     provenance: dict[str, Any] = Field(default_factory=dict)
     card_markdown: str | None = None
+    qa_status: DatasetQAStatus = "auto_generated"
+    task_labels_verified: bool = False
+    modality_labels_verified: bool = False
+    behavior_labels_verified: bool = False
+    brain_regions_verified: bool = False
+    linked_papers_verified: bool = False
+    notebook_tested: bool = False
+    reviewer_notes: str = ""
+    markdown: str | None = None
+    generated_at: datetime | None = None
 
 
 class NotebookGenerationResponse(BaseModel):
@@ -127,9 +170,23 @@ class NotebookGenerationResponse(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class ExperimentQuery(BaseModel):
+    task: list[str] = Field(default_factory=list)
+    behavior: list[str] = Field(default_factory=list)
+    modality: list[str] = Field(default_factory=list)
+    species: list[str] = Field(default_factory=list)
+    brain_region: list[str] = Field(default_factory=list)
+    data_standard: list[str] = Field(default_factory=list)
+    source_archive: list[str] = Field(default_factory=list)
+    analysis_goal: list[str] = Field(default_factory=list)
+    min_analysis_readiness_score: int | None = Field(default=None, ge=0, le=100)
+    reviewed_trusted_only: bool = False
+
+
 class SearchRequest(BaseModel):
-    query: str
+    query: str = ""
     filters: dict[str, Any] = Field(default_factory=dict)
+    structured_query: ExperimentQuery | None = None
     limit: int = Field(default=10, ge=1, le=100)
 
 
@@ -138,6 +195,11 @@ class SearchResult(BaseModel):
     score: float = Field(ge=0.0)
     why_matched: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    matched_terms: list[str] = Field(default_factory=list)
+    inferred_concepts: list[str] = Field(default_factory=list)
+    evidence_snippets: list[str] = Field(default_factory=list)
+    missing_metadata_warnings: list[str] = Field(default_factory=list)
+    reusable_reason: str | None = None
     dataset_card_preview: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -145,4 +207,3 @@ class SearchResponse(BaseModel):
     query: str
     parsed_query: dict[str, Any] = Field(default_factory=dict)
     results: list[SearchResult] = Field(default_factory=list)
-
