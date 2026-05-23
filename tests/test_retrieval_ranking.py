@@ -126,3 +126,96 @@ def test_linked_papers_boost_confidence_without_dominating_relevance():
 
     assert relevant_score.score > unrelated_score.score
     assert any("Linked papers" in reason for reason in unrelated_score.why_matched)
+
+
+def test_score_breakdown_exposes_embedding_semantic_signal():
+    response = search_datasets(
+        "human ECoG reaching BCI classification",
+        datasets=[
+            {
+                "dataset": _dataset(
+                    "REACHING",
+                    description="Human ECoG reaching data for BCI cursor classification.",
+                    species=["human"],
+                    modalities=["ecog"],
+                    brain_regions=["motor_cortex"],
+                    tasks=["reaching"],
+                    behaviors=["movement_onset", "choice"],
+                ),
+                "card": _card(
+                    "REACHING",
+                    scientific_labels={
+                        "tasks": [{"id": "reaching", "label": "Reaching"}],
+                        "behaviors": [{"id": "movement_onset", "label": "Movement onset"}],
+                        "modalities": [{"id": "ecog", "label": "ECoG"}],
+                        "brain_regions": [{"id": "motor_cortex", "label": "Motor cortex"}],
+                        "species": [{"id": "human", "label": "Human"}],
+                    },
+                    suggested_analyses=["motor_imagery_classification"],
+                ),
+            }
+        ],
+        limit=1,
+    )
+
+    breakdown = response.results[0].score_breakdown
+
+    assert breakdown["embedding_semantic"] > 0
+    assert breakdown["semantic"] >= breakdown["keyword_semantic"]
+
+
+def test_hard_negative_human_ecog_bci_beats_rodent_calcium():
+    human_ecog = _dataset(
+        "HUMAN_ECOG",
+        description="Human ECoG reaching dataset for BCI motor decoding.",
+        species=["human"],
+        modalities=["ecog"],
+        brain_regions=["motor_cortex"],
+        tasks=["reaching"],
+        behaviors=["movement_onset", "choice"],
+    )
+    rodent_calcium = _dataset(
+        "RODENT_CALCIUM",
+        description="Mouse calcium imaging visual decision task with reward.",
+        species=["mouse"],
+        modalities=["calcium_imaging"],
+        brain_regions=["visual_cortex"],
+        tasks=["visual_decision_making"],
+        behaviors=["reward", "choice"],
+    )
+
+    response = search_datasets(
+        "Human ECoG or iEEG reaching data for BCI classification",
+        datasets=[
+            {
+                "dataset": rodent_calcium,
+                "card": _card(
+                    "RODENT_CALCIUM",
+                    scientific_labels={
+                        "tasks": [{"id": "visual_decision_making", "label": "Visual decision"}],
+                        "behaviors": [{"id": "reward", "label": "Reward"}],
+                        "modalities": [{"id": "calcium_imaging", "label": "Calcium imaging"}],
+                        "brain_regions": [{"id": "visual_cortex", "label": "Visual cortex"}],
+                        "species": [{"id": "mouse", "label": "Mouse"}],
+                    },
+                ),
+            },
+            {
+                "dataset": human_ecog,
+                "card": _card(
+                    "HUMAN_ECOG",
+                    scientific_labels={
+                        "tasks": [{"id": "reaching", "label": "Reaching"}],
+                        "behaviors": [{"id": "movement_onset", "label": "Movement onset"}],
+                        "modalities": [{"id": "ecog", "label": "ECoG"}],
+                        "brain_regions": [{"id": "motor_cortex", "label": "Motor cortex"}],
+                        "species": [{"id": "human", "label": "Human"}],
+                    },
+                    suggested_analyses=["motor_imagery_classification"],
+                ),
+            },
+        ],
+    )
+
+    assert response.results[0].dataset_id == "HUMAN_ECOG"
+    assert any("Modality mismatch" in warning for warning in response.results[1].warnings)

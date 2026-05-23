@@ -12,6 +12,7 @@ from typing import Any
 import yaml
 
 from neural_search.cards import generate_dataset_card_json
+from neural_search.embeddings import HashingEmbeddingProvider, cosine_similarity
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.ontology import (
     expand_query_terms,
@@ -355,6 +356,17 @@ def _evidence_snippets(text: str, terms: Sequence[str], limit: int = 3) -> list[
     return snippets
 
 
+@lru_cache(maxsize=1)
+def _default_embedding_provider() -> HashingEmbeddingProvider:
+    return HashingEmbeddingProvider()
+
+
+def _embedding_semantic_score(query: str, text: str) -> float:
+    provider = _default_embedding_provider()
+    query_vector, text_vector = provider.embed_texts([query, text])
+    return cosine_similarity(query_vector, text_vector)
+
+
 def _field_score(query_values: set[str], dataset_values: set[str]) -> tuple[float, list[str]]:
     if not query_values:
         return (0.5 if dataset_values else 0.0), []
@@ -426,7 +438,12 @@ def score_dataset_against_query(
     dataset_analyses = _normalize_values(_get_value(card, "suggested_analyses", [])) if card else set()
 
     keyword_hits = [term for term in query_terms if term and term in text]
-    semantic_similarity = min(len(keyword_hits) / max(len(query_terms), 1), 1.0)
+    keyword_similarity = min(len(keyword_hits) / max(len(query_terms), 1), 1.0)
+    embedding_similarity = _embedding_semantic_score(
+        str(parsed_query.get("query", "")),
+        text,
+    )
+    semantic_similarity = max(keyword_similarity, embedding_similarity)
     task_score, matched_tasks = _field_score(task_terms, dataset_tasks)
     behavior_score, matched_behaviors = _field_score(behavior_terms, dataset_behaviors)
     modality_score, matched_modalities = _field_score(modality_terms, dataset_modalities)
@@ -534,6 +551,8 @@ def score_dataset_against_query(
                 "modality": round(modality_score, 3),
                 "metadata": round(metadata_match, 3),
                 "semantic": round(semantic_similarity, 3),
+                "keyword_semantic": round(keyword_similarity, 3),
+                "embedding_semantic": round(embedding_similarity, 3),
                 "readiness": round(readiness_score, 3),
                 "paper_confidence": round(paper_score, 3),
                 "penalties": round(modality_penalty + missing_penalty, 3),
@@ -559,6 +578,7 @@ def score_dataset_against_query(
         missing_metadata_warnings=missing_metadata_warnings,
         reusable_reason=_reusable_reason(dataset, readiness_score, matched_labels, paper_score),
         dataset_card_preview=preview,
+        score_breakdown=preview.get("score_breakdown", {}),
     )
 
 

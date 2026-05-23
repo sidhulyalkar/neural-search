@@ -200,6 +200,7 @@ class SearchResult(BaseModel):
     missing_metadata_warnings: list[str] = Field(default_factory=list)
     reusable_reason: str | None = None
     dataset_card_preview: dict[str, Any] = Field(default_factory=dict)
+    score_breakdown: dict[str, float] = Field(default_factory=dict)
 
 
 class SearchResponse(BaseModel):

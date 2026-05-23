@@ -33,11 +33,21 @@ class BenchmarkQuery:
 
     id: str
     query: str
+    expected_dataset_ids: list[str] = field(default_factory=list)
     expected_tasks: list[str] = field(default_factory=list)
     expected_behaviors: list[str] = field(default_factory=list)
     expected_modalities_any: list[str] = field(default_factory=list)
+    expected_regions_any: list[str] = field(default_factory=list)
     expected_species: list[str] = field(default_factory=list)
+    expected_data_standards: list[str] = field(default_factory=list)
+    expected_sources: list[str] = field(default_factory=list)
     expected_analysis_any: list[str] = field(default_factory=list)
+    hard_negative_dataset_ids: list[str] = field(default_factory=list)
+    hard_negative_modalities: list[str] = field(default_factory=list)
+    hard_negative_species: list[str] = field(default_factory=list)
+    analysis_intent: str | None = None
+    minimum_precision_at_5: float = 0.0
+    minimum_label_recall_at_10: float = 0.0
     notes: str | None = None
 
 
@@ -48,17 +58,39 @@ class QueryEvaluation:
     query_id: str
     query: str
     num_results: int
+    precision_at_1: float
+    precision_at_3: float
     precision_at_5: float
+    precision_at_10: float
+    recall_at_5: float
+    recall_at_10: float
     label_recall_at_10: float
+    mrr: float
+    ndcg_at_10: float
     task_match_rate: float
     modality_match_rate: float
     behavior_match_rate: float
     matched_tasks: list[str]
     matched_modalities: list[str]
     matched_behaviors: list[str]
+    matched_regions: list[str]
+    matched_species: list[str]
+    matched_data_standards: list[str]
+    matched_sources: list[str]
+    matched_analysis: list[str]
     missing_expected_tasks: list[str]
     missing_expected_modalities: list[str]
     missing_expected_behaviors: list[str]
+    missing_expected_regions: list[str]
+    missing_expected_species: list[str]
+    missing_expected_data_standards: list[str]
+    missing_expected_sources: list[str]
+    missing_expected_analysis: list[str]
+    expected_dataset_ids: list[str]
+    missed_expected_datasets: list[str]
+    hard_negative_violations: list[str]
+    top_false_positives: list[str]
+    why_failed: list[str]
     top_results: list[dict[str, Any]]
     warnings: list[str]
     parsed_query: dict[str, Any]
@@ -71,8 +103,15 @@ class EvaluationReport:
     generated_at: str
     total_queries: int
     queries_with_results: int
+    mean_precision_at_1: float
+    mean_precision_at_3: float
     mean_precision_at_5: float
+    mean_precision_at_10: float
+    mean_recall_at_5: float
+    mean_recall_at_10: float
     mean_label_recall_at_10: float
+    mean_mrr: float
+    mean_ndcg_at_10: float
     mean_task_match_rate: float
     mean_modality_match_rate: float
     mean_behavior_match_rate: float
@@ -96,11 +135,23 @@ def load_benchmark_queries(path: Path | None = None) -> list[BenchmarkQuery]:
             BenchmarkQuery(
                 id=item.get("id", ""),
                 query=item.get("query", ""),
+                expected_dataset_ids=item.get("expected_dataset_ids", []),
                 expected_tasks=item.get("expected_tasks", []),
                 expected_behaviors=item.get("expected_behaviors", []),
                 expected_modalities_any=item.get("expected_modalities_any", []),
+                expected_regions_any=item.get("expected_regions_any", []),
                 expected_species=item.get("expected_species", []),
+                expected_data_standards=item.get("expected_data_standards", []),
+                expected_sources=item.get("expected_sources", []),
                 expected_analysis_any=item.get("expected_analysis_any", []),
+                hard_negative_dataset_ids=item.get("hard_negative_dataset_ids", []),
+                hard_negative_modalities=item.get("hard_negative_modalities", []),
+                hard_negative_species=item.get("hard_negative_species", []),
+                analysis_intent=item.get("analysis_intent"),
+                minimum_precision_at_5=float(item.get("minimum_precision_at_5", 0.0) or 0.0),
+                minimum_label_recall_at_10=float(
+                    item.get("minimum_label_recall_at_10", 0.0) or 0.0
+                ),
                 notes=item.get("notes"),
             )
         )
@@ -120,6 +171,11 @@ def _extract_result_labels(
     tasks: set[str] = set()
     modalities: set[str] = set()
     behaviors: set[str] = set()
+    regions: set[str] = set()
+    species: set[str] = set()
+    data_standards: set[str] = set()
+    sources: set[str] = set()
+    analysis: set[str] = set()
 
     # Build lookup for dataset metadata
     dataset_lookup: dict[str, dict[str, Any]] = {}
@@ -128,6 +184,9 @@ def _extract_result_labels(
             ds = record.get("dataset", record)
             ds_id = ds.get("id", ds.get("source_id", ""))
             dataset_lookup[str(ds_id)] = ds
+            source_id = ds.get("source_id")
+            if source_id:
+                dataset_lookup[str(source_id)] = ds
 
     for result in results:
         why_matched = result.get("why_matched", [])
@@ -140,6 +199,12 @@ def _extract_result_labels(
                 modalities.add(normalize_text(reason.replace("Modality matched:", "").strip()))
             elif reason.startswith("Behavior matched:"):
                 behaviors.add(normalize_text(reason.replace("Behavior matched:", "").strip()))
+            elif reason.startswith("Brain region matched:"):
+                regions.add(normalize_text(reason.replace("Brain region matched:", "").strip()))
+            elif reason.startswith("Species matched:"):
+                species.add(normalize_text(reason.replace("Species matched:", "").strip()))
+            elif reason.startswith("Analysis matched:"):
+                analysis.add(normalize_text(reason.replace("Analysis matched:", "").strip()))
 
         # Also extract from underlying dataset metadata
         dataset_id = str(result.get("dataset_id", ""))
@@ -151,8 +216,147 @@ def _extract_result_labels(
                 modalities.add(normalize_text(mod))
             for beh in ds.get("behaviors", []):
                 behaviors.add(normalize_text(beh))
+            for region in ds.get("brain_regions", []):
+                regions.add(normalize_text(region))
+            for item in ds.get("species", []):
+                species.add(normalize_text(item))
+            for standard in ds.get("data_standards", []):
+                data_standards.add(normalize_text(standard))
+            source = ds.get("source")
+            if source:
+                sources.add(normalize_text(source))
+            preview = result.get("dataset_card_preview", {})
+            for item in preview.get("suggested_analyses", []) if isinstance(preview, dict) else []:
+                analysis.add(normalize_text(item))
 
-    return {"tasks": tasks, "modalities": modalities, "behaviors": behaviors}
+    return {
+        "tasks": tasks,
+        "modalities": modalities,
+        "behaviors": behaviors,
+        "regions": regions,
+        "species": species,
+        "data_standards": data_standards,
+        "sources": sources,
+        "analysis": analysis,
+    }
+
+
+def _dataset_lookup(datasets: list[dict[str, Any]] | None) -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
+    for record in datasets or []:
+        ds = record.get("dataset", record)
+        for key in ("id", "source_id"):
+            value = ds.get(key)
+            if value:
+                lookup[str(value)] = ds
+    return lookup
+
+
+def _result_relevance(
+    result_id: str,
+    dataset: dict[str, Any] | None,
+    query: BenchmarkQuery,
+) -> float:
+    expected_ids = set(query.expected_dataset_ids)
+    hard_negative_ids = set(query.hard_negative_dataset_ids)
+    if result_id in hard_negative_ids:
+        return 0.0
+    if expected_ids:
+        return 1.0 if result_id in expected_ids else 0.0
+    if dataset is None:
+        return 0.0
+
+    hard_negative_modalities = _normalize_list(query.hard_negative_modalities)
+    hard_negative_species = _normalize_list(query.hard_negative_species)
+    if hard_negative_modalities & _normalize_list(dataset.get("modalities", [])):
+        return 0.0
+    if hard_negative_species & _normalize_list(dataset.get("species", [])):
+        return 0.0
+
+    expected_groups = [
+        (_normalize_list(query.expected_tasks), _normalize_list(dataset.get("tasks", []))),
+        (_normalize_list(query.expected_behaviors), _normalize_list(dataset.get("behaviors", []))),
+        (
+            _normalize_list(query.expected_modalities_any),
+            _normalize_list(dataset.get("modalities", [])),
+        ),
+        (
+            _normalize_list(query.expected_regions_any),
+            _normalize_list(dataset.get("brain_regions", [])),
+        ),
+        (_normalize_list(query.expected_species), _normalize_list(dataset.get("species", []))),
+        (
+            _normalize_list(query.expected_data_standards),
+            _normalize_list(dataset.get("data_standards", [])),
+        ),
+        (_normalize_list(query.expected_sources), _normalize_list([dataset.get("source", "")])),
+    ]
+    active_groups = [(expected, actual) for expected, actual in expected_groups if expected]
+    if not active_groups:
+        return 1.0 if result_id not in hard_negative_ids else 0.0
+    matched_groups = sum(1 for expected, actual in active_groups if expected & actual)
+    return matched_groups / len(active_groups)
+
+
+def _precision_at(relevance: list[float], k: int) -> float:
+    top = relevance[:k]
+    if not top:
+        return 0.0
+    return sum(1 for value in top if value > 0) / len(top)
+
+
+def _recall_at_ids(returned_ids: list[str], expected_ids: list[str], k: int) -> float:
+    if not expected_ids:
+        return 0.0
+    return len(set(returned_ids[:k]) & set(expected_ids)) / len(set(expected_ids))
+
+
+def _mrr(relevance: list[float]) -> float:
+    for index, value in enumerate(relevance, 1):
+        if value > 0:
+            return 1.0 / index
+    return 0.0
+
+
+def _ndcg(relevance: list[float], k: int) -> float:
+    def dcg(values: list[float]) -> float:
+        import math
+
+        return sum(value / math.log2(index + 2) for index, value in enumerate(values))
+
+    observed = relevance[:k]
+    ideal = sorted(relevance, reverse=True)[:k]
+    ideal_score = dcg(ideal)
+    if ideal_score == 0:
+        return 0.0
+    return dcg(observed) / ideal_score
+
+
+def _hard_negative_violations(
+    returned_ids: list[str],
+    lookup: dict[str, dict[str, Any]],
+    query: BenchmarkQuery,
+) -> list[str]:
+    violations: list[str] = []
+    hard_negative_ids = set(query.hard_negative_dataset_ids)
+    hard_negative_modalities = _normalize_list(query.hard_negative_modalities)
+    hard_negative_species = _normalize_list(query.hard_negative_species)
+    for result_id in returned_ids[:10]:
+        dataset = lookup.get(result_id, {})
+        if result_id in hard_negative_ids:
+            violations.append(f"{result_id}: hard-negative dataset returned")
+        modalities = _normalize_list(dataset.get("modalities", []))
+        species = _normalize_list(dataset.get("species", []))
+        if hard_negative_modalities & modalities:
+            violations.append(
+                f"{result_id}: hard-negative modality "
+                f"{sorted(hard_negative_modalities & modalities)}"
+            )
+        if hard_negative_species & species:
+            violations.append(
+                f"{result_id}: hard-negative species {sorted(hard_negative_species & species)}"
+            )
+    return violations
 
 
 def evaluate_query(
@@ -175,38 +379,85 @@ def evaluate_query(
             "why_matched": r.why_matched,
             "warnings": r.warnings,
             "dataset_card_preview": r.dataset_card_preview,
+            "score_breakdown": r.score_breakdown,
         }
         for r in response.results
     ]
+    returned_ids = [str(result["dataset_id"]) for result in results]
+    lookup = _dataset_lookup(datasets)
 
+    expected_ids = [str(item) for item in query.expected_dataset_ids]
     expected_tasks = _normalize_list(query.expected_tasks)
     expected_modalities = _normalize_list(query.expected_modalities_any)
     expected_behaviors = _normalize_list(query.expected_behaviors)
+    expected_regions = _normalize_list(query.expected_regions_any)
+    expected_species = _normalize_list(query.expected_species)
+    expected_data_standards = _normalize_list(query.expected_data_standards)
+    expected_sources = _normalize_list(query.expected_sources)
+    expected_analysis = _normalize_list(query.expected_analysis_any)
 
     result_labels = _extract_result_labels(results, datasets)
     matched_tasks = sorted(expected_tasks & result_labels["tasks"])
     matched_modalities = sorted(expected_modalities & result_labels["modalities"])
     matched_behaviors = sorted(expected_behaviors & result_labels["behaviors"])
+    matched_regions = sorted(expected_regions & result_labels["regions"])
+    matched_species = sorted(expected_species & result_labels["species"])
+    matched_data_standards = sorted(expected_data_standards & result_labels["data_standards"])
+    matched_sources = sorted(expected_sources & result_labels["sources"])
+    matched_analysis = sorted(expected_analysis & result_labels["analysis"])
 
     missing_tasks = sorted(expected_tasks - result_labels["tasks"])
     missing_modalities = sorted(expected_modalities - result_labels["modalities"])
     missing_behaviors = sorted(expected_behaviors - result_labels["behaviors"])
+    missing_regions = sorted(expected_regions - result_labels["regions"])
+    missing_species = sorted(expected_species - result_labels["species"])
+    missing_data_standards = sorted(expected_data_standards - result_labels["data_standards"])
+    missing_sources = sorted(expected_sources - result_labels["sources"])
+    missing_analysis = sorted(expected_analysis - result_labels["analysis"])
 
     task_match_rate = len(matched_tasks) / len(expected_tasks) if expected_tasks else 1.0
     modality_match_rate = len(matched_modalities) / len(expected_modalities) if expected_modalities else 1.0
     behavior_match_rate = len(matched_behaviors) / len(expected_behaviors) if expected_behaviors else 1.0
 
-    all_expected = expected_tasks | expected_modalities | expected_behaviors
-    all_matched = set(matched_tasks) | set(matched_modalities) | set(matched_behaviors)
+    all_expected = (
+        expected_tasks
+        | expected_modalities
+        | expected_behaviors
+        | expected_regions
+        | expected_species
+        | expected_data_standards
+        | expected_sources
+        | expected_analysis
+    )
+    all_matched = (
+        set(matched_tasks)
+        | set(matched_modalities)
+        | set(matched_behaviors)
+        | set(matched_regions)
+        | set(matched_species)
+        | set(matched_data_standards)
+        | set(matched_sources)
+        | set(matched_analysis)
+    )
     label_recall = len(all_matched) / len(all_expected) if all_expected else 1.0
 
-    relevant_count = 0
-    for r in results[:5]:
-        why = r.get("why_matched", [])
-        if any("matched" in reason.lower() for reason in why):
-            relevant_count += 1
-
-    precision_at_5 = relevant_count / min(5, max(len(results), 1))
+    relevance = [
+        _result_relevance(result_id, lookup.get(result_id), query)
+        for result_id in returned_ids
+    ]
+    precision_at_1 = _precision_at(relevance, 1)
+    precision_at_3 = _precision_at(relevance, 3)
+    precision_at_5 = _precision_at(relevance, 5)
+    precision_at_10 = _precision_at(relevance, 10)
+    recall_at_5 = _recall_at_ids(returned_ids, expected_ids, 5)
+    recall_at_10 = _recall_at_ids(returned_ids, expected_ids, 10)
+    hard_negative_violations = _hard_negative_violations(returned_ids, lookup, query)
+    missed_expected_datasets = sorted(set(expected_ids) - set(returned_ids[:10]))
+    top_false_positives = [
+        result_id
+        for result_id, value in zip(returned_ids[:10], relevance[:10], strict=False)
+        if value == 0
+    ][:5]
 
     warnings = []
     if not results:
@@ -217,25 +468,78 @@ def evaluate_query(
         warnings.append(f"Expected modalities not found: {missing_modalities}")
     if missing_behaviors:
         warnings.append(f"Expected behaviors not found: {missing_behaviors}")
+    if missing_regions:
+        warnings.append(f"Expected regions not found: {missing_regions}")
+    if missing_species:
+        warnings.append(f"Expected species not found: {missing_species}")
+    if missing_data_standards:
+        warnings.append(f"Expected data standards not found: {missing_data_standards}")
+    if missing_sources:
+        warnings.append(f"Expected sources not found: {missing_sources}")
+    if missing_analysis:
+        warnings.append(f"Expected analyses not found: {missing_analysis}")
+    if missed_expected_datasets:
+        warnings.append(f"Expected datasets not returned: {missed_expected_datasets}")
+    warnings.extend(hard_negative_violations)
 
     for r in results:
         warnings.extend(r.get("warnings", []))
+
+    why_failed: list[str] = []
+    if precision_at_5 < query.minimum_precision_at_5:
+        why_failed.append(
+            f"Precision@5 {precision_at_5:.1%} below minimum "
+            f"{query.minimum_precision_at_5:.1%}"
+        )
+    if label_recall < query.minimum_label_recall_at_10:
+        why_failed.append(
+            f"Label recall@10 {label_recall:.1%} below minimum "
+            f"{query.minimum_label_recall_at_10:.1%}"
+        )
+    if missed_expected_datasets:
+        why_failed.append(f"Missed expected datasets: {missed_expected_datasets}")
+    if hard_negative_violations:
+        why_failed.append(f"Hard-negative violations: {hard_negative_violations}")
+    if not results:
+        why_failed.append("No results returned")
 
     return QueryEvaluation(
         query_id=query.id,
         query=query.query,
         num_results=len(results),
+        precision_at_1=round(precision_at_1, 3),
+        precision_at_3=round(precision_at_3, 3),
         precision_at_5=round(precision_at_5, 3),
+        precision_at_10=round(precision_at_10, 3),
+        recall_at_5=round(recall_at_5, 3),
+        recall_at_10=round(recall_at_10, 3),
         label_recall_at_10=round(label_recall, 3),
+        mrr=round(_mrr(relevance), 3),
+        ndcg_at_10=round(_ndcg(relevance, 10), 3),
         task_match_rate=round(task_match_rate, 3),
         modality_match_rate=round(modality_match_rate, 3),
         behavior_match_rate=round(behavior_match_rate, 3),
         matched_tasks=matched_tasks,
         matched_modalities=matched_modalities,
         matched_behaviors=matched_behaviors,
+        matched_regions=matched_regions,
+        matched_species=matched_species,
+        matched_data_standards=matched_data_standards,
+        matched_sources=matched_sources,
+        matched_analysis=matched_analysis,
         missing_expected_tasks=missing_tasks,
         missing_expected_modalities=missing_modalities,
         missing_expected_behaviors=missing_behaviors,
+        missing_expected_regions=missing_regions,
+        missing_expected_species=missing_species,
+        missing_expected_data_standards=missing_data_standards,
+        missing_expected_sources=missing_sources,
+        missing_expected_analysis=missing_analysis,
+        expected_dataset_ids=expected_ids,
+        missed_expected_datasets=missed_expected_datasets,
+        hard_negative_violations=hard_negative_violations,
+        top_false_positives=top_false_positives,
+        why_failed=why_failed,
         top_results=results[:5],
         warnings=list(set(warnings)),
         parsed_query=response.parsed_query,
@@ -255,8 +559,15 @@ def run_full_benchmark(
 
     queries_with_results = sum(1 for e in evaluations if e.num_results > 0)
 
+    mean_p1 = sum(e.precision_at_1 for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_p3 = sum(e.precision_at_3 for e in evaluations) / len(evaluations) if evaluations else 0
     mean_p5 = sum(e.precision_at_5 for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_p10 = sum(e.precision_at_10 for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_r5 = sum(e.recall_at_5 for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_r10 = sum(e.recall_at_10 for e in evaluations) / len(evaluations) if evaluations else 0
     mean_recall = sum(e.label_recall_at_10 for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_mrr = sum(e.mrr for e in evaluations) / len(evaluations) if evaluations else 0
+    mean_ndcg = sum(e.ndcg_at_10 for e in evaluations) / len(evaluations) if evaluations else 0
     mean_task = sum(e.task_match_rate for e in evaluations) / len(evaluations) if evaluations else 0
     mean_mod = sum(e.modality_match_rate for e in evaluations) / len(evaluations) if evaluations else 0
     mean_beh = sum(e.behavior_match_rate for e in evaluations) / len(evaluations) if evaluations else 0
@@ -301,8 +612,15 @@ def run_full_benchmark(
         generated_at=datetime.now(UTC).isoformat(),
         total_queries=len(queries),
         queries_with_results=queries_with_results,
+        mean_precision_at_1=round(mean_p1, 3),
+        mean_precision_at_3=round(mean_p3, 3),
         mean_precision_at_5=round(mean_p5, 3),
+        mean_precision_at_10=round(mean_p10, 3),
+        mean_recall_at_5=round(mean_r5, 3),
+        mean_recall_at_10=round(mean_r10, 3),
         mean_label_recall_at_10=round(mean_recall, 3),
+        mean_mrr=round(mean_mrr, 3),
+        mean_ndcg_at_10=round(mean_ndcg, 3),
         mean_task_match_rate=round(mean_task, 3),
         mean_modality_match_rate=round(mean_mod, 3),
         mean_behavior_match_rate=round(mean_beh, 3),
@@ -325,8 +643,15 @@ def generate_markdown_report(report: EvaluationReport) -> str:
         "|--------|-------|",
         f"| Total Queries | {report.total_queries} |",
         f"| Queries with Results | {report.queries_with_results} |",
+        f"| Mean Precision@1 | {report.mean_precision_at_1:.1%} |",
+        f"| Mean Precision@3 | {report.mean_precision_at_3:.1%} |",
         f"| **Mean Precision@5** | **{report.mean_precision_at_5:.1%}** |",
+        f"| Mean Precision@10 | {report.mean_precision_at_10:.1%} |",
+        f"| Mean Recall@5 | {report.mean_recall_at_5:.1%} |",
+        f"| Mean Recall@10 | {report.mean_recall_at_10:.1%} |",
         f"| **Mean Label Recall@10** | **{report.mean_label_recall_at_10:.1%}** |",
+        f"| Mean MRR | {report.mean_mrr:.3f} |",
+        f"| Mean NDCG@10 | {report.mean_ndcg_at_10:.3f} |",
         f"| Task Match Rate | {report.mean_task_match_rate:.1%} |",
         f"| Modality Match Rate | {report.mean_modality_match_rate:.1%} |",
         f"| Behavior Match Rate | {report.mean_behavior_match_rate:.1%} |",
@@ -357,7 +682,7 @@ def generate_markdown_report(report: EvaluationReport) -> str:
     ])
 
     for eval_result in report.queries:
-        status = "PASS" if eval_result.label_recall_at_10 >= 0.5 else "FAIL"
+        status = "PASS" if not eval_result.why_failed and eval_result.label_recall_at_10 >= 0.5 else "FAIL"
         lines.extend([
             f"### {eval_result.query_id}: {status}",
             "",
@@ -366,8 +691,15 @@ def generate_markdown_report(report: EvaluationReport) -> str:
             "| Metric | Value |",
             "|--------|-------|",
             f"| Results | {eval_result.num_results} |",
+            f"| Precision@1 | {eval_result.precision_at_1:.1%} |",
+            f"| Precision@3 | {eval_result.precision_at_3:.1%} |",
             f"| Precision@5 | {eval_result.precision_at_5:.1%} |",
+            f"| Precision@10 | {eval_result.precision_at_10:.1%} |",
+            f"| Recall@5 | {eval_result.recall_at_5:.1%} |",
+            f"| Recall@10 | {eval_result.recall_at_10:.1%} |",
             f"| Label Recall@10 | {eval_result.label_recall_at_10:.1%} |",
+            f"| MRR | {eval_result.mrr:.3f} |",
+            f"| NDCG@10 | {eval_result.ndcg_at_10:.3f} |",
             f"| Task Match | {eval_result.task_match_rate:.1%} |",
             f"| Modality Match | {eval_result.modality_match_rate:.1%} |",
             f"| Behavior Match | {eval_result.behavior_match_rate:.1%} |",
@@ -386,8 +718,21 @@ def generate_markdown_report(report: EvaluationReport) -> str:
             lines.append(f"**Missing modalities:** {', '.join(eval_result.missing_expected_modalities)}")
         if eval_result.missing_expected_behaviors:
             lines.append(f"**Missing behaviors:** {', '.join(eval_result.missing_expected_behaviors)}")
+        if eval_result.missed_expected_datasets:
+            lines.append(f"**Missed datasets:** {', '.join(eval_result.missed_expected_datasets)}")
+        if eval_result.hard_negative_violations:
+            lines.append(
+                "**Hard-negative violations:** "
+                + "; ".join(eval_result.hard_negative_violations)
+            )
 
         lines.append("")
+
+        if eval_result.why_failed:
+            lines.append("**Why failed:**")
+            for reason in eval_result.why_failed:
+                lines.append(f"- {reason}")
+            lines.append("")
 
         if eval_result.warnings:
             lines.append("**Warnings:**")
@@ -427,8 +772,15 @@ def generate_comparison_markdown(
 
     after_dict = asdict(after)
     metric_keys = [
+        ("Mean Precision@1", "mean_precision_at_1"),
+        ("Mean Precision@3", "mean_precision_at_3"),
         ("Mean Precision@5", "mean_precision_at_5"),
+        ("Mean Precision@10", "mean_precision_at_10"),
+        ("Mean Recall@5", "mean_recall_at_5"),
+        ("Mean Recall@10", "mean_recall_at_10"),
         ("Mean Label Recall@10", "mean_label_recall_at_10"),
+        ("Mean MRR", "mean_mrr"),
+        ("Mean NDCG@10", "mean_ndcg_at_10"),
         ("Task Match Rate", "mean_task_match_rate"),
         ("Modality Match Rate", "mean_modality_match_rate"),
         ("Behavior Match Rate", "mean_behavior_match_rate"),
@@ -489,8 +841,15 @@ def generate_comparison_json(before: dict[str, Any], after: EvaluationReport) ->
 
     after_dict = asdict(after)
     metric_keys = [
+        "mean_precision_at_1",
+        "mean_precision_at_3",
         "mean_precision_at_5",
+        "mean_precision_at_10",
+        "mean_recall_at_5",
+        "mean_recall_at_10",
         "mean_label_recall_at_10",
+        "mean_mrr",
+        "mean_ndcg_at_10",
         "mean_task_match_rate",
         "mean_modality_match_rate",
         "mean_behavior_match_rate",
@@ -596,8 +955,15 @@ def main(argv: list[str] | None = None) -> int:
     print("-" * 50)
     print(f"  Total Queries:          {report.total_queries}")
     print(f"  Queries with Results:   {report.queries_with_results}")
+    print(f"  Mean Precision@1:       {report.mean_precision_at_1:.1%}")
+    print(f"  Mean Precision@3:       {report.mean_precision_at_3:.1%}")
     print(f"  Mean Precision@5:       {report.mean_precision_at_5:.1%}")
+    print(f"  Mean Precision@10:      {report.mean_precision_at_10:.1%}")
+    print(f"  Mean Recall@5:          {report.mean_recall_at_5:.1%}")
+    print(f"  Mean Recall@10:         {report.mean_recall_at_10:.1%}")
     print(f"  Mean Label Recall@10:   {report.mean_label_recall_at_10:.1%}")
+    print(f"  Mean MRR:               {report.mean_mrr:.3f}")
+    print(f"  Mean NDCG@10:           {report.mean_ndcg_at_10:.3f}")
     print(f"  Task Match Rate:        {report.mean_task_match_rate:.1%}")
     print(f"  Modality Match Rate:    {report.mean_modality_match_rate:.1%}")
     print(f"  Behavior Match Rate:    {report.mean_behavior_match_rate:.1%}")
@@ -620,7 +986,7 @@ def main(argv: list[str] | None = None) -> int:
     print("PER-QUERY RESULTS")
     print("-" * 50)
     for e in report.queries:
-        status = "PASS" if e.label_recall_at_10 >= 0.5 else "FAIL"
+        status = "PASS" if not e.why_failed and e.label_recall_at_10 >= 0.5 else "FAIL"
         print(f"  [{status}] {e.query_id}: P@5={e.precision_at_5:.0%} R@10={e.label_recall_at_10:.0%}")
     print()
 
