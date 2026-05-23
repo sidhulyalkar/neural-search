@@ -6,9 +6,55 @@ import type {
   CompilationReport,
   DatasetQAUpdate,
   ExperimentQuery,
+  ComparisonResult,
 } from '../types'
 
 const API_BASE = '/api'
+
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
+function getErrorMessage(error: unknown): string {
+  if (typeof error === 'string') return error
+  if (error && typeof error === 'object') {
+    const detail = 'detail' in error ? (error as { detail?: unknown }).detail : undefined
+    if (typeof detail === 'string') return detail
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          if (item && typeof item === 'object' && 'msg' in item) {
+            return String((item as { msg: unknown }).msg)
+          }
+          return String(item)
+        })
+        .join('; ')
+    }
+    const message = 'message' in error ? (error as { message?: unknown }).message : undefined
+    if (typeof message === 'string') return message
+  }
+  return 'The API returned an unexpected error.'
+}
+
+async function errorFromResponse(response: Response, fallback: string): Promise<ApiError> {
+  let payload: unknown = null
+  try {
+    payload = await response.json()
+  } catch {
+    try {
+      payload = await response.text()
+    } catch {
+      payload = fallback
+    }
+  }
+  return new ApiError(getErrorMessage(payload) || fallback, response.status)
+}
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, {
@@ -19,7 +65,7 @@ async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
   })
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`)
+    throw await errorFromResponse(response, `API request failed with status ${response.status}.`)
   }
 
   return response.json()
@@ -44,7 +90,10 @@ export async function exportDatasetCard(id: string, format: 'json' | 'markdown')
   const response = await fetch(`${API_BASE}/datasets/${id}/card/export/${format}`)
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`)
+    throw await errorFromResponse(
+      response,
+      `Could not export this dataset card. The API returned ${response.status}.`,
+    )
   }
 
   return response.blob()
@@ -60,7 +109,10 @@ export async function generateNotebook(datasetId: string, templateId?: string): 
   })
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`)
+    throw await errorFromResponse(
+      response,
+      `Could not generate this notebook. The API returned ${response.status}.`,
+    )
   }
 
   return response.blob()
@@ -96,4 +148,50 @@ export async function runEvaluation(): Promise<EvaluationReport> {
 
 export async function getCompilationReport(): Promise<CompilationReport> {
   return fetchJSON<CompilationReport>(`${API_BASE}/reports/compilation`)
+}
+
+// Dataset Comparison API
+export async function compareDatasets(datasetIds: string[]): Promise<ComparisonResult> {
+  return fetchJSON<ComparisonResult>(`${API_BASE}/datasets/compare`, {
+    method: 'POST',
+    body: JSON.stringify({ dataset_ids: datasetIds }),
+  })
+}
+
+export async function exportComparisonMarkdown(datasetIds: string[]): Promise<Blob> {
+  const response = await fetch(`${API_BASE}/datasets/compare/export/markdown`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ dataset_ids: datasetIds }),
+  })
+
+  if (!response.ok) {
+    throw await errorFromResponse(
+      response,
+      `Could not export comparison. The API returned ${response.status}.`,
+    )
+  }
+
+  return response.blob()
+}
+
+export async function exportComparisonJson(datasetIds: string[]): Promise<Blob> {
+  const response = await fetch(`${API_BASE}/datasets/compare/export/json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ dataset_ids: datasetIds }),
+  })
+
+  if (!response.ok) {
+    throw await errorFromResponse(
+      response,
+      `Could not export comparison. The API returned ${response.status}.`,
+    )
+  }
+
+  return response.blob()
 }

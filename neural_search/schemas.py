@@ -207,3 +207,75 @@ class SearchResponse(BaseModel):
     query: str
     parsed_query: dict[str, Any] = Field(default_factory=dict)
     results: list[SearchResult] = Field(default_factory=list)
+
+
+# Dataset Comparison Schemas
+class DatasetCompareRequest(BaseModel):
+    """Request to compare multiple datasets."""
+
+    dataset_ids: list[str] = Field(
+        ...,
+        min_length=2,
+        max_length=5,
+        description="List of 2-5 dataset IDs to compare",
+    )
+
+
+class DatasetComparisonItemRead(BaseModel):
+    """Comparison data for a single dataset."""
+
+    dataset_id: str
+    title: str
+    source: str
+    source_id: str
+    url: str | None = None
+    doi: str | None = None
+    license: str | None = None
+
+    task_labels: list[str] = Field(default_factory=list)
+    modalities: list[str] = Field(default_factory=list)
+    species: list[str] = Field(default_factory=list)
+    brain_regions: list[str] = Field(default_factory=list)
+    behavior_labels: list[str] = Field(default_factory=list)
+    data_standards: list[str] = Field(default_factory=list)
+
+    has_trials: bool = False
+    has_events: bool = False
+    has_behavior: bool = False
+    subject_count: int | None = None
+    session_count: int | None = None
+
+    linked_paper_count: int = 0
+    linked_papers: list[dict[str, Any]] = Field(default_factory=list)
+
+    analysis_readiness_score: int = 0
+    strengths: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    missing_metadata: list[str] = Field(default_factory=list)
+
+    available_notebook_templates: list[str] = Field(default_factory=list)
+    suggested_analyses: list[str] = Field(default_factory=list)
+    matched_recipes: list[dict[str, Any]] = Field(default_factory=list)
+
+    qa_status: str = "auto_generated"
+
+
+class FieldComparisonRead(BaseModel):
+    """Comparison of a single field across datasets."""
+
+    field_name: str
+    field_label: str
+    values: dict[str, Any] = Field(default_factory=dict)
+    all_same: bool = False
+    union_values: list[Any] = Field(default_factory=list)
+    intersection_values: list[Any] = Field(default_factory=list)
+
+
+class ComparisonResultRead(BaseModel):
+    """Complete comparison result for multiple datasets."""
+
+    dataset_ids: list[str]
+    datasets: list[DatasetComparisonItemRead]
+    field_comparisons: list[FieldComparisonRead] = Field(default_factory=list)
+    summary: dict[str, Any] = Field(default_factory=dict)
+    generated_at: datetime

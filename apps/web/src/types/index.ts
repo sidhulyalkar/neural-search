@@ -243,6 +243,7 @@ export interface QueryEvaluation {
   precision_at_5: number
   label_recall: number
   passed: boolean
+  warnings?: string[]
   top_results: Array<{
     dataset_id: string
     title: string
@@ -254,8 +255,14 @@ export interface EvaluationReport {
   timestamp: string
   total_queries: number
   passed_queries: number
+  queries_with_results?: number
   avg_precision_at_5: number
   avg_label_recall_at_10: number
+  avg_task_match_rate?: number
+  avg_modality_match_rate?: number
+  avg_behavior_match_rate?: number
+  summary_warnings?: string[]
+  recommendations?: string[]
   query_evaluations: QueryEvaluation[]
 }
 
@@ -286,4 +293,92 @@ export interface CompilationReport {
     analysis_readiness_score?: number
     notebook_tested?: boolean
   }>
+}
+
+// Dataset Comparison Types
+export interface DatasetComparisonItem {
+  dataset_id: string
+  title: string
+  source: string
+  source_id: string
+  url?: string
+  doi?: string
+  license?: string
+
+  task_labels: string[]
+  modalities: string[]
+  species: string[]
+  brain_regions: string[]
+  behavior_labels: string[]
+  data_standards: string[]
+
+  has_trials: boolean
+  has_events: boolean
+  has_behavior: boolean
+  subject_count?: number
+  session_count?: number
+
+  linked_paper_count: number
+  linked_papers: Array<{
+    title: string
+    doi?: string
+    year?: number
+  }>
+
+  analysis_readiness_score: number
+  strengths: string[]
+  limitations: string[]
+  missing_metadata: string[]
+
+  available_notebook_templates: string[]
+  suggested_analyses: string[]
+  matched_recipes: Array<{
+    id: string
+    title: string
+    match_score: number
+  }>
+
+  qa_status: string
+}
+
+export interface FieldComparison {
+  field_name: string
+  field_label: string
+  values: Record<string, unknown>
+  all_same: boolean
+  union_values: unknown[]
+  intersection_values: unknown[]
+}
+
+export interface ComparisonSummary {
+  dataset_count: number
+  common_fields: string[]
+  different_fields: string[]
+  readiness_ranking: Array<{
+    dataset_id: string
+    title: string
+    score: number
+  }>
+  highest_readiness?: {
+    dataset_id: string
+    title: string
+    score: number
+  }
+  most_notebook_templates?: {
+    dataset_id: string
+    title: string
+    count: number
+  }
+  shared_tasks: string[]
+  shared_modalities: string[]
+  all_tasks: string[]
+  all_modalities: string[]
+}
+
+export interface ComparisonResult {
+  dataset_ids: string[]
+  datasets: DatasetComparisonItem[]
+  field_comparisons: FieldComparison[]
+  summary: ComparisonSummary
+  generated_at: string
 }

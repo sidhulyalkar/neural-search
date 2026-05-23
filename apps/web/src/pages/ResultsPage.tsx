@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { SearchIcon, SpinnerIcon, ChevronRightIcon } from '../components/Icons'
 import { getOntology, searchDatasets } from '../api/search'
 import { DatasetCard } from '../components/DatasetCard'
+import { ComparisonDrawer, ComparisonBar } from '../components/ComparisonDrawer'
 import type { DatasetQAStatus, ExperimentQuery } from '../types'
+
+const MAX_COMPARISON_DATASETS = 5
 
 type QAFilter = 'all' | 'reviewed' | 'trusted'
 
@@ -23,6 +26,11 @@ const emptyExperimentQuery: ExperimentQuery = {
 const speciesOptions = ['mouse', 'rat', 'human', 'macaque']
 const dataStandardOptions = ['NWB', 'BIDS']
 const sourceArchiveOptions = ['demo', 'dandi', 'openneuro']
+const recoveryQueries = [
+  'Find reversal learning datasets with reward omission and trial outcomes',
+  'Go/NoGo task with calcium imaging in mPFC and lick events',
+  'Visual decision-making with Neuropixels recordings',
+]
 
 export function ResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -32,6 +40,35 @@ export function ResultsPage() {
   const [advancedOpen, setAdvancedOpen] = useState(false)
   const [experimentQuery, setExperimentQuery] = useState<ExperimentQuery>(emptyExperimentQuery)
   const [submittedExperimentQuery, setSubmittedExperimentQuery] = useState<ExperimentQuery>(emptyExperimentQuery)
+
+  // Comparison state
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([])
+  const [selectedTitles, setSelectedTitles] = useState<Record<string, string>>({})
+  const [comparisonDrawerOpen, setComparisonDrawerOpen] = useState(false)
+
+  const toggleDatasetSelection = useCallback((datasetId: string, title?: string) => {
+    setSelectedForComparison((prev) => {
+      if (prev.includes(datasetId)) {
+        return prev.filter((id) => id !== datasetId)
+      }
+      if (prev.length >= MAX_COMPARISON_DATASETS) {
+        return prev
+      }
+      return [...prev, datasetId]
+    })
+    if (title) {
+      setSelectedTitles((prev) => ({ ...prev, [datasetId]: title }))
+    }
+  }, [])
+
+  const removeFromComparison = useCallback((datasetId: string) => {
+    setSelectedForComparison((prev) => prev.filter((id) => id !== datasetId))
+  }, [])
+
+  const clearComparison = useCallback(() => {
+    setSelectedForComparison([])
+    setSelectedTitles({})
+  }, [])
 
   const { data: ontology } = useQuery({
     queryKey: ['ontology'],
@@ -203,19 +240,46 @@ export function ResultsPage() {
 
       {/* Results */}
       {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <SpinnerIcon className="w-8 h-8 text-accent-cyan" />
-          <span className="ml-3 text-neural-400">Searching...</span>
+        <div className="space-y-4" aria-live="polite" aria-busy="true">
+          <div className="flex items-center gap-3 text-neural-400">
+            <SpinnerIcon className="w-5 h-5 text-accent-cyan" />
+            <span>Searching ontology, metadata, embeddings, and provenance...</span>
+          </div>
+          {[0, 1, 2].map((item) => (
+            <div key={item} className="card animate-pulse">
+              <div className="flex items-start justify-between gap-6">
+                <div className="flex-1 space-y-4">
+                  <div className="h-5 w-2/3 rounded bg-neural-800" />
+                  <div className="h-4 w-full rounded bg-neural-800" />
+                  <div className="h-4 w-5/6 rounded bg-neural-800" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-24 rounded bg-neural-800" />
+                    <div className="h-6 w-28 rounded bg-neural-800" />
+                    <div className="h-6 w-20 rounded bg-neural-800" />
+                  </div>
+                </div>
+                <div className="h-16 w-16 rounded bg-neural-800" />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {error && (
-        <div className="card border-red-500/50 text-center py-10">
-          <p className="text-red-400">Error loading results. Please try again.</p>
+        <div className="card border-red-500/50 py-10">
+          <p className="text-red-300 font-medium mb-2">Search could not complete</p>
+          <p className="text-sm text-neural-400 mb-4">
+            {error instanceof Error
+              ? error.message
+              : 'The API did not return a usable search response.'}
+          </p>
+          <p className="text-xs text-neural-500">
+            Confirm the API is running with <code className="text-accent-cyan">make api</code>, then retry the query.
+          </p>
         </div>
       )}
 
-      {data && (
+      {data && !isLoading && !error && (
         <>
           {/* Results header */}
           <div className="flex items-center justify-between mb-6">
@@ -248,17 +312,48 @@ export function ResultsPage() {
           {data.results.length > 0 ? (
             <div className="space-y-4">
               {data.results.map((result) => (
-                <DatasetCard key={result.dataset.id} result={result} />
+                <DatasetCard
+                  key={result.dataset.id}
+                  result={result}
+                  isSelected={selectedForComparison.includes(result.dataset.id)}
+                  onToggleSelect={(id) => toggleDatasetSelection(id, result.dataset.title)}
+                  selectionDisabled={
+                    selectedForComparison.length >= MAX_COMPARISON_DATASETS &&
+                    !selectedForComparison.includes(result.dataset.id)
+                  }
+                />
               ))}
             </div>
           ) : (
-            <div className="card text-center py-16">
-              <p className="text-neural-400 mb-4">No datasets found for "{query}"</p>
-              <p className="text-sm text-neural-500">
-                Try using different keywords or browse the{' '}
+            <div className="card py-12">
+              <div className="max-w-2xl mx-auto text-center">
+                <p className="text-neural-200 font-medium mb-2">No datasets matched this experiment yet</p>
+                <p className="text-sm text-neural-500 mb-6">
+                  Try loosening structured filters, lowering readiness, or using a query from the demo corpus.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {recoveryQueries.map((example) => (
+                  <button
+                    key={example}
+                    type="button"
+                    onClick={() => {
+                      setInputValue(example)
+                      setSubmittedExperimentQuery(emptyExperimentQuery)
+                      setSearchParams({ q: example })
+                    }}
+                    className="badge bg-neural-800 text-neural-300 hover:bg-neural-700 hover:text-neural-100 px-3 py-1.5"
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-neural-500 text-center">
+                You can also browse the{' '}
                 <Link to="/ontology" className="text-accent-cyan hover:underline">
                   ontology
                 </Link>
+                {' '}to see available task labels.
               </p>
             </div>
           )}
@@ -266,6 +361,23 @@ export function ResultsPage() {
           {/* Facets sidebar could go here */}
         </>
       )}
+
+      {/* Comparison bar and drawer */}
+      <ComparisonBar
+        selectedIds={selectedForComparison}
+        selectedTitles={selectedTitles}
+        onRemove={removeFromComparison}
+        onClear={clearComparison}
+        onCompare={() => setComparisonDrawerOpen(true)}
+      />
+
+      <ComparisonDrawer
+        selectedIds={selectedForComparison}
+        onRemove={removeFromComparison}
+        onClear={clearComparison}
+        isOpen={comparisonDrawerOpen}
+        onClose={() => setComparisonDrawerOpen(false)}
+      />
     </div>
   )
 }

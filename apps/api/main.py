@@ -6,10 +6,12 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from neural_search.cards import generate_dataset_card_json
+from neural_search.compare import compare_datasets, generate_comparison_markdown
+from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.notebooks import generate_nwb_starter_notebook
@@ -17,7 +19,7 @@ from neural_search.notebooks.templates import (
     evaluate_template_for_dataset,
     get_notebook_template,
 )
-from neural_search.ontology import get_all_tasks, get_ontology, load_ontology
+from neural_search.ontology import get_ontology, load_ontology
 from neural_search.recipes import get_recipe
 from neural_search.qa import (
     QA_FIELD_DEFAULTS,
@@ -30,11 +32,11 @@ from neural_search.qa import (
 )
 from neural_search.reports.dataset_compilation import compile_dataset_report
 from neural_search.schemas import (
+    ComparisonResultRead,
     DatasetCardRead,
-    NotebookGenerationResponse,
+    DatasetCompareRequest,
     OntologyTermRead,
     SearchRequest,
-    SearchResponse,
 )
 from neural_search.search import search_datasets
 
@@ -62,7 +64,12 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -114,6 +121,14 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
     """
     import time
     start = time.time()
+    if not (request.query or "").strip() and not request.structured_query:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Enter a free-text experiment description or choose at least one "
+                "structured search filter."
+            ),
+        )
     qa_state = load_qa_state()
     records_with_qa = [
         {**record, "dataset": attach_qa_to_dataset(record["dataset"], qa_state)}
@@ -334,7 +349,7 @@ class NotebookRequest(BaseModel):
 async def generate_notebook(
     dataset_id: str,
     request: NotebookRequest | None = None,
-) -> NotebookGenerationResponse:
+) -> FileResponse:
     """Generate a starter Jupyter notebook for a dataset."""
     for record in _demo_data:
         ds = record["dataset"]
@@ -371,7 +386,19 @@ async def generate_notebook(
                 notebook_template=template,
                 template_warnings=template_status["missing_requirements"],
             )
-            return response
+            if not response.valid:
+                raise HTTPException(
+                    status_code=500,
+                    detail=(
+                        "Notebook was generated but failed validation: "
+                        + "; ".join(response.warnings)
+                    ),
+                )
+            return FileResponse(
+                path=response.output_path,
+                media_type="application/x-ipynb+json",
+                filename=f"{dataset_id}_{template_id}.ipynb",
+            )
     raise HTTPException(status_code=404, detail=f"Dataset {dataset_id} not found")
 
 
@@ -381,6 +408,131 @@ def _dataset_exists(dataset_id: str) -> bool:
         or record["dataset"].get("source_id") == dataset_id
         for record in _demo_data
     )
+
+
+def _find_record(dataset_id: str) -> dict[str, Any] | None:
+    """Find a dataset record by ID."""
+    for record in _demo_data:
+        ds = record["dataset"]
+        if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
+            return record
+    return None
+
+
+# Dataset Comparison endpoints
+@app.post("/api/datasets/compare", response_model=ComparisonResultRead)
+async def compare_datasets_endpoint(
+    request: DatasetCompareRequest,
+) -> ComparisonResultRead:
+    """
+    Compare 2-5 datasets side-by-side.
+
+    Returns detailed comparison including:
+    - Source and metadata
+    - Task labels, modalities, species, brain regions, behaviors
+    - Trial/event availability
+    - Linked papers
+    - Analysis readiness scores
+    - Missing metadata
+    - Available notebook templates
+    - Suggested analyses
+    """
+    # Find all requested datasets
+    records: list[dict[str, Any]] = []
+    missing_ids: list[str] = []
+
+    for dataset_id in request.dataset_ids:
+        record = _find_record(dataset_id)
+        if record is None:
+            missing_ids.append(dataset_id)
+        else:
+            records.append(record)
+
+    if missing_ids:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Datasets not found: {', '.join(missing_ids)}",
+        )
+
+    try:
+        result = compare_datasets(records)
+        return ComparisonResultRead(
+            dataset_ids=result.dataset_ids,
+            datasets=[ds.model_dump() for ds in result.datasets],
+            field_comparisons=[fc.model_dump() for fc in result.field_comparisons],
+            summary=result.summary,
+            generated_at=result.generated_at,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/datasets/compare/export/markdown")
+async def export_comparison_markdown(
+    request: DatasetCompareRequest,
+) -> Response:
+    """Export dataset comparison as Markdown."""
+    # Find all requested datasets
+    records: list[dict[str, Any]] = []
+    missing_ids: list[str] = []
+
+    for dataset_id in request.dataset_ids:
+        record = _find_record(dataset_id)
+        if record is None:
+            missing_ids.append(dataset_id)
+        else:
+            records.append(record)
+
+    if missing_ids:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Datasets not found: {', '.join(missing_ids)}",
+        )
+
+    try:
+        result = compare_datasets(records)
+        markdown = generate_comparison_markdown(result)
+        filename = f"comparison_{'_'.join(request.dataset_ids[:3])}.md"
+        return Response(
+            content=markdown,
+            media_type="text/markdown",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/datasets/compare/export/json")
+async def export_comparison_json(
+    request: DatasetCompareRequest,
+) -> JSONResponse:
+    """Export dataset comparison as JSON."""
+    # Find all requested datasets
+    records: list[dict[str, Any]] = []
+    missing_ids: list[str] = []
+
+    for dataset_id in request.dataset_ids:
+        record = _find_record(dataset_id)
+        if record is None:
+            missing_ids.append(dataset_id)
+        else:
+            records.append(record)
+
+    if missing_ids:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Datasets not found: {', '.join(missing_ids)}",
+        )
+
+    try:
+        result = compare_datasets(records)
+        filename = f"comparison_{'_'.join(request.dataset_ids[:3])}.json"
+        return JSONResponse(
+            content=result.model_dump(mode="json"),
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 def _frontend_paper(paper: dict[str, Any]) -> dict[str, Any]:
@@ -619,13 +771,80 @@ class EvaluationResponse(BaseModel):
     mean_recall: float
 
 
-@app.post("/api/evaluation/run", response_model=EvaluationResponse)
-async def run_evaluation(request: EvaluationRequest) -> EvaluationResponse:
-    """Run benchmark evaluation queries."""
-    # TODO: Implement actual evaluation
-    return EvaluationResponse(
-        status="pending",
-        results=[],
-        mean_precision=0.0,
-        mean_recall=0.0,
-    )
+@app.get("/api/evaluation/report")
+async def get_evaluation_report() -> dict[str, Any]:
+    """Return a benchmark report for the current demo corpus."""
+    report = run_full_benchmark(datasets=build_demo_seed())
+    return _frontend_evaluation_payload(report)
+
+
+@app.post("/api/evaluation/run")
+async def run_evaluation(request: EvaluationRequest | None = None) -> dict[str, Any]:
+    """Run benchmark evaluation queries for the current demo corpus."""
+    benchmark_path = Path(request.benchmark_file) if request and request.benchmark_file else None
+    if benchmark_path and not benchmark_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Benchmark file not found: {benchmark_path}",
+        )
+    report = run_full_benchmark(benchmark_path=benchmark_path, datasets=build_demo_seed())
+    return _frontend_evaluation_payload(report)
+
+
+def _frontend_evaluation_payload(report: Any) -> dict[str, Any]:
+    dataset_titles = {
+        record["dataset"].get("source_id", record["dataset"].get("id")): record["dataset"].get(
+            "title", "Untitled dataset"
+        )
+        for record in build_demo_seed()
+    }
+    query_evaluations = []
+    passed_queries = 0
+    for query in report.queries:
+        expected_tasks = sorted(
+            set(query.matched_tasks) | set(query.missing_expected_tasks)
+        )
+        expected_modalities = sorted(
+            set(query.matched_modalities) | set(query.missing_expected_modalities)
+        )
+        passed = query.precision_at_5 >= 0.4 and query.label_recall_at_10 >= 0.5
+        if passed:
+            passed_queries += 1
+        query_evaluations.append(
+            {
+                "query_id": query.query_id,
+                "query": query.query,
+                "expected_tasks": expected_tasks,
+                "expected_modalities": expected_modalities,
+                "found_tasks": query.matched_tasks,
+                "found_modalities": query.matched_modalities,
+                "precision_at_5": query.precision_at_5,
+                "label_recall": query.label_recall_at_10,
+                "passed": passed,
+                "warnings": query.warnings,
+                "top_results": [
+                    {
+                        "dataset_id": result["dataset_id"],
+                        "title": dataset_titles.get(
+                            result["dataset_id"], result["dataset_id"]
+                        ),
+                        "score": round(float(result.get("score", 0)) / 100, 3),
+                    }
+                    for result in query.top_results
+                ],
+            }
+        )
+    return {
+        "timestamp": report.generated_at,
+        "total_queries": report.total_queries,
+        "passed_queries": passed_queries,
+        "queries_with_results": report.queries_with_results,
+        "avg_precision_at_5": report.mean_precision_at_5,
+        "avg_label_recall_at_10": report.mean_label_recall_at_10,
+        "avg_task_match_rate": report.mean_task_match_rate,
+        "avg_modality_match_rate": report.mean_modality_match_rate,
+        "avg_behavior_match_rate": report.mean_behavior_match_rate,
+        "summary_warnings": report.summary_warnings,
+        "recommendations": report.recommendations,
+        "query_evaluations": query_evaluations,
+    }

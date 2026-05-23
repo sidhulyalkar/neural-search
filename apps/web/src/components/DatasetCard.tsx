@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { ChevronRightIcon, WarningIcon, ExternalLinkIcon, CodeIcon, BookOpenIcon } from './Icons'
+import { ChevronRightIcon, WarningIcon, ExternalLinkIcon, CodeIcon, BookOpenIcon, CompareIcon } from './Icons'
 import { generateNotebook } from '../api/search'
 import type { SearchResultItem } from '../types'
 
@@ -19,9 +19,17 @@ function formatQAStatus(status: string | undefined) {
 
 interface DatasetCardProps {
   result: SearchResultItem
+  isSelected?: boolean
+  onToggleSelect?: (datasetId: string) => void
+  selectionDisabled?: boolean
 }
 
-export function DatasetCard({ result }: DatasetCardProps) {
+export function DatasetCard({
+  result,
+  isSelected = false,
+  onToggleSelect,
+  selectionDisabled = false,
+}: DatasetCardProps) {
   const {
     dataset,
     score,
@@ -62,12 +70,47 @@ export function DatasetCard({ result }: DatasetCardProps) {
     e.stopPropagation()
   }
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    onToggleSelect?.(dataset.id)
+  }
+
   return (
-    <div className="card-hover group">
-      <div className="flex items-start justify-between">
+    <div className={`card-hover group ${isSelected ? 'ring-2 ring-accent-cyan/50' : ''}`}>
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
         <div className="flex-1 min-w-0">
           {/* Header: source badge and title */}
           <div className="flex items-center gap-2 mb-2">
+            {/* Comparison checkbox */}
+            {onToggleSelect && (
+              <label
+                className={`flex items-center justify-center w-5 h-5 rounded border transition-colors cursor-pointer ${
+                  isSelected
+                    ? 'bg-accent-cyan border-accent-cyan'
+                    : selectionDisabled
+                    ? 'bg-neural-800 border-neural-700 cursor-not-allowed opacity-50'
+                    : 'bg-neural-900 border-neural-600 hover:border-accent-cyan/50'
+                }`}
+                title={
+                  selectionDisabled && !isSelected
+                    ? 'Maximum 5 datasets can be compared'
+                    : isSelected
+                    ? 'Remove from comparison'
+                    : 'Add to comparison'
+                }
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={handleCheckboxChange}
+                  disabled={selectionDisabled && !isSelected}
+                  className="sr-only"
+                />
+                {isSelected && (
+                  <CompareIcon className="w-3 h-3 text-neural-950" />
+                )}
+              </label>
+            )}
             <span className={`badge ${sourceColors[dataset.source] || 'badge-emerald'}`}>
               {dataset.source.toUpperCase()}
             </span>
@@ -155,11 +198,33 @@ export function DatasetCard({ result }: DatasetCardProps) {
           </div>
 
           {/* Match reasons */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
+            <div className="rounded border border-neural-800 bg-neural-950/60 px-3 py-2">
+              <div className="text-xs text-neural-500">experiment signal</div>
+              <div className="text-sm text-neural-200 truncate">
+                {dataset.tasks?.[0]?.replace(/_/g, ' ') || dataset.behaviors?.[0]?.replace(/_/g, ' ') || 'label pending'}
+              </div>
+            </div>
+            <div className="rounded border border-neural-800 bg-neural-950/60 px-3 py-2">
+              <div className="text-xs text-neural-500">reuse signal</div>
+              <div className="text-sm text-neural-200 truncate">
+                {readiness_score !== undefined ? `${Math.round(readiness_score)} readiness` : 'card generated'}
+              </div>
+            </div>
+            <div className="rounded border border-neural-800 bg-neural-950/60 px-3 py-2">
+              <div className="text-xs text-neural-500">provenance signal</div>
+              <div className="text-sm text-neural-200 truncate">
+                {linked_papers?.length ? `${linked_papers.length} linked paper${linked_papers.length > 1 ? 's' : ''}` : formatQAStatus(dataset.qa_status)}
+              </div>
+            </div>
+          </div>
+
           {why_matched.length > 0 && (
-            <div className="text-xs text-neural-500 mb-2 bg-neural-800/50 rounded px-2 py-1.5">
-              <span className="text-neural-400 font-medium">Why matched: </span>
-              {why_matched.slice(0, 2).join(' · ')}
-              {why_matched.length > 2 && <span className="text-neural-600"> +{why_matched.length - 2} more</span>}
+            <div className="text-xs text-neural-500 mb-2 bg-neural-800/50 rounded px-3 py-2">
+              <div className="text-neural-400 font-medium mb-1">Why matched</div>
+              <div>{why_matched.slice(0, 3).join(' · ')}
+                {why_matched.length > 3 && <span className="text-neural-600"> +{why_matched.length - 3} more</span>}
+              </div>
             </div>
           )}
 
@@ -236,12 +301,19 @@ export function DatasetCard({ result }: DatasetCardProps) {
               </a>
             )}
           </div>
+          {notebookMutation.error && (
+            <div className="mt-3 text-xs text-red-300 bg-red-500/10 border border-red-500/30 rounded px-3 py-2">
+              {notebookMutation.error instanceof Error
+                ? notebookMutation.error.message
+                : 'Notebook generation failed for this dataset.'}
+            </div>
+          )}
         </div>
 
         {/* Score column */}
-        <div className="flex flex-col items-end gap-2 ml-6 flex-shrink-0">
+        <div className="grid grid-cols-3 lg:flex lg:flex-col lg:items-end gap-3 lg:ml-6 flex-shrink-0">
           {/* Match score */}
-          <div className="text-right">
+          <div className="rounded border border-accent-cyan/20 bg-accent-cyan/10 px-3 py-2 text-center lg:text-right">
             <div className="text-2xl font-bold text-accent-cyan">
               {Math.round(score * 100)}
             </div>
@@ -250,7 +322,7 @@ export function DatasetCard({ result }: DatasetCardProps) {
 
           {/* Readiness score */}
           {readiness_score !== undefined && (
-            <div className="text-right mt-2">
+            <div className="rounded border border-accent-emerald/20 bg-accent-emerald/10 px-3 py-2 text-center lg:text-right">
               <div className="text-lg font-semibold text-accent-emerald">
                 {Math.round(readiness_score)}
               </div>
@@ -260,7 +332,7 @@ export function DatasetCard({ result }: DatasetCardProps) {
 
           {/* NWB count */}
           {dataset.nwb_count > 0 && (
-            <div className="text-right mt-2">
+            <div className="rounded border border-neural-700 bg-neural-800/50 px-3 py-2 text-center lg:text-right">
               <span className="badge-cyan text-xs">
                 {dataset.nwb_count} NWB
               </span>
