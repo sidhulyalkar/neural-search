@@ -34,7 +34,7 @@ Scores are combined on a 0-1 scale and returned as 0-100. The default weights ar
 | Behavior | Strong boost for requested behavioral events or labels. |
 | Modality | Rewards matching requested recording/data modalities. |
 | Metadata | Rewards requested species, brain regions, and analysis support. |
-| Semantic | Lightweight keyword evidence from expanded ontology terms. |
+| Semantic | Max of expanded-term keyword evidence and deterministic hash embeddings. |
 | Readiness | Boosts datasets that are ready for analysis. |
 | Paper confidence | Small provenance boost from linked papers. |
 
@@ -51,7 +51,7 @@ Each result includes:
 - `evidence_snippets`: short source snippets from dataset text or card evidence.
 - `missing_metadata_warnings`: required metadata gaps.
 - `reusable_reason`: a concise statement of why the dataset is scientifically reusable.
-- `dataset_card_preview.score_breakdown`: normalized component scores and penalties.
+- `score_breakdown` and `dataset_card_preview.score_breakdown`: normalized component scores and penalties, including keyword and embedding semantic components.
 
 ## Benchmark Feedback
 
@@ -78,3 +78,8 @@ The runner writes:
 Some benchmark queries describe concepts that are not represented in the demo corpus. Those queries
 are useful parser-coverage checks, but they cannot be fully recovered by ranking alone until matching
 datasets are indexed.
+
+Benchmark query YAML supports expected dataset IDs, expected labels, minimum thresholds, and hard
+negatives. The report includes precision@1/3/5/10, recall@5/10 for expected IDs, label recall@10,
+MRR, NDCG@10, false positives, missed expected datasets, hard-negative violations, and `why_failed`
+notes for each query.

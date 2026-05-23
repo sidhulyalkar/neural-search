@@ -129,6 +129,8 @@ Structured search fields in the UI let you combine free text with explicit task,
 - [Project vision](docs/project_vision.md)
 - [Technical architecture](docs/technical_architecture.md)
 - [Evaluation](docs/evaluation.md)
+- [Ingestion](docs/ingestion.md)
+- [Example queries](docs/example_queries.md)
 - [Known limitations](docs/known_limitations.md)
 - [Retrieval notes](docs/retrieval.md)
 - [Dataset-card review checklist](docs/dataset_card_review_checklist.md)
