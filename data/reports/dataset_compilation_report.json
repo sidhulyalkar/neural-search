@@ -1,5 +1,5 @@
 {
-  "report_generated_at": "2026-05-23T03:39:39.621584+00:00",
+  "report_generated_at": "2026-05-23T18:25:39.271450+00:00",
   "summary": {
     "total_datasets": 5,
     "total_papers_linked": 5,
@@ -7,7 +7,10 @@
     "average_readiness_score": 95.0,
     "datasets_with_behavior": 5,
     "datasets_with_trials": 5,
-    "datasets_with_linked_papers": 5
+    "datasets_with_linked_papers": 5,
+    "number_reviewed": 0,
+    "number_trusted": 0,
+    "number_rejected": 0
   },
   "curated_sources": {
     "total": 10,
@@ -173,6 +176,16 @@
       ]
     }
   ],
+  "top_datasets_ready_for_demo": [],
+  "qa_review_counts": {
+    "unreviewed": 0,
+    "auto_generated": 5,
+    "needs_review": 0,
+    "reviewed": 0,
+    "trusted": 0,
+    "rejected": 0
+  },
+  "common_missing_metadata": {},
   "missing_metadata": {
     "fields_missing_count": {},
     "datasets_with_incomplete_metadata": 0,

@@ -1,6 +1,6 @@
 # Neural Search Dataset Compilation Report
 
-Generated: 2026-05-23T03:39:39.621584+00:00
+Generated: 2026-05-23T18:25:39.271450+00:00
 
 ## Summary
 
@@ -11,6 +11,9 @@ Generated: 2026-05-23T03:39:39.621584+00:00
 - **Datasets with behavior**: 5
 - **Datasets with trial structure**: 5
 - **Datasets with linked papers**: 5
+- **Reviewed**: 0
+- **Trusted**: 0
+- **Rejected**: 0
 
 ## Curated Sources (Pending Ingestion)
 
@@ -94,6 +97,12 @@ Generated: 2026-05-23T03:39:39.621584+00:00
 | 3 | DEMO_DELAY_DISCOUNTING | Demo delay discounting behavior and neur... | 95 | demo |
 | 4 | DEMO_REACHING_ECOG_IEEG | Demo reaching ECoG and iEEG dataset | 95 | demo |
 | 5 | DEMO_VISUAL_DECISION_NEUROPIXELS | Demo visual decision-making Neuropixels ... | 95 | demo |
+
+## Top Datasets Ready for Demo
+
+| Rank | Source ID | Title | QA Status | Score |
+|------|-----------|-------|-----------|-------|
+| - | - | No reviewed or trusted datasets yet | - | - |
 
 ## Missing Metadata Summary
 
