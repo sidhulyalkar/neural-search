@@ -108,6 +108,25 @@ Structured search fields in the UI let you combine free text with explicit task,
 | `make test-backend` | Run the quick backend test suite |
 | `make build` | Type-check and build the frontend |
 
+## Quality Gate
+
+Before opening or merging a PR, run:
+
+```bash
+bash scripts/quality_gate.sh
+```
+
+The gate runs backend tests, Ruff, the frontend TypeScript/Vite build, the retrieval benchmark, and
+the dataset compilation report. The same checks are wired into GitHub Actions across backend,
+frontend, and demo-artifact jobs.
+
+Common failures:
+
+- Missing `ruff`: run `python -m pip install -e ".[dev]"`.
+- Frontend dependency mismatch: run `cd apps/web && npm ci`.
+- Benchmark failures on specific queries: check `data/eval/results/latest_eval_report.md` for
+  `why_failed`, missed labels, and hard-negative violations.
+
 ## API Highlights
 
 | Endpoint | Method | Description |
