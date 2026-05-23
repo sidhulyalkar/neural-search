@@ -159,7 +159,7 @@ export function ComparisonDrawer({
 }
 
 function SummaryView({ comparison }: { comparison: ComparisonResult }) {
-  const { summary, datasets } = comparison
+  const { summary } = comparison
 
   return (
     <div className="space-y-6">

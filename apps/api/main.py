@@ -7,12 +7,13 @@ from typing import Any
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
+from neural_search.ingestion import services as ingestion_services
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.notebooks.templates import (
@@ -20,7 +21,6 @@ from neural_search.notebooks.templates import (
     get_notebook_template,
 )
 from neural_search.ontology import get_ontology, load_ontology
-from neural_search.recipes import get_recipe
 from neural_search.qa import (
     QA_FIELD_DEFAULTS,
     attach_qa_to_card,
@@ -30,6 +30,7 @@ from neural_search.qa import (
     update_dataset_qa_fields,
     update_dataset_status,
 )
+from neural_search.recipes import get_recipe
 from neural_search.reports.dataset_compilation import compile_dataset_report
 from neural_search.schemas import (
     ComparisonResultRead,
@@ -39,7 +40,6 @@ from neural_search.schemas import (
     SearchRequest,
 )
 from neural_search.search import search_datasets
-
 
 # In-memory store for demo (replace with DB in production)
 _demo_data: list[dict[str, Any]] = []
@@ -668,49 +668,78 @@ async def get_ontology_task(task_id: str) -> OntologyTermRead:
     )
 
 
-# Ingestion endpoints (stubs for now)
+# Ingestion endpoints
 class IngestRequest(BaseModel):
-    dataset_ids: list[str] | None = Field(default=None, description="Specific IDs to ingest")
+    query: str = Field(description="Source search query")
     limit: int = Field(default=10, ge=1, le=100)
+    save: bool = Field(
+        default=False,
+        description="Persist normalized records and raw payloads.",
+    )
+    force: bool = Field(default=False, description="Overwrite existing records when saving.")
+
+    @field_validator("query")
+    @classmethod
+    def query_must_not_be_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("query is required")
+        return value
 
 
 class IngestResponse(BaseModel):
-    status: str
-    datasets_ingested: int
-    message: str
+    source: str
+    query: str
+    fetched: int
+    normalized: int
+    saved: int
+    skipped: int
+    raw_response_paths: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    dataset_ids: list[str] = Field(default_factory=list)
+    paper_ids: list[str] = Field(default_factory=list)
 
 
 @app.post("/api/ingest/dandi", response_model=IngestResponse)
 async def ingest_dandi(request: IngestRequest) -> IngestResponse:
     """Ingest datasets from DANDI Archive."""
-    # TODO: Implement actual DANDI ingestion
-    return IngestResponse(
-        status="pending",
-        datasets_ingested=0,
-        message="DANDI ingestion not yet implemented. Using demo data.",
+    return _ingestion_response(
+        ingestion_services.ingest_dandi(
+            request.query,
+            request.limit,
+            save=request.save,
+            force=request.force,
+        )
     )
 
 
 @app.post("/api/ingest/openneuro", response_model=IngestResponse)
 async def ingest_openneuro(request: IngestRequest) -> IngestResponse:
     """Ingest datasets from OpenNeuro."""
-    # TODO: Implement actual OpenNeuro ingestion
-    return IngestResponse(
-        status="pending",
-        datasets_ingested=0,
-        message="OpenNeuro ingestion not yet implemented. Using demo data.",
+    return _ingestion_response(
+        ingestion_services.ingest_openneuro(
+            request.query,
+            request.limit,
+            save=request.save,
+            force=request.force,
+        )
     )
 
 
 @app.post("/api/ingest/openalex", response_model=IngestResponse)
 async def ingest_openalex(request: IngestRequest) -> IngestResponse:
     """Link papers from OpenAlex to datasets."""
-    # TODO: Implement actual OpenAlex ingestion
-    return IngestResponse(
-        status="pending",
-        datasets_ingested=0,
-        message="OpenAlex ingestion not yet implemented. Using demo data.",
+    return _ingestion_response(
+        ingestion_services.ingest_openalex(
+            request.query,
+            request.limit,
+            save=request.save,
+            force=request.force,
+        )
     )
+
+
+def _ingestion_response(result: ingestion_services.IngestionRunResult) -> IngestResponse:
+    return IngestResponse(**result.to_dict())
 
 
 # Reports endpoints

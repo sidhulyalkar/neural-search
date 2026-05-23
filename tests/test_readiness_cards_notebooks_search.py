@@ -9,7 +9,11 @@ from neural_search.ingestion.demo_seed import build_demo_seed, seed_demo_databas
 from neural_search.models import Dataset, DatasetCard, Embedding, Paper
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.readiness import compute_analysis_readiness
-from neural_search.search import parse_query, score_dataset_against_query, search_datasets
+from neural_search.search import (
+    parse_query,
+    score_dataset_against_query,
+    search_datasets,
+)
 
 
 def _dataset():

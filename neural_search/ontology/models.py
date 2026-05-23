@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-
 REQUIRED_TASK_FIELDS = {
     "id",
     "label",
@@ -101,7 +100,7 @@ class Ontology(BaseModel):
     behavior_labels: list[BehaviorLabel] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_unique_ids(self) -> "Ontology":
+    def validate_unique_ids(self) -> Ontology:
         task_ids = [task.id for task in self.tasks]
         behavior_ids = [behavior.id for behavior in self.behavior_labels]
         duplicate_tasks = {item for item in task_ids if task_ids.count(item) > 1}

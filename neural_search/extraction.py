@@ -7,9 +7,13 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
-from neural_search.ontology import LabelMatch, match_behavior_labels, match_tasks, normalize_text
+from neural_search.ontology import (
+    LabelMatch,
+    match_behavior_labels,
+    match_tasks,
+    normalize_text,
+)
 from neural_search.schemas import ExtractionResult, LabelEvidence
-
 
 MODALITY_SYNONYMS: dict[str, list[str]] = {
     "calcium_imaging": ["calcium imaging", "two photon", "2 photon", "2p", "gcamp"],

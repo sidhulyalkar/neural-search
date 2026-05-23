@@ -7,8 +7,7 @@ from collections.abc import Iterable
 from difflib import SequenceMatcher
 
 from neural_search.ontology.loader import get_ontology
-from neural_search.ontology.models import BehaviorLabel, LabelMatch, Ontology, Task
-
+from neural_search.ontology.models import LabelMatch, Ontology
 
 ALIASES: dict[str, list[str]] = {
     # Recording modalities

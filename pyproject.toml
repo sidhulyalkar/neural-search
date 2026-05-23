@@ -73,11 +73,16 @@ packages = ["neural_search"]
 [tool.ruff]
 target-version = "py311"
 line-length = 88
+
+[tool.ruff.lint]
 select = ["E", "W", "F", "I", "B", "C4", "UP"]
 ignore = ["E501", "B008"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["neural_search"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/demo.py" = ["E402"]
 
 [tool.mypy]
 python_version = "3.11"

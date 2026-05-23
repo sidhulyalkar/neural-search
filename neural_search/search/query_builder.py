@@ -7,7 +7,6 @@ from typing import Any
 
 from neural_search.schemas import ExperimentQuery
 
-
 STRUCTURED_FILTER_FIELD_MAP = {
     "task": "tasks",
     "behavior": "behaviors",

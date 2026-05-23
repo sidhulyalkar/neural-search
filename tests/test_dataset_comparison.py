@@ -3,10 +3,10 @@
 import pytest
 
 from neural_search.compare import (
-    compare_datasets,
-    generate_comparison_markdown,
     ComparisonResult,
     DatasetComparisonItem,
+    compare_datasets,
+    generate_comparison_markdown,
 )
 from neural_search.ingestion.demo_seed import build_demo_seed
 

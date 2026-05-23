@@ -6,7 +6,7 @@ the Neural Search index before full live ingestion is reliable.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +18,7 @@ CURATED_SOURCES_PATH = (
 )
 
 
-class SourceType(str, Enum):
+class SourceType(StrEnum):
     """Supported source types for curated entries."""
 
     DANDI = "dandi"
@@ -27,7 +27,7 @@ class SourceType(str, Enum):
     MANUAL = "manual"
 
 
-class Priority(str, Enum):
+class Priority(StrEnum):
     """Ingestion priority levels."""
 
     HIGH = "high"

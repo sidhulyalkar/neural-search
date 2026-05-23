@@ -11,17 +11,17 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from neural_search.cards import generate_dataset_card_json
+from neural_search.ingestion.curated import (
+    summarize_curated_sources,
+)
 from neural_search.ingestion.demo_seed import build_demo_seed
-from neural_search.ingestion.curated import load_curated_sources, summarize_curated_sources
 from neural_search.qa import qa_counts, top_demo_ready
-
 
 REPORTS_DIR = Path(__file__).resolve().parents[2] / "data" / "reports"
 METADATA_FIELDS = [
@@ -159,7 +159,6 @@ def compile_dataset_report() -> dict[str, Any]:
     review_counts = qa_counts(records)
     demo_ready = top_demo_ready(records, limit=10)
 
-    total_papers = sum(len(r.get("papers", [])) for r in records)
     unique_papers = len({
         p.get("id", p.get("doi", i))
         for r in records
@@ -172,7 +171,7 @@ def compile_dataset_report() -> dict[str, Any]:
     )
 
     return {
-        "report_generated_at": datetime.now(timezone.utc).isoformat(),
+        "report_generated_at": datetime.now(UTC).isoformat(),
         "summary": {
             "total_datasets": len(records),
             "total_papers_linked": unique_papers,

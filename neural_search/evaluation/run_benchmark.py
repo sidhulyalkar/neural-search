@@ -13,7 +13,7 @@ import argparse
 import json
 from collections import Counter
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -21,8 +21,7 @@ import yaml
 
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.ontology import normalize_text
-from neural_search.search import parse_query, search_datasets
-
+from neural_search.search import search_datasets
 
 BENCHMARK_PATH = Path(__file__).resolve().parents[2] / "data" / "eval" / "benchmark_queries.yaml"
 RESULTS_DIR = Path(__file__).resolve().parents[2] / "data" / "eval" / "results"
@@ -299,7 +298,7 @@ def run_full_benchmark(
         recommendations.append("Expand ontology synonyms for better recall")
 
     return EvaluationReport(
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
         total_queries=len(queries),
         queries_with_results=queries_with_results,
         mean_precision_at_5=round(mean_p5, 3),
@@ -322,8 +321,8 @@ def generate_markdown_report(report: EvaluationReport) -> str:
         "",
         "## Summary Metrics",
         "",
-        f"| Metric | Value |",
-        f"|--------|-------|",
+        "| Metric | Value |",
+        "|--------|-------|",
         f"| Total Queries | {report.total_queries} |",
         f"| Queries with Results | {report.queries_with_results} |",
         f"| **Mean Precision@5** | **{report.mean_precision_at_5:.1%}** |",
@@ -364,8 +363,8 @@ def generate_markdown_report(report: EvaluationReport) -> str:
             "",
             f"**Query:** {eval_result.query}",
             "",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| Results | {eval_result.num_results} |",
             f"| Precision@5 | {eval_result.precision_at_5:.1%} |",
             f"| Label Recall@10 | {eval_result.label_recall_at_10:.1%} |",

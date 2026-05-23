@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -76,7 +76,7 @@ class ComparisonResult(BaseModel):
     datasets: list[DatasetComparisonItem]
     field_comparisons: list[FieldComparison] = Field(default_factory=list)
     summary: dict[str, Any] = Field(default_factory=dict)
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 def _extract_comparison_item(

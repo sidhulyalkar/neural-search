@@ -11,8 +11,8 @@ import httpx
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
 from neural_search.ingestion.live import (
-    print_normalized_records,
     print_cli_error,
+    print_normalized_records,
     save_dataset_records,
     save_raw_response,
 )

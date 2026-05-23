@@ -19,7 +19,6 @@ from neural_search.db import Base
 from neural_search.extraction import extract_dataset_labels
 from neural_search.models import Dataset, DatasetAsset, DatasetCard, Embedding, Paper
 
-
 SEED_DIR = Path(__file__).resolve().parents[2] / "data" / "seed"
 FIXTURE_PATH = SEED_DIR / "demo_datasets.yaml"
 PAPERS_PATH = SEED_DIR / "demo_papers.yaml"

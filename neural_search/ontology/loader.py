@@ -9,8 +9,7 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
-from neural_search.ontology.models import Ontology, REQUIRED_TASK_FIELDS
-
+from neural_search.ontology.models import REQUIRED_TASK_FIELDS, Ontology
 
 DEFAULT_ONTOLOGY_PATH = (
     Path(__file__).resolve().parents[2]

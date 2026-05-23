@@ -22,7 +22,6 @@ from __future__ import annotations
 import json
 import sys
 import time
-from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
@@ -31,12 +30,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from neural_search.cards import generate_dataset_card_json
-from neural_search.evaluation.run_benchmark import run_full_benchmark, generate_markdown_report
+from neural_search.evaluation.run_benchmark import (
+    generate_markdown_report,
+    run_full_benchmark,
+)
 from neural_search.ingestion.demo_seed import build_demo_seed, seed_demo_database
 from neural_search.notebooks.generator import generate_nwb_starter_notebook
-from neural_search.ontology import get_all_tasks, load_ontology, match_tasks
+from neural_search.ontology import get_all_tasks, load_ontology
 from neural_search.reports.dataset_compilation import (
     compile_dataset_report,
+)
+from neural_search.reports.dataset_compilation import (
     generate_markdown_report as generate_compilation_markdown,
 )
 from neural_search.search import search_datasets
@@ -98,9 +102,9 @@ def run_demo() -> int:
     # Step 1: Load ontology
     print()
     print_step(1, "Loading behavioral task ontology...")
-    ontology = load_ontology()
+    load_ontology()
     tasks = get_all_tasks()
-    categories = sorted(set(t.category for t in tasks))
+    categories = sorted({t.category for t in tasks})
     print_success(f"Loaded {len(tasks)} tasks across {len(categories)} categories")
     print_substep(f"Categories: {', '.join(categories)}")
 
@@ -168,7 +172,7 @@ def run_demo() -> int:
         md_path.write_text(generate_compilation_markdown(comp_report), encoding="utf-8")
         json_path = reports_dir / "dataset_compilation_report.json"
         json_path.write_text(json.dumps(comp_report, indent=2, default=str), encoding="utf-8")
-        print_success(f"Compilation report generated")
+        print_success("Compilation report generated")
         print_substep(f"Total datasets: {comp_report['summary']['total_datasets']}")
         print_substep(f"Reports saved to: {reports_dir.relative_to(PROJECT_ROOT)}/")
     except Exception as e:
@@ -192,7 +196,7 @@ def run_demo() -> int:
         print_success(f"Generated notebook: {output_path.relative_to(PROJECT_ROOT)}")
         # Count cells in the generated notebook
         import nbformat
-        with open(output_path, 'r', encoding='utf-8') as f:
+        with open(output_path, encoding='utf-8') as f:
             nb = nbformat.read(f, as_version=4)
             total_cells = len(nb.cells)
             code_cells = sum(1 for c in nb.cells if c.cell_type == 'code')

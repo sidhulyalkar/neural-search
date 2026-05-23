@@ -16,7 +16,6 @@ from neural_search.db import Base
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL, stable_uuid
 from neural_search.models import Dataset, Paper
 
-
 RAW_DATA_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
 
 

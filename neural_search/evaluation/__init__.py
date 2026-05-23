@@ -11,7 +11,6 @@ from neural_search.evaluation.benchmark import (
     run_benchmark,
 )
 
-
 _DETAILED_EXPORTS = {
     "EvaluationReport",
     "QueryEvaluation",

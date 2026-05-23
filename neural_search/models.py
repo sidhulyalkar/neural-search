@@ -47,10 +47,10 @@ class Dataset(TimestampMixin, Base):
     qa_status: Mapped[str] = mapped_column(String(40), default="auto_generated", nullable=False)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSONType, default=dict)
 
-    assets: Mapped[list["DatasetAsset"]] = relationship(
+    assets: Mapped[list[DatasetAsset]] = relationship(
         back_populates="dataset", cascade="all, delete-orphan"
     )
-    cards: Mapped[list["DatasetCard"]] = relationship(
+    cards: Mapped[list[DatasetCard]] = relationship(
         back_populates="dataset", cascade="all, delete-orphan"
     )
 

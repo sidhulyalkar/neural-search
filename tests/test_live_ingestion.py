@@ -4,10 +4,16 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from neural_search.db import Base
+from neural_search.ingestion import services
 from neural_search.ingestion.dandi import normalize_dandiset
 from neural_search.ingestion.live import save_dataset_records, save_paper_records
 from neural_search.ingestion.openalex import normalize_work
 from neural_search.ingestion.openneuro import normalize_openneuro_dataset
+from neural_search.ingestion.services import (
+    ingest_dandi,
+    ingest_openalex,
+    ingest_openneuro,
+)
 from neural_search.models import Dataset, Paper
 
 
@@ -132,3 +138,95 @@ def test_save_paper_records_does_not_overwrite_without_force(tmp_path: Path):
         assert session.scalar(select(func.count()).select_from(Paper)) == 1
         assert session.scalar(select(Paper.title)) == "Original paper"
 
+
+def test_dandi_service_normalizes_injected_payload_without_saving():
+    result = ingest_dandi(
+        "go no-go calcium imaging",
+        limit=5,
+        payload={
+            "results": [
+                {
+                    "identifier": "000001",
+                    "most_recent_published_version": {
+                        "metadata": {
+                            "name": "Go NoGo calcium imaging",
+                            "description": "Mouse NWB lick reward omission trials",
+                        },
+                    },
+                }
+            ]
+        },
+    )
+
+    assert result.source == "dandi"
+    assert result.fetched == 1
+    assert result.normalized == 1
+    assert result.saved == 0
+    assert result.dataset_ids == ["000001"]
+    assert result.raw_response_paths == []
+
+
+def test_openneuro_service_saves_injected_payload(tmp_path: Path, monkeypatch):
+    database_url = f"sqlite:///{tmp_path / 'live.db'}"
+    raw_path = tmp_path / "openneuro-raw.json"
+
+    monkeypatch.setattr(services, "save_raw_response", lambda *_args: raw_path)
+
+    result = ingest_openneuro(
+        "EEG motor imagery BCI",
+        limit=5,
+        save=True,
+        database_url=database_url,
+        payload={
+            "data": {
+                "datasets": {
+                    "edges": [
+                        {
+                            "node": {
+                                "id": "ds000001",
+                                "name": "Motor imagery EEG",
+                                "description": "BCI motor imagery task with EEG",
+                                "latestSnapshot": {
+                                    "summary": {
+                                        "subjects": 2,
+                                        "tasks": ["motor_imagery"],
+                                        "modalities": ["EEG"],
+                                    }
+                                },
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+
+    assert result.source == "openneuro"
+    assert result.fetched == 1
+    assert result.normalized == 1
+    assert result.saved == 1
+    assert result.skipped == 0
+    assert result.dataset_ids == ["ds000001"]
+    assert len(result.raw_response_paths) == 1
+
+
+def test_openalex_service_normalizes_paper_ids_from_injected_payload():
+    result = ingest_openalex(
+        "reversal learning electrophysiology",
+        limit=5,
+        payload={
+            "results": [
+                {
+                    "id": "https://openalex.org/W123",
+                    "title": "Reversal learning electrophysiology",
+                    "authorships": [],
+                    "concepts": [],
+                }
+            ]
+        },
+    )
+
+    assert result.source == "openalex"
+    assert result.fetched == 1
+    assert result.normalized == 1
+    assert result.paper_ids == ["W123"]

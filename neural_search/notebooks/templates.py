@@ -8,7 +8,6 @@ from typing import Any
 
 import yaml
 
-
 DEFAULT_TEMPLATE_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "notebooks" / "templates.yaml"
 )

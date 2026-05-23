@@ -10,7 +10,6 @@ import yaml
 
 from neural_search.ontology import normalize_text
 
-
 DEFAULT_RECIPE_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "recipes" / "analysis_recipes.yaml"
 )

@@ -10,7 +10,6 @@ import yaml
 
 from neural_search.search import search_datasets
 
-
 DEFAULT_BENCHMARK_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "eval" / "benchmark_queries.yaml"
 )
@@ -71,7 +70,7 @@ def load_benchmark_queries(
     if not path.exists():
         return []
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
 
     queries = []

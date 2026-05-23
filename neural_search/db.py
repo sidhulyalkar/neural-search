@@ -8,7 +8,6 @@ from sqlalchemy import JSON, Uuid
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase
 
-
 JSONType = JSON().with_variant(JSONB, "postgresql")
 UUIDType = Uuid(as_uuid=True)
 

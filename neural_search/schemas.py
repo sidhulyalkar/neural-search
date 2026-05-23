@@ -8,7 +8,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 DatasetQAStatus = Literal[
     "unreviewed",
     "auto_generated",

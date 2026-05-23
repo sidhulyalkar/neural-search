@@ -20,7 +20,6 @@ from neural_search.notebooks.templates import (
 )
 from neural_search.recipes import get_recipe
 
-
 GENERATED_DIR = Path(__file__).resolve().parents[2] / "data" / "notebooks" / "generated"
 
 

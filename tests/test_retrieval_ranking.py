@@ -1,4 +1,8 @@
-from neural_search.search import parse_query, score_dataset_against_query, search_datasets
+from neural_search.search import (
+    parse_query,
+    score_dataset_against_query,
+    search_datasets,
+)
 
 
 def _dataset(source_id: str, **overrides):
