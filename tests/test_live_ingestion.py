@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from neural_search.db import Base
-from neural_search.ingestion import services
+from neural_search.ingestion import dandi, services
 from neural_search.ingestion.dandi import normalize_dandiset
 from neural_search.ingestion.live import save_dataset_records, save_paper_records
 from neural_search.ingestion.openalex import normalize_work
@@ -230,3 +230,40 @@ def test_openalex_service_normalizes_paper_ids_from_injected_payload():
     assert result.fetched == 1
     assert result.normalized == 1
     assert result.paper_ids == ["W123"]
+
+
+def test_dandi_module_cli_is_dry_run_unless_save(monkeypatch, tmp_path: Path):
+    calls = {"saved": 0, "raw": 0}
+    payload = {
+        "results": [
+            {
+                "identifier": "000001",
+                "most_recent_published_version": {
+                    "metadata": {
+                        "name": "Go NoGo calcium imaging",
+                        "description": "Mouse NWB lick reward omission trials",
+                    }
+                },
+            }
+        ]
+    }
+
+    monkeypatch.setattr(dandi, "fetch_dandi", lambda *_args: payload)
+    monkeypatch.setattr(dandi, "print_normalized_records", lambda _records: None)
+    monkeypatch.setattr(
+        dandi,
+        "save_raw_response",
+        lambda *_args: calls.update(raw=calls["raw"] + 1) or tmp_path / "raw.json",
+    )
+    monkeypatch.setattr(
+        dandi,
+        "save_dataset_records",
+        lambda *_args, **_kwargs: calls.update(saved=calls["saved"] + 1)
+        or {"saved": 1, "skipped": 0},
+    )
+
+    assert dandi.main(["--query", "go no-go", "--limit", "1"]) == 0
+    assert calls == {"saved": 0, "raw": 0}
+
+    assert dandi.main(["--query", "go no-go", "--limit", "1", "--save"]) == 0
+    assert calls == {"saved": 1, "raw": 1}

@@ -211,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--query", required=True)
     parser.add_argument("--limit", type=int, default=10)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--save", action="store_true")
     parser.add_argument("--save-raw", action="store_true")
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--database-url", default=DEFAULT_DATABASE_URL)
@@ -218,12 +219,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         payload = fetch_openneuro(args.query, args.limit)
-        if args.save_raw:
+        if args.save or args.save_raw:
             raw_path = save_raw_response("openneuro", args.query, payload)
             print(json.dumps({"raw_saved": str(raw_path)}, indent=2))
         records = records_from_response(payload, args.limit)
         print_normalized_records(records)
-        if args.dry_run:
+        if args.dry_run or not args.save:
             return 0
         summary = save_dataset_records(records, args.database_url, args.force)
         print(json.dumps(summary, indent=2))

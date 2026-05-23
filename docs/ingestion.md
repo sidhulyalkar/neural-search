@@ -19,10 +19,10 @@ Persist raw payloads under `data/raw/<source>/` and save normalized records to t
 neural-search ingest dandi --query "go no-go calcium imaging" --limit 25 --save
 ```
 
-The source-specific module CLIs still support `--save-raw` for raw payload capture:
+The source-specific module CLIs use the same explicit `--save` behavior:
 
 ```bash
-python -m neural_search.ingestion.dandi --query "go no-go calcium imaging" --limit 5 --save-raw
+python -m neural_search.ingestion.dandi --query "go no-go calcium imaging" --limit 5 --save
 ```
 
 ## Service Layer
