@@ -1,0 +1,1273 @@
+# Benchmark Queries v0.6 - Scientific Retrieval Layer Expansion
+# 90 queries across 6 categories for rigorous evaluation of Neural Search
+#
+# Categories:
+#   - dataset_search (25): Core dataset discovery queries
+#   - adversarial_constraint (15): Queries designed to test precision under constraints
+#   - paper_to_dataset_linking (15): Queries bridging literature and data
+#   - analysis_affordance (15): Queries testing analysis capability matching
+#   - graph_reasoning (10): Queries requiring knowledge graph traversal
+#   - experimental_design (10): Queries supporting experimental planning
+
+metadata:
+  version: "0.6"
+  created: "2024-01-15"
+  total_queries: 90
+  categories:
+    dataset_search: 25
+    adversarial_constraint: 15
+    paper_to_dataset_linking: 15
+    analysis_affordance: 15
+    graph_reasoning: 10
+    experimental_design: 10
+  evaluation_metrics:
+    - precision_at_5
+    - recall_at_10
+    - label_accuracy
+    - constraint_satisfaction
+    - hard_negative_rejection
+
+# =============================================================================
+# DATASET SEARCH QUERIES (25)
+# Core dataset discovery across domains
+# =============================================================================
+
+dataset_search:
+  # Reinforcement Learning Domain (5 queries)
+  - id: ds_rl_001
+    query: "temporal difference learning dopamine recordings"
+    natural_language: "Find datasets with dopamine recordings during temporal difference learning tasks"
+    expected_tasks: [temporal_difference_learning, reversal_learning, classical_conditioning]
+    expected_modalities: [fiber_photometry, extracellular_ephys, neuropixels]
+    expected_brain_regions: [VTA, SNc, striatum, NAc]
+    expected_behaviors: [reward, omission, reward_prediction_error]
+    difficulty: medium
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Dopamine recordings during sleep (no TD task)"
+        reason: "Region match but wrong task context"
+      - description: "Reversal learning behavior only (no neural data)"
+        reason: "Task match but missing modality"
+
+  - id: ds_rl_002
+    query: "multi-armed bandit explore exploit neural"
+    natural_language: "Bandit task with neural recordings studying exploration vs exploitation"
+    expected_tasks: [bandit_task, foraging]
+    expected_modalities: [extracellular_ephys, calcium_imaging, neuropixels]
+    expected_brain_regions: [ACC, OFC, mPFC, striatum]
+    expected_behaviors: [choice, reward, exploration]
+    difficulty: medium
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Two-choice task without exploration manipulation"
+        reason: "Decision task but not exploration-specific"
+
+  - id: ds_rl_003
+    query: "actor critic prefrontal striatum"
+    natural_language: "Actor-critic decomposition with prefrontal and striatal recordings"
+    expected_tasks: [actor_critic_task, reinforcement_learning]
+    expected_brain_regions: [mPFC, ACC, striatum, dorsal_striatum]
+    expected_modalities: [extracellular_ephys, neuropixels]
+    difficulty: hard
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Value-based decision without action component"
+        reason: "Value encoding without policy learning"
+
+  - id: ds_rl_004
+    query: "model-based planning hippocampus replay"
+    natural_language: "Model-based reinforcement learning with hippocampal replay"
+    expected_tasks: [model_based_planning, spatial_navigation]
+    expected_brain_regions: [hippocampus, OFC, mPFC]
+    expected_behaviors: [sharp_wave_ripple, memory]
+    expected_modalities: [extracellular_ephys, neuropixels, calcium_imaging]
+    difficulty: hard
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Hippocampal place cells without decision task"
+        reason: "Region and replay but missing planning context"
+
+  - id: ds_rl_005
+    query: "effort discounting cost benefit choice"
+    natural_language: "Effort-based decision making with cost-benefit trade-offs"
+    expected_tasks: [effort_based_decision, delay_discounting]
+    expected_brain_regions: [ACC, mPFC, motor_cortex]
+    expected_behaviors: [choice, effort_exertion, reward]
+    difficulty: medium
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Simple reward choice without effort manipulation"
+        reason: "Choice task but no effort dimension"
+
+  # Sensory Decision-Making Domain (5 queries)
+  - id: ds_sdm_001
+    query: "random dot motion coherence LIP"
+    natural_language: "Motion discrimination with LIP recordings"
+    expected_tasks: [random_dot_motion, visual_decision_making]
+    expected_brain_regions: [LIP, MT, FEF]
+    expected_modalities: [extracellular_ephys]
+    expected_behaviors: [choice, reaction_time, saccade]
+    difficulty: medium
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Motion perception without choice"
+        reason: "Stimulus match but passive viewing"
+
+  - id: ds_sdm_002
+    query: "evidence accumulation drift diffusion"
+    natural_language: "Perceptual decision task with evidence accumulation"
+    expected_tasks: [two_alternative_forced_choice, random_dot_motion, detection_threshold]
+    expected_behaviors: [choice, reaction_time, confidence]
+    expected_analyses: [drift_diffusion_model, psychometric_curve]
+    difficulty: medium
+    priority: HIGH
+    hard_negatives:
+      - description: "Speeded response without accumulation period"
+        reason: "Decision but no evidence accumulation"
+
+  - id: ds_sdm_003
+    query: "signal detection near threshold visual cortex"
+    natural_language: "Near-threshold detection with visual cortex recordings"
+    expected_tasks: [detection_threshold, visual_discrimination]
+    expected_brain_regions: [V1, visual_cortex]
+    expected_behaviors: [hit, miss, false_alarm, correct_rejection]
+    difficulty: medium
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Suprathreshold visual discrimination"
+        reason: "Visual task but not threshold-level"
+
+  - id: ds_sdm_004
+    query: "perceptual categorization boundary learning"
+    natural_language: "Category learning with perceptual boundaries"
+    expected_tasks: [categorization, visual_discrimination]
+    expected_brain_regions: [IT, PFC, parietal_cortex]
+    expected_behaviors: [choice, learning, feedback]
+    difficulty: hard
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Fixed category discrimination (no learning)"
+        reason: "Categorization but no boundary acquisition"
+
+  - id: ds_sdm_005
+    query: "confidence metacognition decision uncertainty"
+    natural_language: "Confidence reports during perceptual decisions"
+    expected_tasks: [two_alternative_forced_choice, visual_decision_making]
+    expected_behaviors: [choice, confidence, reaction_time]
+    expected_modalities: [extracellular_ephys, fmri, eeg]
+    difficulty: hard
+    priority: LOW
+    hard_negatives:
+      - description: "Objective accuracy without confidence reports"
+        reason: "Decision task without metacognition"
+
+  # Motor Control Domain (5 queries)
+  - id: ds_mc_001
+    query: "center out reaching Utah array motor cortex"
+    natural_language: "Center-out reaching with Utah array recordings from motor cortex"
+    expected_tasks: [center_out_reaching, reaching]
+    expected_modalities: [utah_array, extracellular_ephys]
+    expected_brain_regions: [M1, PMd, motor_cortex]
+    expected_behaviors: [kinematics, movement_onset]
+    difficulty: easy
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Motor cortex resting state (no reaching)"
+        reason: "Region and modality but wrong task"
+
+  - id: ds_mc_002
+    query: "motor sequence learning procedural memory"
+    natural_language: "Motor sequence learning with neural recordings"
+    expected_tasks: [sequence_learning, skilled_reaching]
+    expected_brain_regions: [M1, SMA, striatum, cerebellum]
+    expected_behaviors: [learning, kinematics]
+    difficulty: medium
+    priority: HIGH
+    hard_negatives:
+      - description: "Overlearned motor execution"
+        reason: "Motor task but no learning phase"
+
+  - id: ds_mc_003
+    query: "bimanual coordination interhemispheric"
+    natural_language: "Bimanual coordination with bilateral recordings"
+    expected_tasks: [bimanual_coordination]
+    expected_brain_regions: [M1, SMA, preSMA]
+    expected_modalities: [extracellular_ephys, eeg, meg, ecog]
+    difficulty: hard
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Unimanual reaching with bilateral recording"
+        reason: "Bilateral recording but not bimanual task"
+
+  - id: ds_mc_004
+    query: "grip force precision grasp somatosensory"
+    natural_language: "Grip force control with somatosensory recordings"
+    expected_tasks: [grasping, force_tracking]
+    expected_brain_regions: [S1, M1, cerebellum]
+    expected_behaviors: [grip_force, kinematics]
+    difficulty: medium
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Reach without grasp component"
+        reason: "Motor task but no force measurement"
+
+  - id: ds_mc_005
+    query: "saccade antisaccade frontal eye field"
+    natural_language: "Saccade and antisaccade with FEF recordings"
+    expected_tasks: [oculomotor_task]
+    expected_brain_regions: [FEF, SC, SEF]
+    expected_behaviors: [saccade, fixation]
+    expected_modalities: [extracellular_ephys, eye_tracking]
+    difficulty: medium
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Fixation task without saccades"
+        reason: "Eye tracking but different paradigm"
+
+  # BCI and Speech Domain (5 queries)
+  - id: ds_bci_001
+    query: "motor imagery left right hand EEG classification"
+    natural_language: "Motor imagery BCI with left/right hand discrimination"
+    expected_tasks: [motor_imagery]
+    expected_modalities: [eeg]
+    expected_behaviors: [left_right_hand_imagery]
+    expected_analyses: [motor_imagery_classification, common_spatial_patterns]
+    difficulty: easy
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Motor execution (not imagery)"
+        reason: "Motor EEG but overt movement"
+
+  - id: ds_bci_002
+    query: "speech BCI phoneme decoding ECoG"
+    natural_language: "Speech neuroprosthesis decoding phonemes from ECoG"
+    expected_tasks: [speech_bci, speech_production]
+    expected_modalities: [ecog, ieeg]
+    expected_brain_regions: [speech_motor_cortex, Broca_area, STG]
+    expected_behaviors: [phoneme, speech_onset]
+    difficulty: medium
+    priority: HIGH
+    hard_negatives:
+      - description: "Auditory speech perception only"
+        reason: "Speech area but receptive not productive"
+
+  - id: ds_bci_003
+    query: "handwriting BCI imagined writing motor cortex"
+    natural_language: "Handwriting BCI decoding imagined writing"
+    expected_tasks: [handwriting_bci, motor_imagery]
+    expected_modalities: [utah_array, ecog]
+    expected_brain_regions: [motor_cortex, premotor_cortex]
+    difficulty: hard
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Cursor control BCI"
+        reason: "Motor BCI but different output modality"
+
+  - id: ds_bci_004
+    query: "closed loop cursor control intracortical"
+    natural_language: "Closed-loop BCI cursor control with intracortical recordings"
+    expected_tasks: [closed_loop_control, joystick_task]
+    expected_modalities: [utah_array, ecog, neuropixels]
+    expected_brain_regions: [motor_cortex, premotor_cortex, parietal_cortex]
+    difficulty: medium
+    priority: HIGH
+    hard_negatives:
+      - description: "Open-loop motor decoding offline"
+        reason: "Similar neural data but no closed-loop"
+
+  - id: ds_bci_005
+    query: "P300 speller assistive BCI"
+    natural_language: "P300 speller BCI for communication"
+    expected_tasks: [p300_bci, oddball]
+    expected_modalities: [eeg]
+    expected_behaviors: [attention, choice]
+    difficulty: easy
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Passive oddball (no BCI use)"
+        reason: "P300 paradigm but not for control"
+
+  # Clinical Domain (5 queries)
+  - id: ds_clin_001
+    query: "epilepsy seizure onset zone iEEG"
+    natural_language: "Epilepsy iEEG for seizure onset zone localization"
+    expected_tasks: [seizure_monitoring, interictal_monitoring]
+    expected_modalities: [ieeg, seeg, ecog]
+    expected_behaviors: [seizure_onset, interictal_spike]
+    expected_brain_regions: [temporal_lobe, hippocampus]
+    difficulty: easy
+    priority: HIGH
+    expected_dataset_ids: []
+    hard_negatives:
+      - description: "Cognitive task iEEG in epilepsy patients (seizure-free periods only)"
+        reason: "Same population but different focus"
+
+  - id: ds_clin_002
+    query: "sleep staging polysomnography EEG"
+    natural_language: "Sleep staging from polysomnography"
+    expected_tasks: [sleep_staging, sleep_wake]
+    expected_modalities: [eeg, eog, emg, polysomnography]
+    expected_behaviors: [sleep_stage, spindle, arousal]
+    difficulty: easy
+    priority: HIGH
+    hard_negatives:
+      - description: "Resting-state EEG during wakefulness"
+        reason: "Similar modality but no sleep"
+
+  - id: ds_clin_003
+    query: "interictal spike HFO detection"
+    natural_language: "High-frequency oscillation and interictal spike detection"
+    expected_tasks: [interictal_monitoring, seizure_monitoring]
+    expected_modalities: [ieeg, ecog, seeg]
+    expected_behaviors: [interictal_spike, high_frequency_oscillation]
+    difficulty: medium
+    priority: MEDIUM
+    hard_negatives:
+      - description: "Normal HFOs (gamma) in healthy subjects"
+        reason: "Similar frequency but physiological not pathological"
+
+  - id: ds_clin_004
+    query: "human single neuron medial temporal lobe memory"
+    natural_language: "Human single-unit recordings in MTL during memory tasks"
+    expected_species: [human]
+    expected_brain_regions: [hippocampus, entorhinal_cortex, amygdala]
+    expected_tasks: [delayed_match_to_sample, object_recognition, spatial_navigation]
+    expected_modalities: [single_unit, microelectrode]
+    difficulty: hard
+    priority: HIGH
+    hard_negatives:
+      - description: "Non-human primate MTL recordings"
+        reason: "Same regions but different species"
+
+  - id: ds_clin_005
+    query: "intraoperative mapping awake craniotomy language"
+    natural_language: "Language mapping during awake craniotomy"
+    expected_tasks: [intraoperative_mapping, speech_production, picture_naming]
+    expected_modalities: [ecog, direct_stimulation]
+    expected_brain_regions: [Broca_area, motor_cortex, language_cortex]
+    difficulty: hard
+    priority: LOW
+    hard_negatives:
+      - description: "Post-operative iEEG (not intraoperative)"
+        reason: "Clinical recording but different context"
+
+# =============================================================================
+# ADVERSARIAL CONSTRAINT QUERIES (15)
+# Queries designed to test precision under multiple constraints
+# =============================================================================
+
+adversarial_constraint:
+  # Species Constraints (3 queries)
+  - id: adv_species_001
+    query: "mouse Neuropixels visual cortex NOT primate"
+    natural_language: "Mouse Neuropixels recordings in visual cortex, exclude primate"
+    required_constraints:
+      species: [mouse, Mus musculus]
+      species_exclude: [macaque, monkey, primate, human]
+    expected_modalities: [neuropixels]
+    expected_brain_regions: [V1, visual_cortex]
+    adversarial_trap: "Primate V1 Neuropixels data should NOT match"
+    difficulty: medium
+    priority: HIGH
+
+  - id: adv_species_002
+    query: "human intracranial NOT epilepsy patient"
+    natural_language: "Human iEEG but not from epilepsy monitoring"
+    required_constraints:
+      species: [human]
+      modality: [ieeg, ecog]
+      condition_exclude: [epilepsy, seizure]
+    adversarial_trap: "Epilepsy monitoring iEEG should NOT match"
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: adv_species_003
+    query: "rat electrophysiology hippocampus NOT mouse"
+    natural_language: "Rat hippocampal recordings, exclude mouse"
+    required_constraints:
+      species: [rat, Rattus norvegicus]
+      species_exclude: [mouse]
+      brain_regions: [hippocampus]
+    adversarial_trap: "Mouse hippocampal recordings should NOT match"
+    difficulty: medium
+    priority: MEDIUM
+
+  # Modality Constraints (3 queries)
+  - id: adv_modality_001
+    query: "decision making calcium imaging NOT electrophysiology"
+    natural_language: "Decision tasks with calcium imaging, no ephys"
+    required_constraints:
+      modality: [calcium_imaging, two_photon]
+      modality_exclude: [extracellular_ephys, neuropixels, utah_array]
+    expected_tasks: [two_alternative_forced_choice, go_nogo, reversal_learning]
+    adversarial_trap: "Ephys decision-making data should NOT match"
+    difficulty: medium
+    priority: HIGH
+
+  - id: adv_modality_002
+    query: "motor cortex Utah array NOT ECoG"
+    natural_language: "Motor cortex Utah array, exclude ECoG"
+    required_constraints:
+      modality: [utah_array]
+      modality_exclude: [ecog]
+      brain_regions: [M1, motor_cortex]
+    adversarial_trap: "Motor cortex ECoG should NOT match"
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: adv_modality_003
+    query: "sleep EEG scalp NOT intracranial"
+    natural_language: "Sleep EEG but only scalp, not iEEG"
+    required_constraints:
+      modality: [eeg]
+      modality_exclude: [ieeg, ecog, seeg]
+      task: [sleep_staging, sleep_wake]
+    adversarial_trap: "Sleep iEEG should NOT match"
+    difficulty: medium
+    priority: MEDIUM
+
+  # Task Constraints (3 queries)
+  - id: adv_task_001
+    query: "reversal learning NOT bandit"
+    natural_language: "Reversal learning but not multi-armed bandit"
+    required_constraints:
+      task: [reversal_learning]
+      task_exclude: [bandit_task]
+    adversarial_trap: "Bandit with reversal blocks should be carefully evaluated"
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: adv_task_002
+    query: "working memory NOT spatial navigation"
+    natural_language: "Working memory tasks excluding spatial navigation"
+    required_constraints:
+      task: [delayed_match_to_sample, delayed_nonmatch_to_sample, n_back]
+      task_exclude: [spatial_navigation, t_maze, radial_arm_maze]
+    adversarial_trap: "Spatial working memory is ambiguous"
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: adv_task_003
+    query: "motor execution NOT motor imagery"
+    natural_language: "Actual movement, not imagined movement"
+    required_constraints:
+      task: [reaching, grasping, locomotion]
+      task_exclude: [motor_imagery]
+    expected_behaviors: [kinematics, movement_onset]
+    adversarial_trap: "Motor imagery datasets should NOT match"
+    difficulty: medium
+    priority: HIGH
+
+  # Compound Constraints (3 queries)
+  - id: adv_compound_001
+    query: "mouse prefrontal cortex fiber photometry go nogo"
+    natural_language: "Exact match: mouse + PFC + fiber photometry + go/no-go"
+    required_constraints:
+      species: [mouse]
+      brain_regions: [mPFC, PFC, prefrontal]
+      modality: [fiber_photometry]
+      task: [go_nogo]
+    adversarial_trap: "Any missing constraint should fail"
+    difficulty: hard
+    priority: HIGH
+
+  - id: adv_compound_002
+    query: "human ECoG speech production NOT perception"
+    natural_language: "Human ECoG during speech production, exclude perception"
+    required_constraints:
+      species: [human]
+      modality: [ecog]
+      task: [speech_production, picture_naming]
+      task_exclude: [speech_perception, language_comprehension]
+    adversarial_trap: "Speech perception ECoG should NOT match"
+    difficulty: hard
+    priority: HIGH
+
+  - id: adv_compound_003
+    query: "NWB format Neuropixels visual cortex 2023 or later"
+    natural_language: "NWB Neuropixels visual recordings from 2023+"
+    required_constraints:
+      data_standard: [NWB]
+      modality: [neuropixels]
+      brain_regions: [V1, visual_cortex]
+      year_min: 2023
+    adversarial_trap: "Older datasets or non-NWB should NOT match"
+    difficulty: medium
+    priority: MEDIUM
+
+  # Negative Space Constraints (3 queries)
+  - id: adv_negative_001
+    query: "neural recordings WITHOUT behavior"
+    natural_language: "Neural data without any behavioral measurements"
+    required_constraints:
+      has_neural_data: true
+      has_behavior: false
+    adversarial_trap: "Datasets with behavioral events should NOT match"
+    difficulty: medium
+    priority: LOW
+
+  - id: adv_negative_002
+    query: "behavior video WITHOUT neural recordings"
+    natural_language: "Behavior video data without neural recordings"
+    required_constraints:
+      has_behavior_video: true
+      has_neural_data: false
+    adversarial_trap: "Multimodal neural+behavior should NOT match"
+    difficulty: easy
+    priority: LOW
+
+  - id: adv_negative_003
+    query: "published dataset WITHOUT linked paper"
+    natural_language: "Datasets that have no associated publications"
+    required_constraints:
+      has_linked_papers: false
+    adversarial_trap: "Datasets with papers should NOT match"
+    difficulty: medium
+    priority: LOW
+
+# =============================================================================
+# PAPER-TO-DATASET LINKING QUERIES (15)
+# Queries that bridge literature and data
+# =============================================================================
+
+paper_to_dataset_linking:
+  # Find Data from Paper (5 queries)
+  - id: ptd_paper2data_001
+    query: "data from International Brain Laboratory"
+    natural_language: "Find datasets from IBL consortium publications"
+    paper_context:
+      consortium: "International Brain Laboratory"
+      topics: [decision_making, visual_decision, neuropixels]
+    expected_sources: [dandi]
+    expected_modalities: [neuropixels]
+    expected_tasks: [two_alternative_forced_choice, visual_decision_making]
+    difficulty: easy
+    priority: HIGH
+
+  - id: ptd_paper2data_002
+    query: "data from Steinmetz 2019 Nature"
+    natural_language: "Find the dataset from Steinmetz et al. 2019 large-scale Neuropixels study"
+    paper_context:
+      first_author: "Steinmetz"
+      year: 2019
+      journal: "Nature"
+      doi_partial: "10.1038/s41586"
+    expected_sources: [figshare, dandi]
+    expected_modalities: [neuropixels]
+    difficulty: medium
+    priority: HIGH
+
+  - id: ptd_paper2data_003
+    query: "datasets from Allen Institute Visual Coding"
+    natural_language: "Allen Institute Visual Coding project datasets"
+    paper_context:
+      institution: "Allen Institute"
+      project: "Visual Coding"
+    expected_sources: [dandi, allen_brain_observatory]
+    expected_modalities: [neuropixels, calcium_imaging]
+    expected_brain_regions: [visual_cortex, V1]
+    difficulty: easy
+    priority: HIGH
+
+  - id: ptd_paper2data_004
+    query: "BCI data Chang lab UCSF"
+    natural_language: "Speech BCI datasets from Chang lab"
+    paper_context:
+      lab: "Chang"
+      institution: "UCSF"
+      topics: [speech_bci, ecog, speech_decoding]
+    expected_modalities: [ecog]
+    expected_tasks: [speech_production, speech_bci]
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: ptd_paper2data_005
+    query: "dataset Churchland reaching monkey"
+    natural_language: "Reaching datasets from Churchland/Shenoy motor control work"
+    paper_context:
+      authors: [Churchland, Shenoy]
+      topics: [reaching, motor_cortex, neural_population]
+    expected_tasks: [reaching, center_out_reaching]
+    expected_species: [macaque, monkey]
+    difficulty: medium
+    priority: MEDIUM
+
+  # Find Papers for Dataset (5 queries)
+  - id: ptd_data2paper_001
+    query: "papers using DANDI 000003"
+    natural_language: "Find publications that used DANDI dataset 000003"
+    dataset_context:
+      source: "dandi"
+      dataset_id: "000003"
+    expected_outputs:
+      - paper_titles
+      - dois
+      - usage_context
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: ptd_data2paper_002
+    query: "publications citing OpenNeuro ds000117"
+    natural_language: "Papers citing or using OpenNeuro ds000117"
+    dataset_context:
+      source: "openneuro"
+      dataset_id: "ds000117"
+    expected_outputs:
+      - paper_list
+      - citation_count
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: ptd_data2paper_003
+    query: "original paper for IBL repeated site dataset"
+    natural_language: "Find the primary publication describing IBL repeated site data"
+    dataset_context:
+      consortium: "IBL"
+      dataset_name: "repeated site"
+    expected_outputs:
+      - primary_paper
+      - methods_paper
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ptd_data2paper_004
+    query: "methodology paper for Neuropixels sleep dataset"
+    natural_language: "Methods paper for Neuropixels sleep recording dataset"
+    dataset_context:
+      modality: "neuropixels"
+      task: "sleep_wake"
+    expected_outputs:
+      - methods_paper
+      - analysis_code
+    difficulty: hard
+    priority: LOW
+
+  - id: ptd_data2paper_005
+    query: "analysis papers reusing Allen Visual Coding data"
+    natural_language: "Secondary analyses using Allen Visual Coding"
+    dataset_context:
+      source: "allen"
+      project: "visual_coding"
+    expected_outputs:
+      - reuse_papers
+      - new_analyses
+    difficulty: hard
+    priority: LOW
+
+  # Cross-Reference Queries (5 queries)
+  - id: ptd_xref_001
+    query: "similar datasets to Stringer et al spontaneous activity"
+    natural_language: "Find datasets similar to Stringer's spontaneous activity work"
+    reference_paper:
+      author: "Stringer"
+      topic: "spontaneous activity"
+    similarity_criteria:
+      - modality_match
+      - brain_region_match
+      - task_similarity
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ptd_xref_002
+    query: "replication datasets for motor imagery BCI"
+    natural_language: "Datasets suitable for replicating motor imagery BCI studies"
+    reference_domain: "motor_imagery_bci"
+    required_features:
+      - standard_paradigm
+      - sufficient_trials
+      - labeled_classes
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ptd_xref_003
+    query: "complementary data to speech ECoG paper"
+    natural_language: "Find datasets that complement a speech ECoG publication"
+    reference_context:
+      modality: [ecog]
+      task: [speech_production]
+    complementary_criteria:
+      - different_participants
+      - similar_paradigm
+      - different_brain_coverage
+    difficulty: hard
+    priority: LOW
+
+  - id: ptd_xref_004
+    query: "validation dataset for seizure detection algorithm"
+    natural_language: "External validation data for seizure detection model"
+    reference_context:
+      task: [seizure_monitoring]
+      modality: [ieeg, eeg]
+    validation_criteria:
+      - independent_institution
+      - annotated_seizures
+      - sufficient_events
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ptd_xref_005
+    query: "benchmark comparison hippocampus place cell"
+    natural_language: "Datasets for benchmarking place cell analyses"
+    reference_context:
+      brain_region: [hippocampus]
+      analysis: [place_cell_analysis]
+    benchmark_criteria:
+      - standard_task
+      - position_tracking
+      - sufficient_units
+    difficulty: hard
+    priority: MEDIUM
+
+# =============================================================================
+# ANALYSIS AFFORDANCE QUERIES (15)
+# Queries testing analysis capability matching
+# =============================================================================
+
+analysis_affordance:
+  # Model Fitting Queries (4 queries)
+  - id: aff_model_001
+    query: "datasets supporting Q-learning model fitting"
+    natural_language: "Find data suitable for Q-learning RL model fitting"
+    required_affordance: q_learning_model_fitting
+    required_signals:
+      - choice_data
+      - reward_outcome
+      - trial_structure
+    expected_tasks: [reversal_learning, bandit_task, two_alternative_forced_choice]
+    difficulty: medium
+    priority: HIGH
+    negative_examples:
+      - "Classical conditioning (no choice)"
+      - "Observation only (no behavior)"
+
+  - id: aff_model_002
+    query: "temporal difference error analysis ready"
+    natural_language: "Data ready for TD error modeling"
+    required_affordance: temporal_difference_modeling
+    required_signals:
+      - reward_timing
+      - trial_events
+      - neural_activity
+    expected_brain_regions: [VTA, striatum, OFC]
+    difficulty: medium
+    priority: HIGH
+    negative_examples:
+      - "No reward timing information"
+      - "Behavior only, no neural"
+
+  - id: aff_model_003
+    query: "drift diffusion model ready perceptual"
+    natural_language: "Data suitable for DDM fitting"
+    required_affordance: evidence_accumulation_modeling
+    required_signals:
+      - choice
+      - reaction_time
+      - stimulus_strength
+    expected_tasks: [random_dot_motion, visual_discrimination, detection_threshold]
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: aff_model_004
+    query: "state space model neural population"
+    natural_language: "Data supporting latent state-space modeling"
+    required_affordance: population_dynamics
+    required_signals:
+      - multi_unit_data
+      - trial_structure
+    expected_modalities: [neuropixels, utah_array, calcium_imaging]
+    difficulty: medium
+    priority: MEDIUM
+
+  # Decoding Queries (5 queries)
+  - id: aff_decode_001
+    query: "choice decoding ready neural"
+    natural_language: "Datasets ready for choice decoding analysis"
+    required_affordance: choice_decoding
+    required_signals:
+      - neural_data
+      - choice_labels
+      - trial_alignment
+    expected_tasks: [two_alternative_forced_choice, go_nogo, bandit_task]
+    difficulty: easy
+    priority: HIGH
+    negative_examples:
+      - "No trial-level choice labels"
+      - "Resting state only"
+
+  - id: aff_decode_002
+    query: "motor trajectory decoding kinematics"
+    natural_language: "Data for decoding movement trajectories"
+    required_affordance: motor_decoding
+    required_signals:
+      - neural_data
+      - kinematics
+      - movement_timing
+    expected_tasks: [reaching, center_out_reaching, grasping]
+    expected_brain_regions: [M1, PMd, motor_cortex]
+    difficulty: medium
+    priority: HIGH
+    negative_examples:
+      - "Motor area recording without kinematics"
+      - "Kinematics without neural"
+
+  - id: aff_decode_003
+    query: "speech phoneme decoding ready"
+    natural_language: "Data suitable for phoneme decoding"
+    required_affordance: speech_decoding
+    required_signals:
+      - neural_data_speech_areas
+      - speech_labels
+      - timing_alignment
+    expected_tasks: [speech_production, speech_bci]
+    expected_modalities: [ecog, ieeg]
+    difficulty: hard
+    priority: HIGH
+    negative_examples:
+      - "Speech perception only"
+      - "Audio without neural"
+
+  - id: aff_decode_004
+    query: "sleep stage classification ready EEG"
+    natural_language: "EEG data ready for automated sleep staging"
+    required_affordance: sleep_stage_classification
+    required_signals:
+      - eeg_data
+      - sleep_annotations
+    expected_tasks: [sleep_staging, sleep_wake]
+    difficulty: easy
+    priority: HIGH
+    negative_examples:
+      - "Resting wake EEG"
+      - "Sleep recording without annotations"
+
+  - id: aff_decode_005
+    query: "seizure detection algorithm ready"
+    natural_language: "iEEG data ready for seizure detection"
+    required_affordance: seizure_detection
+    required_signals:
+      - neural_data
+      - seizure_annotations
+    expected_tasks: [seizure_monitoring]
+    expected_modalities: [ieeg, ecog, eeg]
+    difficulty: medium
+    priority: HIGH
+    negative_examples:
+      - "Seizure-free cognitive recordings"
+      - "Interictal only"
+
+  # Processing Pipeline Queries (3 queries)
+  - id: aff_pipe_001
+    query: "spike sorting ready extracellular"
+    natural_language: "Raw extracellular data ready for spike sorting"
+    required_affordance: spike_sorting
+    required_signals:
+      - raw_extracellular_data
+    helpful_signals:
+      - probe_geometry
+    expected_modalities: [neuropixels, utah_array, extracellular_ephys]
+    difficulty: easy
+    priority: MEDIUM
+    negative_examples:
+      - "Pre-sorted spikes only"
+      - "LFP only"
+
+  - id: aff_pipe_002
+    query: "pose estimation behavior video"
+    natural_language: "Behavior video ready for pose estimation"
+    required_affordance: pose_estimation
+    required_signals:
+      - behavior_video
+    expected_tasks: [open_field, social_interaction, free_behavior]
+    difficulty: easy
+    priority: MEDIUM
+    negative_examples:
+      - "No video, only tracking data"
+      - "Single-frame images"
+
+  - id: aff_pipe_003
+    query: "functional connectivity multi-region"
+    natural_language: "Multi-region data for connectivity analysis"
+    required_affordance: functional_connectivity
+    required_signals:
+      - multi_region_data
+      - region_labels
+    expected_tasks: [resting_state, seizure_monitoring]
+    difficulty: medium
+    priority: MEDIUM
+    negative_examples:
+      - "Single region recording"
+      - "No anatomical labels"
+
+  # Cross-Modal Queries (3 queries)
+  - id: aff_xmod_001
+    query: "neural behavior correlation continuous"
+    natural_language: "Data for neural-behavior correlation analysis"
+    required_affordance: neural_behavior_correlation
+    required_signals:
+      - neural_data
+      - behavioral_timeseries
+      - temporal_alignment
+    expected_tasks: [locomotion, free_behavior, pupil_arousal]
+    difficulty: medium
+    priority: MEDIUM
+    negative_examples:
+      - "Trial-only behavior"
+      - "Neural without continuous behavior"
+
+  - id: aff_xmod_002
+    query: "encoding model stimulus features"
+    natural_language: "Data for encoding model with stimulus features"
+    required_affordance: encoding_modeling
+    required_signals:
+      - neural_data
+      - stimulus_features
+    expected_tasks: [naturalistic_vision, natural_movie_viewing, receptive_field_mapping]
+    difficulty: hard
+    priority: MEDIUM
+    negative_examples:
+      - "No stimulus information"
+      - "Decision only without sensory"
+
+  - id: aff_xmod_003
+    query: "event aligned PSTH trial averaged"
+    natural_language: "Data ready for peri-stimulus time histogram analysis"
+    required_affordance: event_aligned_activity
+    required_signals:
+      - neural_data
+      - event_timestamps
+    expected_tasks: [go_nogo, oddball, classical_conditioning]
+    difficulty: easy
+    priority: HIGH
+    negative_examples:
+      - "Continuous recording without events"
+      - "No timing information"
+
+# =============================================================================
+# GRAPH REASONING QUERIES (10)
+# Queries requiring knowledge graph traversal
+# =============================================================================
+
+graph_reasoning:
+  # Entity Relationship Queries (4 queries)
+  - id: gr_rel_001
+    query: "datasets from labs that published in Nature Neuroscience 2023"
+    natural_language: "Find datasets from labs with recent high-impact publications"
+    reasoning_path:
+      - find_papers: {journal: "Nature Neuroscience", year: 2023}
+      - extract_labs: from_papers
+      - find_datasets: from_labs
+    expected_outputs:
+      - lab_names
+      - paper_dois
+      - dataset_ids
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: gr_rel_002
+    query: "datasets that share authors with Svoboda lab publications"
+    natural_language: "Datasets from researchers affiliated with Svoboda lab"
+    reasoning_path:
+      - find_lab: "Svoboda"
+      - extract_authors: from_lab_papers
+      - find_datasets: with_overlapping_authors
+    difficulty: hard
+    priority: LOW
+
+  - id: gr_rel_003
+    query: "datasets citing same methods papers as IBL"
+    natural_language: "Datasets using similar methodologies to IBL"
+    reasoning_path:
+      - find_datasets: {consortium: "IBL"}
+      - extract_methods_papers: from_datasets
+      - find_other_datasets: citing_same_methods
+    difficulty: hard
+    priority: LOW
+
+  - id: gr_rel_004
+    query: "datasets from institutions with >5 DANDI contributions"
+    natural_language: "Datasets from prolific DANDI contributors"
+    reasoning_path:
+      - aggregate_institutions: from_dandi_datasets
+      - filter: contribution_count > 5
+      - find_datasets: from_filtered_institutions
+    difficulty: medium
+    priority: LOW
+
+  # Multi-Hop Queries (3 queries)
+  - id: gr_hop_001
+    query: "find collaborators datasets based on my hippocampus paper"
+    natural_language: "Datasets from potential collaborators via citation network"
+    reasoning_path:
+      - input: user_paper
+      - find_citations: papers_citing_user_paper
+      - extract_authors: from_citing_papers
+      - find_datasets: from_those_authors
+    requires_user_input: true
+    difficulty: hard
+    priority: LOW
+
+  - id: gr_hop_002
+    query: "datasets using same analysis code as visual cortex studies"
+    natural_language: "Find datasets sharing code dependencies"
+    reasoning_path:
+      - find_papers: {brain_region: "visual_cortex"}
+      - extract_code_repos: from_papers
+      - find_other_papers: using_same_repos
+      - find_datasets: from_those_papers
+    difficulty: hard
+    priority: LOW
+
+  - id: gr_hop_003
+    query: "mouse analogs of human clinical datasets"
+    natural_language: "Mouse datasets studying same phenomena as human clinical"
+    reasoning_path:
+      - find_datasets: {species: "human", domain: "clinical"}
+      - extract_tasks: from_datasets
+      - find_mouse_datasets: with_equivalent_tasks
+    difficulty: hard
+    priority: MEDIUM
+
+  # Aggregate Reasoning Queries (3 queries)
+  - id: gr_agg_001
+    query: "most commonly recorded brain regions in decision making"
+    natural_language: "Which regions are most studied in decision-making datasets?"
+    reasoning_path:
+      - find_datasets: {task_category: "decision_making"}
+      - aggregate: brain_regions
+      - rank: by_frequency
+    expected_outputs:
+      - region_frequencies
+      - top_regions
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: gr_agg_002
+    query: "trending modalities in BCI research 2022-2024"
+    natural_language: "Which recording modalities are gaining popularity in BCI?"
+    reasoning_path:
+      - find_datasets: {task_category: "bci", year_range: [2022, 2024]}
+      - aggregate: modalities_by_year
+      - compute: trend_analysis
+    difficulty: medium
+    priority: LOW
+
+  - id: gr_agg_003
+    query: "data standard adoption by domain"
+    natural_language: "NWB vs BIDS adoption across scientific domains"
+    reasoning_path:
+      - find_datasets: all
+      - group_by: task_category
+      - aggregate: data_standard_counts
+      - compute: adoption_rates
+    expected_outputs:
+      - domain_standard_matrix
+      - adoption_trends
+    difficulty: medium
+    priority: MEDIUM
+
+# =============================================================================
+# EXPERIMENTAL DESIGN QUERIES (10)
+# Queries supporting experimental planning
+# =============================================================================
+
+experimental_design:
+  # Task Design Queries (4 queries)
+  - id: ed_task_001
+    query: "design auditory reversal learning task for mouse"
+    natural_language: "Reference designs for mouse auditory reversal learning"
+    design_request:
+      task_type: reversal_learning
+      sensory_modality: auditory
+      species: mouse
+    expected_outputs:
+      - example_datasets
+      - task_parameters
+      - timing_structure
+      - hardware_requirements
+    difficulty: medium
+    priority: HIGH
+
+  - id: ed_task_002
+    query: "standard center-out reaching paradigm primate"
+    natural_language: "Standard parameters for primate center-out reaching"
+    design_request:
+      task_type: center_out_reaching
+      species: primate
+    expected_outputs:
+      - target_configurations
+      - timing_parameters
+      - training_protocols
+      - success_criteria
+    difficulty: medium
+    priority: HIGH
+
+  - id: ed_task_003
+    query: "motor imagery BCI paradigm EEG human"
+    natural_language: "Standard motor imagery BCI protocol for human EEG"
+    design_request:
+      task_type: motor_imagery
+      modality: eeg
+      species: human
+    expected_outputs:
+      - class_definitions
+      - trial_timing
+      - feedback_protocols
+      - training_sessions
+    difficulty: medium
+    priority: HIGH
+
+  - id: ed_task_004
+    query: "naturalistic foraging task design rodent"
+    natural_language: "Design parameters for rodent foraging task"
+    design_request:
+      task_type: foraging
+      species: [mouse, rat]
+    expected_outputs:
+      - arena_specifications
+      - patch_parameters
+      - depletion_schedules
+      - behavioral_measures
+    difficulty: hard
+    priority: MEDIUM
+
+  # Recording Design Queries (3 queries)
+  - id: ed_rec_001
+    query: "Neuropixels targeting OFC ACC decision making"
+    natural_language: "Neuropixels insertion strategy for OFC/ACC"
+    recording_request:
+      modality: neuropixels
+      target_regions: [OFC, ACC]
+      task_domain: decision_making
+    expected_outputs:
+      - insertion_coordinates
+      - angle_recommendations
+      - expected_yield
+      - reference_datasets
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ed_rec_002
+    query: "calcium imaging setup prefrontal cortex mouse"
+    natural_language: "Two-photon setup for mouse PFC imaging"
+    recording_request:
+      modality: two_photon
+      target_regions: [mPFC]
+      species: mouse
+    expected_outputs:
+      - surgery_protocols
+      - window_specifications
+      - imaging_parameters
+      - reference_datasets
+    difficulty: hard
+    priority: MEDIUM
+
+  - id: ed_rec_003
+    query: "ECoG grid placement speech motor cortex human"
+    natural_language: "ECoG coverage for speech motor mapping"
+    recording_request:
+      modality: ecog
+      target_regions: [speech_motor_cortex, ventral_sensorimotor]
+      species: human
+      context: clinical
+    expected_outputs:
+      - grid_configurations
+      - coverage_maps
+      - clinical_considerations
+      - reference_datasets
+    difficulty: hard
+    priority: LOW
+
+  # Analysis Pipeline Queries (3 queries)
+  - id: ed_ana_001
+    query: "analysis pipeline Q-learning reversal"
+    natural_language: "Standard analysis pipeline for reversal learning Q-learning"
+    analysis_request:
+      analysis_type: q_learning_model_fitting
+      task: reversal_learning
+    expected_outputs:
+      - preprocessing_steps
+      - model_specifications
+      - fitting_procedures
+      - validation_methods
+      - reference_code
+    difficulty: medium
+    priority: HIGH
+
+  - id: ed_ana_002
+    query: "spike sorting pipeline Neuropixels kilosort"
+    natural_language: "Spike sorting workflow for Neuropixels with Kilosort"
+    analysis_request:
+      analysis_type: spike_sorting
+      modality: neuropixels
+      software: kilosort
+    expected_outputs:
+      - preprocessing_steps
+      - sorting_parameters
+      - curation_guidelines
+      - quality_metrics
+    difficulty: medium
+    priority: MEDIUM
+
+  - id: ed_ana_003
+    query: "seizure detection pipeline iEEG"
+    natural_language: "Seizure detection analysis workflow for iEEG"
+    analysis_request:
+      analysis_type: seizure_detection
+      modality: ieeg
+    expected_outputs:
+      - preprocessing_steps
+      - detection_algorithms
+      - validation_protocols
+      - clinical_standards
+    difficulty: hard
+    priority: MEDIUM
+
+# =============================================================================
+# EVALUATION CRITERIA
+# =============================================================================
+
+evaluation:
+  precision_metrics:
+    - name: precision_at_5
+      description: "Fraction of top-5 results that are relevant"
+      target: ">= 0.7 for easy, >= 0.5 for hard"
+
+    - name: constraint_satisfaction
+      description: "Fraction of results satisfying all specified constraints"
+      target: "1.0 for adversarial queries"
+
+    - name: hard_negative_rejection
+      description: "Fraction of hard negatives correctly excluded"
+      target: ">= 0.9"
+
+  recall_metrics:
+    - name: label_recall_at_10
+      description: "Fraction of expected labels found in top-10"
+      target: ">= 0.7"
+
+    - name: dataset_recall
+      description: "Fraction of expected datasets found (when IDs specified)"
+      target: ">= 0.8"
+
+  relevance_metrics:
+    - name: ndcg_at_10
+      description: "Normalized discounted cumulative gain"
+      target: ">= 0.6"
+
+    - name: mrr
+      description: "Mean reciprocal rank of first relevant result"
+      target: ">= 0.5"
+
+  coverage_metrics:
+    - name: domain_coverage
+      description: "Queries covering each scientific domain"
+      target: "All domains represented"
+
+    - name: modality_coverage
+      description: "Queries covering each recording modality"
+      target: "Major modalities represented"
