@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 REQUIRED_TASK_FIELDS = {
@@ -98,6 +100,7 @@ class Ontology(BaseModel):
 
     tasks: list[Task]
     behavior_labels: list[BehaviorLabel] = Field(default_factory=list)
+    analysis_affordances: list[dict[str, Any]] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_unique_ids(self) -> Ontology:

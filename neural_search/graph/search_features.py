@@ -39,6 +39,25 @@ def _result_node_id(result_id: str) -> str:
     return dataset_node_id(result_id)
 
 
+def _resolve_dataset_node_id(graph: KnowledgeGraph, result_id: str) -> str:
+    candidate = _result_node_id(result_id)
+    if candidate in graph.nodes:
+        return candidate
+    normalized_result = str(result_id)
+    for node in graph.nodes.values():
+        if node.node_type != "dataset":
+            continue
+        aliases = {
+            node.node_id,
+            *node.aliases,
+            *node.source_ids,
+            str(node.properties.get("source_id", "")),
+        }
+        if normalized_result in aliases:
+            return node.node_id
+    return candidate
+
+
 def _neighbor_labels(
     graph: KnowledgeGraph,
     node_id: str,
@@ -69,7 +88,7 @@ def compute_graph_features_for_result(
             "matched_query_context": {},
         }
 
-    node_id = _result_node_id(result_id)
+    node_id = _resolve_dataset_node_id(graph, result_id)
     if node_id not in graph.nodes:
         return {
             "graph_available": True,

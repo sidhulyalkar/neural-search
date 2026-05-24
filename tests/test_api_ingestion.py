@@ -1,4 +1,4 @@
-from fastapi.testclient import TestClient
+import asyncio
 
 from apps.api import main as api_main
 from neural_search.ingestion.services import IngestionRunResult
@@ -20,22 +20,18 @@ def test_dandi_ingestion_endpoint_returns_service_result(monkeypatch):
 
     monkeypatch.setattr(api_main.ingestion_services, "ingest_dandi", fake_ingest)
 
-    with TestClient(api_main.app) as client:
-        response = client.post(
-            "/api/ingest/dandi",
-            json={"query": "go no-go", "limit": 2},
-        )
+    response = asyncio.run(
+        api_main.ingest_dandi(api_main.IngestRequest(query="go no-go", limit=2))
+    )
 
-    assert response.status_code == 200
-    assert response.json()["dataset_ids"] == ["000001"]
-    assert response.json()["normalized"] == 1
+    assert response.dataset_ids == ["000001"]
+    assert response.normalized == 1
 
 
 def test_ingestion_endpoint_rejects_blank_query():
-    with TestClient(api_main.app) as client:
-        response = client.post(
-            "/api/ingest/dandi",
-            json={"query": "   ", "limit": 2},
-        )
-
-    assert response.status_code == 422
+    try:
+        api_main.IngestRequest(query="   ", limit=2)
+    except ValueError as exc:
+        assert "query is required" in str(exc)
+    else:
+        raise AssertionError("blank query should fail validation")

@@ -13,6 +13,11 @@ import yaml
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.embeddings import HashingEmbeddingProvider, cosine_similarity
+from neural_search.graph.search_features import (
+    compute_graph_features_for_result,
+    graph_context_score,
+    load_graph_if_exists,
+)
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.ontology import (
     expand_query_terms,
@@ -23,6 +28,14 @@ from neural_search.ontology import (
     normalize_text,
 )
 from neural_search.schemas import DatasetCardRead, SearchResponse, SearchResult
+from neural_search.search.constraints import (
+    negative_constraint_violations,
+    parse_hard_negative_constraints,
+)
+from neural_search.search.field_semantic import (
+    field_semantic_score_for_result,
+    load_field_semantic_index,
+)
 from neural_search.search.query_builder import (
     combine_query_and_structured_text,
     merge_filters,
@@ -39,6 +52,8 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
         "modality": 0.14,
         "metadata": 0.10,
         "semantic": 0.10,
+        "field_semantic": 0.06,
+        "graph": 0.04,
         "readiness": 0.10,
         "paper_confidence": 0.04,
     },
@@ -60,6 +75,17 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
     "analysis_required_fields": {},
     "species_aliases": {},
     "analysis_intents": {},
+    "graph": {
+        "enabled": False,
+        "path": "data/graph/neural_search_graph.demo_v05.json",
+        "weights": {},
+    },
+    "field_embeddings": {
+        "enabled": False,
+        "path": "data/embeddings/demo_v05.field_embeddings.jsonl",
+        "field_weights": {},
+    },
+    "hard_negative_filters": {"enabled": True},
 }
 
 MODALITY_TERMS: dict[str, list[str]] = {
@@ -98,6 +124,14 @@ def _deep_merge(base: dict[str, Any], override: Mapping[str, Any]) -> dict[str, 
         else:
             merged[key] = value
     return merged
+
+
+def _retrieval_config_with_defaults(
+    retrieval_config: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    if retrieval_config is None:
+        return load_retrieval_config()
+    return _deep_merge(DEFAULT_RETRIEVAL_CONFIG, retrieval_config)
 
 
 @lru_cache(maxsize=4)
@@ -233,7 +267,7 @@ def parse_query(
 ) -> dict[str, Any]:
     """Parse search intent with ontology expansion and simple metadata hints."""
 
-    config = dict(retrieval_config or load_retrieval_config())
+    config = _retrieval_config_with_defaults(retrieval_config)
     task_matches = match_tasks(query)
     behavior_matches = match_behavior_labels(query)
     brain_region_matches = match_brain_regions(query)
@@ -241,6 +275,13 @@ def parse_query(
 
     # Parse exclusions first
     excluded_modalities, excluded_species = _parse_exclusions(query)
+    negative_constraints = parse_hard_negative_constraints(query, config)
+    excluded_modalities = sorted(
+        set(excluded_modalities) | set(negative_constraints["hard_excluded_modalities"])
+    )
+    excluded_species = sorted(
+        set(excluded_species) | set(negative_constraints["hard_excluded_species"])
+    )
 
     modalities: list[str] = [match.id for match in match_modalities(query)]
 
@@ -297,6 +338,17 @@ def parse_query(
         "modalities": sorted(set(modalities)),
         "excluded_modalities": excluded_modalities,
         "excluded_species": excluded_species,
+        "excluded_tasks": negative_constraints["hard_excluded_tasks"],
+        "excluded_sources": negative_constraints["hard_excluded_sources"],
+        "excluded_regions": negative_constraints["hard_excluded_regions"],
+        "excluded_dataset_types": negative_constraints["hard_excluded_dataset_types"],
+        "excluded_analysis_affordances": negative_constraints[
+            "hard_excluded_analysis_affordances"
+        ],
+        "excluded_recording_devices": negative_constraints[
+            "hard_excluded_recording_devices"
+        ],
+        "negative_constraints": negative_constraints,
         "species": sorted({match["id"] for match in species_intents}),
         "brain_regions": [match.id for match in brain_region_matches],
         "analysis": sorted(set(analysis_ids)),
@@ -449,7 +501,7 @@ def score_dataset_against_query(
 ) -> SearchResult:
     """Score one dataset against a parsed query and return explanations."""
 
-    config = dict(retrieval_config or load_retrieval_config())
+    config = _retrieval_config_with_defaults(retrieval_config)
     weights = config.get("weights", {})
     penalties = config.get("penalties", {})
     dataset_id = _get_value(dataset, "id", _get_value(dataset, "source_id", "unknown"))
@@ -534,20 +586,25 @@ def score_dataset_against_query(
             + "."
         )
 
-    # Apply exclusion penalty for hard-negative modalities
+    # Preserve direct scoring behavior: explicit hard negatives are still visible
+    # when this lower-level scorer is called outside the main filtered search path.
     exclusion_penalty = 0.0
     excluded_modalities = {normalize_text(m) for m in parsed_query.get("excluded_modalities", [])}
+    violated_exclusions = set(
+        negative_constraint_violations(
+            dataset,
+            card if isinstance(card, Mapping) else None,
+            parsed_query.get("negative_constraints", {}),
+        )
+    )
     if excluded_modalities:
-        violated_exclusions = excluded_modalities & dataset_modalities
-        if violated_exclusions:
-            # Strong penalty for violating exclusion constraints
-            exclusion_penalty = float(penalties.get("exclusion_violation", 0.5))
-            warnings.append(
-                f"Exclusion violation: dataset contains {', '.join(sorted(violated_exclusions))} "
-                "which was explicitly excluded from the query."
-            )
-    else:
-        violated_exclusions = set()
+        violated_exclusions |= excluded_modalities & dataset_modalities
+    if violated_exclusions:
+        exclusion_penalty = float(penalties.get("exclusion_violation", 0.5))
+        warnings.append(
+            f"Exclusion violation: dataset contains {', '.join(sorted(violated_exclusions))} "
+            "which was explicitly excluded from the query."
+        )
 
     readiness_score = 0.0
     if card:
@@ -698,6 +755,63 @@ def _passes_filters(
     return True
 
 
+def _augment_result_with_optional_scores(
+    result: SearchResult,
+    query: str,
+    parsed_query: Mapping[str, Any],
+    retrieval_config: Mapping[str, Any],
+    *,
+    graph: Any,
+    graph_config: Mapping[str, Any],
+    field_index: Any,
+    field_config: Mapping[str, Any],
+) -> None:
+    weights = retrieval_config.get("weights", {})
+    base_final = float(result.score_breakdown.get("final_score", result.score / 100.0))
+    extra_score = 0.0
+
+    if field_config.get("enabled"):
+        field_score = field_semantic_score_for_result(
+            field_index,
+            str(result.dataset_id),
+            query,
+            dict(field_config),
+        )
+        result.score_breakdown["field_semantic_score"] = round(field_score.score, 3)
+        if field_score.matched_fields:
+            result.why_matched.append(
+                "Field semantic matches: " + ", ".join(field_score.matched_fields)
+            )
+        extra_score += float(weights.get("field_semantic", 0.0)) * field_score.score
+
+    if graph_config.get("enabled"):
+        graph_score = graph_context_score(
+            graph,
+            str(result.dataset_id),
+            dict(parsed_query),
+            weights=dict(graph_config.get("weights", {})),
+        )
+        result.score_breakdown["graph_score"] = round(graph_score, 3)
+        if graph_score > 0:
+            graph_features = compute_graph_features_for_result(
+                graph,
+                str(result.dataset_id),
+                dict(parsed_query),
+            )
+            result.why_matched.append(f"Graph context score: {graph_score:.2f}")
+            result.dataset_card_preview["graph_context"] = {
+                "linked_papers": graph_features.get("linked_papers", [])[:5],
+                "analysis_affordances": graph_features.get("analysis_affordances", [])[:5],
+                "matched_query_context": graph_features.get("matched_query_context", {}),
+            }
+        extra_score += float(weights.get("graph", 0.0)) * graph_score
+
+    if extra_score:
+        final_score = max(0.0, min(base_final + extra_score, 1.0))
+        result.score_breakdown["final_score"] = round(final_score, 3)
+        result.score = round(final_score * 100, 2)
+
+
 def search_datasets(
     query: str,
     filters: Mapping[str, Any] | None = None,
@@ -708,12 +822,30 @@ def search_datasets(
 ) -> SearchResponse:
     """Search supplied datasets or the built-in demo seed."""
 
-    config = dict(retrieval_config or load_retrieval_config())
+    config = _retrieval_config_with_defaults(retrieval_config)
     combined_query = combine_query_and_structured_text(query, structured_query)
     parsed = parse_query(combined_query, config)
     filters = merge_filters(filters, structured_query)
     records = list(datasets) if datasets is not None else build_demo_seed()
     results: list[SearchResult] = []
+    filtered_constraints: list[dict[str, Any]] = []
+    hard_filters_enabled = bool(config.get("hard_negative_filters", {}).get("enabled", True))
+    graph_config = config.get("graph", {}) if isinstance(config.get("graph", {}), Mapping) else {}
+    graph = (
+        load_graph_if_exists(graph_config.get("path"))
+        if graph_config.get("enabled")
+        else None
+    )
+    field_config = (
+        config.get("field_embeddings", {})
+        if isinstance(config.get("field_embeddings", {}), Mapping)
+        else {}
+    )
+    field_index = (
+        load_field_semantic_index(field_config.get("path"))
+        if field_config.get("enabled")
+        else None
+    )
 
     for record in records:
         dataset = record.get("dataset", record)
@@ -724,10 +856,37 @@ def search_datasets(
             )
         if not _passes_filters(dataset, filters, card):
             continue
-        results.append(score_dataset_against_query(dataset, card, parsed, config))
+        violations = negative_constraint_violations(
+            dataset,
+            card if isinstance(card, Mapping) else None,
+            parsed.get("negative_constraints", {}),
+        )
+        if hard_filters_enabled and violations:
+            filtered_constraints.append(
+                {
+                    "dataset_id": _get_value(dataset, "id", _get_value(dataset, "source_id", "unknown")),
+                    "violations": violations,
+                }
+            )
+            continue
+        result = score_dataset_against_query(dataset, card, parsed, config)
+        _augment_result_with_optional_scores(
+            result,
+            combined_query,
+            parsed,
+            config,
+            graph=graph,
+            graph_config=graph_config,
+            field_index=field_index,
+            field_config=field_config,
+        )
+        results.append(result)
 
     results.sort(key=lambda item: item.score, reverse=True)
-    return SearchResponse(query=combined_query, parsed_query=dict(parsed), results=results[:limit])
+    parsed_response = dict(parsed)
+    if filtered_constraints:
+        parsed_response["filtered_negative_constraints"] = filtered_constraints
+    return SearchResponse(query=combined_query, parsed_query=parsed_response, results=results[:limit])
 
 
 def hybrid_search_with_latent(

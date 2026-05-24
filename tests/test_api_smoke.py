@@ -1,43 +1,36 @@
-from fastapi.testclient import TestClient
+import asyncio
 
-from apps.api.main import app
+from apps.api import main as api_main
+from neural_search.schemas import DatasetCompareRequest, SearchRequest
 
 
 def test_core_api_smoke_flow():
-    with TestClient(app) as client:
-        health = client.get("/healthz")
-        assert health.status_code == 200
-        assert health.json() == {"status": "ok"}
+    async def run_flow():
+        health = await api_main.healthz()
+        assert health == {"status": "ok"}
 
-        search = client.post(
-            "/api/search",
-            json={"query": "go/no-go calcium imaging", "limit": 2},
+        search = await api_main.search(
+            SearchRequest(query="go/no-go calcium imaging", limit=2)
         )
-        assert search.status_code == 200
-        search_payload = search.json()
-        assert search_payload["total_count"] >= 1
+        assert search.total_count >= 1
 
-        dataset_id = search_payload["results"][0]["dataset"]["source_id"]
+        dataset_id = search.results[0].dataset["source_id"]
 
-        dataset = client.get(f"/api/datasets/{dataset_id}")
-        assert dataset.status_code == 200
-        assert dataset.json()["source_id"] == dataset_id
+        dataset = await api_main.get_dataset(dataset_id)
+        assert dataset["source_id"] == dataset_id
 
-        card = client.get(f"/api/datasets/{dataset_id}/card")
-        assert card.status_code == 200
-        assert card.json()["dataset_id"] == dataset_id
+        card = await api_main.get_dataset_card(dataset_id)
+        assert card["dataset_id"] == dataset_id
 
-        datasets = client.get("/api/datasets?limit=2")
-        assert datasets.status_code == 200
-        listed_ids = [item["source_id"] for item in datasets.json()["datasets"]]
+        datasets = await api_main.list_datasets(limit=2, offset=0, qa_status=None)
+        listed_ids = [item["source_id"] for item in datasets.datasets]
 
-        comparison = client.post(
-            "/api/datasets/compare",
-            json={"dataset_ids": listed_ids[:2]},
+        comparison = await api_main.compare_datasets_endpoint(
+            DatasetCompareRequest(dataset_ids=listed_ids[:2])
         )
-        assert comparison.status_code == 200
-        assert len(comparison.json()["dataset_ids"]) == 2
+        assert len(comparison.dataset_ids) == 2
 
-        report = client.get("/api/reports/compilation")
-        assert report.status_code == 200
-        assert report.json()["total_datasets"] >= 1
+        report = await api_main.get_compilation_report()
+        assert report["total_datasets"] >= 1
+
+    asyncio.run(run_flow())

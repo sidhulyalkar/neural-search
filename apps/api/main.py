@@ -54,11 +54,20 @@ async def lifespan(app: FastAPI):
     yield
 
 
+def _ensure_demo_data() -> list[dict[str, Any]]:
+    """Load demo data lazily for tests and local API usage."""
+
+    global _demo_data
+    if not _demo_data:
+        load_ontology()
+        _demo_data = build_demo_seed()
+    return _demo_data
+
+
 app = FastAPI(
     title="Neural Search API",
     description="Experiment-aware neural data discovery system",
     version="0.1.0",
-    lifespan=lifespan,
 )
 
 # CORS middleware
@@ -130,9 +139,10 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
             ),
         )
     qa_state = load_qa_state()
+    demo_data = _ensure_demo_data()
     records_with_qa = [
         {**record, "dataset": attach_qa_to_dataset(record["dataset"], qa_state)}
-        for record in _demo_data
+        for record in demo_data
     ]
 
     response = search_datasets(
@@ -198,7 +208,10 @@ async def list_datasets(
 ) -> DatasetListResponse:
     """List all indexed datasets."""
     qa_state = load_qa_state()
-    datasets = [attach_qa_to_dataset(record["dataset"], qa_state) for record in _demo_data]
+    datasets = [
+        attach_qa_to_dataset(record["dataset"], qa_state)
+        for record in _ensure_demo_data()
+    ]
     if qa_status:
         accepted = set(qa_status)
         datasets = [dataset for dataset in datasets if dataset.get("qa_status") in accepted]
@@ -212,7 +225,7 @@ async def list_datasets(
 async def get_dataset(dataset_id: str) -> dict[str, Any]:
     """Get a specific dataset by ID."""
     qa_state = load_qa_state()
-    for record in _demo_data:
+    for record in _ensure_demo_data():
         ds = record["dataset"]
         if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
             return attach_qa_to_dataset(ds, qa_state)
@@ -223,7 +236,7 @@ async def get_dataset(dataset_id: str) -> dict[str, Any]:
 async def get_dataset_card(dataset_id: str) -> dict[str, Any]:
     """Get the dataset card for a specific dataset."""
     qa_state = load_qa_state()
-    for record in _demo_data:
+    for record in _ensure_demo_data():
         ds = record["dataset"]
         if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
             dataset = attach_qa_to_dataset(ds, qa_state)
@@ -249,7 +262,7 @@ async def get_dataset_card(dataset_id: str) -> dict[str, Any]:
 
 def _card_for_dataset(dataset_id: str) -> DatasetCardRead:
     qa_state = load_qa_state()
-    for record in _demo_data:
+    for record in _ensure_demo_data():
         ds = record["dataset"]
         if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
             dataset = attach_qa_to_dataset(ds, qa_state)
@@ -351,7 +364,7 @@ async def generate_notebook(
     request: NotebookRequest | None = None,
 ) -> FileResponse:
     """Generate a starter Jupyter notebook for a dataset."""
-    for record in _demo_data:
+    for record in _ensure_demo_data():
         ds = record["dataset"]
         if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
             # Create a temporary output path
@@ -406,13 +419,13 @@ def _dataset_exists(dataset_id: str) -> bool:
     return any(
         record["dataset"].get("id") == dataset_id
         or record["dataset"].get("source_id") == dataset_id
-        for record in _demo_data
+        for record in _ensure_demo_data()
     )
 
 
 def _find_record(dataset_id: str) -> dict[str, Any] | None:
     """Find a dataset record by ID."""
-    for record in _demo_data:
+    for record in _ensure_demo_data():
         ds = record["dataset"]
         if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
             return record

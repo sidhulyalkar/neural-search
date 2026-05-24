@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build
 
 # ============================================================================
 # SETUP TARGETS
@@ -135,6 +135,35 @@ reports:
 # Alias for reports
 report: reports
 
+# ============================================================================
+# CANONICAL ARTIFACT PIPELINE
+# ============================================================================
+
+corpus-build:
+	python -m neural_search.corpus.convert_demo_seed \
+		--datasets data/seed/demo_datasets.yaml \
+		--papers data/seed/demo_papers.yaml \
+		--out-dir data/corpus/normalized
+
+graph-build: corpus-build
+	python -m neural_search.graph.build_graph \
+		--datasets data/corpus/normalized/demo_v05.datasets.jsonl \
+		--papers data/corpus/normalized/demo_v05.papers.jsonl \
+		--out data/graph/neural_search_graph.demo_v05.json
+
+graph-reports: graph-build
+	python -m neural_search.graph.reports \
+		--graph data/graph/neural_search_graph.demo_v05.json \
+		--out data/reports/graph
+
+embeddings-build: corpus-build
+	python -m neural_search.embeddings.build_index \
+		--input data/corpus/normalized/demo_v05.records.jsonl \
+		--out data/embeddings/demo_v05.field_embeddings.jsonl \
+		--provider hashing
+
+artifacts-build: corpus-build graph-build graph-reports embeddings-build
+
 # Generate notebook for a dataset
 notebook-generate:
 	@if [ -z "$(DATASET_ID)" ]; then \
@@ -162,6 +191,44 @@ db-revision:
 
 # Seed data (alias)
 seed: demo-seed
+
+# ============================================================================
+# CORPUS EXPANSION
+# ============================================================================
+
+# Run corpus expansion phase 1 (high priority)
+corpus-expand-phase1:
+	@echo "Running Corpus Expansion Phase 1..."
+	bash scripts/run_corpus_expansion.sh 1
+
+# Run corpus expansion phase 2 (medium priority)
+corpus-expand-phase2:
+	@echo "Running Corpus Expansion Phase 2..."
+	bash scripts/run_corpus_expansion.sh 2
+
+# Run corpus expansion phase 3 (gap filling)
+corpus-expand-phase3:
+	@echo "Running Corpus Expansion Phase 3..."
+	bash scripts/run_corpus_expansion.sh 3
+
+# Run all corpus expansion phases
+corpus-expand-all:
+	@echo "Running All Corpus Expansion Phases..."
+	bash scripts/run_corpus_expansion.sh all
+
+# Show corpus status
+corpus-status:
+	@echo "=== Corpus Status ==="
+	@echo "DANDI datasets: $$(ls data/raw/dandi/*.json 2>/dev/null | wc -l) raw files"
+	@echo "OpenNeuro datasets: $$(ls data/raw/openneuro/*.json 2>/dev/null | wc -l) raw files"
+	@echo "OpenAlex papers: $$(ls data/raw/openalex/*.json 2>/dev/null | wc -l) raw files"
+	@echo ""
+	@echo "Log files: $$(ls data/logs/ingestion/*.log 2>/dev/null | wc -l)"
+	@echo "Failures: $$(cat data/logs/ingestion/failures_*.csv 2>/dev/null | wc -l)"
+
+# Generate corpus coverage report
+corpus-coverage:
+	python -m neural_search.reports.coverage
 
 # ============================================================================
 # CLEANUP

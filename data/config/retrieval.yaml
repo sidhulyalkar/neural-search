@@ -7,6 +7,8 @@ weights:
   modality: 0.14
   metadata: 0.10
   semantic: 0.10
+  field_semantic: 0.06
+  graph: 0.04
   readiness: 0.10
   paper_confidence: 0.04
 
@@ -14,6 +16,7 @@ penalties:
   modality_mismatch: 0.18
   missing_required_field: 0.04
   max_missing_required_fields: 5
+  exclusion_violation: 0.50
 
 thresholds:
   high_analysis_readiness: 0.80
@@ -95,3 +98,35 @@ analysis_intents:
     - pupil neural correlation
     - arousal coupling
     - pupil arousal
+  reward_prediction:
+    - reward prediction
+    - predict reward
+    - reward prediction model
+    - reward expectation
+  value_estimation:
+    - value estimation
+    - value encoding
+    - value computation
+    - subjective value
+  temporal_difference:
+    - temporal difference
+    - td learning
+    - td error
+    - prediction error
+  trial_outcome_prediction:
+    - trial outcome prediction
+    - predict trial outcome
+    - outcome classification
+
+graph:
+  enabled: false
+  path: data/graph/neural_search_graph.demo_v05.json
+  weights: {}
+
+field_embeddings:
+  enabled: false
+  path: data/embeddings/demo_v05.field_embeddings.jsonl
+  field_weights: {}
+
+hard_negative_filters:
+  enabled: true

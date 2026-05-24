@@ -20,13 +20,12 @@ from typing import Any
 
 from neural_search.evaluation.run_benchmark import (
     SUITE_CHOICES,
-    SUITE_PATHS,
     EvaluationReport,
     benchmark_path_for_suite,
     output_dir_for_suite,
     run_full_benchmark,
 )
-from neural_search.search.core import DEFAULT_RETRIEVAL_CONFIG, load_retrieval_config
+from neural_search.search.core import load_retrieval_config
 
 ABLATION_MODES = (
     "lexical_only",

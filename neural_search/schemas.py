@@ -165,6 +165,8 @@ class ScoreBreakdown(BaseModel):
     lexical_score: float = Field(default=0.0, ge=0.0, le=1.0)
     ontology_score: float = Field(default=0.0, ge=0.0, le=1.0)
     semantic_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    field_semantic_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    graph_score: float = Field(default=0.0, ge=0.0, le=1.0)
     provenance_score: float = Field(default=0.0, ge=0.0, le=1.0)
     usability_score: float = Field(default=0.0, ge=0.0, le=1.0)
     analysis_fit_score: float = Field(default=0.0, ge=0.0, le=1.0)

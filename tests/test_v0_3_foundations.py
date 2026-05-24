@@ -115,7 +115,7 @@ def test_search_result_exposes_v0_3_score_heads_and_negative_constraints():
         ],
     )
 
-    result = response.results[0]
-    assert result.score_breakdown["lexical_score"] >= 0
-    assert result.score_breakdown["negative_constraint_score"] < 1
-    assert result.negative_constraint_matches == ["eeg"]
+    assert response.results == []
+    assert response.parsed_query["filtered_negative_constraints"] == [
+        {"dataset_id": "EEG_NEGATIVE", "violations": ["eeg"]}
+    ]

@@ -86,6 +86,9 @@ def test_evaluate_query_flags_hard_negative_modalities():
         ],
     )
 
-    assert evaluation.hard_negative_violations
-    assert evaluation.top_false_positives == ["EEG_NEGATIVE"]
-    assert any("Hard-negative violations" in reason for reason in evaluation.why_failed)
+    assert evaluation.hard_negative_violations == []
+    assert evaluation.top_false_positives == []
+    assert evaluation.num_results == 0
+    assert evaluation.parsed_query["filtered_negative_constraints"] == [
+        {"dataset_id": "EEG_NEGATIVE", "violations": ["eeg"]}
+    ]
