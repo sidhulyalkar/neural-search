@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from neural_search.embeddings import (
     FieldEmbeddingRecord,
@@ -13,6 +13,16 @@ from neural_search.embeddings import (
     cosine_similarity,
     read_field_embedding_cache,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+
+class EmbeddingProviderProtocol(Protocol):
+    """Protocol for embedding providers."""
+
+    def embed_text(self, text: str) -> list[float]: ...
+    def embed_batch(self, texts: Sequence[str]) -> list[list[float]]: ...
 
 DEFAULT_FIELD_WEIGHTS = {
     "title": 0.18,
@@ -37,6 +47,8 @@ class FieldSemanticScore:
 class FieldSemanticIndex:
     """Small in-memory index over precomputed field embedding records."""
 
+    provider: EmbeddingProviderProtocol | None
+
     def __init__(self, records: list[FieldEmbeddingRecord]) -> None:
         self.records = records
         self._by_record_id: dict[str, list[FieldEmbeddingRecord]] = {}
@@ -52,6 +64,7 @@ class FieldSemanticIndex:
             for alias in aliases:
                 self._by_record_id.setdefault(alias, []).append(record)
         self.provider = _provider_for_cache(records)
+        self._provider_type = records[0].provider_name if records else "unknown"
 
     def score_dataset(
         self,
@@ -92,16 +105,36 @@ class FieldSemanticIndex:
         )
 
 
-def _provider_for_cache(records: list[FieldEmbeddingRecord]) -> HashingEmbeddingProvider | None:
+def _provider_for_cache(
+    records: list[FieldEmbeddingRecord],
+) -> EmbeddingProviderProtocol | None:
+    """Create an embedding provider matching the cache metadata.
+
+    Supports both hashing (deterministic) and sentence-transformer (neural) providers.
+    """
     if not records:
         return None
     first = records[0]
-    if first.provider_name != "hashing":
-        return None
-    return HashingEmbeddingProvider(
-        dimensions=first.dimension,
-        normalize_embeddings=first.normalize,
-    )
+
+    if first.provider_name == "hashing":
+        return HashingEmbeddingProvider(
+            dimensions=first.dimension,
+            normalize_embeddings=first.normalize,
+        )
+
+    if first.provider_name == "sentence-transformer":
+        try:
+            from neural_search.embeddings import SentenceTransformerEmbeddingProvider
+
+            return SentenceTransformerEmbeddingProvider(
+                model_name=first.model_name,
+                normalize=first.normalize,
+            )
+        except RuntimeError:
+            # sentence-transformers not installed, fall back gracefully
+            return None
+
+    return None
 
 
 @lru_cache(maxsize=4)

@@ -1,0 +1,333 @@
+# Neural Search Analysis Methods Ontology v0.1
+# Purpose: Define analysis methods that can be applied to neural datasets.
+# Each method specifies required signals and typical outputs.
+
+analysis_methods:
+  # ---------------------------------------------------------------------------
+  # Spike-based analyses
+  # ---------------------------------------------------------------------------
+  - id: spike_rate_psth
+    label: Peri-Stimulus Time Histogram
+    category: spike_analysis
+    definition: >
+      Compute firing rates aligned to behavioral events or stimuli,
+      revealing temporal dynamics of neural responses.
+    aliases:
+      - PSTH
+      - peri-stimulus histogram
+      - event-aligned firing rate
+      - spike rate analysis
+      - firing rate analysis
+    required_signals:
+      - spikes
+      - trial_events
+    helpful_signals:
+      - trial_structure
+      - behavioral_labels
+    typical_outputs:
+      - firing_rate_timecourse
+      - response_latency
+      - peak_firing_rate
+    applicable_tasks:
+      - all
+
+  - id: population_decoding
+    label: Population Decoding
+    category: decoding
+    definition: >
+      Use machine learning classifiers (SVM, logistic regression, neural networks)
+      to decode behavioral variables from population neural activity.
+    aliases:
+      - neural decoding
+      - SVM decoding
+      - classification
+      - linear decoding
+      - choice decoding
+      - stimulus decoding
+    required_signals:
+      - spikes
+      - behavioral_labels
+    helpful_signals:
+      - trial_structure
+      - choice
+      - stimulus_identity
+    typical_outputs:
+      - decoding_accuracy
+      - confusion_matrix
+      - decoder_weights
+      - cross_validation_score
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - reversal_learning
+      - go_nogo
+
+  - id: dimensionality_reduction
+    label: Dimensionality Reduction
+    category: population_analysis
+    definition: >
+      Project high-dimensional neural activity into lower-dimensional spaces
+      (PCA, GPFA, LFADS) to reveal population dynamics and latent variables.
+    aliases:
+      - PCA
+      - principal component analysis
+      - GPFA
+      - gaussian process factor analysis
+      - LFADS
+      - latent factor analysis
+      - neural manifold
+    required_signals:
+      - spikes
+    helpful_signals:
+      - trial_structure
+      - behavioral_labels
+    typical_outputs:
+      - principal_components
+      - explained_variance
+      - latent_trajectories
+      - neural_manifold
+    applicable_tasks:
+      - all
+
+  - id: glm_encoding
+    label: Generalized Linear Model
+    category: encoding
+    definition: >
+      Model neural firing as a function of task variables, stimuli, and history
+      using generalized linear models with Poisson or negative binomial likelihoods.
+    aliases:
+      - GLM
+      - encoding model
+      - poisson regression
+      - spike GLM
+      - tuning curve
+    required_signals:
+      - spikes
+      - task_variables
+    helpful_signals:
+      - stimulus_features
+      - behavioral_covariates
+      - spike_history
+    typical_outputs:
+      - model_coefficients
+      - tuning_curves
+      - deviance_explained
+      - response_selectivity
+    applicable_tasks:
+      - all
+
+  # ---------------------------------------------------------------------------
+  # LFP and field potential analyses
+  # ---------------------------------------------------------------------------
+  - id: spectral_analysis
+    label: Spectral Analysis
+    category: lfp_analysis
+    definition: >
+      Compute power spectra, coherence, and phase relationships in local field
+      potentials or EEG/ECoG signals across frequency bands.
+    aliases:
+      - power spectrum
+      - coherence analysis
+      - phase analysis
+      - oscillation analysis
+      - band power
+    required_signals:
+      - lfp
+    helpful_signals:
+      - trial_events
+      - behavioral_state
+    typical_outputs:
+      - power_spectrum
+      - band_power
+      - coherence_matrix
+      - phase_locking_value
+    applicable_tasks:
+      - all
+
+  - id: spike_field_coupling
+    label: Spike-Field Coupling
+    category: lfp_analysis
+    definition: >
+      Analyze relationships between spike timing and LFP phase/amplitude,
+      including spike-field coherence and phase-locking statistics.
+    aliases:
+      - spike-LFP coherence
+      - phase locking
+      - spike-phase coupling
+      - pairwise phase consistency
+    required_signals:
+      - spikes
+      - lfp
+    helpful_signals:
+      - trial_events
+    typical_outputs:
+      - spike_field_coherence
+      - phase_locking_value
+      - preferred_phase
+      - modulation_index
+    applicable_tasks:
+      - all
+
+  # ---------------------------------------------------------------------------
+  # Behavioral analyses
+  # ---------------------------------------------------------------------------
+  - id: reinforcement_learning_model
+    label: Reinforcement Learning Model
+    category: computational_modeling
+    definition: >
+      Fit RL models (Q-learning, actor-critic) to behavioral choice data
+      to estimate learning rates, value estimates, and prediction errors.
+    aliases:
+      - Q-learning
+      - actor-critic
+      - value learning
+      - reward learning
+      - TD learning
+    required_signals:
+      - choice
+      - reward
+      - trial_structure
+    helpful_signals:
+      - reaction_time
+      - stimulus_features
+    typical_outputs:
+      - learning_rate
+      - value_estimates
+      - prediction_error
+      - model_comparison
+    applicable_tasks:
+      - reversal_learning
+      - probabilistic_learning
+      - bandit_task
+
+  - id: psychometric_analysis
+    label: Psychometric Analysis
+    category: behavioral_analysis
+    definition: >
+      Fit psychometric curves to choice behavior as a function of stimulus
+      strength or evidence to estimate perceptual sensitivity and bias.
+    aliases:
+      - psychometric curve
+      - psychometric function
+      - sensitivity analysis
+      - threshold estimation
+    required_signals:
+      - choice
+      - stimulus_strength
+    helpful_signals:
+      - reaction_time
+      - confidence
+    typical_outputs:
+      - psychometric_curve
+      - threshold
+      - slope
+      - bias
+      - lapse_rate
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - perceptual_decision_making
+      - visual_discrimination
+
+  - id: drift_diffusion_model
+    label: Drift-Diffusion Model
+    category: computational_modeling
+    definition: >
+      Fit evidence accumulation models to choice and reaction time data
+      to estimate drift rate, boundary separation, and non-decision time.
+    aliases:
+      - DDM
+      - evidence accumulation
+      - sequential sampling
+      - HDDM
+    required_signals:
+      - choice
+      - reaction_time
+    helpful_signals:
+      - stimulus_strength
+      - confidence
+    typical_outputs:
+      - drift_rate
+      - boundary_separation
+      - non_decision_time
+      - starting_point_bias
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - perceptual_decision_making
+
+  # ---------------------------------------------------------------------------
+  # Clinical analyses
+  # ---------------------------------------------------------------------------
+  - id: seizure_detection
+    label: Seizure Detection
+    category: clinical_analysis
+    definition: >
+      Detect epileptic seizures or interictal discharges from continuous
+      EEG/ECoG/SEEG recordings using spectral or machine learning methods.
+    aliases:
+      - seizure onset detection
+      - epileptic event detection
+      - ictal detection
+      - interictal spike detection
+    required_signals:
+      - eeg
+    helpful_signals:
+      - clinical_annotations
+      - seizure_labels
+    typical_outputs:
+      - seizure_onset_times
+      - seizure_duration
+      - detection_accuracy
+      - false_alarm_rate
+    applicable_tasks:
+      - seizure_monitoring
+      - epilepsy_study
+
+  - id: speech_decoding
+    label: Speech Decoding
+    category: bci_analysis
+    definition: >
+      Decode speech-related signals (phonemes, words, sentences) from
+      neural activity recorded during speech production or perception.
+    aliases:
+      - phoneme decoding
+      - word decoding
+      - speech BCI
+      - neural speech recognition
+    required_signals:
+      - neural_recordings
+      - speech_labels
+    helpful_signals:
+      - audio
+      - articulatory_features
+    typical_outputs:
+      - word_error_rate
+      - phoneme_accuracy
+      - decoded_transcript
+    applicable_tasks:
+      - speech_production
+      - speech_perception
+      - bci_communication
+
+  - id: motor_imagery_classification
+    label: Motor Imagery Classification
+    category: bci_analysis
+    definition: >
+      Classify imagined movements from EEG/ECoG signals for brain-computer
+      interface applications, using CSP, LDA, or deep learning methods.
+    aliases:
+      - BCI classification
+      - imagined movement decoding
+      - motor intention decoding
+      - CSP classification
+    required_signals:
+      - eeg
+      - movement_labels
+    helpful_signals:
+      - emg
+      - kinematic_data
+    typical_outputs:
+      - classification_accuracy
+      - information_transfer_rate
+      - confusion_matrix
+    applicable_tasks:
+      - motor_imagery
+      - bci_control

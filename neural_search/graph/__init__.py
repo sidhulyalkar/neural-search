@@ -35,14 +35,6 @@ from neural_search.graph.query import (
     rank_related_datasets,
     rank_related_papers,
 )
-from neural_search.graph.reports import (
-    generate_graph_reports,
-    graph_gap_report,
-    graph_linking_report,
-    graph_scientific_coverage_report,
-    graph_summary_report,
-    write_graph_reports,
-)
 from neural_search.graph.schema import (
     SUPPORTED_EDGE_TYPES,
     SUPPORTED_NODE_TYPES,
@@ -68,6 +60,40 @@ from neural_search.graph.search_features import (
     graph_context_score,
     load_graph_if_exists,
 )
+from neural_search.graph.similarity import (
+    DatasetSimilarity,
+    SimilarityWeights,
+    add_similarity_edges_to_graph,
+    build_similarity_edges,
+    compute_dataset_similarity,
+    find_similar_datasets,
+)
+from neural_search.graph.transitive import (
+    TransitiveMatch,
+    expand_query_with_graph,
+    find_related_affordances,
+    find_related_tasks,
+    find_transitive_concepts,
+    get_transitive_boost,
+)
+
+_REPORT_EXPORTS = {
+    "generate_graph_reports",
+    "graph_gap_report",
+    "graph_linking_report",
+    "graph_scientific_coverage_report",
+    "graph_summary_report",
+    "write_graph_reports",
+}
+
+
+def __getattr__(name: str):
+    if name in _REPORT_EXPORTS:
+        from neural_search.graph import reports
+
+        return getattr(reports, name)
+    raise AttributeError(f"module 'neural_search.graph' has no attribute {name!r}")
+
 
 __all__ = [
     # Schema
@@ -130,4 +156,18 @@ __all__ = [
     "get_experimental_design",
     "list_experimental_designs",
     "load_experimental_design_seeds",
+    # Transitive Matching
+    "TransitiveMatch",
+    "expand_query_with_graph",
+    "find_related_affordances",
+    "find_related_tasks",
+    "find_transitive_concepts",
+    "get_transitive_boost",
+    # Similarity
+    "DatasetSimilarity",
+    "SimilarityWeights",
+    "add_similarity_edges_to_graph",
+    "build_similarity_edges",
+    "compute_dataset_similarity",
+    "find_similar_datasets",
 ]
