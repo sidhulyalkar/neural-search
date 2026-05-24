@@ -45,6 +45,24 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [ ] Add a dry-run mode for ingestion and artifact builds.
 - [ ] Add a short troubleshooting guide for missing credentials, rate limits, malformed records, and skipped files.
 
+## Phase 6: Task 7 AI Research Workflows
+
+- [ ] Create agent-facing workflow schemas for dataset discovery, paper-to-dataset linking, dataset comparison, benchmark audit, experimental design, notebook generation, and gap analysis.
+- [ ] Add graph, provenance, missing-metadata, and hard-negative summaries to workflow outputs.
+- [ ] Add deterministic tests for Codex-owned workflow APIs and reports.
+- [ ] Coordinate with Claude on workflow language, scientific examples, and relevance rubrics.
+- [ ] Track kickoff work in `docs/TASK_7_AI_WORKFLOW_KICKOFF.md`.
+- [ ] Preserve the broader architecture in `docs/AI_RESEARCH_WORKFLOW_ROADMAP.md`.
+
+## Phase 7: Task 8 Search Improvement
+
+- [ ] Add a query intent router with intent-specific retrieval profiles.
+- [ ] Improve label and synonym recall using benchmark failure reports.
+- [ ] Tune field embedding weights by intent while keeping hashing as the CI default.
+- [ ] Make graph reranking explanations more explicit.
+- [ ] Preserve 0 hard-negative violations while improving Precision@5 and label recall.
+- [ ] Track implementation in `docs/TASK_8_SEARCH_IMPROVEMENT_PLAN.md`.
+
 ## Quality Gates
 
 ```bash
@@ -68,3 +86,4 @@ python -m neural_search.evaluation.run_benchmark --suite real_v07
 - Whether file-inspection claims should live inside normalized records or as a linked sidecar artifact.
 - Whether graph reports should summarize by corpus tag and timestamp.
 - How much real-corpus benchmark labeling should be automated versus manually reviewed.
+- Whether Task 8 search improvement should land before, during, or immediately after real-corpus ingestion.
