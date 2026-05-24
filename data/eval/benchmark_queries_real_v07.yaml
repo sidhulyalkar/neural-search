@@ -1,0 +1,30 @@
+benchmark_queries:
+  - id: real_v07_lookup_steinmetz
+    query: "Find mouse Neuropixels visual decision-making data but not EEG"
+    expected_dataset_ids: ["dataset:dandi:000026"]
+    expected_sources: [dandi]
+    expected_modalities_any: [neuropixels, extracellular_ephys]
+    expected_species: [mouse]
+    expected_tasks: [visual_decision_making]
+    hard_negative_modalities: [eeg]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.4
+
+  - id: real_v07_bids_bci
+    query: "OpenNeuro human EEG motor imagery BCI without Neuropixels"
+    expected_dataset_ids: ["dataset:openneuro:ds003505"]
+    expected_sources: [openneuro]
+    expected_modalities_any: [eeg]
+    expected_species: [human]
+    expected_tasks: [motor_imagery]
+    hard_negative_modalities: [neuropixels]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.4
+
+  - id: real_v07_claim_affordance
+    query: "Datasets suitable for event aligned analysis with trial events and spikes"
+    expected_analysis_any: [event_aligned_analysis, spike_train_analysis]
+    expected_data_standards: [NWB]
+    expected_modalities_any: [extracellular_ephys, neuropixels]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4

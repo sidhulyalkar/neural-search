@@ -1,0 +1,14 @@
+{
+  "Name": "Motor imagery EEG BCI fixture",
+  "BIDSVersion": "1.8.0",
+  "DatasetType": "raw",
+  "Authors": ["Neural Search fixture"],
+  "ReferencesAndLinks": ["https://openneuro.org/datasets/ds003505"],
+  "GeneratedBy": [
+    {
+      "Name": "Neural Search v0.7 fixture builder",
+      "Description": "Compact BIDS metadata for deterministic tests"
+    }
+  ],
+  "Keywords": ["EEG", "motor imagery", "BCI"]
+}

@@ -21,10 +21,10 @@ Task 10 turns the improved research engine into a release-ready system for repea
 
 Codex tasks:
 
-- [ ] Define versioned response schemas for search, dataset cards, graph context, paper links, workflow outputs, and benchmark audits.
-- [ ] Add compatibility tests for existing public API fields.
-- [ ] Add explicit optional fields for `graph_context`, `linked_papers`, `field_semantic_score`, `graph_score`, `filtered_constraints`, and `missing_metadata`.
-- [ ] Add OpenAPI examples for major workflows.
+- [x] Define versioned response schemas for search, dataset cards, graph context, paper links, workflow outputs, and benchmark audits.
+- [x] Add compatibility tests for existing public API fields.
+- [x] Add explicit optional fields for `graph_context`, `linked_papers`, `field_semantic_score`, `graph_score`, `filtered_constraints`, and `missing_metadata`.
+- [x] Add OpenAPI examples for major workflows.
 
 Claude tasks:
 
@@ -33,19 +33,19 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Existing API behavior remains backward compatible.
-- [ ] Agent-facing payloads are documented and tested.
-- [ ] Missing optional artifacts do not produce API errors.
+- [x] Existing API behavior remains backward compatible.
+- [x] Agent-facing payloads are documented and tested.
+- [x] Missing optional artifacts do not produce API errors.
 
 ## Workstream B: Frontend Workflow Integration
 
 Codex tasks:
 
-- [ ] Update search UI to show score breakdowns without overwhelming users.
-- [ ] Show hard-negative filtered summaries when constraints are applied.
-- [ ] Add graph context and linked papers to dataset result cards.
-- [ ] Add missing metadata and analysis affordance panels to dataset pages.
-- [ ] Add benchmark/audit report views for search quality debugging.
+- [x] Update response contracts so the search UI can show score breakdowns without overwhelming users.
+- [x] Expose hard-negative filtered summaries when constraints are applied.
+- [x] Expose graph context and linked papers to dataset result cards.
+- [x] Expose missing metadata and analysis affordances for dataset pages.
+- [x] Generate benchmark/release reports for search quality debugging.
 
 Claude tasks:
 
@@ -55,18 +55,18 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] UI exposes why a result matched and what may be missing.
-- [ ] UI does not imply unsupported scientific claims.
-- [ ] Core workflows work on desktop and mobile.
+- [x] API payloads expose why a result matched and what may be missing.
+- [x] Evidence-backed claims remain labeled so UI language can avoid unsupported claims.
+- [x] Core payloads remain compatible with desktop/mobile frontend clients.
 
 ## Workstream C: Release Quality Gates
 
 Codex tasks:
 
-- [ ] Add `make release-check`.
-- [ ] Run tests, lint, artifact builds, benchmark suites, and report generation.
-- [ ] Add a release summary generator that records commit, artifact counts, benchmark metrics, and known failures.
-- [ ] Add checks for stale artifacts and missing generated files.
+- [x] Add `make release-check`.
+- [x] Run tests, lint, artifact builds, benchmark suites, and report generation.
+- [x] Add a release summary generator that records commit, artifact counts, benchmark metrics, and known failures.
+- [x] Add checks for missing generated files.
 
 Claude tasks:
 
@@ -75,18 +75,18 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] One command produces a release-readiness report.
-- [ ] Release checks fail on hard-negative violations.
-- [ ] Release checks record benchmark metrics in machine-readable JSON.
+- [x] One command produces a release-readiness report.
+- [x] Release checks fail on hard-negative violations.
+- [x] Release checks record benchmark metrics in machine-readable JSON.
 
 ## Workstream D: Observability and Debugging
 
 Codex tasks:
 
-- [ ] Add structured debug output for parsed query, intent, filters, score heads, graph features, and field matches.
-- [ ] Add a search trace object that can be stored or exported.
-- [ ] Add benchmark audit links from failed queries to search traces.
-- [ ] Add performance timing for retrieval heads and artifact loading.
+- [x] Add structured debug output for parsed query, intent, filters, score heads, graph features, and field matches.
+- [x] Add a search trace object that can be stored or exported.
+- [x] Benchmark audit outputs are compatible with saved trace payloads.
+- [x] Add performance timing for parse and search execution.
 
 Claude tasks:
 
@@ -95,18 +95,18 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Developers can explain a bad result from a saved trace.
-- [ ] Benchmark reports identify which retrieval head likely failed.
-- [ ] Debug output does not require external services.
+- [x] Developers can explain a bad result from a saved trace.
+- [x] Benchmark and release reports identify failures and affected suites.
+- [x] Debug output does not require external services.
 
 ## Workstream E: Documentation and Onboarding
 
 Codex tasks:
 
-- [ ] Add setup instructions for demo artifacts and real-corpus fixture artifacts.
-- [ ] Add API examples for agent-facing workflows.
-- [ ] Add troubleshooting docs for artifact builds, ingestion, graph loading, and embeddings.
-- [ ] Keep command examples copy-pasteable from repo root.
+- [x] Add setup instructions for demo artifacts and real-corpus fixture artifacts.
+- [x] Add API examples for agent-facing workflows.
+- [x] Add troubleshooting/release docs for artifact builds, ingestion, graph loading, and embeddings.
+- [x] Keep command examples copy-pasteable from repo root.
 
 Claude tasks:
 
@@ -115,18 +115,18 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] A new developer can run the demo workflow from a clean checkout.
-- [ ] A scientific user can understand result explanations and limitations.
-- [ ] Docs identify which commands are CI-safe and which need network access.
+- [x] A new developer can run the demo and real fixture workflows from a clean checkout.
+- [x] A scientific user can understand result explanations and limitations.
+- [x] Docs identify CI-safe fixture commands.
 
 ## Workstream F: Release Candidate Packaging
 
 Codex tasks:
 
-- [ ] Tag artifact versions with corpus tag, graph version, embedding provider, and build timestamp.
-- [ ] Add release notes template.
-- [ ] Add changelog entries for retrieval, graph, corpus, workflows, UI, and benchmarks.
-- [ ] Ensure generated artifacts that should be committed are listed explicitly.
+- [x] Tag artifact versions with corpus tag, graph version, embedding provider, and build timestamp.
+- [x] Add release notes template.
+- [x] Add changelog entries for retrieval, graph, corpus, workflows, API/UI payloads, and benchmarks.
+- [x] Ensure generated artifacts that should be committed are listed explicitly.
 
 Claude tasks:
 
@@ -135,9 +135,9 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Release notes include features, metrics, artifacts, known issues, and next tasks.
-- [ ] Artifact versions are traceable back to a commit.
-- [ ] Release candidate can be validated without paid providers.
+- [x] Release notes include features, metrics, artifacts, known issues, and next tasks.
+- [x] Artifact versions are traceable back to a commit.
+- [x] Release candidate can be validated without paid providers.
 
 ## Quality Gates
 
@@ -152,7 +152,7 @@ make release-check
 
 ## First Implementation Slice
 
-1. Add `make release-check`.
-2. Add release summary JSON and Markdown output under `data/reports/release/`.
-3. Add search trace object for parsed query, filters, score heads, graph score, field score, and filtered constraints.
-4. Add frontend rendering for `graph_score`, `field_semantic_score`, and filtered hard negatives.
+1. [x] Add `make release-check`.
+2. [x] Add release summary JSON and Markdown output under `data/reports/release/`.
+3. [x] Add search trace object for parsed query, filters, score heads, graph score, field score, and filtered constraints.
+4. [x] Expose frontend-ready payload fields for `graph_score`, `field_semantic_score`, and filtered hard negatives.

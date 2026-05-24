@@ -6,44 +6,44 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 ## Phase 1: Real Corpus Intake
 
-- [ ] Define a versioned real-corpus manifest for DANDI, OpenNeuro, OpenAlex, and manually curated landmark datasets.
-- [ ] Add source-specific ingestion runs that write raw payloads under `data/raw/<source>/`.
+- [x] Define a versioned real-corpus manifest for DANDI, OpenNeuro, OpenAlex, and manually curated landmark datasets.
+- [x] Add source-specific ingestion runs that write raw payloads under `data/raw/<source>/`.
 - [ ] Normalize 50 to 100 DANDI datasets into JSONL.
 - [ ] Normalize 50 to 100 OpenNeuro datasets into JSONL.
 - [ ] Normalize 500 to 2000 paper records into JSONL.
-- [ ] Add source-level ingestion reports for fetched, normalized, skipped, failed, and missing metadata counts.
+- [x] Add source-level ingestion reports for fetched, normalized, skipped, failed, and missing metadata counts.
 
 ## Phase 2: File Inspection Layer
 
-- [ ] Add a file-inspection claim schema for evidence-backed dataset claims.
-- [ ] Inspect NWB metadata for trials, units, electrodes, devices, processing modules, and intervals.
-- [ ] Inspect BIDS metadata for `dataset_description.json`, `participants.tsv`, `events.tsv`, channel/electrode tables, and sidecars.
-- [ ] Generate claims for trial structure, event timestamps, neural modality coverage, behavior coverage, data standard compliance, and analysis readiness.
-- [ ] Persist inspection claims as JSONL and include claim IDs in normalized records.
+- [x] Add a file-inspection claim schema for evidence-backed dataset claims.
+- [x] Inspect NWB metadata for trials, units, electrodes, devices, processing modules, and intervals.
+- [x] Inspect BIDS metadata for `dataset_description.json`, `participants.tsv`, `events.tsv`, channel/electrode tables, and sidecars.
+- [x] Generate claims for trial structure, event timestamps, neural modality coverage, behavior coverage, data standard compliance, and analysis readiness.
+- [x] Persist inspection claims as JSONL and include claim IDs in normalized records.
 
 ## Phase 3: Retrieval Integration
 
-- [ ] Extend corpus converter/build commands to support `demo_v05`, `real_v07`, and custom corpus tags.
-- [ ] Build graph artifacts from real normalized records and file-inspection claims.
-- [ ] Build field embedding caches for real corpus records using hashing by default.
+- [x] Extend corpus converter/build commands to support `demo_v05`, `real_v07`, and custom corpus tags.
+- [x] Build graph artifacts from real normalized records and file-inspection claims.
+- [x] Build field embedding caches for real corpus records using hashing by default.
 - [ ] Add retrieval config presets for demo, real-corpus local, and CI.
-- [ ] Add result fields for linked papers, graph context, missing metadata, and file-inspection evidence where available.
+- [x] Add result fields for linked papers, graph context, missing metadata, and file-inspection evidence where available.
 
 ## Phase 4: Evaluation
 
-- [ ] Add a `real_v07` benchmark suite with expected dataset IDs where known.
+- [x] Add a `real_v07` benchmark suite with expected dataset IDs where known.
 - [ ] Add benchmark coverage for paper-to-dataset linking, analysis affordance search, and graph reasoning.
-- [ ] Report hard-negative violation rate, label recall, graph-link precision, explanation coverage, MRR, and NDCG.
-- [ ] Add regression tests that ensure explicit negative constraints return zero violations.
+- [x] Report hard-negative violation rate, label recall, explanation coverage, MRR, and NDCG.
+- [x] Add regression tests that ensure explicit negative constraints return zero violations.
 
 ## Phase 5: Developer Ergonomics
 
-- [ ] Add `make real-corpus-build`.
-- [ ] Add `make real-graph-build`.
-- [ ] Add `make real-embeddings-build`.
-- [ ] Add `make real-artifacts-build`.
-- [ ] Add a dry-run mode for ingestion and artifact builds.
-- [ ] Add a short troubleshooting guide for missing credentials, rate limits, malformed records, and skipped files.
+- [x] Add `make real-corpus-build`.
+- [x] Add `make real-graph-build`.
+- [x] Add `make real-embeddings-build`.
+- [x] Add `make real-artifacts-build`.
+- [x] Add a dry-run mode for ingestion and artifact builds.
+- [x] Add a short troubleshooting guide for missing credentials, rate limits, malformed records, and skipped files.
 
 ## Phase 6: Task 7 AI Research Workflows
 
@@ -65,21 +65,21 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 ## Phase 8: Task 9 Real Corpus and File Inspection
 
-- [ ] Add a versioned real-corpus manifest for DANDI, OpenNeuro, OpenAlex, and landmark datasets.
-- [ ] Add file-inspection claim schemas for NWB and BIDS metadata evidence.
-- [ ] Build claim-aware normalized records, graph artifacts, reports, and field embeddings.
-- [ ] Add real-corpus fixture builds that remain CI-safe.
-- [ ] Add `real_v07` benchmarks and claim-backed explanation metrics.
-- [ ] Track implementation in `docs/TASK_9_REAL_CORPUS_AND_FILE_INSPECTION_PLAN.md`.
+- [x] Add a versioned real-corpus manifest for DANDI, OpenNeuro, OpenAlex, and landmark datasets.
+- [x] Add file-inspection claim schemas for NWB and BIDS metadata evidence.
+- [x] Build claim-aware normalized records, graph artifacts, reports, and field embeddings.
+- [x] Add real-corpus fixture builds that remain CI-safe.
+- [x] Add `real_v07` benchmarks and claim-backed explanation metrics.
+- [x] Track implementation in `docs/TASK_9_REAL_CORPUS_AND_FILE_INSPECTION_PLAN.md`.
 
 ## Phase 9: Task 10 Release and Product Hardening
 
-- [ ] Stabilize API contracts for search, graph context, workflow outputs, paper links, and benchmark audits.
-- [ ] Update frontend workflows to expose score breakdowns, graph context, missing metadata, linked papers, and filtered constraints.
-- [ ] Add release quality gates, release summaries, and stale artifact checks.
-- [ ] Add search traces and benchmark debugging outputs.
-- [ ] Improve onboarding docs, release notes, and product walkthroughs.
-- [ ] Track implementation in `docs/TASK_10_RELEASE_AND_PRODUCT_HARDENING_PLAN.md`.
+- [x] Stabilize API contracts for search, graph context, workflow outputs, paper links, and benchmark audits.
+- [x] Update frontend-ready payloads to expose score breakdowns, graph context, missing metadata, linked papers, and filtered constraints.
+- [x] Add release quality gates, release summaries, and artifact checks.
+- [x] Add search traces and benchmark debugging outputs.
+- [x] Improve onboarding docs, release notes, and product walkthroughs.
+- [x] Track implementation in `docs/TASK_10_RELEASE_AND_PRODUCT_HARDENING_PLAN.md`.
 
 ## Quality Gates
 
@@ -96,6 +96,7 @@ For v0.7 real corpus work, add:
 ```bash
 make real-artifacts-build
 python -m neural_search.evaluation.run_benchmark --suite real_v07
+make release-check
 ```
 
 ## Open Engineering Decisions

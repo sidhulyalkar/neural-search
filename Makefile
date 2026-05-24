@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -163,6 +163,52 @@ embeddings-build: corpus-build
 		--provider hashing
 
 artifacts-build: corpus-build graph-build graph-reports embeddings-build
+
+real-corpus-build:
+	python -m neural_search.corpus.ingest_manifest \
+		--manifest data/corpus/manifests/real_v07.yaml \
+		--out data/corpus/normalized \
+		--claims-out data/corpus/claims/real_v07.claims.jsonl \
+		--prefix real_v07
+
+real-claims-build: real-corpus-build
+
+real-graph-build: real-corpus-build
+	python -m neural_search.graph.build_graph \
+		--datasets data/corpus/normalized/real_v07.datasets.jsonl \
+		--papers data/corpus/normalized/real_v07.papers.jsonl \
+		--out data/graph/neural_search_graph.real_v07.json
+
+real-embeddings-build: real-corpus-build
+	python -m neural_search.embeddings.build_index \
+		--input data/corpus/normalized/real_v07.records.jsonl \
+		--out data/embeddings/real_v07.field_embeddings.jsonl \
+		--provider hashing
+
+real-reports: real-corpus-build real-graph-build
+	python -m neural_search.graph.reports \
+		--graph data/graph/neural_search_graph.real_v07.json \
+		--out data/reports/real_v07/graph
+	python -m neural_search.corpus.real_reports \
+		--manifest data/corpus/manifests/real_v07.yaml \
+		--records data/corpus/normalized/real_v07.records.jsonl \
+		--claims data/corpus/claims/real_v07.claims.jsonl \
+		--out data/reports/real_v07
+
+real-artifacts-build: real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports
+
+release-summary:
+	python -m neural_search.release.check --summary-only
+
+release-check:
+	pytest -q
+	ruff check neural_search tests
+	$(MAKE) artifacts-build
+	$(MAKE) real-artifacts-build
+	python -m neural_search.evaluation.run_benchmark --suite demo_v02
+	python -m neural_search.evaluation.run_benchmark --suite adversarial
+	python -m neural_search.evaluation.run_benchmark --suite real_v07
+	python -m neural_search.release.check
 
 # Generate notebook for a dataset
 notebook-generate:

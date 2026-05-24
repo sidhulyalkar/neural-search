@@ -353,12 +353,17 @@ class SearchResult(BaseModel):
     reusable_reason: str | None = None
     dataset_card_preview: dict[str, Any] = Field(default_factory=dict)
     score_breakdown: dict[str, float] = Field(default_factory=dict)
+    graph_context: dict[str, Any] | None = None
+    linked_papers: list[dict[str, Any]] = Field(default_factory=list)
+    filtered_constraints: list[dict[str, Any]] = Field(default_factory=list)
+    missing_metadata: list[str] = Field(default_factory=list)
 
 
 class SearchResponse(BaseModel):
     query: str
     parsed_query: dict[str, Any] = Field(default_factory=dict)
     results: list[SearchResult] = Field(default_factory=list)
+    filtered_constraints: list[dict[str, Any]] = Field(default_factory=list)
 
 
 # Dataset Comparison Schemas

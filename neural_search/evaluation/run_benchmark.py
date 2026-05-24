@@ -20,11 +20,21 @@ from typing import Any
 import yaml
 
 from neural_search.ingestion.demo_seed import build_demo_seed
+from neural_search.normalized import load_normalized_records
 from neural_search.ontology import normalize_text
+from neural_search.schemas import NormalizedDatasetRecord
 from neural_search.search import search_datasets
 
-BENCHMARK_PATH = Path(__file__).resolve().parents[2] / "data" / "eval" / "benchmark_queries.yaml"
+EVAL_DIR = Path(__file__).resolve().parents[2] / "data" / "eval"
+BENCHMARK_PATH = EVAL_DIR / "benchmark_queries.yaml"
 RESULTS_DIR = Path(__file__).resolve().parents[2] / "data" / "eval" / "results"
+SUITE_PATHS = {
+    "demo_v02": EVAL_DIR / "benchmark_queries_demo_v02.yaml",
+    "real_corpus": EVAL_DIR / "benchmark_queries_real_corpus.yaml",
+    "real_v07": EVAL_DIR / "benchmark_queries_real_v07.yaml",
+    "adversarial": EVAL_DIR / "benchmark_queries_adversarial.yaml",
+}
+SUITE_CHOICES = (*SUITE_PATHS.keys(), "all")
 
 
 @dataclass
@@ -118,6 +128,7 @@ class EvaluationReport:
     queries: list[QueryEvaluation]
     summary_warnings: list[str]
     recommendations: list[str]
+    suite: str = "demo_v02"
 
 
 def load_benchmark_queries(path: Path | None = None) -> list[BenchmarkQuery]:
@@ -156,6 +167,106 @@ def load_benchmark_queries(path: Path | None = None) -> list[BenchmarkQuery]:
             )
         )
     return queries
+
+
+def benchmark_path_for_suite(suite: str) -> Path:
+    """Resolve a named benchmark suite to a query YAML path."""
+
+    if suite not in SUITE_PATHS:
+        raise ValueError(f"Unknown benchmark suite: {suite}")
+    return SUITE_PATHS[suite]
+
+
+def output_dir_for_suite(suite: str) -> Path:
+    """Return the suite-specific default result directory."""
+
+    return RESULTS_DIR / suite
+
+
+def _labels_as_strings(labels: list[Any]) -> list[str]:
+    return [str(getattr(label, "label", label)) for label in labels]
+
+
+def _real_v07_search_records() -> list[dict[str, Any]]:
+    records_path = Path(__file__).resolve().parents[2] / "data" / "corpus" / "normalized" / "real_v07.datasets.jsonl"
+    if not records_path.exists():
+        return []
+    normalized = load_normalized_records(records_path)
+    datasets = [record for record in normalized if isinstance(record, NormalizedDatasetRecord)]
+    search_records: list[dict[str, Any]] = []
+    for dataset in datasets:
+        analyses = [item.analysis_id for item in dataset.analysis_affordances]
+        search_records.append(
+            {
+                "dataset": {
+                    "id": dataset.dataset_id,
+                    "source": dataset.source,
+                    "source_id": dataset.source_id,
+                    "title": dataset.title,
+                    "description": dataset.description or "",
+                    "url": dataset.url,
+                    "species": _labels_as_strings(dataset.species),
+                    "modalities": _labels_as_strings(dataset.modalities),
+                    "brain_regions": _labels_as_strings(dataset.brain_regions),
+                    "tasks": _labels_as_strings(dataset.tasks),
+                    "behaviors": _labels_as_strings(dataset.behavioral_events),
+                    "data_standards": _labels_as_strings(dataset.data_standards),
+                    "analysis_affordances": analyses,
+                    "has_trials": bool(dataset.usability_flags.has_trials),
+                    "has_behavior": bool(dataset.usability_flags.has_behavior),
+                    "has_raw_data": bool(dataset.usability_flags.has_raw_data),
+                    "has_processed_data": bool(dataset.usability_flags.has_processed_data),
+                    "linked_paper_ids": dataset.linked_papers,
+                    "metadata_json": {
+                        "missing_fields": dataset.missing_fields,
+                        "analysis_affordances": analyses,
+                    },
+                },
+                "card": {
+                    "summary": dataset.description or dataset.title,
+                    "why_relevant": [
+                        f"{dataset.source} fixture record",
+                        "File-inspection claims are available",
+                    ],
+                    "analysis_readiness": {
+                        "score": 85 if dataset.usability_flags.has_trials else 65,
+                    },
+                    "suggested_analyses": analyses,
+                    "missing_fields": dataset.missing_fields,
+                    "scientific_labels": {
+                        "tasks": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.tasks
+                        ],
+                        "modalities": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.modalities
+                        ],
+                        "behaviors": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.behavioral_events
+                        ],
+                        "brain_regions": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.brain_regions
+                        ],
+                        "species": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.species
+                        ],
+                    },
+                },
+            }
+        )
+    return search_records
+
+
+def _datasets_for_suite(suite: str) -> list[dict[str, Any]]:
+    if suite == "real_v07":
+        records = _real_v07_search_records()
+        if records:
+            return records
+    return build_demo_seed()
 
 
 def _normalize_list(values: list[str]) -> set[str]:
@@ -549,11 +660,12 @@ def evaluate_query(
 def run_full_benchmark(
     benchmark_path: Path | None = None,
     datasets: list[dict[str, Any]] | None = None,
+    suite: str = "demo_v02",
 ) -> EvaluationReport:
     """Run complete benchmark evaluation."""
     queries = load_benchmark_queries(benchmark_path)
     if datasets is None:
-        datasets = build_demo_seed()
+        datasets = _datasets_for_suite(suite)
 
     evaluations = [evaluate_query(q, datasets) for q in queries]
 
@@ -627,6 +739,7 @@ def run_full_benchmark(
         queries=evaluations,
         summary_warnings=summary_warnings,
         recommendations=recommendations,
+        suite=suite,
     )
 
 
@@ -636,6 +749,7 @@ def generate_markdown_report(report: EvaluationReport) -> str:
         "# Neural Search Benchmark Evaluation Report",
         "",
         f"Generated: {report.generated_at}",
+        f"Suite: {report.suite}",
         "",
         "## Summary Metrics",
         "",
@@ -892,19 +1006,30 @@ def write_comparison_reports(
 
 def write_reports(report: EvaluationReport, output_dir: Path | None = None) -> dict[str, str]:
     """Write evaluation reports to files."""
-    out = output_dir or RESULTS_DIR
+    out = output_dir or output_dir_for_suite(report.suite)
     out.mkdir(parents=True, exist_ok=True)
 
     md_path = out / "latest_eval_report.md"
     json_path = out / "latest_eval_report.json"
+    suite_json_path = out / "latest.json"
 
     md_content = generate_markdown_report(report)
     json_content = generate_json_report(report)
 
     md_path.write_text(md_content, encoding="utf-8")
     json_path.write_text(json_content, encoding="utf-8")
+    suite_json_path.write_text(json_content, encoding="utf-8")
 
-    return {"markdown": str(md_path), "json": str(json_path)}
+    return {"markdown": str(md_path), "json": str(json_path), "latest": str(suite_json_path)}
+
+
+def run_suite(suite: str, output_dir: Path | None = None) -> dict[str, str] | EvaluationReport:
+    """Run one benchmark suite and write reports."""
+
+    report = run_full_benchmark(benchmark_path_for_suite(suite), suite=suite)
+    if output_dir is None:
+        return write_reports(report)
+    return write_reports(report, output_dir / suite)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -912,6 +1037,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="python -m neural_search.evaluation.run_benchmark",
         description="Run benchmark evaluation for Neural Search retrieval.",
+    )
+    parser.add_argument(
+        "--suite",
+        choices=SUITE_CHOICES,
+        default="demo_v02",
+        help="Benchmark suite to run.",
     )
     parser.add_argument(
         "--output-dir",
@@ -932,19 +1063,31 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    report = run_full_benchmark()
+    if args.suite == "all":
+        all_paths = {
+            suite: run_suite(suite, args.output_dir)
+            for suite in SUITE_PATHS
+        }
+        if args.json_only:
+            print(json.dumps(all_paths, indent=2, sort_keys=True))
+            return 0
+        print(json.dumps(all_paths, indent=2, sort_keys=True))
+        return 0
+
+    report = run_full_benchmark(benchmark_path_for_suite(args.suite), suite=args.suite)
 
     if args.json_only:
         print(generate_json_report(report))
         return 0
 
-    paths = write_reports(report, args.output_dir)
+    suite_output_dir = args.output_dir / args.suite if args.output_dir else None
+    paths = write_reports(report, suite_output_dir)
     comparison_paths = None
     if args.compare_to is not None:
         comparison_paths = write_comparison_reports(
             args.compare_to,
             report,
-            args.output_dir,
+            suite_output_dir,
         )
 
     print("=" * 70)

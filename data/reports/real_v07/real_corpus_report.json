@@ -1,0 +1,75 @@
+{
+  "claim_count": 40,
+  "claim_field_counts": {
+    "acquisition_groups": 3,
+    "analysis_affordances": 5,
+    "behavioral_events": 3,
+    "data_standards": 3,
+    "dataset_type": 3,
+    "has_event_timestamps": 1,
+    "has_trials": 2,
+    "intervals": 2,
+    "modalities": 5,
+    "participants": 1,
+    "processing_modules": 3,
+    "recording_devices": 2,
+    "sessions": 2,
+    "species": 3,
+    "units": 2
+  },
+  "claim_type_counts": {
+    "analysis_affordance": 5,
+    "label": 14,
+    "metadata_presence": 18,
+    "usability": 3
+  },
+  "corpus_tag": "real_v07",
+  "dataset_label_counts": {
+    "analysis_affordances": 53,
+    "behavioral_events": 11,
+    "brain_regions": 4,
+    "data_standards": 9,
+    "modalities": 7,
+    "species": 9,
+    "tasks": 3
+  },
+  "datasets": [
+    {
+      "claim_count": 15,
+      "dataset_id": "dataset:dandi:000026",
+      "missing_fields": [],
+      "source": "dandi",
+      "title": "Steinmetz 2019 mouse Neuropixels visual decision-making"
+    },
+    {
+      "claim_count": 12,
+      "dataset_id": "dataset:dandi:000020",
+      "missing_fields": [],
+      "source": "dandi",
+      "title": "Mouse hippocampus extracellular electrophysiology"
+    },
+    {
+      "claim_count": 13,
+      "dataset_id": "dataset:openneuro:ds003505",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "openneuro",
+      "title": "OpenNeuro ds003505 motor imagery EEG BCI"
+    }
+  ],
+  "manifest_entries": 4,
+  "missing_metadata": {
+    "trials": 1
+  },
+  "normalized_dataset_count": 3,
+  "record_type_counts": {
+    "dataset": 3,
+    "paper": 1
+  },
+  "source_counts": {
+    "dandi": 2,
+    "openalex": 1,
+    "openneuro": 1
+  }
+}

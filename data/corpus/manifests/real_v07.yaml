@@ -1,0 +1,102 @@
+corpus_tag: real_v07
+description: >
+  Deterministic v0.7 real-corpus fixture slice covering DANDI, OpenNeuro,
+  OpenAlex, landmark electrophysiology, behavior, BCI, and file inspection.
+entries:
+  - source: dandi
+    source_id: "000026"
+    record_type: dataset
+    priority: 1
+    status: fixture
+    tags: [dandi, landmark, ephys, behavior]
+    fetch:
+      mode: fixture
+      url: https://dandiarchive.org/dandiset/000026
+    review_notes: "Fixture uses compact metadata only; full asset fetch is local opt-in."
+    scientific_rationale: "Landmark mouse Neuropixels visual decision-making dataset with NWB-style trial and unit metadata."
+    inspection_paths:
+      - data/corpus/fixtures/real_v07/nwb/dandi_000026.nwb.json
+    metadata:
+      title: "Steinmetz 2019 mouse Neuropixels visual decision-making"
+      description: "Mouse Neuropixels recordings during visual contrast decisions with trials, choices, rewards, and spike units."
+      url: https://dandiarchive.org/dandiset/000026
+      species: [mouse]
+      modalities: [neuropixels, extracellular_ephys]
+      brain_regions: [visual_cortex, thalamus]
+      tasks: [visual_decision_making]
+      behaviors: [choice, reward, stimulus_onset, response]
+      data_standards: [NWB, DANDI]
+      file_formats: [nwb]
+      has_trials: true
+      has_behavior: true
+      linked_paper_ids: [W2963345511]
+
+  - source: dandi
+    source_id: "000020"
+    record_type: dataset
+    priority: 2
+    status: fixture
+    tags: [dandi, ephys, hippocampus]
+    fetch:
+      mode: fixture
+      url: https://dandiarchive.org/dandiset/000020
+    review_notes: "Included to exercise sparse but useful NWB metadata."
+    scientific_rationale: "Mouse hippocampal electrophysiology fixture for memory and spike-train analysis queries."
+    inspection_paths:
+      - data/corpus/fixtures/real_v07/nwb/dandi_000020.nwb.json
+    metadata:
+      title: "Mouse hippocampus extracellular electrophysiology"
+      description: "Mouse hippocampal spiking and behavioral events in NWB-style metadata."
+      url: https://dandiarchive.org/dandiset/000020
+      species: [mouse]
+      modalities: [extracellular_ephys]
+      brain_regions: [hippocampus]
+      tasks: [spatial_navigation]
+      behaviors: [movement_onset, position]
+      data_standards: [NWB, DANDI]
+      file_formats: [nwb]
+      has_behavior: true
+
+  - source: openneuro
+    source_id: ds003505
+    record_type: dataset
+    priority: 1
+    status: fixture
+    tags: [openneuro, clinical, bci, eeg, behavior]
+    fetch:
+      mode: fixture
+      url: https://openneuro.org/datasets/ds003505
+    review_notes: "BIDS fixture includes participant, channel, and events tables."
+    scientific_rationale: "Human EEG motor-imagery BCI dataset exercises BIDS inspection and behavior/event claims."
+    inspection_paths:
+      - data/corpus/fixtures/real_v07/bids/ds003505
+    metadata:
+      title: "OpenNeuro ds003505 motor imagery EEG BCI"
+      description: "Human EEG BCI motor-imagery BIDS fixture with events and EEG channel metadata."
+      url: https://openneuro.org/datasets/ds003505
+      species: [human]
+      modalities: [eeg]
+      brain_regions: [motor_cortex]
+      tasks: [motor_imagery]
+      behaviors: [left_hand_imagery, right_hand_imagery]
+      data_standards: [BIDS, OpenNeuro]
+      file_formats: [json, tsv]
+      has_behavior: true
+
+  - source: openalex
+    source_id: W2963345511
+    record_type: paper
+    priority: 1
+    status: fixture
+    tags: [openalex, landmark, ephys]
+    fetch:
+      mode: fixture
+      url: https://openalex.org/W2963345511
+    review_notes: "Paper fixture links to DANDI 000026 for graph provenance."
+    scientific_rationale: "Landmark paper anchors visual decision-making, Neuropixels, and spike-train analysis concepts."
+    metadata:
+      title: "Distributed coding of choice, action and engagement across the mouse brain"
+      abstract: "Neuropixels recordings across mouse brain regions during a visual decision-making task support choice decoding, spike-train analysis, and event-aligned analysis."
+      year: 2019
+      authors: [Nicholas Steinmetz, Peter Zatka-Haas, Matteo Carandini, Kenneth Harris]
+      linked_dataset_ids: ["dataset:dandi:000026"]

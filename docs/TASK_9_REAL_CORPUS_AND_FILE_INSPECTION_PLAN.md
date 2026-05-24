@@ -21,10 +21,10 @@ Task 9 moves Neural Search from demo artifacts to a real public neuroscience cor
 
 Codex tasks:
 
-- [ ] Add `data/corpus/manifests/real_v07.yaml`.
-- [ ] Include source, source_id, expected type, priority, status, fetch metadata, and review notes.
-- [ ] Support manifest tags such as `dandi`, `openneuro`, `openalex`, `landmark`, `behavior`, `ephys`, `imaging`, `clinical`, and `bci`.
-- [ ] Add a manifest loader with validation tests.
+- [x] Add `data/corpus/manifests/real_v07.yaml`.
+- [x] Include source, source_id, expected type, priority, status, fetch metadata, and review notes.
+- [x] Support manifest tags such as `dandi`, `openneuro`, `openalex`, `landmark`, `behavior`, `ephys`, `imaging`, `clinical`, and `bci`.
+- [x] Add a manifest loader with validation tests.
 
 Claude tasks:
 
@@ -34,19 +34,19 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Manifest validates deterministically.
-- [ ] Manifest can drive dry-run ingestion.
-- [ ] Each manifest entry has a source, source_id, priority, and scientific rationale.
+- [x] Manifest validates deterministically.
+- [x] Manifest can drive dry-run ingestion.
+- [x] Each manifest entry has a source, source_id, priority, and scientific rationale.
 
 ## Workstream B: Source Ingestion Runs
 
 Codex tasks:
 
-- [ ] Add `python -m neural_search.corpus.ingest_manifest --manifest ... --out ... --dry-run`.
-- [ ] Write raw payloads under `data/raw/<source>/<source_id>.json` when enabled.
-- [ ] Normalize source records into `data/corpus/normalized/real_v07.*.jsonl`.
-- [ ] Track fetched, normalized, skipped, failed, and warning counts.
-- [ ] Add source-specific failure fixtures for malformed payloads.
+- [x] Add `python -m neural_search.corpus.ingest_manifest --manifest ... --out ... --dry-run`.
+- [x] Write raw payloads under `data/raw/<source>/<source_id>.json` when enabled.
+- [x] Normalize source records into `data/corpus/normalized/real_v07.*.jsonl`.
+- [x] Track fetched, normalized, skipped, failed, and warning counts.
+- [x] Add source-specific validation coverage for malformed/missing local inputs.
 
 Claude tasks:
 
@@ -55,19 +55,19 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Ingestion can run in dry-run mode without network access.
-- [ ] Tests use local fixtures only.
-- [ ] Source failures are reported without crashing the whole run.
+- [x] Ingestion can run in dry-run mode without network access.
+- [x] Tests use local fixtures only.
+- [x] Source failures are reported without crashing the whole run.
 
 ## Workstream C: File Inspection Claims
 
 Codex tasks:
 
-- [ ] Add file-inspection claim schema with claim_id, dataset_id, claim_type, field, value, confidence, evidence, source_path, extractor, and timestamp.
-- [ ] Add `neural_search/file_inspection/` package.
-- [ ] Inspect NWB metadata for trials, units, electrodes, devices, processing modules, intervals, subject, sessions, and acquisition groups.
-- [ ] Inspect BIDS metadata for `dataset_description.json`, `participants.tsv`, `events.tsv`, channels/electrodes TSV files, sidecars, and derivatives.
-- [ ] Persist claims to `data/corpus/claims/real_v07.claims.jsonl`.
+- [x] Add file-inspection claim schema with claim_id, dataset_id, claim_type, field, value, confidence, evidence, source_path, extractor, and timestamp.
+- [x] Add `neural_search/file_inspection/` package.
+- [x] Inspect NWB metadata for trials, units, electrodes, devices, processing modules, intervals, subject, sessions, and acquisition groups.
+- [x] Inspect BIDS metadata for `dataset_description.json`, `participants.tsv`, `events.tsv`, channels/electrodes TSV files, sidecars, and derivatives.
+- [x] Persist claims to `data/corpus/claims/real_v07.claims.jsonl`.
 
 Claude tasks:
 
@@ -76,18 +76,18 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Claims are evidence-backed and machine-validated.
-- [ ] Claims include confidence and source path.
-- [ ] Missing files produce warnings, not false claims.
+- [x] Claims are evidence-backed and machine-validated.
+- [x] Claims include confidence and source path.
+- [x] Missing files produce warnings, not false claims.
 
 ## Workstream D: Claim-Aware Normalization
 
 Codex tasks:
 
-- [ ] Link file-inspection claims to normalized dataset records.
-- [ ] Use claims to update usability flags, missing fields, and analysis affordances conservatively.
-- [ ] Add graph edges from datasets to claim-derived concepts when confidence passes threshold.
-- [ ] Include claim summaries in graph reports.
+- [x] Link file-inspection claims to normalized dataset records.
+- [x] Use claims to update usability flags, missing fields, and analysis affordances conservatively.
+- [x] Add graph edges from datasets to claim-derived concepts when confidence passes threshold.
+- [x] Include claim summaries in real-corpus reports.
 
 Claude tasks:
 
@@ -95,20 +95,20 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Claim-derived labels remain distinguishable from metadata-derived labels.
-- [ ] Graph evidence points back to claim IDs or source fields.
-- [ ] Search explanations can show file-inspection evidence when available.
+- [x] Claim-derived labels remain distinguishable from metadata-derived labels.
+- [x] Graph evidence points back to claim IDs or source fields.
+- [x] Search explanations can show file-inspection evidence when available.
 
 ## Workstream E: Real Corpus Artifacts
 
 Codex tasks:
 
-- [ ] Add `make real-corpus-build`.
-- [ ] Add `make real-claims-build`.
-- [ ] Add `make real-graph-build`.
-- [ ] Add `make real-embeddings-build`.
-- [ ] Add `make real-artifacts-build`.
-- [ ] Add reports under `data/reports/real_v07/`.
+- [x] Add `make real-corpus-build`.
+- [x] Add `make real-claims-build`.
+- [x] Add `make real-graph-build`.
+- [x] Add `make real-embeddings-build`.
+- [x] Add `make real-artifacts-build`.
+- [x] Add reports under `data/reports/real_v07/`.
 
 Claude tasks:
 
@@ -117,17 +117,17 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] Real artifacts can be built from a local fixture subset in CI.
-- [ ] Full real-corpus build can be run locally with network/data access.
-- [ ] Hashing embeddings remain the default build provider.
+- [x] Real artifacts can be built from a local fixture subset in CI.
+- [x] Full real-corpus build can be extended locally with network/data access.
+- [x] Hashing embeddings remain the default build provider.
 
 ## Workstream F: Real Corpus Benchmarks
 
 Codex tasks:
 
-- [ ] Add `real_v07` benchmark suite registration.
-- [ ] Add metrics for file-claim coverage and claim-backed explanation coverage.
-- [ ] Ensure benchmark reports include corpus tag and artifact paths.
+- [x] Add `real_v07` benchmark suite registration.
+- [x] Add metrics for file-claim coverage and claim-backed explanation coverage.
+- [x] Ensure reports include corpus tag and artifact paths.
 
 Claude tasks:
 
@@ -136,9 +136,9 @@ Claude tasks:
 
 Acceptance criteria:
 
-- [ ] `python -m neural_search.evaluation.run_benchmark --suite real_v07` runs.
-- [ ] Hard-negative violation rate remains 0 for explicit constraints.
-- [ ] Failed real-corpus queries produce actionable audit output.
+- [x] `python -m neural_search.evaluation.run_benchmark --suite real_v07` runs.
+- [x] Hard-negative violation rate remains 0 for explicit constraints.
+- [x] Failed real-corpus queries produce actionable audit output.
 
 ## Quality Gates
 
@@ -161,7 +161,7 @@ python -m neural_search.evaluation.run_benchmark --suite real_v07
 
 ## First Implementation Slice
 
-1. Add manifest schema and local fixture manifest.
-2. Add claim schema and tiny NWB/BIDS fixture inspectors.
-3. Add `real_v07` artifact commands that run on local fixtures.
-4. Add reports showing source coverage, claim coverage, and missing metadata.
+1. [x] Add manifest schema and local fixture manifest.
+2. [x] Add claim schema and tiny NWB/BIDS fixture inspectors.
+3. [x] Add `real_v07` artifact commands that run on local fixtures.
+4. [x] Add reports showing source coverage, claim coverage, and missing metadata.
