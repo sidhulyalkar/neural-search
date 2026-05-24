@@ -64,10 +64,10 @@ Make Neural Search usable by research agents that need audit-ready dataset disco
 
 ## First Codex Implementation Slice
 
-1. Add workflow response schema models under `neural_search/schemas.py` or a focused workflow module.
-2. Add a dataset discovery workflow wrapper around `search_datasets`.
-3. Add benchmark audit report generation from existing benchmark JSON output.
-4. Add tests for deterministic dataset discovery and benchmark audit behavior.
+1. [x] Add workflow response schema models under `neural_search/schemas.py` or a focused workflow module.
+2. [x] Add a dataset discovery workflow wrapper around `search_datasets`.
+3. [x] Add benchmark audit report generation from existing benchmark JSON output.
+4. [x] Add tests for deterministic dataset discovery and benchmark audit behavior.
 
 ## Acceptance Criteria
 
