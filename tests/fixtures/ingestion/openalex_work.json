@@ -1,0 +1,13 @@
+{
+  "id": "https://openalex.org/W123",
+  "doi": "https://doi.org/10.0000/example",
+  "title": "Reversal learning electrophysiology",
+  "publication_year": 2024,
+  "authorships": [{"author": {"display_name": "Demo Author"}}],
+  "concepts": [{"display_name": "Neuroscience"}],
+  "abstract_inverted_index": {
+    "Reward": [0],
+    "omission": [1],
+    "electrophysiology": [2]
+  }
+}

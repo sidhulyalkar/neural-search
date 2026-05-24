@@ -1,0 +1,28 @@
+{
+  "paper_id": "paper:openalex:W123456789",
+  "source": "openalex",
+  "source_id": "W123456789",
+  "title": "Neuropixels recordings during decision making",
+  "abstract": null,
+  "doi": "https://doi.org/10.0000/example",
+  "url": "https://openalex.org/W123456789",
+  "year": 2024,
+  "authors": ["Demo Author"],
+  "linked_datasets": ["dataset:dandi:000026"],
+  "extracted_labels": [
+    {
+      "id": "label:modality:neuropixels",
+      "label": "Neuropixels",
+      "label_type": "modality",
+      "confidence": 0.82,
+      "evidence_text": "Neuropixels recordings",
+      "source_field": "title",
+      "source_value": "Neuropixels recordings during decision making",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "raw_payload_path": "data/raw/openalex/W123456789.json",
+  "created_at": "2026-05-23T00:00:00+00:00",
+  "extractor_version": "v0.3.0"
+}
