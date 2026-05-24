@@ -24,6 +24,33 @@ ARTIFACTS = {
     "real_embeddings": ROOT / "data" / "embeddings" / "real_v07.field_embeddings.jsonl",
 }
 
+ARTIFACT_INPUTS = {
+    "demo_datasets": [ROOT / "data" / "seed" / "demo_datasets.yaml"],
+    "demo_papers": [ROOT / "data" / "seed" / "demo_papers.yaml"],
+    "demo_graph": [
+        ROOT / "data" / "corpus" / "normalized" / "demo_v05.datasets.jsonl",
+        ROOT / "data" / "corpus" / "normalized" / "demo_v05.papers.jsonl",
+    ],
+    "demo_embeddings": [ROOT / "data" / "corpus" / "normalized" / "demo_v05.records.jsonl"],
+    "real_datasets": [
+        ROOT / "data" / "corpus" / "manifests" / "real_v07.yaml",
+        ROOT / "data" / "corpus" / "fixtures" / "real_v07",
+    ],
+    "real_papers": [
+        ROOT / "data" / "corpus" / "manifests" / "real_v07.yaml",
+        ROOT / "data" / "corpus" / "fixtures" / "real_v07",
+    ],
+    "real_claims": [
+        ROOT / "data" / "corpus" / "manifests" / "real_v07.yaml",
+        ROOT / "data" / "corpus" / "fixtures" / "real_v07",
+    ],
+    "real_graph": [
+        ROOT / "data" / "corpus" / "normalized" / "real_v07.datasets.jsonl",
+        ROOT / "data" / "corpus" / "normalized" / "real_v07.papers.jsonl",
+    ],
+    "real_embeddings": [ROOT / "data" / "corpus" / "normalized" / "real_v07.records.jsonl"],
+}
+
 BENCHMARK_REPORTS = {
     "demo_v02": ROOT / "data" / "eval" / "results" / "demo_v02" / "latest_eval_report.json",
     "adversarial": ROOT / "data" / "eval" / "results" / "adversarial" / "latest_eval_report.json",
@@ -68,18 +95,56 @@ def _load_benchmark(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _iter_existing_inputs(paths: list[Path]) -> list[Path]:
+    inputs: list[Path] = []
+    for path in paths:
+        if not path.exists():
+            continue
+        if path.is_dir():
+            inputs.extend(child for child in path.rglob("*") if child.is_file())
+        else:
+            inputs.append(path)
+    return inputs
+
+
+def _staleness(path: Path, inputs: list[Path]) -> dict[str, Any]:
+    if not path.exists():
+        return {"stale": None, "newest_input": None, "artifact_mtime": None}
+    existing_inputs = _iter_existing_inputs(inputs)
+    if not existing_inputs:
+        return {
+            "stale": False,
+            "newest_input": None,
+            "artifact_mtime": datetime.fromtimestamp(path.stat().st_mtime, UTC).isoformat(),
+        }
+    newest_input = max(existing_inputs, key=lambda item: item.stat().st_mtime)
+    artifact_mtime = path.stat().st_mtime
+    newest_input_mtime = newest_input.stat().st_mtime
+    return {
+        "stale": newest_input_mtime > artifact_mtime,
+        "newest_input": str(newest_input.relative_to(ROOT)),
+        "newest_input_mtime": datetime.fromtimestamp(newest_input_mtime, UTC).isoformat(),
+        "artifact_mtime": datetime.fromtimestamp(artifact_mtime, UTC).isoformat(),
+    }
+
+
 def build_release_summary() -> dict[str, Any]:
     artifact_summary: dict[str, Any] = {}
     missing_artifacts: list[str] = []
+    stale_artifacts: list[str] = []
     for name, path in ARTIFACTS.items():
         exists = path.exists()
         if not exists:
             missing_artifacts.append(name)
+        staleness = _staleness(path, ARTIFACT_INPUTS.get(name, []))
+        if staleness["stale"]:
+            stale_artifacts.append(name)
         artifact_summary[name] = {
             "path": str(path.relative_to(ROOT)),
             "exists": exists,
             "line_count": _line_count(path),
             "graph_counts": _graph_counts(path) if "graph" in name else None,
+            "staleness": staleness,
             "modified_at": (
                 datetime.fromtimestamp(path.stat().st_mtime, UTC).isoformat()
                 if exists
@@ -118,6 +183,8 @@ def build_release_summary() -> dict[str, Any]:
     known_failures = [
         f"missing artifact: {name}" for name in missing_artifacts
     ] + [
+        f"stale artifact: {name}" for name in stale_artifacts
+    ] + [
         f"missing benchmark report: {suite}" for suite in missing_benchmarks
     ]
     if hard_negative_violations:
@@ -138,6 +205,7 @@ def build_release_summary() -> dict[str, Any]:
         "benchmarks": benchmark_summary,
         "known_failures": known_failures,
         "release_ready": not missing_artifacts
+        and not stale_artifacts
         and not missing_benchmarks
         and hard_negative_violations == 0,
     }
@@ -165,7 +233,8 @@ def markdown_summary(summary: dict[str, Any]) -> str:
         )
         lines.append(
             f"- `{name}`: exists={artifact['exists']}, "
-            f"lines={artifact.get('line_count')}{graph_text}"
+            f"lines={artifact.get('line_count')}, "
+            f"stale={artifact.get('staleness', {}).get('stale')}{graph_text}"
         )
 
     lines.extend(["", "## Benchmarks", ""])

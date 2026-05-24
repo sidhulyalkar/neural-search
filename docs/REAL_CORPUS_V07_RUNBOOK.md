@@ -38,4 +38,6 @@ Dry-run validates the manifest and reports what would be normalized.
 - Missing fixture paths produce warning claims instead of false scientific labels.
 - If graph loading is disabled or an artifact is absent, search remains usable without graph scores.
 - If field embeddings are absent, hashing embeddings can be regenerated with `make real-embeddings-build`.
+- `make release-check` fails if required artifacts are missing or older than their source manifest/fixture inputs.
+- Search traces can be exported with `python -m neural_search.search.trace "mouse visual decision making" --out data/reports/release/example_trace.json`.
 - Full public-source ingestion should be layered behind the manifest and raw payload writer so CI remains deterministic.

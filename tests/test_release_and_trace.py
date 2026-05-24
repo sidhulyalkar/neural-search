@@ -3,7 +3,7 @@ from __future__ import annotations
 from neural_search.contracts import SearchResponseV1, SearchResultV1
 from neural_search.release.check import build_release_summary, write_release_summary
 from neural_search.schemas import SearchResponse, SearchResult
-from neural_search.search.trace import capture_search_trace
+from neural_search.search.trace import capture_search_trace, write_search_trace
 
 
 def test_versioned_contracts_and_legacy_search_schemas_are_compatible() -> None:
@@ -78,6 +78,30 @@ def test_search_trace_captures_scores_constraints_and_timings() -> None:
     assert "negative_constraints" in trace.parsed_query
 
 
+def test_search_trace_can_be_exported(tmp_path) -> None:
+    trace = capture_search_trace(
+        "mouse visual decision making",
+        datasets=[
+            {
+                "dataset": {
+                    "id": "TRACE_DEMO",
+                    "source_id": "TRACE_DEMO",
+                    "title": "Mouse visual decision task",
+                    "species": ["mouse"],
+                    "modalities": ["neuropixels"],
+                    "tasks": ["visual_decision_making"],
+                }
+            }
+        ],
+        limit=1,
+    )
+
+    output = write_search_trace(trace, tmp_path / "trace.json")
+
+    assert output.exists()
+    assert '"TRACE_DEMO"' in output.read_text(encoding="utf-8")
+
+
 def test_release_summary_records_artifacts_and_can_be_written(tmp_path) -> None:
     paths = write_release_summary(tmp_path)
     summary = build_release_summary()
@@ -86,4 +110,5 @@ def test_release_summary_records_artifacts_and_can_be_written(tmp_path) -> None:
     assert paths["markdown"].endswith("release_summary.md")
     assert summary["artifact_versions"]["embedding_provider"] == "hashing"
     assert "real_datasets" in summary["artifacts"]
+    assert "staleness" in summary["artifacts"]["real_datasets"]
     assert "demo_v02" in summary["benchmarks"]

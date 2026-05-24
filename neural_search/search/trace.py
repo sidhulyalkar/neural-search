@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import argparse
+import json
 from datetime import UTC, datetime
+from pathlib import Path
 from time import perf_counter
 from typing import Any
 
@@ -89,3 +92,50 @@ def capture_search_trace(
             for index, result in enumerate(response.results, 1)
         ],
     )
+
+
+def write_search_trace(trace: SearchTrace, path: str | Path) -> Path:
+    """Write a search trace as deterministic JSON."""
+
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(trace.model_dump(mode="json"), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    return output
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Export a Neural Search trace as JSON.")
+    parser.add_argument("query", help="Search query to trace")
+    parser.add_argument("--out", required=True, help="Output trace JSON path")
+    parser.add_argument("--limit", type=int, default=10)
+    parser.add_argument(
+        "--retrieval-config-json",
+        help="Optional JSON object merged into retrieval configuration.",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    retrieval_config = (
+        json.loads(args.retrieval_config_json)
+        if args.retrieval_config_json
+        else None
+    )
+    if retrieval_config is not None and not isinstance(retrieval_config, dict):
+        raise ValueError("--retrieval-config-json must decode to an object")
+    trace = capture_search_trace(
+        args.query,
+        limit=args.limit,
+        retrieval_config=retrieval_config,
+    )
+    output = write_search_trace(trace, args.out)
+    print(output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

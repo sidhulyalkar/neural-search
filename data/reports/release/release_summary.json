@@ -11,14 +11,26 @@
       "graph_counts": null,
       "line_count": 26,
       "modified_at": "2026-05-24T20:26:42.772022+00:00",
-      "path": "data/corpus/normalized/demo_v05.datasets.jsonl"
+      "path": "data/corpus/normalized/demo_v05.datasets.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:42.772022+00:00",
+        "newest_input": "data/seed/demo_datasets.yaml",
+        "newest_input_mtime": "2026-05-23T21:56:01.309296+00:00",
+        "stale": false
+      }
     },
     "demo_embeddings": {
       "exists": true,
       "graph_counts": null,
       "line_count": 337,
       "modified_at": "2026-05-24T20:26:44.394177+00:00",
-      "path": "data/embeddings/demo_v05.field_embeddings.jsonl"
+      "path": "data/embeddings/demo_v05.field_embeddings.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:44.394177+00:00",
+        "newest_input": "data/corpus/normalized/demo_v05.records.jsonl",
+        "newest_input_mtime": "2026-05-24T20:26:42.814184+00:00",
+        "stale": false
+      }
     },
     "demo_graph": {
       "exists": true,
@@ -28,35 +40,65 @@
       },
       "line_count": 41245,
       "modified_at": "2026-05-24T20:26:43.413950+00:00",
-      "path": "data/graph/neural_search_graph.demo_v05.json"
+      "path": "data/graph/neural_search_graph.demo_v05.json",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:43.413950+00:00",
+        "newest_input": "data/corpus/normalized/demo_v05.papers.jsonl",
+        "newest_input_mtime": "2026-05-24T20:26:42.784558+00:00",
+        "stale": false
+      }
     },
     "demo_papers": {
       "exists": true,
       "graph_counts": null,
       "line_count": 26,
       "modified_at": "2026-05-24T20:26:42.784558+00:00",
-      "path": "data/corpus/normalized/demo_v05.papers.jsonl"
+      "path": "data/corpus/normalized/demo_v05.papers.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:42.784558+00:00",
+        "newest_input": "data/seed/demo_papers.yaml",
+        "newest_input_mtime": "2026-05-23T21:56:01.329131+00:00",
+        "stale": false
+      }
     },
     "real_claims": {
       "exists": true,
       "graph_counts": null,
       "line_count": 40,
       "modified_at": "2026-05-24T20:26:45.063122+00:00",
-      "path": "data/corpus/claims/real_v07.claims.jsonl"
+      "path": "data/corpus/claims/real_v07.claims.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:45.063122+00:00",
+        "newest_input": "data/corpus/fixtures/real_v07/bids/ds003505/sub-01/eeg/sub-01_task-motorimagery_eeg.json",
+        "newest_input_mtime": "2026-05-24T19:56:02.763550+00:00",
+        "stale": false
+      }
     },
     "real_datasets": {
       "exists": true,
       "graph_counts": null,
       "line_count": 3,
       "modified_at": "2026-05-24T20:26:45.034299+00:00",
-      "path": "data/corpus/normalized/real_v07.datasets.jsonl"
+      "path": "data/corpus/normalized/real_v07.datasets.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:45.034299+00:00",
+        "newest_input": "data/corpus/fixtures/real_v07/bids/ds003505/sub-01/eeg/sub-01_task-motorimagery_eeg.json",
+        "newest_input_mtime": "2026-05-24T19:56:02.763550+00:00",
+        "stale": false
+      }
     },
     "real_embeddings": {
       "exists": true,
       "graph_counts": null,
       "line_count": 31,
       "modified_at": "2026-05-24T20:26:45.972259+00:00",
-      "path": "data/embeddings/real_v07.field_embeddings.jsonl"
+      "path": "data/embeddings/real_v07.field_embeddings.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:45.972259+00:00",
+        "newest_input": "data/corpus/normalized/real_v07.records.jsonl",
+        "newest_input_mtime": "2026-05-24T20:26:45.052972+00:00",
+        "stale": false
+      }
     },
     "real_graph": {
       "exists": true,
@@ -66,14 +108,26 @@
       },
       "line_count": 4071,
       "modified_at": "2026-05-24T20:26:45.568577+00:00",
-      "path": "data/graph/neural_search_graph.real_v07.json"
+      "path": "data/graph/neural_search_graph.real_v07.json",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:45.568577+00:00",
+        "newest_input": "data/corpus/normalized/real_v07.papers.jsonl",
+        "newest_input_mtime": "2026-05-24T20:26:45.041919+00:00",
+        "stale": false
+      }
     },
     "real_papers": {
       "exists": true,
       "graph_counts": null,
       "line_count": 1,
       "modified_at": "2026-05-24T20:26:45.041919+00:00",
-      "path": "data/corpus/normalized/real_v07.papers.jsonl"
+      "path": "data/corpus/normalized/real_v07.papers.jsonl",
+      "staleness": {
+        "artifact_mtime": "2026-05-24T20:26:45.041919+00:00",
+        "newest_input": "data/corpus/fixtures/real_v07/bids/ds003505/sub-01/eeg/sub-01_task-motorimagery_eeg.json",
+        "newest_input_mtime": "2026-05-24T19:56:02.763550+00:00",
+        "stale": false
+      }
     }
   },
   "benchmarks": {
@@ -105,8 +159,8 @@
       "total_queries": 3
     }
   },
-  "commit": "092c0e1c23c6fda15ca84eaab448e3974bcf9a74",
-  "generated_at": "2026-05-24T20:28:34.170836+00:00",
+  "commit": "3290b018bfe26f3107139c663e471b868fa5270b",
+  "generated_at": "2026-05-24T20:34:02.868656+00:00",
   "known_failures": [],
   "release_ready": true
 }
