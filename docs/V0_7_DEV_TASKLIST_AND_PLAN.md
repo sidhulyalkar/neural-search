@@ -63,6 +63,24 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [ ] Preserve 0 hard-negative violations while improving Precision@5 and label recall.
 - [ ] Track implementation in `docs/TASK_8_SEARCH_IMPROVEMENT_PLAN.md`.
 
+## Phase 8: Task 9 Real Corpus and File Inspection
+
+- [ ] Add a versioned real-corpus manifest for DANDI, OpenNeuro, OpenAlex, and landmark datasets.
+- [ ] Add file-inspection claim schemas for NWB and BIDS metadata evidence.
+- [ ] Build claim-aware normalized records, graph artifacts, reports, and field embeddings.
+- [ ] Add real-corpus fixture builds that remain CI-safe.
+- [ ] Add `real_v07` benchmarks and claim-backed explanation metrics.
+- [ ] Track implementation in `docs/TASK_9_REAL_CORPUS_AND_FILE_INSPECTION_PLAN.md`.
+
+## Phase 9: Task 10 Release and Product Hardening
+
+- [ ] Stabilize API contracts for search, graph context, workflow outputs, paper links, and benchmark audits.
+- [ ] Update frontend workflows to expose score breakdowns, graph context, missing metadata, linked papers, and filtered constraints.
+- [ ] Add release quality gates, release summaries, and stale artifact checks.
+- [ ] Add search traces and benchmark debugging outputs.
+- [ ] Improve onboarding docs, release notes, and product walkthroughs.
+- [ ] Track implementation in `docs/TASK_10_RELEASE_AND_PRODUCT_HARDENING_PLAN.md`.
+
 ## Quality Gates
 
 ```bash
@@ -87,3 +105,5 @@ python -m neural_search.evaluation.run_benchmark --suite real_v07
 - Whether graph reports should summarize by corpus tag and timestamp.
 - How much real-corpus benchmark labeling should be automated versus manually reviewed.
 - Whether Task 8 search improvement should land before, during, or immediately after real-corpus ingestion.
+- Which real-corpus artifacts are small and stable enough to commit.
+- Whether release checks should block on per-query benchmark failures or only aggregate thresholds.
