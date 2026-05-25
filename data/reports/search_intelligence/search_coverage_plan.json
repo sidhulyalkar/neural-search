@@ -1,0 +1,221 @@
+{
+  "benchmark_data_form_counts": {
+    "behavior": 1,
+    "clinical": 1,
+    "eeg_meg": 1,
+    "extracellular_ephys": 2
+  },
+  "benchmark_query_count": 3,
+  "data_form_counts": {
+    "behavior": 35,
+    "clinical": 14,
+    "eeg_meg": 6,
+    "extracellular_ephys": 32,
+    "fiber_photometry": 4,
+    "intracranial_human_ephys": 8,
+    "mri": 4,
+    "optical_imaging": 7
+  },
+  "dataset_count": 59,
+  "gaps": [
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 0,
+      "data_form": "computational_model",
+      "label": "Computational model or simulation",
+      "priority": "critical",
+      "recommended_queries": [
+        "simulation datasets for model comparison",
+        "Computational model or simulation with behavior and reusable metadata",
+        "Computational model or simulation excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "ModelDB",
+        "Open Source Brain"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 0,
+      "data_form": "connectomics",
+      "label": "Connectomics and morphology",
+      "priority": "critical",
+      "recommended_queries": [
+        "connectome datasets for circuit mapping",
+        "Connectomics and morphology with behavior and reusable metadata",
+        "Connectomics and morphology excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "MICrONS",
+        "DANDI",
+        "NeuroMorpho"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 0,
+      "data_form": "intracellular_ephys",
+      "label": "Intracellular electrophysiology",
+      "priority": "critical",
+      "recommended_queries": [
+        "patch clamp datasets for cellular physiology",
+        "Intracellular electrophysiology with behavior and reusable metadata",
+        "Intracellular electrophysiology excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "DANDI",
+        "NeuroElectro-style curated tables"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 0,
+      "data_form": "molecular",
+      "label": "Molecular and single-cell neuroscience",
+      "priority": "critical",
+      "recommended_queries": [
+        "single cell datasets for cell type mapping",
+        "Molecular and single-cell neuroscience with behavior and reusable metadata",
+        "Molecular and single-cell neuroscience excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "cellxgene",
+        "Allen Brain Cell Atlas"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 4,
+      "data_form": "fiber_photometry",
+      "label": "Fiber photometry",
+      "priority": "medium",
+      "recommended_queries": [
+        "photometry datasets for event aligned analysis",
+        "Fiber photometry with behavior and reusable metadata",
+        "Fiber photometry excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "DANDI"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 4,
+      "data_form": "mri",
+      "label": "MRI and fMRI",
+      "priority": "medium",
+      "recommended_queries": [
+        "fmri datasets for connectivity",
+        "MRI and fMRI with behavior and reusable metadata",
+        "MRI and fMRI excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "OpenNeuro",
+        "Human Connectome Project"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 1,
+      "corpus_count": 6,
+      "data_form": "eeg_meg",
+      "label": "EEG and MEG",
+      "priority": "medium",
+      "recommended_queries": [
+        "eeg datasets for time frequency",
+        "EEG and MEG with behavior and reusable metadata",
+        "EEG and MEG excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "OpenNeuro",
+        "clinical EDF/BIDS repositories"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 7,
+      "data_form": "optical_imaging",
+      "label": "Optical neural imaging",
+      "priority": "medium",
+      "recommended_queries": [
+        "calcium imaging datasets for event aligned analysis",
+        "Optical neural imaging with behavior and reusable metadata",
+        "Optical neural imaging excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "DANDI",
+        "Allen Brain Observatory"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 0,
+      "corpus_count": 8,
+      "data_form": "intracranial_human_ephys",
+      "label": "Human intracranial electrophysiology",
+      "priority": "medium",
+      "recommended_queries": [
+        "ecog datasets for speech decoding",
+        "Human intracranial electrophysiology with behavior and reusable metadata",
+        "Human intracranial electrophysiology excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "OpenNeuro iEEG",
+        "DANDI"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 1,
+      "corpus_count": 14,
+      "data_form": "clinical",
+      "label": "Clinical neuroscience",
+      "priority": "medium",
+      "recommended_queries": [
+        "patient datasets for clinical prediction",
+        "Clinical neuroscience with behavior and reusable metadata",
+        "Clinical neuroscience excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "OpenNeuro",
+        "clinical BIDS/EDF repositories"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    },
+    {
+      "benchmark_query_count": 1,
+      "corpus_count": 35,
+      "data_form": "behavior",
+      "label": "Behavior and task events",
+      "priority": "medium",
+      "recommended_queries": [
+        "behavior datasets for behavioral modeling",
+        "Behavior and task events with behavior and reusable metadata",
+        "Behavior and task events excluding unrelated modalities"
+      ],
+      "recommended_sources": [
+        "DANDI",
+        "OpenNeuro",
+        "manual landmark corpus"
+      ],
+      "target_benchmark_query_count": 2,
+      "target_corpus_count": 3
+    }
+  ]
+}

@@ -101,6 +101,22 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [ ] Promote awareness scoring into the primary retrieval core once Task 12 semantic changes are stable.
 - [x] Track implementation in `docs/TASK_14_AWARENESS_INTEGRATED_RETRIEVAL.md`.
 
+## Phase 12: Task 17 Search Intelligence Planner
+
+- [x] Convert query awareness into deterministic retrieval plans.
+- [x] Recommend mode-specific weights for hard negatives, cross-modal fit, analysis readiness, graph similarity, exact lookup, and exploratory search.
+- [x] Emit required signals, complementary data forms, quality checks, warnings, and benchmark tags.
+- [ ] Integrate planner-selected profiles into the main retrieval core after Task 12 semantic work settles.
+- [x] Track implementation in `docs/TASK_17_SEARCH_INTELLIGENCE_PLANNER.md`.
+
+## Phase 13: Task 18 Coverage-Driven Search Expansion
+
+- [x] Compare normalized corpus data-form coverage against benchmark-query coverage.
+- [x] Produce prioritized ingestion and benchmark gaps with query seeds and source recommendations.
+- [x] Add JSON and Markdown report writing plus CLI support.
+- [ ] Add this report to the standard artifact pipeline after benchmark labels expand.
+- [x] Track implementation in `docs/TASK_18_COVERAGE_DRIVEN_SEARCH_EXPANSION.md`.
+
 ## Quality Gates
 
 ```bash
