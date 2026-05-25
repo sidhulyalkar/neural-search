@@ -32,6 +32,7 @@ from neural_search.qa import (
 )
 from neural_search.recipes import get_recipe
 from neural_search.reports.dataset_compilation import compile_dataset_report
+from neural_search.reports.scientific_readiness import build_scientific_readiness_report
 from neural_search.schemas import (
     ComparisonResultRead,
     DatasetCardRead,
@@ -219,6 +220,13 @@ async def list_datasets(
         total=len(datasets),
         datasets=datasets[offset : offset + limit],
     )
+
+
+@app.get("/api/corpus/readiness")
+async def get_corpus_readiness() -> dict[str, Any]:
+    """Return the v0.8 scientific readiness audit for agent planning."""
+
+    return build_scientific_readiness_report()
 
 
 @app.get("/api/datasets/{dataset_id}")

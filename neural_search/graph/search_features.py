@@ -23,6 +23,8 @@ DEFAULT_GRAPH_SEARCH_WEIGHTS = {
     "analysis_requirement_coverage": 0.015,
     "task_match": 0.03,
     "modality_match": 0.02,
+    "species_match": 0.02,
+    "taxon_match": 0.01,
     "brain_region_match": 0.02,
     "degree": 0.01,
 }
@@ -109,6 +111,12 @@ def _empty_features(*, graph_available: bool) -> dict[str, Any]:
         "analysis_affordances": [],
         "tasks": [],
         "modalities": [],
+        "species": [],
+        "species_context": {
+            "taxon_groups": [],
+            "model_roles": [],
+            "animal_types": [],
+        },
         "brain_regions": [],
         "matched_query_context": {},
         "requirement_matches": {
@@ -236,6 +244,39 @@ def _requirement_matches(
     return grouped
 
 
+def _species_context(
+    graph: KnowledgeGraph,
+    dataset_node_id: str,
+) -> dict[str, list[str]]:
+    """Return broader organism context linked from dataset species nodes."""
+
+    species_nodes = get_neighbors(
+        graph,
+        dataset_node_id,
+        ["dataset_has_species"],
+        direction="out",
+    )
+    context = {
+        "taxon_groups": [],
+        "model_roles": [],
+        "animal_types": [],
+    }
+    for species_node in species_nodes:
+        context["taxon_groups"].extend(
+            _neighbor_labels(graph, species_node.node_id, "species_in_taxon_group")
+        )
+        context["model_roles"].extend(
+            _neighbor_labels(graph, species_node.node_id, "species_has_model_role")
+        )
+        context["animal_types"].extend(
+            _neighbor_labels(graph, species_node.node_id, "species_has_animal_type")
+        )
+    return {
+        key: sorted(dict.fromkeys(values))
+        for key, values in context.items()
+    }
+
+
 def compute_graph_features_for_result(
     graph: KnowledgeGraph | None,
     result_id: str,
@@ -259,11 +300,25 @@ def compute_graph_features_for_result(
     analysis_affordances = _neighbor_labels(graph, node_id, "dataset_supports_analysis")
     tasks = _neighbor_labels(graph, node_id, "dataset_has_task")
     modalities = _neighbor_labels(graph, node_id, "dataset_has_modality")
+    species = _neighbor_labels(graph, node_id, "dataset_has_species")
+    species_context = _species_context(graph, node_id)
     brain_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
     context = query_context or {}
+    query_species = {_norm(value) for value in context.get("species", [])}
+    species_terms = {_norm(value) for value in species}
+    broader_species_terms = {
+        _norm(value)
+        for value in (
+            *species_context["taxon_groups"],
+            *species_context["animal_types"],
+            *species_context["model_roles"],
+        )
+    }
     matched_query_context = {
         "tasks": sorted(set(context.get("tasks", [])) & set(tasks)),
         "modalities": sorted(set(context.get("modalities", [])) & set(modalities)),
+        "species": sorted(query_species & species_terms),
+        "taxon_groups": sorted(query_species & broader_species_terms),
         "brain_regions": sorted(
             set(context.get("brain_regions", [])) & set(brain_regions)
         ),
@@ -279,6 +334,8 @@ def compute_graph_features_for_result(
         "analysis_affordances": analysis_affordances,
         "tasks": tasks,
         "modalities": modalities,
+        "species": species,
+        "species_context": species_context,
         "brain_regions": brain_regions,
         "matched_query_context": matched_query_context,
         "requirement_matches": _requirement_matches(graph, node_id),
@@ -361,6 +418,8 @@ def graph_context_score(
 
         # Degree bonus unchanged (no edge-level confidence applies)
         score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
+        score += len(matched.get("species", [])) * score_weights.get("species_match", 0.0)
+        score += len(matched.get("taxon_groups", [])) * score_weights.get("taxon_match", 0.0)
         score += (
             min(requirement_count, 5)
             * score_weights.get("requirement_match", 0.0)
@@ -380,6 +439,8 @@ def graph_context_score(
         )
         score += len(matched["tasks"]) * score_weights["task_match"]
         score += len(matched["modalities"]) * score_weights["modality_match"]
+        score += len(matched.get("species", [])) * score_weights.get("species_match", 0.0)
+        score += len(matched.get("taxon_groups", [])) * score_weights.get("taxon_match", 0.0)
         score += len(matched["brain_regions"]) * score_weights["brain_region_match"]
         score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
 

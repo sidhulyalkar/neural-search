@@ -40,6 +40,11 @@ from neural_search.search.query_builder import (
     combine_query_and_structured_text,
     merge_filters,
 )
+from neural_search.species import (
+    species_exclusions_for_only_query,
+    species_query_matches,
+    species_terms_for_values,
+)
 
 RETRIEVAL_CONFIG_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "config" / "retrieval.yaml"
@@ -276,6 +281,14 @@ def parse_query(
     # Parse exclusions first
     excluded_modalities, excluded_species = _parse_exclusions(query)
     negative_constraints = parse_hard_negative_constraints(query, config)
+    only_species_exclusions = species_exclusions_for_only_query(query)
+    if only_species_exclusions:
+        negative_constraints["hard_excluded_species"] = sorted(
+            {
+                *negative_constraints["hard_excluded_species"],
+                *only_species_exclusions,
+            }
+        )
     excluded_modalities = sorted(
         set(excluded_modalities) | set(negative_constraints["hard_excluded_modalities"])
     )
@@ -329,6 +342,11 @@ def parse_query(
         normalized,
         config.get("species_aliases", {}),
     )
+    existing_species_ids = {match["id"] for match in species_intents}
+    for match in species_query_matches(query):
+        if match["id"] not in existing_species_ids:
+            species_intents.append(match)
+            existing_species_ids.add(match["id"])
 
     return {
         "query": query,
@@ -350,6 +368,10 @@ def parse_query(
         ],
         "negative_constraints": negative_constraints,
         "species": sorted({match["id"] for match in species_intents}),
+        "species_constraints": {
+            "matches": species_intents,
+            "only_query_exclusions": only_species_exclusions,
+        },
         "brain_regions": [match.id for match in brain_region_matches],
         "analysis": sorted(set(analysis_ids)),
         "task_intent": _match_dumps(task_matches),
@@ -510,7 +532,10 @@ def score_dataset_against_query(
     task_terms = {normalize_text(value) for value in parsed_query.get("tasks", [])}
     behavior_terms = {normalize_text(value) for value in parsed_query.get("behaviors", [])}
     modality_terms = {normalize_text(value) for value in parsed_query.get("modalities", [])}
-    species_terms = {normalize_text(value) for value in parsed_query.get("species", [])}
+    species_terms = {
+        normalize_text(value).replace(" ", "_")
+        for value in parsed_query.get("species", [])
+    }
     region_terms = {normalize_text(value) for value in parsed_query.get("brain_regions", [])}
     analysis_terms = {normalize_text(value) for value in parsed_query.get("analysis", [])}
 
@@ -523,8 +548,14 @@ def score_dataset_against_query(
     dataset_modalities = _normalize_values(_get_value(dataset, "modalities", [])) | (
         _card_labels(card, "modalities") if card else set()
     )
-    dataset_species = _normalize_values(_get_value(dataset, "species", [])) | (
-        _card_labels(card, "species") if card else set()
+    raw_dataset_species = [
+        *_raw_values(_get_value(dataset, "species", [])),
+        *list(_card_labels(card, "species") if card else set()),
+    ]
+    dataset_species = (
+        _normalize_values(_get_value(dataset, "species", []))
+        | (_card_labels(card, "species") if card else set())
+        | species_terms_for_values(raw_dataset_species)
     )
     dataset_regions = _normalize_values(_get_value(dataset, "brain_regions", [])) | (
         _card_labels(card, "brain_regions") if card else set()
@@ -811,11 +842,23 @@ def _augment_result_with_optional_scores(
                     "Graph requirements matched: "
                     + ", ".join(sorted(dict.fromkeys(requirement_labels))[:5])
                 )
+            species_context = graph_features.get("species_context", {})
+            taxon_matches = graph_features.get("matched_query_context", {}).get(
+                "taxon_groups",
+                [],
+            )
+            if taxon_matches:
+                result.why_matched.append(
+                    "Graph species context matched: "
+                    + ", ".join(sorted(dict.fromkeys(taxon_matches))[:5])
+                )
             result.dataset_card_preview["graph_context"] = {
                 "linked_papers": graph_features.get("linked_papers", [])[:5],
                 "analysis_affordances": graph_features.get("analysis_affordances", [])[:5],
                 "matched_query_context": graph_features.get("matched_query_context", {}),
                 "requirement_matches": requirement_matches,
+                "species": graph_features.get("species", [])[:5],
+                "species_context": species_context,
             }
             result.graph_context = result.dataset_card_preview["graph_context"]
             result.linked_papers = graph_features.get("linked_papers", [])[:5]

@@ -9,6 +9,7 @@ from typing import Any
 from neural_search.analysis_affordances import AFFORDANCE_IDS
 from neural_search.ontology import get_ontology, normalize_text
 from neural_search.scientific_labels import RULES
+from neural_search.species import species_terms_for_values, species_vocab_aliases
 
 NEGATIVE_FIELDS = (
     "hard_excluded_modalities",
@@ -133,6 +134,9 @@ def _vocabulary(config: Mapping[str, Any] | None = None) -> dict[str, dict[str, 
     for canonical, aliases in SOURCE_ALIASES.items():
         for alias in aliases:
             _add_alias(vocab, "hard_excluded_sources", canonical, alias)
+    for canonical, aliases in species_vocab_aliases().items():
+        for alias in aliases:
+            _add_alias(vocab, "hard_excluded_species", canonical, alias)
     for canonical, aliases in RECORDING_DEVICE_ALIASES.items():
         for alias in aliases:
             _add_alias(vocab, "hard_excluded_recording_devices", canonical, alias)
@@ -295,7 +299,11 @@ def negative_constraint_violations(
 
     modalities = _norm_set([*_values(dataset, "modalities"), *_card_labels(card, "modalities")])
     tasks = _norm_set([*_values(dataset, "tasks"), *_card_labels(card, "tasks")])
-    species = _norm_set([*_values(dataset, "species"), *_card_labels(card, "species")])
+    species = _norm_set(
+        [*_values(dataset, "species"), *_card_labels(card, "species")]
+    ) | species_terms_for_values(
+        [*_values(dataset, "species"), *_card_labels(card, "species")]
+    )
     regions = _norm_set([*_values(dataset, "brain_regions"), *_card_labels(card, "brain_regions")])
     behaviors = _norm_set([*_values(dataset, "behaviors"), *_card_labels(card, "behaviors")])
     sources = _norm_set(

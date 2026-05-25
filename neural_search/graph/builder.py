@@ -24,6 +24,7 @@ from neural_search.schemas import (
     NormalizedDatasetRecord,
     NormalizedPaperRecord,
 )
+from neural_search.species import SpeciesProfile, get_species_profile
 
 GRAPH_BUILDER_NAME = "neural_search.graph.builder"
 GRAPH_BUILDER_VERSION = "v0.5.0"
@@ -343,6 +344,56 @@ def _taxonomy_label(
     )
 
 
+def _species_taxonomy_evidence(
+    profile: SpeciesProfile,
+    *,
+    source_id: str,
+    source_field: str,
+    evidence_text: str,
+) -> GraphEvidence:
+    return _record_evidence(
+        source_type="species_taxonomy",
+        source_id=profile.species_id,
+        source_field=source_field,
+        evidence_text=evidence_text,
+        confidence=0.88,
+        extractor_name="neural_search.species",
+        extractor_version="v0.8.0",
+    )
+
+
+def _species_label(label: EvidenceLabel, profile: SpeciesProfile) -> EvidenceLabel:
+    return label.model_copy(
+        update={
+            "id": f"label:species:{profile.species_id}",
+            "label": profile.label,
+            "evidence_text": label.evidence_text or label.label,
+        }
+    )
+
+
+def _simple_taxonomy_node(
+    *,
+    node_type: str,
+    node_id_part: str,
+    label: str,
+    aliases: list[str],
+    source_id: str,
+    evidence: GraphEvidence,
+) -> KnowledgeGraphNode:
+    return KnowledgeGraphNode(
+        node_id=make_node_id(node_type, node_id_part),
+        node_type=node_type,
+        label=label,
+        aliases=_dedupe([node_id_part, label, *aliases]),
+        source_ids=[source_id],
+        properties={},
+        evidence=[evidence],
+        confidence=evidence.confidence,
+        created_at=_now(),
+    )
+
+
 def _taxonomy_concept_node(
     *,
     node_type: str,
@@ -478,15 +529,19 @@ def build_dataset_subgraph(
         for label in getattr(dataset, field_name):
             if label.confidence < min_confidence:
                 continue
+            concept_label = label
+            species_profile = get_species_profile(label.label) if field_name == "species" else None
+            if species_profile is not None:
+                concept_label = _species_label(label, species_profile)
             concept = _concept_node(
                 node_type,
-                label,
+                concept_label,
                 source_id=dataset.dataset_id,
                 source_type="normalized_dataset",
                 source_field=field_name,
             )
             evidence = _label_evidence(
-                label,
+                concept_label,
                 source_type="normalized_dataset",
                 source_id=dataset.dataset_id,
                 source_field=field_name,
@@ -503,6 +558,14 @@ def build_dataset_subgraph(
                     properties={"source_field": field_name},
                 ),
             )
+            if species_profile is not None:
+                _add_species_taxonomy_edges(
+                    nodes,
+                    edges,
+                    concept.node_id,
+                    species_profile,
+                    source_id=dataset.dataset_id,
+                )
 
     for affordance in dataset.analysis_affordances:
         if affordance.confidence < min_confidence or affordance.support_level == "unsupported":
@@ -556,6 +619,100 @@ def build_dataset_subgraph(
             "paper_count": 0,
         },
     )
+
+
+def _add_species_taxonomy_edges(
+    nodes: dict[str, KnowledgeGraphNode],
+    edges: dict[str, KnowledgeGraphEdge],
+    species_node_id: str,
+    profile: SpeciesProfile,
+    *,
+    source_id: str,
+) -> None:
+    """Attach broader organism context to a canonical species node."""
+
+    for group in profile.taxon_groups:
+        evidence = _species_taxonomy_evidence(
+            profile,
+            source_id=source_id,
+            source_field="taxon_groups",
+            evidence_text=f"{profile.label} belongs to {group}",
+        )
+        group_node = _simple_taxonomy_node(
+            node_type="taxon_group",
+            node_id_part=group,
+            label=group.replace("_", " ").title(),
+            aliases=[group.replace("_", " ")],
+            source_id=profile.species_id,
+            evidence=evidence,
+        )
+        _add_node(nodes, group_node)
+        _add_edge(
+            edges,
+            _edge(
+                species_node_id,
+                "species_in_taxon_group",
+                group_node.node_id,
+                confidence=evidence.confidence,
+                evidence=[evidence],
+                properties={"taxon_id": profile.taxon_id},
+            ),
+        )
+
+    animal_evidence = _species_taxonomy_evidence(
+        profile,
+        source_id=source_id,
+        source_field="animal_type",
+        evidence_text=f"{profile.label} is represented as {profile.animal_type}",
+    )
+    animal_node = _simple_taxonomy_node(
+        node_type="organism_model",
+        node_id_part=profile.animal_type,
+        label=profile.animal_type.replace("_", " ").title(),
+        aliases=[profile.animal_type.replace("_", " ")],
+        source_id=profile.species_id,
+        evidence=animal_evidence,
+    )
+    _add_node(nodes, animal_node)
+    _add_edge(
+        edges,
+        _edge(
+            species_node_id,
+            "species_has_animal_type",
+            animal_node.node_id,
+            confidence=animal_evidence.confidence,
+            evidence=[animal_evidence],
+            properties={"taxon_id": profile.taxon_id},
+        ),
+    )
+
+    for role in profile.model_roles:
+        evidence = _species_taxonomy_evidence(
+            profile,
+            source_id=source_id,
+            source_field="model_roles",
+            evidence_text=f"{profile.label} supports model role {role}",
+        )
+        role_node = _simple_taxonomy_node(
+            node_type="organism_model",
+            node_id_part=role,
+            label=role.replace("_", " ").title(),
+            aliases=[role.replace("_", " ")],
+            source_id=profile.species_id,
+            evidence=evidence,
+        )
+        _add_node(nodes, role_node)
+        _add_edge(
+            edges,
+            _edge(
+                species_node_id,
+                "species_has_model_role",
+                role_node.node_id,
+                confidence=evidence.confidence,
+                evidence=[evidence],
+                properties={"taxon_id": profile.taxon_id},
+            ),
+        )
 
 
 def build_paper_subgraph(
