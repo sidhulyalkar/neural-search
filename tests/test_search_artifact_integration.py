@@ -42,10 +42,11 @@ def test_search_adds_graph_score_when_graph_config_is_enabled(tmp_path):
         species=[_label("species", "mouse")],
         analysis_affordances=[
             AnalysisAffordance(
-                analysis_id="event_aligned_activity",
+                analysis_id="decoding",
                 support_level="high",
                 confidence=0.9,
-                evidence=["event timestamps"],
+                required_fields_present=["spike_times"],
+                evidence=["spike_times"],
             )
         ],
         linked_papers=[make_paper_id("demo", "P1")],
@@ -60,7 +61,7 @@ def test_search_adds_graph_score_when_graph_config_is_enabled(tmp_path):
     graph_path = write_graph_json(build_graph_from_records([normalized], [paper]), tmp_path / "graph.json")
 
     response = search_datasets(
-        "mouse reversal learning neuropixels event aligned",
+        "mouse reversal learning neuropixels decoding",
         datasets=[
             {
                 "dataset": {
@@ -86,7 +87,7 @@ def test_search_adds_graph_score_when_graph_config_is_enabled(tmp_path):
                     "scientific_labels": {},
                     "analysis_readiness": {"score": 90},
                     "missing_fields": [],
-                    "suggested_analyses": ["event_aligned_activity"],
+                    "suggested_analyses": ["decoding"],
                     "provenance": {},
                 },
             }
@@ -97,6 +98,12 @@ def test_search_adds_graph_score_when_graph_config_is_enabled(tmp_path):
     breakdown = response.results[0].score_breakdown
     assert "graph_score" in breakdown
     assert breakdown["graph_score"] > 0
+    graph_context = response.results[0].graph_context or {}
+    assert graph_context["requirement_matches"]["modality"]
+    assert any(
+        "Graph requirements matched" in reason
+        for reason in response.results[0].why_matched
+    )
 
 
 def test_search_adds_field_semantic_score_when_embedding_config_is_enabled(tmp_path):

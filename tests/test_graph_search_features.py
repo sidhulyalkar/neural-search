@@ -38,12 +38,15 @@ def _graph():
         tasks=[_label("task", "reversal_learning")],
         modalities=[_label("modality", "Neuropixels")],
         brain_regions=[_label("brain_region", "orbitofrontal_cortex")],
+        behavioral_events=[_label("behavioral_event", "spike_times")],
+        data_standards=[_label("data_standard", "NWB")],
         analysis_affordances=[
             AnalysisAffordance(
-                analysis_id="q_learning_modeling",
+                analysis_id="decoding",
                 support_level="high",
                 confidence=0.9,
-                evidence=["choice", "reward"],
+                required_fields_present=["spike_times"],
+                evidence=["spike_times"],
                 detector_name="test",
                 detector_version="v0.5.0",
             )
@@ -65,6 +68,12 @@ def test_graph_features_are_empty_and_zero_when_graph_is_absent():
 
     assert features["graph_available"] is False
     assert features["graph_degree"] == 0
+    assert features["requirement_matches"] == {
+        "modality": [],
+        "behavioral_event": [],
+        "data_standard": [],
+        "required_signal": [],
+    }
     assert graph_context_score(None, "dataset:dandi:000026") == 0.0
 
 
@@ -77,7 +86,7 @@ def test_graph_features_and_context_score_are_bounded():
         {
             "tasks": ["reversal_learning"],
             "modalities": ["Neuropixels"],
-            "analysis": ["Q Learning Modeling"],
+            "analysis": ["Decoding"],
         },
     )
     score = graph_context_score(
@@ -89,7 +98,24 @@ def test_graph_features_and_context_score_are_bounded():
     assert features["graph_available"] is True
     assert features["linked_papers"]
     assert features["analysis_affordances"]
+    assert features["requirement_matches"]["modality"]
+    assert features["requirement_matches"]["data_standard"]
+    assert features["requirement_matches"]["required_signal"]
     assert 0 < score <= 0.25
+
+
+def test_graph_features_return_empty_requirement_matches_without_analysis_edges():
+    graph = _graph()
+
+    features = compute_graph_features_for_result(graph, "missing")
+
+    assert features["graph_available"] is True
+    assert features["requirement_matches"] == {
+        "modality": [],
+        "behavioral_event": [],
+        "data_standard": [],
+        "required_signal": [],
+    }
 
 
 def test_load_graph_if_exists_is_optional(tmp_path):

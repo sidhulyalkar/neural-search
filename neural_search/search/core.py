@@ -798,12 +798,27 @@ def _augment_result_with_optional_scores(
                 str(result.dataset_id),
                 dict(parsed_query),
             )
+            requirement_matches = graph_features.get("requirement_matches", {})
+            requirement_labels = [
+                str(item.get("requirement"))
+                for values in requirement_matches.values()
+                for item in values
+                if item.get("requirement")
+            ]
             result.why_matched.append(f"Graph context score: {graph_score:.2f}")
+            if requirement_labels:
+                result.why_matched.append(
+                    "Graph requirements matched: "
+                    + ", ".join(sorted(dict.fromkeys(requirement_labels))[:5])
+                )
             result.dataset_card_preview["graph_context"] = {
                 "linked_papers": graph_features.get("linked_papers", [])[:5],
                 "analysis_affordances": graph_features.get("analysis_affordances", [])[:5],
                 "matched_query_context": graph_features.get("matched_query_context", {}),
+                "requirement_matches": requirement_matches,
             }
+            result.graph_context = result.dataset_card_preview["graph_context"]
+            result.linked_papers = graph_features.get("linked_papers", [])[:5]
         extra_score += float(weights.get("graph", 0.0)) * graph_score
 
     if extra_score:

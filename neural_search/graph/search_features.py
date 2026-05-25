@@ -10,15 +10,28 @@ from neural_search.graph.query import (
     find_papers_for_dataset,
     get_neighbors,
 )
-from neural_search.graph.schema import KnowledgeGraph, read_graph_json
+from neural_search.graph.schema import (
+    KnowledgeGraph,
+    KnowledgeGraphEdge,
+    read_graph_json,
+)
 
 DEFAULT_GRAPH_SEARCH_WEIGHTS = {
     "linked_paper": 0.04,
     "analysis_affordance": 0.03,
+    "requirement_match": 0.01,
+    "analysis_requirement_coverage": 0.015,
     "task_match": 0.03,
     "modality_match": 0.02,
     "brain_region_match": 0.02,
     "degree": 0.01,
+}
+
+REQUIREMENT_GROUPS = {
+    "modality": "modality",
+    "behavioral_event": "behavioral_event",
+    "data_standard": "data_standard",
+    "required_signal": "required_signal",
 }
 
 
@@ -69,6 +82,160 @@ def _neighbor_labels(
     ]
 
 
+def _get_edges_for_node(
+    graph: KnowledgeGraph,
+    node_id: str,
+    edge_type: str | None = None,
+    direction: str = "out",
+) -> list[KnowledgeGraphEdge]:
+    """Return edges connected to a node, optionally filtered by type."""
+    edges = []
+    for edge in graph.edges.values():
+        if direction in ("out", "both") and edge.source_node_id == node_id:
+            if edge_type is None or edge.edge_type == edge_type:
+                edges.append(edge)
+        elif direction in ("in", "both") and edge.target_node_id == node_id:
+            if edge_type is None or edge.edge_type == edge_type:
+                edges.append(edge)
+    # Sort by confidence descending
+    return sorted(edges, key=lambda e: e.confidence, reverse=True)
+
+
+def _empty_features(*, graph_available: bool) -> dict[str, Any]:
+    return {
+        "graph_available": graph_available,
+        "graph_degree": 0,
+        "linked_papers": [],
+        "analysis_affordances": [],
+        "tasks": [],
+        "modalities": [],
+        "brain_regions": [],
+        "matched_query_context": {},
+        "requirement_matches": {
+            "modality": [],
+            "behavioral_event": [],
+            "data_standard": [],
+            "required_signal": [],
+        },
+    }
+
+
+def _norm(value: str) -> str:
+    return " ".join(str(value).casefold().replace("_", " ").replace("-", " ").split())
+
+
+def _node_terms(graph: KnowledgeGraph, node_id: str) -> set[str]:
+    node = graph.nodes.get(node_id)
+    if node is None:
+        return set()
+    terms = {node.node_id, node.label, *node.aliases, *node.source_ids}
+    for value in node.properties.values():
+        if isinstance(value, str):
+            terms.add(value)
+        elif isinstance(value, list):
+            terms.update(str(item) for item in value)
+    return {_norm(term) for term in terms if str(term).strip()}
+
+
+def _dataset_concept_terms(
+    graph: KnowledgeGraph,
+    dataset_node_id: str,
+) -> dict[str, set[str]]:
+    edge_to_group = {
+        "dataset_has_modality": "modality",
+        "dataset_has_behavioral_event": "behavioral_event",
+        "dataset_uses_standard": "data_standard",
+    }
+    terms: dict[str, set[str]] = {group: set() for group in REQUIREMENT_GROUPS}
+    for edge in _get_edges_for_node(graph, dataset_node_id, direction="out"):
+        group = edge_to_group.get(edge.edge_type)
+        if group:
+            terms[group].update(_node_terms(graph, edge.target_node_id))
+        if edge.edge_type == "dataset_supports_analysis":
+            terms["required_signal"].update(_node_terms(graph, edge.target_node_id))
+    terms["required_signal"].update(_node_terms(graph, dataset_node_id))
+    return terms
+
+
+def _requirement_group(edge: KnowledgeGraphEdge, target_type: str) -> str | None:
+    if edge.edge_type == "analysis_requires_modality":
+        return "modality"
+    if edge.edge_type == "analysis_requires_behavioral_event":
+        return "behavioral_event"
+    if target_type == "data_standard":
+        return "data_standard"
+    if target_type == "required_signal":
+        return "required_signal"
+    return REQUIREMENT_GROUPS.get(target_type)
+
+
+def _requirement_matches(
+    graph: KnowledgeGraph,
+    dataset_node_id: str,
+) -> dict[str, list[dict[str, Any]]]:
+    """Return matched analysis requirements for a dataset."""
+
+    grouped: dict[str, list[dict[str, Any]]] = {
+        "modality": [],
+        "behavioral_event": [],
+        "data_standard": [],
+        "required_signal": [],
+    }
+    dataset_terms = _dataset_concept_terms(graph, dataset_node_id)
+    seen: set[tuple[str, str, str]] = set()
+    for analysis_edge in _get_edges_for_node(
+        graph,
+        dataset_node_id,
+        "dataset_supports_analysis",
+        direction="out",
+    ):
+        analysis_node = graph.nodes.get(analysis_edge.target_node_id)
+        if analysis_node is None:
+            continue
+        for requirement_edge in _get_edges_for_node(
+            graph,
+            analysis_node.node_id,
+            direction="out",
+        ):
+            if not requirement_edge.edge_type.startswith("analysis_requires_"):
+                continue
+            target = graph.nodes.get(requirement_edge.target_node_id)
+            if target is None:
+                continue
+            group = _requirement_group(requirement_edge, target.node_type)
+            if group is None:
+                continue
+            target_terms = _node_terms(graph, target.node_id)
+            if not (target_terms & dataset_terms.get(group, set())):
+                continue
+            key = (analysis_node.node_id, target.node_id, requirement_edge.edge_type)
+            if key in seen:
+                continue
+            seen.add(key)
+            grouped[group].append(
+                {
+                    "analysis": analysis_node.label,
+                    "requirement": target.label,
+                    "edge_type": requirement_edge.edge_type,
+                    "confidence": round(
+                        min(analysis_edge.confidence, requirement_edge.confidence),
+                        3,
+                    ),
+                    "data_form": requirement_edge.properties.get("data_form"),
+                    "requirement_type": requirement_edge.properties.get("requirement_type"),
+                }
+            )
+    for values in grouped.values():
+        values.sort(
+            key=lambda item: (
+                str(item["analysis"]),
+                str(item["requirement"]),
+                str(item["edge_type"]),
+            )
+        )
+    return grouped
+
+
 def compute_graph_features_for_result(
     graph: KnowledgeGraph | None,
     result_id: str,
@@ -77,29 +244,11 @@ def compute_graph_features_for_result(
     """Return graph features for a result without requiring graph availability."""
 
     if graph is None:
-        return {
-            "graph_available": False,
-            "graph_degree": 0,
-            "linked_papers": [],
-            "analysis_affordances": [],
-            "tasks": [],
-            "modalities": [],
-            "brain_regions": [],
-            "matched_query_context": {},
-        }
+        return _empty_features(graph_available=False)
 
     node_id = _resolve_dataset_node_id(graph, result_id)
     if node_id not in graph.nodes:
-        return {
-            "graph_available": True,
-            "graph_degree": 0,
-            "linked_papers": [],
-            "analysis_affordances": [],
-            "tasks": [],
-            "modalities": [],
-            "brain_regions": [],
-            "matched_query_context": {},
-        }
+        return _empty_features(graph_available=True)
 
     graph_degree = sum(
         1
@@ -132,6 +281,7 @@ def compute_graph_features_for_result(
         "modalities": modalities,
         "brain_regions": brain_regions,
         "matched_query_context": matched_query_context,
+        "requirement_matches": _requirement_matches(graph, node_id),
     }
 
 
@@ -140,9 +290,20 @@ def graph_context_score(
     result_id: str,
     query_context: dict[str, Any] | None = None,
     weights: dict[str, float] | None = None,
+    use_edge_confidence: bool = False,
 ) -> float:
-    """Return a small optional graph score; absent graphs contribute zero."""
+    """Return a small optional graph score; absent graphs contribute zero.
 
+    Args:
+        graph: Knowledge graph instance or None
+        result_id: Dataset result identifier
+        query_context: Query context with matched tasks/modalities/regions
+        weights: Custom scoring weights (merged with defaults)
+        use_edge_confidence: Weight scores by edge confidence values
+
+    Returns:
+        Graph context score between 0.0 and 0.25
+    """
     if graph is None:
         return 0.0
     score_weights = {**DEFAULT_GRAPH_SEARCH_WEIGHTS, **(weights or {})}
@@ -151,11 +312,75 @@ def graph_context_score(
         return 0.0
 
     matched = features["matched_query_context"]
+    requirement_matches = features.get("requirement_matches", {})
     score = 0.0
-    score += min(len(features["linked_papers"]), 3) * score_weights["linked_paper"]
-    score += min(len(features["analysis_affordances"]), 3) * score_weights["analysis_affordance"]
-    score += len(matched["tasks"]) * score_weights["task_match"]
-    score += len(matched["modalities"]) * score_weights["modality_match"]
-    score += len(matched["brain_regions"]) * score_weights["brain_region_match"]
-    score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
+    node_id = _resolve_dataset_node_id(graph, result_id)
+    requirement_count = sum(len(values) for values in requirement_matches.values())
+    covered_requirement_groups = len(
+        [values for values in requirement_matches.values() if values]
+    )
+
+    if use_edge_confidence:
+        # Weight linked paper edges by confidence
+        paper_edges = _get_edges_for_node(graph, node_id, "paper_uses_dataset", direction="in")
+        paper_edges.extend(_get_edges_for_node(graph, node_id, "paper_mentions_dataset", direction="in"))
+        for edge in paper_edges[:3]:  # Cap at 3 highest-confidence papers
+            score += edge.confidence * score_weights["linked_paper"]
+
+        # Weight analysis affordance edges by confidence
+        affordance_edges = _get_edges_for_node(graph, node_id, "dataset_supports_analysis", direction="out")
+        for edge in affordance_edges[:3]:
+            score += edge.confidence * score_weights["analysis_affordance"]
+
+        # Weight task edges by confidence for matched tasks
+        matched_tasks = matched.get("tasks", [])
+        if matched_tasks:
+            task_edges = _get_edges_for_node(graph, node_id, "dataset_has_task", direction="out")
+            for edge in task_edges:
+                target_node = graph.nodes.get(edge.target_node_id)
+                if target_node and target_node.label in matched_tasks:
+                    score += edge.confidence * score_weights["task_match"]
+
+        # Weight modality edges by confidence for matched modalities
+        matched_modalities = matched.get("modalities", [])
+        if matched_modalities:
+            modality_edges = _get_edges_for_node(graph, node_id, "dataset_has_modality", direction="out")
+            for edge in modality_edges:
+                target_node = graph.nodes.get(edge.target_node_id)
+                if target_node and target_node.label in matched_modalities:
+                    score += edge.confidence * score_weights["modality_match"]
+
+        # Weight region edges by confidence for matched regions
+        matched_regions = matched.get("brain_regions", [])
+        if matched_regions:
+            region_edges = _get_edges_for_node(graph, node_id, "dataset_records_region", direction="out")
+            for edge in region_edges:
+                target_node = graph.nodes.get(edge.target_node_id)
+                if target_node and target_node.label in matched_regions:
+                    score += edge.confidence * score_weights["brain_region_match"]
+
+        # Degree bonus unchanged (no edge-level confidence applies)
+        score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
+        score += (
+            min(requirement_count, 5)
+            * score_weights.get("requirement_match", 0.0)
+        )
+        score += (
+            min(covered_requirement_groups, 4)
+            * score_weights.get("analysis_requirement_coverage", 0.0)
+        )
+    else:
+        # Original counting-based scoring
+        score += min(len(features["linked_papers"]), 3) * score_weights["linked_paper"]
+        score += min(len(features["analysis_affordances"]), 3) * score_weights["analysis_affordance"]
+        score += min(requirement_count, 5) * score_weights.get("requirement_match", 0.0)
+        score += (
+            min(covered_requirement_groups, 4)
+            * score_weights.get("analysis_requirement_coverage", 0.0)
+        )
+        score += len(matched["tasks"]) * score_weights["task_match"]
+        score += len(matched["modalities"]) * score_weights["modality_match"]
+        score += len(matched["brain_regions"]) * score_weights["brain_region_match"]
+        score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
+
     return round(min(score, 0.25), 4)

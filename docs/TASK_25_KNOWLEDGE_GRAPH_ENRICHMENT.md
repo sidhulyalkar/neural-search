@@ -19,8 +19,16 @@ Make the knowledge graph useful for scientific retrieval, not just artifact insp
 - [ ] Add graph coverage thresholds to reports and release checks.
 - [x] Add `analysis_requires_modality`, `analysis_requires_behavioral_event`, and `analysis_requires_task_structure` edges from the deterministic awareness taxonomy.
 - [x] Add a graph requirement report for analysis-to-requirement edges.
+- [x] Add requirement-aware graph context to retrieval explanations when graph config is enabled.
 - [ ] Add graph report sections for unresolved placeholder nodes and weak dataset-paper links.
 - [x] Add tests that verify required graph edges exist for representative records.
+
+## Retrieval Integration Notes
+
+Requirement-aware graph context is opt-in through existing graph retrieval config.
+When enabled, search results can include matched analysis requirements inside
+`graph_context.requirement_matches` without changing the public `graph_score`
+field or existing graph payload keys.
 
 ## Acceptance Criteria
 

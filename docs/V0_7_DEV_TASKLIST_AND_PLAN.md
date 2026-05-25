@@ -175,6 +175,7 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [ ] Expand dataset-paper linking beyond weak linked ID fields.
 - [x] Add analysis requirement edges from data forms to modalities, events, standards, and signals.
 - [x] Add a graph requirement report for analysis-to-requirement edges.
+- [x] Add requirement-aware graph context to retrieval explanations when graph config is enabled.
 - [ ] Add source-specific graph provenance summaries for DANDI, OpenNeuro, OpenAlex, ModelDB, cellxgene, MICrONS, and curated records.
 - [ ] Track planning in `docs/TASK_25_KNOWLEDGE_GRAPH_ENRICHMENT.md`.
 
