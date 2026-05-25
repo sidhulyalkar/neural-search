@@ -17,6 +17,7 @@ from neural_search.intelligence import (
     plan_search_intelligence,
     run_query_plan_evaluation,
     search_datasets_with_intelligence,
+    summarize_human_labels_by_intent,
     summarize_relevance_judgments,
     write_promotion_gate_report,
     write_query_plan_evaluation_report,
@@ -24,8 +25,15 @@ from neural_search.intelligence import (
     write_search_coverage_plan,
 )
 from neural_search.intelligence.evaluation import main as evaluation_main
+from neural_search.intelligence.fixtures import (
+    build_realistic_fixture_benchmark,
+    build_realistic_fixture_judgments,
+    build_realistic_fixture_records,
+    write_realistic_fixture_files,
+)
 from neural_search.intelligence.planner import main as planner_main
 from neural_search.intelligence.promotion import main as promotion_main
+from neural_search.intelligence.review import judgment_from_dict
 from neural_search.intelligence.review import main as review_main
 from neural_search.normalized import make_dataset_id, write_jsonl
 from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord
@@ -354,6 +362,7 @@ def test_query_plan_evaluation_compares_variants(tmp_path: Path) -> None:
     assert evaluation.intelligence_delta["hard_negative_violations"] == 0.0
     assert report.promotion_safe is True
     assert report.grouped_by_intent["hard_negative"]["promotion_safe"] is True
+    assert "eeg_meg" in report.grouped_by_data_form
     assert Path(paths["json"]).exists()
     assert Path(paths["markdown"]).exists()
 
@@ -490,6 +499,69 @@ def test_promotion_gates_use_human_label_summary() -> None:
 
     assert report.promotion_ready is False
     assert "human judgment_count 1 < required 2" in report.blockers
+
+
+def test_task23_realistic_fixtures_cover_underrepresented_forms(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+
+    records = build_realistic_fixture_records()
+    benchmark = build_realistic_fixture_benchmark()
+    judgments = build_realistic_fixture_judgments()
+    paths = write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    modalities = {label.label for record in records for label in record.modalities}
+    assert {
+        "electron_microscopy",
+        "single_cell_rna",
+        "patch_clamp",
+        "model_output",
+    } <= modalities
+    assert len(benchmark["benchmark_queries"]) >= 6
+    assert len(judgments) == len(benchmark["benchmark_queries"])
+    assert Path(paths["records"]).exists()
+    assert Path(paths["benchmark"]).exists()
+    assert Path(paths["judgments"]).exists()
+
+
+def test_per_intent_human_label_summary_uses_evaluation_report() -> None:
+    judgments = [
+        judgment_from_dict(
+            {
+                "query_id": "q_hard",
+                "query_text": "without fmri",
+                "dataset_id": "GOOD",
+                "relevance": "exact",
+                "confidence": 0.9,
+            }
+        ),
+        judgment_from_dict(
+            {
+                "query_id": "q_data",
+                "query_text": "single cell",
+                "dataset_id": "CELL",
+                "relevance": "exact",
+                "confidence": 0.9,
+            }
+        ),
+    ]
+    summary = summarize_human_labels_by_intent(
+        judgments,
+        {
+            "queries": [
+                {"query_id": "q_hard", "planner_intent": "hard_negative"},
+                {"query_id": "q_data", "planner_intent": "data_form_search"},
+            ]
+        },
+    )
+
+    assert summary["hard_negative"]["judgment_count"] == 1
+    assert summary["data_form_search"]["positive_count"] == 1
 
 
 def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:

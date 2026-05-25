@@ -11,6 +11,7 @@ from typing import Any
 import yaml
 
 from neural_search.intelligence.review import (
+    RelevanceJudgment,
     load_relevance_judgments,
     summarize_relevance_judgments,
 )
@@ -70,6 +71,7 @@ def _intent_decision(
     intent: str,
     gate: dict[str, Any],
     summary: dict[str, Any] | None,
+    human_summary: dict[str, Any] | None = None,
 ) -> IntentPromotionDecision:
     blockers: list[str] = []
     enabled = bool(gate.get("enabled", False))
@@ -102,6 +104,24 @@ def _intent_decision(
     if not enabled:
         blockers.append("intent disabled in manifest")
 
+    human_gates = gate.get("human_label_gates", {})
+    human_summary = dict(human_summary or {})
+    min_human_judgments = int(human_gates.get("min_judgments", 0) or 0)
+    human_judgment_count = int(human_summary.get("judgment_count", 0) or 0)
+    if human_judgment_count < min_human_judgments:
+        blockers.append(
+            f"human judgment_count {human_judgment_count} < required {min_human_judgments}"
+        )
+    max_human_hard_negatives = int(
+        human_gates.get("max_hard_negative_count", 0) or 0
+    )
+    human_hard_negatives = int(human_summary.get("hard_negative_count", 0) or 0)
+    if human_hard_negatives > max_human_hard_negatives:
+        blockers.append(
+            f"human hard_negative_count {human_hard_negatives} > allowed "
+            f"{max_human_hard_negatives}"
+        )
+
     return IntentPromotionDecision(
         intent=intent,
         ready=not blockers,
@@ -111,8 +131,30 @@ def _intent_decision(
             "query_count": query_count,
             "mean_mrr_delta": mean_mrr_delta,
             "hard_negative_violation_delta": hard_negative_delta,
+            "human_judgment_count": human_judgment_count,
+            "human_hard_negative_count": human_hard_negatives,
         },
     )
+
+
+def summarize_human_labels_by_intent(
+    judgments: list[RelevanceJudgment],
+    evaluation_report: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Summarize human judgments using planner intent from an evaluation report."""
+
+    intent_by_query_id = {
+        str(query.get("query_id", "")): str(query.get("planner_intent", "unknown"))
+        for query in evaluation_report.get("queries", [])
+    }
+    grouped: dict[str, list[RelevanceJudgment]] = {}
+    for judgment in judgments:
+        intent = intent_by_query_id.get(judgment.query_id, "unknown")
+        grouped.setdefault(intent, []).append(judgment)
+    return {
+        intent: summarize_relevance_judgments(items)
+        for intent, items in sorted(grouped.items())
+    }
 
 
 def evaluate_promotion_gates(
@@ -162,8 +204,14 @@ def evaluate_promotion_gates(
         )
 
     grouped = evaluation_report.get("grouped_by_intent", {})
+    human_by_intent = human_summary.get("by_intent", {})
     decisions = tuple(
-        _intent_decision(intent, dict(gate), grouped.get(intent))
+        _intent_decision(
+            intent,
+            dict(gate),
+            grouped.get(intent),
+            human_by_intent.get(intent),
+        )
         for intent, gate in sorted((manifest.get("intents", {}) or {}).items())
     )
     default_enabled = bool(manifest.get("default_enabled", False))
@@ -254,8 +302,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.judgments
         else None
     )
+    evaluation_report = load_evaluation_report(args.evaluation)
+    if args.judgments:
+        judgments = load_relevance_judgments(args.judgments)
+        human_summary = {
+            **summarize_relevance_judgments(judgments),
+            "by_intent": summarize_human_labels_by_intent(judgments, evaluation_report),
+        }
     report = evaluate_promotion_gates(
-        load_evaluation_report(args.evaluation),
+        evaluation_report,
         load_promotion_manifest(args.manifest),
         human_label_summary=human_summary,
     )

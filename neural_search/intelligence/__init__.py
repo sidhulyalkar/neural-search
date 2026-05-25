@@ -21,6 +21,7 @@ __all__ = [
     "plan_search_intelligence",
     "run_query_plan_evaluation",
     "search_datasets_with_intelligence",
+    "summarize_human_labels_by_intent",
     "summarize_relevance_judgments",
     "write_promotion_gate_report",
     "write_query_plan_evaluation_report",
@@ -73,6 +74,7 @@ def __getattr__(name: str) -> Any:
     if name in {
         "PromotionGateReport",
         "evaluate_promotion_gates",
+        "summarize_human_labels_by_intent",
         "write_promotion_gate_report",
     }:
         from neural_search.intelligence import promotion

@@ -16,23 +16,46 @@ intents:
     min_query_count: 5
     min_mean_mrr_delta: 0.0
     max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0
   analysis_affordance:
     enabled: false
     min_query_count: 5
     min_mean_mrr_delta: 0.0
     max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0
   cross_modal:
     enabled: false
     min_query_count: 5
     min_mean_mrr_delta: 0.0
     max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0
+  data_form_search:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0
   dataset_lookup:
     enabled: false
     min_query_count: 5
     min_mean_mrr_delta: 0.0
     max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0
   graph_similarity:
     enabled: false
     min_query_count: 5
     min_mean_mrr_delta: 0.0
     max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      max_hard_negative_count: 0

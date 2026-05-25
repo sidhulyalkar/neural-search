@@ -57,6 +57,7 @@ class QueryPlanEvaluation:
     query: str
     planner_intent: str
     planner_mode: str
+    planner_data_forms: tuple[str, ...]
     baseline: VariantMetrics
     awareness: VariantMetrics
     intelligence: VariantMetrics
@@ -69,6 +70,7 @@ class QueryPlanEvaluation:
             "query": self.query,
             "planner_intent": self.planner_intent,
             "planner_mode": self.planner_mode,
+            "planner_data_forms": list(self.planner_data_forms),
             "baseline": self.baseline.model_dump(),
             "awareness": self.awareness.model_dump(),
             "intelligence": self.intelligence.model_dump(),
@@ -86,6 +88,7 @@ class QueryPlanEvaluationReport:
     corpus: dict[str, Any]
     mean_delta: dict[str, float]
     grouped_by_intent: dict[str, dict[str, Any]]
+    grouped_by_data_form: dict[str, dict[str, Any]]
     queries: tuple[QueryPlanEvaluation, ...]
 
     def model_dump(self) -> dict[str, Any]:
@@ -95,6 +98,7 @@ class QueryPlanEvaluationReport:
             "corpus": dict(self.corpus),
             "mean_delta": dict(self.mean_delta),
             "grouped_by_intent": self.grouped_by_intent,
+            "grouped_by_data_form": self.grouped_by_data_form,
             "queries": [query.model_dump() for query in self.queries],
         }
 
@@ -268,6 +272,13 @@ def evaluate_query_plan(
     awareness = _variant_metrics("awareness", awareness_response, query)
     intelligence = _variant_metrics("intelligence", intelligence_response, query)
     plan = intelligence_response.parsed_query.get("search_intelligence_plan", {})
+    data_forms = tuple(
+        str(value)
+        for value in (
+            plan.get("required_data_forms")
+            or plan.get("query_awareness", {}).get("requested_data_forms", [])
+        )
+    )
     delta = {
         "hit_at_5": round(intelligence.hit_at_5 - baseline.hit_at_5, 4),
         "mrr": round(intelligence.mrr - baseline.mrr, 4),
@@ -280,6 +291,7 @@ def evaluate_query_plan(
         query=query.query,
         planner_intent=str(plan.get("intent", "unknown")),
         planner_mode=str(plan.get("mode", "unknown")),
+        planner_data_forms=data_forms,
         baseline=baseline,
         awareness=awareness,
         intelligence=intelligence,
@@ -308,12 +320,15 @@ def run_query_plan_evaluation(
         for query in queries
     )
     grouped: dict[str, list[QueryPlanEvaluation]] = defaultdict(list)
+    grouped_data_forms: dict[str, list[QueryPlanEvaluation]] = defaultdict(list)
     for evaluation in evaluations:
         grouped[evaluation.planner_intent].append(evaluation)
+        data_forms = evaluation.planner_data_forms or ("unspecified",)
+        for data_form in data_forms:
+            grouped_data_forms[data_form].append(evaluation)
 
-    grouped_summary: dict[str, dict[str, Any]] = {}
-    for intent, items in grouped.items():
-        grouped_summary[intent] = {
+    def _group_summary(items: list[QueryPlanEvaluation]) -> dict[str, Any]:
+        return {
             "query_count": len(items),
             "mean_hit_at_5_delta": round(
                 sum(item.intelligence_delta["hit_at_5"] for item in items) / len(items),
@@ -328,6 +343,14 @@ def run_query_plan_evaluation(
             ),
             "promotion_safe": not any(item.promotion_blocked for item in items),
         }
+
+    grouped_summary: dict[str, dict[str, Any]] = {}
+    for intent, items in grouped.items():
+        grouped_summary[intent] = _group_summary(items)
+
+    grouped_data_form_summary: dict[str, dict[str, Any]] = {}
+    for data_form, items in grouped_data_forms.items():
+        grouped_data_form_summary[data_form] = _group_summary(items)
 
     query_count = len(evaluations)
     mean_delta = {
@@ -356,6 +379,7 @@ def run_query_plan_evaluation(
         },
         mean_delta=mean_delta,
         grouped_by_intent=grouped_summary,
+        grouped_by_data_form=grouped_data_form_summary,
         queries=evaluations,
     )
 
@@ -382,6 +406,30 @@ def _markdown(report: QueryPlanEvaluationReport) -> str:
             + " | ".join(
                 [
                     intent,
+                    str(summary["query_count"]),
+                    str(summary["mean_hit_at_5_delta"]),
+                    str(summary["mean_mrr_delta"]),
+                    str(summary["hard_negative_violation_delta"]),
+                    str(summary["promotion_safe"]).lower(),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "## By Data Form",
+            "",
+            "| Data Form | Queries | Hit@5 Delta | MRR Delta | Hard Neg Delta | Promotion Safe |",
+            "|---|---:|---:|---:|---:|---|",
+        ]
+    )
+    for data_form, summary in sorted(report.grouped_by_data_form.items()):
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    data_form,
                     str(summary["query_count"]),
                     str(summary["mean_hit_at_5_delta"]),
                     str(summary["mean_mrr_delta"]),

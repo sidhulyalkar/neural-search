@@ -1,0 +1,167 @@
+{
+  "blockers": [
+    "total query_count 6 < required 10",
+    "default promotion disabled in manifest"
+  ],
+  "default_enabled": false,
+  "human_label_summary": {
+    "by_intent": {
+      "analysis_affordance": {
+        "counts_by_relevance": {
+          "exact": 1
+        },
+        "hard_negative_count": 0,
+        "judgment_count": 1,
+        "labeled_count": 1,
+        "mean_confidence": 0.9,
+        "positive_count": 1,
+        "precision_like_rate": 1.0
+      },
+      "cross_modal": {
+        "counts_by_relevance": {
+          "exact": 1
+        },
+        "hard_negative_count": 0,
+        "judgment_count": 1,
+        "labeled_count": 1,
+        "mean_confidence": 0.9,
+        "positive_count": 1,
+        "precision_like_rate": 1.0
+      },
+      "data_form_search": {
+        "counts_by_relevance": {
+          "exact": 1
+        },
+        "hard_negative_count": 0,
+        "judgment_count": 1,
+        "labeled_count": 1,
+        "mean_confidence": 0.9,
+        "positive_count": 1,
+        "precision_like_rate": 1.0
+      },
+      "hard_negative": {
+        "counts_by_relevance": {
+          "exact": 3
+        },
+        "hard_negative_count": 0,
+        "judgment_count": 3,
+        "labeled_count": 3,
+        "mean_confidence": 0.9,
+        "positive_count": 3,
+        "precision_like_rate": 1.0
+      }
+    },
+    "counts_by_relevance": {
+      "exact": 6
+    },
+    "hard_negative_count": 0,
+    "judgment_count": 6,
+    "labeled_count": 6,
+    "mean_confidence": 0.9,
+    "positive_count": 6,
+    "precision_like_rate": 1.0
+  },
+  "intent_decisions": [
+    {
+      "blockers": [
+        "query_count 1 < required 5",
+        "intent disabled in manifest"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "analysis_affordance",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 1,
+        "mean_mrr_delta": 0.6667,
+        "query_count": 1
+      },
+      "ready": false
+    },
+    {
+      "blockers": [
+        "query_count 1 < required 5",
+        "intent disabled in manifest"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "cross_modal",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 1,
+        "mean_mrr_delta": 0.0,
+        "query_count": 1
+      },
+      "ready": false
+    },
+    {
+      "blockers": [
+        "query_count 1 < required 5",
+        "intent disabled in manifest"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "data_form_search",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 1,
+        "mean_mrr_delta": 0.0,
+        "query_count": 1
+      },
+      "ready": false
+    },
+    {
+      "blockers": [
+        "missing evaluation summary",
+        "query_count 0 < required 5",
+        "intent disabled in manifest",
+        "human judgment_count 0 < required 1"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "dataset_lookup",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 0,
+        "mean_mrr_delta": 0.0,
+        "query_count": 0
+      },
+      "ready": false
+    },
+    {
+      "blockers": [
+        "missing evaluation summary",
+        "query_count 0 < required 5",
+        "intent disabled in manifest",
+        "human judgment_count 0 < required 1"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "graph_similarity",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 0,
+        "mean_mrr_delta": 0.0,
+        "query_count": 0
+      },
+      "ready": false
+    },
+    {
+      "blockers": [
+        "query_count 3 < required 5",
+        "intent disabled in manifest"
+      ],
+      "enabled_in_manifest": false,
+      "intent": "hard_negative",
+      "metrics": {
+        "hard_negative_violation_delta": 0,
+        "human_hard_negative_count": 0,
+        "human_judgment_count": 3,
+        "mean_mrr_delta": 0.0,
+        "query_count": 3
+      },
+      "ready": false
+    }
+  ],
+  "promotion_ready": false
+}

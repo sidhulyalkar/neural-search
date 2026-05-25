@@ -1,0 +1,91 @@
+benchmark_queries:
+- id: task23_connectomics_mapping
+  query: connectome morphology tracing for circuit mapping without fMRI
+  expected_dataset_ids:
+  - dataset:microns:visual_connectome_v1
+  expected_modalities_any:
+  - electron_microscopy
+  - morphology
+  - tracing
+  expected_analysis_any:
+  - circuit_mapping
+  - connectivity
+  hard_negative_dataset_ids:
+  - dataset:openneuro:ds_fmri_connectivity_v1
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: task23_single_cell_mapping
+  query: single cell transcriptomics cell type mapping human cortex
+  expected_dataset_ids:
+  - dataset:cellxgene:human_cortex_single_cell_v1
+  expected_modalities_any:
+  - single_cell_rna
+  - transcriptomics
+  expected_species:
+  - human
+  expected_analysis_any:
+  - cell_type_mapping
+  - differential_expression
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: task23_patch_clamp_excitability
+  query: mouse patch clamp membrane voltage excitability without fMRI
+  expected_dataset_ids:
+  - dataset:dandi:patch_clamp_mouse_cortex_v1
+  expected_modalities_any:
+  - patch_clamp
+  - intracellular_ephys
+  expected_species:
+  - mouse
+  expected_analysis_any:
+  - cellular_physiology
+  - excitability_analysis
+  hard_negative_dataset_ids:
+  - dataset:openneuro:ds_fmri_connectivity_v1
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: task23_computational_model
+  query: biophysical simulation model parameter inference hippocampus
+  expected_dataset_ids:
+  - dataset:modeldb:hippocampal_biophysical_model_v1
+  expected_modalities_any:
+  - model_output
+  - simulation
+  expected_regions_any:
+  - hippocampus
+  expected_analysis_any:
+  - parameter_inference
+  - mechanistic_modeling
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: task23_meg_time_frequency
+  query: human MEG language time frequency with events
+  expected_dataset_ids:
+  - dataset:openneuro:ds_meg_language_v1
+  expected_modalities_any:
+  - meg
+  expected_species:
+  - human
+  expected_analysis_any:
+  - time_frequency
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: task23_fmri_connectivity_no_eeg
+  query: human fMRI connectivity behavior without EEG
+  expected_dataset_ids:
+  - dataset:openneuro:ds_fmri_connectivity_v1
+  expected_modalities_any:
+  - fmri
+  - mri
+  expected_species:
+  - human
+  expected_analysis_any:
+  - connectivity
+  hard_negative_dataset_ids:
+  - dataset:openneuro:ds_meg_language_v1
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+metadata:
+  source: neural_search.intelligence.fixtures
+  review_required: false
+  note: Task 23 realistic fixture queries with deterministic expected IDs.

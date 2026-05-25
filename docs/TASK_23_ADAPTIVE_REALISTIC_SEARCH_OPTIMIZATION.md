@@ -12,6 +12,9 @@ Make Neural Search more realistic, smarter, and more adaptable by grounding rank
 - The current `real_v07` evaluation uses only 3 normalized dataset records and 3 benchmark queries.
 - Intelligence deltas are neutral, not yet evidence for default promotion.
 - Promotion is correctly blocked by insufficient query count and disabled manifest gates.
+- Task 23 fixture evaluation covers 6 realistic records and 6 queries spanning connectomics, molecular, intracellular ephys, computational models, MEG, and fMRI.
+- Task 23 fixture evaluation remains hard-negative safe and shows a positive MRR delta for molecular/single-cell analysis-affordance search.
+- Promotion remains blocked because default promotion is disabled and each intent still has fewer than the required 5 evaluated queries.
 
 ## Optimization Strategy
 
@@ -24,10 +27,10 @@ Make Neural Search more realistic, smarter, and more adaptable by grounding rank
 
 ## First Implementation Slices
 
-- Add per-intent human-label gates after the first reviewed judgment files exist.
-- Extend query-plan evaluation with modality/data-form group summaries.
+- [x] Add per-intent human-label gates after the first reviewed judgment files exist.
+- [x] Extend query-plan evaluation with data-form group summaries.
 - Add calibration reports comparing score distributions against human judgments.
-- Add a realistic search fixture set covering fMRI, MEG, connectomics, molecular, intracellular ephys, computational models, and clinical data.
+- [x] Add a realistic search fixture set covering fMRI, MEG, connectomics, molecular, intracellular ephys, and computational models.
 - Add source-aware ranking diagnostics for DANDI, OpenNeuro, OpenAlex, ModelDB, cellxgene, MICrONS, and curated landmark records.
 
 ## Acceptance Criteria
