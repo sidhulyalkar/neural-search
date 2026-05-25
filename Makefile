@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -196,6 +196,11 @@ real-reports: real-corpus-build real-graph-build
 		--out data/reports/real_v07
 
 real-artifacts-build: real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports
+
+awareness-report: corpus-build real-corpus-build
+	python -m neural_search.awareness.report \
+		--records data/corpus/normalized \
+		--out data/reports/awareness
 
 release-summary:
 	python -m neural_search.release.check --summary-only

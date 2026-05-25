@@ -81,6 +81,16 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [x] Improve onboarding docs, release notes, and product walkthroughs.
 - [x] Track implementation in `docs/TASK_10_RELEASE_AND_PRODUCT_HARDENING_PLAN.md`.
 
+## Phase 10: Task 13 General Neuroscience Search Intelligence
+
+- [x] Add a deterministic neuroscience data-form taxonomy.
+- [x] Infer query awareness for data forms, analysis families, scales, species, and exclusions.
+- [x] Score dataset awareness separately from the main retrieval score.
+- [x] Add corpus awareness reports for coverage and underrepresented data forms.
+- [ ] Wire awareness scoring into the main retrieval path after concurrent Task 12 search-core work settles.
+- [ ] Add real-corpus benchmarks for fMRI, MEG, connectomics, molecular, clinical, and computational-model searches.
+- [x] Track implementation in `docs/TASK_13_GENERAL_NEUROSCIENCE_SEARCH_INTELLIGENCE.md`.
+
 ## Quality Gates
 
 ```bash
@@ -97,6 +107,7 @@ For v0.7 real corpus work, add:
 make real-artifacts-build
 python -m neural_search.evaluation.run_benchmark --suite real_v07
 make release-check
+make awareness-report
 ```
 
 ## Open Engineering Decisions
