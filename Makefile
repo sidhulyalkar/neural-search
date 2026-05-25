@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report search-intelligence-plan release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report search-intelligence-plan human-review-queue release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -216,6 +216,12 @@ search-intelligence-plan:
 			--query "$(QUERY)" \
 			--corpus-profile data/reports/search_intelligence/search_coverage_plan.json; \
 	fi
+
+human-review-queue: search-intelligence-report
+	python -m neural_search.intelligence.review \
+		--coverage data/reports/search_intelligence/search_coverage_plan.json \
+		--benchmark-seeds data/reports/search_intelligence/benchmark_query_seeds.yaml \
+		--out data/reports/search_intelligence
 
 release-summary:
 	python -m neural_search.release.check --summary-only

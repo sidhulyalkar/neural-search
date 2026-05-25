@@ -1,6 +1,6 @@
 # Task 19: Retrieval Planner Integration
 
-Status: prepared
+Status: bridge implemented
 
 ## Goal
 
@@ -24,5 +24,15 @@ Promote the Task 17 planner from an inspection tool into the main retrieval path
 
 ## First Implementation Slice
 
-- Add config-only plumbing and tests with the feature disabled by default.
-- Add one focused benchmark/debug test proving `query_awareness`, `intent`, `mode`, and quality checks are traceable.
+- [x] Add config-only planner application without editing the active search core.
+- [x] Add `search_datasets_with_intelligence` as a bridge wrapper.
+- [x] Blend planner weights conservatively with supplied retrieval config.
+- [x] Preserve hard-negative filtering for constraint-first plans.
+- [x] Expose planner metadata in `parsed_query`.
+- [x] Add focused tests for config application and wrapper response metadata.
+
+## Remaining Main-Core Integration
+
+- Add disabled-by-default `intelligence.enabled` plumbing to `search_datasets`.
+- Persist planner metadata in search traces and benchmark debug outputs.
+- Compare benchmark metrics before enabling planner blending by default.

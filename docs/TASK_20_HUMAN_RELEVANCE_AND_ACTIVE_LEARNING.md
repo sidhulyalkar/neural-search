@@ -1,6 +1,6 @@
 # Task 20: Human Relevance and Active Learning Loop
 
-Status: prepared
+Status: first implementation slice complete
 
 ## Goal
 
@@ -23,6 +23,15 @@ Turn search failures and coverage gaps into a human-review loop that improves be
 
 ## First Implementation Slice
 
-- Add `neural_search.evaluation.human_labels` or extend the current relevance module if the concurrent Task 15/16 files settle.
-- Generate a review queue from `search_coverage_plan.json` and benchmark failure outputs.
-- Add fixture tests for exact, relevant, partial, hard-negative, and unknown judgments.
+- [x] Add deterministic relevance judgment loading and summaries.
+- [x] Generate review queues from coverage reports and benchmark seed YAML.
+- [x] Write JSON and Markdown review queue reports.
+- [x] Add CLI: `python -m neural_search.intelligence.review`.
+- [x] Add `make human-review-queue`.
+- [x] Add fixture tests for positive and hard-negative labels plus queue generation.
+
+## Next Implementation
+
+- Merge this review queue with benchmark failure output once Task 16 ablation work settles.
+- Add reviewer assignment, timestamps, and promotion rules for validated labels.
+- Keep human labels separate from benchmark expectations until explicitly promoted.

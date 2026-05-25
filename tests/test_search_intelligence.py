@@ -5,12 +5,19 @@ from pathlib import Path
 import yaml
 
 from neural_search.intelligence import (
+    apply_search_intelligence_config,
     build_benchmark_query_seeds,
+    build_review_queue,
     build_search_coverage_plan,
+    load_relevance_judgments,
     plan_search_intelligence,
+    search_datasets_with_intelligence,
+    summarize_relevance_judgments,
+    write_review_queue,
     write_search_coverage_plan,
 )
 from neural_search.intelligence.planner import main as planner_main
+from neural_search.intelligence.review import main as review_main
 from neural_search.normalized import make_dataset_id, write_jsonl
 from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord
 
@@ -22,6 +29,38 @@ def _label(label_type: str, label: str) -> EvidenceLabel:
         label_type=label_type,
         confidence=0.95,
     )
+
+
+def _search_record(
+    source_id: str,
+    title: str,
+    description: str,
+    *,
+    species: list[str],
+    modalities: list[str],
+    behaviors: list[str] | None = None,
+    tasks: list[str] | None = None,
+) -> dict:
+    return {
+        "dataset": {
+            "id": source_id,
+            "source": "fixture",
+            "source_id": source_id,
+            "title": title,
+            "description": description,
+            "species": species,
+            "modalities": modalities,
+            "brain_regions": [],
+            "tasks": tasks or [],
+            "behaviors": behaviors or [],
+            "data_standards": ["BIDS"],
+            "has_behavior": bool(behaviors),
+            "has_trials": True,
+            "license": "CC0",
+            "linked_paper_ids": [],
+            "metadata_json": {},
+        }
+    }
 
 
 def test_search_intelligence_plan_handles_cross_modal_hard_negatives() -> None:
@@ -133,3 +172,137 @@ def test_planner_cli_writes_query_plan(tmp_path: Path) -> None:
     payload = output_path.read_text(encoding="utf-8")
     assert "connectomics" in payload
     assert "constraint_filter_first" in payload
+
+
+def test_intelligence_config_application_preserves_hard_negative_filters() -> None:
+    application = apply_search_intelligence_config(
+        "human EEG without fMRI",
+        {
+            "weights": {"ontology": 0.2, "semantic": 0.2},
+            "intelligence": {"enabled": True, "weight_blend_strength": 0.5},
+        },
+    )
+
+    assert application.enabled is True
+    assert application.plan.intent == "hard_negative"
+    assert application.retrieval_config["hard_negative_filters"]["enabled"] is True
+    assert application.blended_weights["negative_constraint"] > 0
+
+
+def test_search_with_intelligence_exposes_plan_metadata() -> None:
+    response = search_datasets_with_intelligence(
+        "human EEG BCI decoding with behavior without fMRI",
+        datasets=[
+            _search_record(
+                "GOOD_EEG",
+                "Human EEG BCI motor imagery",
+                "Human EEG channels, events, labels, sampling rate, and behavior trials.",
+                species=["human"],
+                modalities=["eeg"],
+                behaviors=["motor imagery"],
+                tasks=["bci_decoding"],
+            ),
+            _search_record(
+                "BAD_FMRI",
+                "Human fMRI behavior task",
+                "Human BOLD fMRI images and behavior events.",
+                species=["human"],
+                modalities=["fmri"],
+                behaviors=["button press"],
+                tasks=["decision making"],
+            ),
+        ],
+        limit=2,
+        rerank=True,
+    )
+
+    assert response.parsed_query["search_intelligence_enabled"] is True
+    assert response.parsed_query["search_intelligence_plan"]["intent"] == "hard_negative"
+    assert response.results[0].dataset_id == "GOOD_EEG"
+    assert "awareness_score" in response.results[0].score_breakdown
+
+
+def test_relevance_judgments_and_review_queue(tmp_path: Path) -> None:
+    judgments_path = tmp_path / "judgments.jsonl"
+    judgments_path.write_text(
+        "\n".join(
+            [
+                (
+                    '{"query_id":"q1","query_text":"eeg","dataset_id":"GOOD",'
+                    '"relevance":"exact","confidence":0.9}'
+                ),
+                (
+                    '{"query_id":"q1","query_text":"eeg","dataset_id":"BAD",'
+                    '"relevance":"hard_negative","confidence":0.8}'
+                ),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    judgments = load_relevance_judgments(judgments_path)
+    summary = summarize_relevance_judgments(judgments)
+    queue = build_review_queue(
+        {
+            "gaps": [
+                {"data_form": "molecular", "priority": "critical"},
+            ]
+        },
+        {
+            "benchmark_queries": [
+                {
+                    "id": "coverage_molecular_01",
+                    "query": "single cell datasets",
+                    "coverage_gap": "molecular",
+                    "priority": "critical",
+                }
+            ]
+        },
+    )
+    paths = write_review_queue(queue, tmp_path / "review")
+
+    assert summary["judgment_count"] == 2
+    assert summary["positive_count"] == 1
+    assert summary["hard_negative_count"] == 1
+    assert queue[0]["label_status"] == "needs_review"
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_review_queue_cli_writes_reports(tmp_path: Path) -> None:
+    coverage_path = tmp_path / "coverage.json"
+    seeds_path = tmp_path / "seeds.yaml"
+    out_dir = tmp_path / "queue"
+    coverage_path.write_text(
+        '{"gaps":[{"data_form":"connectomics","priority":"critical"}]}',
+        encoding="utf-8",
+    )
+    seeds_path.write_text(
+        yaml.safe_dump(
+            {
+                "benchmark_queries": [
+                    {
+                        "id": "coverage_connectomics_01",
+                        "query": "connectome datasets",
+                        "coverage_gap": "connectomics",
+                        "priority": "critical",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = review_main(
+        [
+            "--coverage",
+            str(coverage_path),
+            "--benchmark-seeds",
+            str(seeds_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "human_review_queue.json").exists()

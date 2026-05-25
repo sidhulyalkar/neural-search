@@ -121,19 +121,33 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 ## Phase 14: Task 19 Retrieval Planner Integration
 
-- [ ] Add disabled-by-default retrieval config plumbing for planner integration.
-- [ ] Expose planner metadata in parsed query/search traces when enabled.
-- [ ] Blend planner weights with existing query-intent routing conservatively.
+- [x] Add bridge-level retrieval config plumbing for planner integration.
+- [x] Expose planner metadata in parsed query through `search_datasets_with_intelligence`.
+- [x] Blend planner weights with existing retrieval config conservatively.
 - [ ] Validate demo, adversarial, and real_v07 benchmarks before enabling by default.
 - [x] Track preparation in `docs/TASK_19_RETRIEVAL_PLANNER_INTEGRATION.md`.
 
 ## Phase 15: Task 20 Human Relevance and Active Learning Loop
 
-- [ ] Define/load human relevance judgments for query-result pairs.
-- [ ] Generate review queues from coverage gaps and benchmark failures.
-- [ ] Report human-labeled metrics separately from synthetic benchmark expectations.
+- [x] Define/load human relevance judgments for query-result pairs.
+- [x] Generate review queues from coverage gaps and benchmark seed queries.
+- [x] Report human-labeled metrics separately from synthetic benchmark expectations.
 - [ ] Use labels to prioritize corpus and benchmark expansion before ranking changes.
 - [x] Track preparation in `docs/TASK_20_HUMAN_RELEVANCE_AND_ACTIVE_LEARNING.md`.
+
+## Phase 16: Task 21 Query Plan Evaluation Harness
+
+- [ ] Compare baseline, awareness, and intelligence retrieval across benchmark suites.
+- [ ] Group metric deltas by planner intent and data form.
+- [ ] Block promotion when hard-negative violations increase.
+- [ ] Track planning in `docs/TASK_21_QUERY_PLAN_EVALUATION_HARNESS.md`.
+
+## Phase 17: Task 22 Retrieval Default Promotion
+
+- [ ] Add an intent-specific promotion manifest.
+- [ ] Define CI/local/exploratory config presets.
+- [ ] Promote planner metadata into standard search traces after Task 21 review.
+- [ ] Track planning in `docs/TASK_22_RETRIEVAL_DEFAULT_PROMOTION.md`.
 
 ## Quality Gates
 
