@@ -161,6 +161,30 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [x] Add realistic fixtures for underrepresented neuroscience data forms.
 - [ ] Track planning in `docs/TASK_23_ADAPTIVE_REALISTIC_SEARCH_OPTIMIZATION.md`.
 
+## Phase 19: Task 24 Corpus and Knowledge Base Expansion Plan
+
+- [x] Add a regeneratable corpus and knowledge-base expansion report.
+- [x] Convert data-form coverage gaps into source, concept, benchmark, and graph-edge tasks.
+- [x] Add `make corpus-knowledge-plan`.
+- [ ] Review the generated plan before promoting any new ranking defaults.
+- [ ] Track planning in `docs/TASK_24_CORPUS_AND_KNOWLEDGE_BASE_EXPANSION.md`.
+
+## Phase 20: Task 25 Knowledge Graph Enrichment
+
+- [ ] Add graph coverage gates for required scientific node and edge types.
+- [ ] Expand dataset-paper linking beyond weak linked ID fields.
+- [ ] Add analysis requirement edges from data forms to modalities, events, standards, and signals.
+- [ ] Add source-specific graph provenance summaries for DANDI, OpenNeuro, OpenAlex, ModelDB, cellxgene, MICrONS, and curated records.
+- [ ] Track planning in `docs/TASK_25_KNOWLEDGE_GRAPH_ENRICHMENT.md`.
+
+## Phase 21: Task 26 Source Intake Scaling
+
+- [ ] Add fixture-backed source families for ModelDB, cellxgene, MICrONS, and curated landmark records.
+- [ ] Expand real-corpus local intake targets by data form before tuning ranking weights.
+- [ ] Keep network-backed source expansion optional outside CI.
+- [ ] Add source-balance checks to release and search-intelligence reports.
+- [ ] Track planning in `docs/TASK_26_SOURCE_INTAKE_SCALING.md`.
+
 ## Quality Gates
 
 ```bash

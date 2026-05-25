@@ -11,9 +11,12 @@ __all__ = [
     "EvaluationQuery",
     "PromotionGateReport",
     "CalibrationReport",
+    "CorpusKnowledgeExpansionPlan",
+    "ExpansionTask",
     "apply_search_intelligence_config",
     "build_search_coverage_plan",
     "build_benchmark_query_seeds",
+    "build_corpus_knowledge_expansion_plan",
     "build_review_queue",
     "evaluate_promotion_gates",
     "evaluate_query_plan",
@@ -27,6 +30,7 @@ __all__ = [
     "summarize_relevance_judgments",
     "write_promotion_gate_report",
     "write_calibration_report",
+    "write_corpus_knowledge_expansion_plan",
     "write_query_plan_evaluation_report",
     "write_search_coverage_plan",
     "write_review_queue",
@@ -44,6 +48,15 @@ def __getattr__(name: str) -> Any:
         from neural_search.intelligence import coverage
 
         return getattr(coverage, name)
+    if name in {
+        "CorpusKnowledgeExpansionPlan",
+        "ExpansionTask",
+        "build_corpus_knowledge_expansion_plan",
+        "write_corpus_knowledge_expansion_plan",
+    }:
+        from neural_search.intelligence import expansion
+
+        return getattr(expansion, name)
     if name in {
         "apply_search_intelligence_config",
         "search_datasets_with_intelligence",

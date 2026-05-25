@@ -31,7 +31,14 @@ Make Neural Search more realistic, smarter, and more adaptable by grounding rank
 - [x] Extend query-plan evaluation with data-form group summaries.
 - [x] Add calibration reports comparing score distributions against human judgments.
 - [x] Add a realistic search fixture set covering fMRI, MEG, connectomics, molecular, intracellular ephys, and computational models.
+- [x] Add a regeneratable corpus and knowledge-base expansion plan to turn coverage gaps into concrete source, graph, and benchmark tasks.
 - Add source-aware ranking diagnostics for DANDI, OpenNeuro, OpenAlex, ModelDB, cellxgene, MICrONS, and curated landmark records.
+
+## Next Tasks
+
+- Task 24 expands the normalized corpus and benchmark queue from realistic data-form gaps.
+- Task 25 enriches the knowledge graph with missing node and edge types needed for scientific reasoning.
+- Task 26 scales source intake across ModelDB, cellxgene, MICrONS, and curated landmark datasets while preserving CI-safe fixtures.
 
 ## Acceptance Criteria
 

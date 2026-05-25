@@ -4,10 +4,13 @@ from pathlib import Path
 
 import yaml
 
+from neural_search.graph.builder import build_graph_from_records
+from neural_search.graph.schema import write_graph_json
 from neural_search.intelligence import (
     EvaluationQuery,
     apply_search_intelligence_config,
     build_benchmark_query_seeds,
+    build_corpus_knowledge_expansion_plan,
     build_review_queue,
     build_search_coverage_plan,
     calibrate_scores_against_judgments,
@@ -21,6 +24,7 @@ from neural_search.intelligence import (
     summarize_human_labels_by_intent,
     summarize_relevance_judgments,
     write_calibration_report,
+    write_corpus_knowledge_expansion_plan,
     write_promotion_gate_report,
     write_query_plan_evaluation_report,
     write_review_queue,
@@ -28,6 +32,7 @@ from neural_search.intelligence import (
 )
 from neural_search.intelligence.calibration import main as calibration_main
 from neural_search.intelligence.evaluation import main as evaluation_main
+from neural_search.intelligence.expansion import main as expansion_main
 from neural_search.intelligence.fixtures import (
     build_realistic_fixture_benchmark,
     build_realistic_fixture_judgments,
@@ -175,6 +180,65 @@ def test_coverage_plan_generates_reviewable_benchmark_seeds(tmp_path: Path) -> N
     assert seeds["metadata"]["review_required"] is True
     assert seeds["benchmark_queries"][0]["coverage_gap"]
     assert seeds["benchmark_queries"][0]["minimum_precision_at_5"] == 0.0
+
+
+def test_corpus_knowledge_expansion_plan_adds_source_and_graph_tasks(
+    tmp_path: Path,
+) -> None:
+    records_path = tmp_path / "records.jsonl"
+    graph_path = tmp_path / "graph.json"
+    record = NormalizedDatasetRecord(
+        dataset_id=make_dataset_id("dandi", "001"),
+        source="dandi",
+        source_id="001",
+        title="Mouse Neuropixels decision behavior",
+        description="NWB units, spike times, events, and behavior trials.",
+        species=[_label("species", "mouse")],
+        modalities=[_label("modality", "neuropixels")],
+        behavioral_events=[_label("behavior", "choice")],
+        data_standards=[_label("data_standard", "NWB")],
+    )
+    write_jsonl([record], records_path)
+    write_graph_json(build_graph_from_records([record]), graph_path)
+
+    plan = build_corpus_knowledge_expansion_plan(
+        records_path,
+        graph_path=graph_path,
+        target_corpus_count=1,
+        target_benchmark_query_count=1,
+    )
+    paths = write_corpus_knowledge_expansion_plan(plan, tmp_path / "reports")
+    task_ids = {task.task_id for task in plan.tasks}
+
+    assert "task24_expand_molecular" in task_ids
+    assert "task25_fill_graph_edge_types" in task_ids
+    assert "task26_add_source_families" in task_ids
+    assert plan.graph_node_type_counts["dataset"] == 1
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_corpus_knowledge_expansion_cli_writes_reports(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    out_dir = tmp_path / "reports"
+    write_jsonl([], records_path)
+
+    exit_code = expansion_main(
+        [
+            "--records",
+            str(records_path),
+            "--out",
+            str(out_dir),
+            "--target-corpus-count",
+            "1",
+            "--target-benchmark-query-count",
+            "1",
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "corpus_knowledge_expansion_plan.json").exists()
+    assert (out_dir / "corpus_knowledge_expansion_plan.md").exists()
 
 
 def test_planner_cli_writes_query_plan(tmp_path: Path) -> None:

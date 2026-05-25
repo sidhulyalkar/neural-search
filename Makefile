@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -206,6 +206,13 @@ search-intelligence-report: corpus-build
 	python -m neural_search.intelligence.coverage \
 		--records data/corpus/normalized \
 		--benchmark data/eval/benchmark_queries_real_v07.yaml \
+		--out data/reports/search_intelligence
+
+corpus-knowledge-plan: real-corpus-build real-graph-build search-intelligence-report
+	python -m neural_search.intelligence.expansion \
+		--records data/corpus/normalized/real_v07.records.jsonl \
+		--benchmark data/eval/benchmark_queries_real_v07.yaml \
+		--graph data/graph/neural_search_graph.real_v07.json \
 		--out data/reports/search_intelligence
 
 search-intelligence-plan:
