@@ -29,7 +29,7 @@ Make Neural Search more realistic, smarter, and more adaptable by grounding rank
 
 - [x] Add per-intent human-label gates after the first reviewed judgment files exist.
 - [x] Extend query-plan evaluation with data-form group summaries.
-- Add calibration reports comparing score distributions against human judgments.
+- [x] Add calibration reports comparing score distributions against human judgments.
 - [x] Add a realistic search fixture set covering fMRI, MEG, connectomics, molecular, intracellular ephys, and computational models.
 - Add source-aware ranking diagnostics for DANDI, OpenNeuro, OpenAlex, ModelDB, cellxgene, MICrONS, and curated landmark records.
 

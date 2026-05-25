@@ -10,6 +10,7 @@ from neural_search.intelligence import (
     build_benchmark_query_seeds,
     build_review_queue,
     build_search_coverage_plan,
+    calibrate_scores_against_judgments,
     evaluate_promotion_gates,
     evaluate_query_plan,
     load_relevance_judgments,
@@ -19,11 +20,13 @@ from neural_search.intelligence import (
     search_datasets_with_intelligence,
     summarize_human_labels_by_intent,
     summarize_relevance_judgments,
+    write_calibration_report,
     write_promotion_gate_report,
     write_query_plan_evaluation_report,
     write_review_queue,
     write_search_coverage_plan,
 )
+from neural_search.intelligence.calibration import main as calibration_main
 from neural_search.intelligence.evaluation import main as evaluation_main
 from neural_search.intelligence.fixtures import (
     build_realistic_fixture_benchmark,
@@ -486,7 +489,7 @@ def test_promotion_gates_use_human_label_summary() -> None:
         },
         "human_label_gates": {
             "min_judgments": 2,
-            "max_hard_negative_count": 0,
+            "min_hard_negative_judgments": 0,
         },
         "intents": {},
     }
@@ -523,7 +526,8 @@ def test_task23_realistic_fixtures_cover_underrepresented_forms(tmp_path: Path) 
         "model_output",
     } <= modalities
     assert len(benchmark["benchmark_queries"]) >= 6
-    assert len(judgments) == len(benchmark["benchmark_queries"])
+    assert len(judgments) > len(benchmark["benchmark_queries"])
+    assert any(judgment["relevance"] == "hard_negative" for judgment in judgments)
     assert Path(paths["records"]).exists()
     assert Path(paths["benchmark"]).exists()
     assert Path(paths["judgments"]).exists()
@@ -562,6 +566,71 @@ def test_per_intent_human_label_summary_uses_evaluation_report() -> None:
 
     assert summary["hard_negative"]["judgment_count"] == 1
     assert summary["data_form_search"]["positive_count"] == 1
+
+
+def test_score_calibration_separates_positive_and_negative_judgments(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+    write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    queries = [
+        EvaluationQuery(
+            id="task23_connectomics_mapping",
+            query="connectome morphology tracing for circuit mapping without fMRI",
+        )
+    ]
+    judgments = [
+        judgment
+        for judgment in load_relevance_judgments(judgments_path)
+        if judgment.query_id == "task23_connectomics_mapping"
+    ]
+    report = calibrate_scores_against_judgments(
+        queries,
+        judgments,
+        datasets=load_search_records_from_normalized(records_path),
+        limit=6,
+    )
+    paths = write_calibration_report(report, tmp_path / "calibration")
+
+    assert report.positive_count == 1
+    assert report.negative_count == 1
+    assert report.score_gap >= 0
+    assert report.brier_score >= 0
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_score_calibration_cli_writes_reports(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+    out_dir = tmp_path / "calibration"
+    write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    exit_code = calibration_main(
+        [
+            "--benchmark",
+            str(benchmark_path),
+            "--records",
+            str(records_path),
+            "--judgments",
+            str(judgments_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "score_calibration_report.json").exists()
 
 
 def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:

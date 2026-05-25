@@ -157,7 +157,7 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 - [x] Add per-intent human-label gates once reviewed judgment files exist.
 - [x] Add data-form grouped query-plan evaluation.
-- [ ] Add score calibration reports against human relevance judgments.
+- [x] Add score calibration reports against human relevance judgments.
 - [x] Add realistic fixtures for underrepresented neuroscience data forms.
 - [ ] Track planning in `docs/TASK_23_ADAPTIVE_REALISTIC_SEARCH_OPTIMIZATION.md`.
 

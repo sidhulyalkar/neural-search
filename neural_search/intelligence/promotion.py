@@ -112,14 +112,14 @@ def _intent_decision(
         blockers.append(
             f"human judgment_count {human_judgment_count} < required {min_human_judgments}"
         )
-    max_human_hard_negatives = int(
-        human_gates.get("max_hard_negative_count", 0) or 0
+    min_human_hard_negatives = int(
+        human_gates.get("min_hard_negative_judgments", 0) or 0
     )
     human_hard_negatives = int(human_summary.get("hard_negative_count", 0) or 0)
-    if human_hard_negatives > max_human_hard_negatives:
+    if human_hard_negatives < min_human_hard_negatives:
         blockers.append(
-            f"human hard_negative_count {human_hard_negatives} > allowed "
-            f"{max_human_hard_negatives}"
+            f"human hard_negative_count {human_hard_negatives} < required "
+            f"{min_human_hard_negatives}"
         )
 
     return IntentPromotionDecision(
@@ -193,14 +193,14 @@ def evaluate_promotion_gates(
             f"human judgment_count {judgment_count} < required {min_human_judgments}"
         )
 
-    max_human_hard_negatives = int(
-        human_gates.get("max_hard_negative_count", 0) or 0
+    min_human_hard_negatives = int(
+        human_gates.get("min_hard_negative_judgments", 0) or 0
     )
     human_hard_negatives = int(human_summary.get("hard_negative_count", 0) or 0)
-    if human_hard_negatives > max_human_hard_negatives:
+    if human_hard_negatives < min_human_hard_negatives:
         blockers.append(
-            f"human hard_negative_count {human_hard_negatives} > allowed "
-            f"{max_human_hard_negatives}"
+            f"human hard_negative_count {human_hard_negatives} < required "
+            f"{min_human_hard_negatives}"
         )
 
     grouped = evaluation_report.get("grouped_by_intent", {})

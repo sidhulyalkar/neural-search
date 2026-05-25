@@ -41,25 +41,27 @@
       },
       "hard_negative": {
         "counts_by_relevance": {
-          "exact": 3
+          "exact": 3,
+          "hard_negative": 3
         },
-        "hard_negative_count": 0,
-        "judgment_count": 3,
-        "labeled_count": 3,
+        "hard_negative_count": 3,
+        "judgment_count": 6,
+        "labeled_count": 6,
         "mean_confidence": 0.9,
         "positive_count": 3,
-        "precision_like_rate": 1.0
+        "precision_like_rate": 0.5
       }
     },
     "counts_by_relevance": {
-      "exact": 6
+      "exact": 6,
+      "hard_negative": 3
     },
-    "hard_negative_count": 0,
-    "judgment_count": 6,
-    "labeled_count": 6,
+    "hard_negative_count": 3,
+    "judgment_count": 9,
+    "labeled_count": 9,
     "mean_confidence": 0.9,
     "positive_count": 6,
-    "precision_like_rate": 1.0
+    "precision_like_rate": 0.6667
   },
   "intent_decisions": [
     {
@@ -155,8 +157,8 @@
       "intent": "hard_negative",
       "metrics": {
         "hard_negative_violation_delta": 0,
-        "human_hard_negative_count": 0,
-        "human_judgment_count": 3,
+        "human_hard_negative_count": 3,
+        "human_judgment_count": 6,
         "mean_mrr_delta": 0.0,
         "query_count": 3
       },

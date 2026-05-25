@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-promotion-check release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -244,7 +244,14 @@ task23-eval: task23-fixtures-build
 		--records data/corpus/normalized/search_intelligence_task23.datasets.jsonl \
 		--out data/reports/search_intelligence/task23
 
-task23-promotion-check: task23-eval
+task23-calibration: task23-fixtures-build
+	python -m neural_search.intelligence.calibration \
+		--benchmark data/eval/benchmark_queries_search_intelligence_task23.yaml \
+		--records data/corpus/normalized/search_intelligence_task23.datasets.jsonl \
+		--judgments data/eval/human_judgments_search_intelligence_task23.jsonl \
+		--out data/reports/search_intelligence/task23
+
+task23-promotion-check: task23-eval task23-calibration
 	python -m neural_search.intelligence.promotion \
 		--manifest data/config/search_intelligence_promotion.yaml \
 		--evaluation data/reports/search_intelligence/task23/query_plan_evaluation.json \

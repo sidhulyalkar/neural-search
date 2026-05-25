@@ -322,6 +322,22 @@ def build_realistic_fixture_judgments() -> list[dict[str, Any]]:
                     "notes": "Deterministic fixture judgment for promotion-gate plumbing.",
                 }
             )
+        for dataset_id in query.get("hard_negative_dataset_ids", []):
+            judgments.append(
+                {
+                    "query_id": query["id"],
+                    "query_text": query["query"],
+                    "dataset_id": dataset_id,
+                    "relevance": "hard_negative",
+                    "task_match": 0,
+                    "modality_match": 0,
+                    "species_match": 0,
+                    "analysis_fit": 0,
+                    "reviewer_id": "task23_fixture_review",
+                    "confidence": 0.9,
+                    "notes": "Deterministic fixture hard-negative judgment.",
+                }
+            )
     return judgments
 
 

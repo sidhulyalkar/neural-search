@@ -9,7 +9,7 @@ global_gates:
   max_hard_negative_violation_delta: 0
 human_label_gates:
   min_judgments: 0
-  max_hard_negative_count: 0
+  min_hard_negative_judgments: 0
 intents:
   hard_negative:
     enabled: false
@@ -18,7 +18,7 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0
   analysis_affordance:
     enabled: false
     min_query_count: 5
@@ -26,7 +26,7 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0
   cross_modal:
     enabled: false
     min_query_count: 5
@@ -34,7 +34,7 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0
   data_form_search:
     enabled: false
     min_query_count: 5
@@ -42,7 +42,7 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0
   dataset_lookup:
     enabled: false
     min_query_count: 5
@@ -50,7 +50,7 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0
   graph_similarity:
     enabled: false
     min_query_count: 5
@@ -58,4 +58,4 @@ intents:
     max_hard_negative_violation_delta: 0
     human_label_gates:
       min_judgments: 1
-      max_hard_negative_count: 0
+      min_hard_negative_judgments: 0

@@ -10,12 +10,14 @@ __all__ = [
     "SearchIntelligencePlan",
     "EvaluationQuery",
     "PromotionGateReport",
+    "CalibrationReport",
     "apply_search_intelligence_config",
     "build_search_coverage_plan",
     "build_benchmark_query_seeds",
     "build_review_queue",
     "evaluate_promotion_gates",
     "evaluate_query_plan",
+    "calibrate_scores_against_judgments",
     "load_search_records_from_normalized",
     "load_relevance_judgments",
     "plan_search_intelligence",
@@ -24,6 +26,7 @@ __all__ = [
     "summarize_human_labels_by_intent",
     "summarize_relevance_judgments",
     "write_promotion_gate_report",
+    "write_calibration_report",
     "write_query_plan_evaluation_report",
     "write_search_coverage_plan",
     "write_review_queue",
@@ -58,6 +61,14 @@ def __getattr__(name: str) -> Any:
         from neural_search.intelligence import evaluation
 
         return getattr(evaluation, name)
+    if name in {
+        "CalibrationReport",
+        "calibrate_scores_against_judgments",
+        "write_calibration_report",
+    }:
+        from neural_search.intelligence import calibration
+
+        return getattr(calibration, name)
     if name in {"SearchIntelligencePlan", "plan_search_intelligence"}:
         from neural_search.intelligence import planner
 
