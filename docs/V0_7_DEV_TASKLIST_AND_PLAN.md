@@ -106,6 +106,7 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [x] Convert query awareness into deterministic retrieval plans.
 - [x] Recommend mode-specific weights for hard negatives, cross-modal fit, analysis readiness, graph similarity, exact lookup, and exploratory search.
 - [x] Emit required signals, complementary data forms, quality checks, warnings, and benchmark tags.
+- [x] Add CLI and Make target for inspecting planner output.
 - [ ] Integrate planner-selected profiles into the main retrieval core after Task 12 semantic work settles.
 - [x] Track implementation in `docs/TASK_17_SEARCH_INTELLIGENCE_PLANNER.md`.
 
@@ -114,8 +115,25 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [x] Compare normalized corpus data-form coverage against benchmark-query coverage.
 - [x] Produce prioritized ingestion and benchmark gaps with query seeds and source recommendations.
 - [x] Add JSON and Markdown report writing plus CLI support.
+- [x] Generate human-reviewable benchmark seed YAML from coverage gaps.
 - [ ] Add this report to the standard artifact pipeline after benchmark labels expand.
 - [x] Track implementation in `docs/TASK_18_COVERAGE_DRIVEN_SEARCH_EXPANSION.md`.
+
+## Phase 14: Task 19 Retrieval Planner Integration
+
+- [ ] Add disabled-by-default retrieval config plumbing for planner integration.
+- [ ] Expose planner metadata in parsed query/search traces when enabled.
+- [ ] Blend planner weights with existing query-intent routing conservatively.
+- [ ] Validate demo, adversarial, and real_v07 benchmarks before enabling by default.
+- [x] Track preparation in `docs/TASK_19_RETRIEVAL_PLANNER_INTEGRATION.md`.
+
+## Phase 15: Task 20 Human Relevance and Active Learning Loop
+
+- [ ] Define/load human relevance judgments for query-result pairs.
+- [ ] Generate review queues from coverage gaps and benchmark failures.
+- [ ] Report human-labeled metrics separately from synthetic benchmark expectations.
+- [ ] Use labels to prioritize corpus and benchmark expansion before ranking changes.
+- [x] Track preparation in `docs/TASK_20_HUMAN_RELEVANCE_AND_ACTIVE_LEARNING.md`.
 
 ## Quality Gates
 

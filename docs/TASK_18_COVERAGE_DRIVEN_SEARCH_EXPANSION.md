@@ -14,6 +14,8 @@ Use normalized corpus records and benchmark queries to identify which neuroscien
 - Produces prioritized gaps with recommended source families and query seeds.
 - Adds JSON and Markdown report output through `write_search_coverage_plan`.
 - Adds a CLI: `python -m neural_search.intelligence.coverage`.
+- Writes `benchmark_query_seeds.yaml` for human-reviewed benchmark expansion.
+- Adds `make search-intelligence-report`.
 
 ## Next Integration
 

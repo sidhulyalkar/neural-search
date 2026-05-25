@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from neural_search.awareness.scoring import infer_dataset_awareness
 from neural_search.awareness.taxonomy import DATA_FORMS, infer_query_awareness
 from neural_search.evaluation.run_benchmark import load_benchmark_queries
@@ -62,6 +64,10 @@ class SearchCoveragePlan:
             "benchmark_data_form_counts": dict(self.benchmark_data_form_counts),
             "gaps": [gap.model_dump() for gap in self.gaps],
         }
+
+
+def _safe_id(value: str) -> str:
+    return "_".join(value.casefold().replace("-", "_").split())
 
 
 SOURCE_HINTS: dict[str, tuple[str, ...]] = {
@@ -223,12 +229,69 @@ def write_search_coverage_plan(
     out.mkdir(parents=True, exist_ok=True)
     json_path = out / "search_coverage_plan.json"
     md_path = out / "search_coverage_plan.md"
+    benchmark_path = out / "benchmark_query_seeds.yaml"
     json_path.write_text(
         json.dumps(plan.model_dump(), indent=2, sort_keys=True),
         encoding="utf-8",
     )
     md_path.write_text(_markdown(plan), encoding="utf-8")
-    return {"json": str(json_path), "markdown": str(md_path)}
+    benchmark_path.write_text(
+        yaml.safe_dump(
+            build_benchmark_query_seeds(plan),
+            sort_keys=False,
+            allow_unicode=False,
+        ),
+        encoding="utf-8",
+    )
+    return {
+        "json": str(json_path),
+        "markdown": str(md_path),
+        "benchmark_seeds": str(benchmark_path),
+    }
+
+
+def build_benchmark_query_seeds(
+    plan: SearchCoveragePlan,
+    *,
+    max_gaps: int = 8,
+    queries_per_gap: int = 2,
+) -> dict[str, Any]:
+    """Create benchmark query YAML payloads from the highest-priority gaps."""
+
+    queries: list[dict[str, Any]] = []
+    for gap in plan.gaps[:max_gaps]:
+        form = DATA_FORMS[gap.data_form]
+        for index, query in enumerate(gap.recommended_queries[:queries_per_gap], 1):
+            item: dict[str, Any] = {
+                "id": f"coverage_{_safe_id(gap.data_form)}_{index:02d}",
+                "query": query,
+                "minimum_precision_at_5": 0.0,
+                "minimum_label_recall_at_10": 0.0,
+                "notes": (
+                    f"Seeded from {gap.priority} coverage gap for {gap.label}; "
+                    "expected labels should be reviewed after adding representative records."
+                ),
+                "coverage_gap": gap.data_form,
+                "priority": gap.priority,
+            }
+            if form.modalities:
+                item["expected_modalities_any"] = list(form.modalities[:3])
+            if form.analysis_families:
+                item["expected_analysis_any"] = list(form.analysis_families[:3])
+            if form.standards:
+                item["expected_data_standards"] = list(form.standards[:2])
+            queries.append(item)
+    return {
+        "benchmark_queries": queries,
+        "metadata": {
+            "source": "neural_search.intelligence.coverage",
+            "review_required": True,
+            "note": (
+                "These are gap-driven seed queries. Add expected dataset IDs "
+                "after representative corpus records are ingested."
+            ),
+        },
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

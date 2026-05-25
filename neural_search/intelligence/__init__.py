@@ -9,6 +9,7 @@ __all__ = [
     "SearchCoveragePlan",
     "SearchIntelligencePlan",
     "build_search_coverage_plan",
+    "build_benchmark_query_seeds",
     "plan_search_intelligence",
     "write_search_coverage_plan",
 ]
@@ -18,6 +19,7 @@ def __getattr__(name: str) -> Any:
     if name in {
         "CoverageGap",
         "SearchCoveragePlan",
+        "build_benchmark_query_seeds",
         "build_search_coverage_plan",
         "write_search_coverage_plan",
     }:

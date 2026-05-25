@@ -13,6 +13,8 @@ Turn neuroscience query awareness into an actionable retrieval plan before ranki
 - Emits deterministic retrieval weight recommendations including `awareness`, `field_semantic`, `graph`, and `negative_constraint` heads.
 - Carries required/excluded data forms, required signals, complementary data forms, quality checks, and benchmark tags.
 - Adds corpus-coverage warnings when a requested data form is thin or absent.
+- Adds CLI support with `python -m neural_search.intelligence.planner --query "..."`.
+- Adds `make search-intelligence-plan QUERY="..."` for local inspection.
 
 ## Next Integration
 

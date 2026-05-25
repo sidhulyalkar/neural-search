@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import argparse
+import json
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -225,3 +227,50 @@ def plan_search_intelligence(
         recommended_benchmark_tags=tuple(sorted(_unique(tags))),
         metadata=dict(metadata or {}),
     )
+
+
+def _load_corpus_profile(path: str | None) -> dict[str, Any] | None:
+    if not path:
+        return None
+    with open(path, encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if "data_form_counts" in payload:
+        return payload
+    return {
+        "data_form_counts": payload.get("data_form_counts", {}),
+        "underrepresented_data_forms": [
+            gap.get("data_form")
+            for gap in payload.get("gaps", [])
+            if gap.get("priority") in {"critical", "high"}
+        ],
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Create a neuroscience-aware retrieval plan for one query."
+    )
+    parser.add_argument("--query", required=True)
+    parser.add_argument(
+        "--corpus-profile",
+        help="Optional JSON coverage profile from search-intelligence-report.",
+    )
+    parser.add_argument("--out", help="Optional JSON output path.")
+    args = parser.parse_args(argv)
+
+    plan = plan_search_intelligence(
+        args.query,
+        corpus_profile=_load_corpus_profile(args.corpus_profile),
+    )
+    payload = json.dumps(plan.model_dump(), indent=2, sort_keys=True)
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as handle:
+            handle.write(payload)
+            handle.write("\n")
+    else:
+        print(payload)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

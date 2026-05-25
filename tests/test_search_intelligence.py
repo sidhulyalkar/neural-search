@@ -5,10 +5,12 @@ from pathlib import Path
 import yaml
 
 from neural_search.intelligence import (
+    build_benchmark_query_seeds,
     build_search_coverage_plan,
     plan_search_intelligence,
     write_search_coverage_plan,
 )
+from neural_search.intelligence.planner import main as planner_main
 from neural_search.normalized import make_dataset_id, write_jsonl
 from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord
 
@@ -97,3 +99,37 @@ def test_coverage_plan_prioritizes_missing_data_forms(tmp_path: Path) -> None:
     assert "extracellular_ephys" not in gap_ids
     assert Path(paths["json"]).exists()
     assert Path(paths["markdown"]).exists()
+    assert Path(paths["benchmark_seeds"]).exists()
+
+
+def test_coverage_plan_generates_reviewable_benchmark_seeds(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    write_jsonl([], records_path)
+
+    plan = build_search_coverage_plan(
+        records_path,
+        target_corpus_count=1,
+        target_benchmark_query_count=1,
+    )
+    seeds = build_benchmark_query_seeds(plan, max_gaps=1, queries_per_gap=1)
+
+    assert seeds["metadata"]["review_required"] is True
+    assert seeds["benchmark_queries"][0]["coverage_gap"]
+    assert seeds["benchmark_queries"][0]["minimum_precision_at_5"] == 0.0
+
+
+def test_planner_cli_writes_query_plan(tmp_path: Path) -> None:
+    output_path = tmp_path / "plan.json"
+    exit_code = planner_main(
+        [
+            "--query",
+            "connectomics morphology excluding fMRI",
+            "--out",
+            str(output_path),
+        ]
+    )
+
+    assert exit_code == 0
+    payload = output_path.read_text(encoding="utf-8")
+    assert "connectomics" in payload
+    assert "constraint_filter_first" in payload
