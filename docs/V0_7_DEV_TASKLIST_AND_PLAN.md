@@ -179,7 +179,8 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 ## Phase 21: Task 26 Source Intake Scaling
 
-- [ ] Add fixture-backed source families for ModelDB, cellxgene, MICrONS, and curated landmark records.
+- [x] Add fixture-backed source families for ModelDB, cellxgene, and MICrONS.
+- [ ] Add fixture-backed curated landmark records for remaining benchmark-critical gaps.
 - [ ] Expand real-corpus local intake targets by data form before tuning ranking weights.
 - [ ] Keep network-backed source expansion optional outside CI.
 - [ ] Add source-balance checks to release and search-intelligence reports.

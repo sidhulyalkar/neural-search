@@ -1,8 +1,228 @@
 {
   "edges": {
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_file_format:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641253+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_file_format:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_file_format",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:file_formats:h5ad",
+          "evidence_text": "h5ad",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "file_formats"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:file_format:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_modality:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640952+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_modality:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_modality",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:modalities:single_cell_rna",
+          "evidence_text": "single_cell_rna",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:modalities:transcriptomics",
+          "evidence_text": "transcriptomics",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "modalities"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:modality:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.641005+00:00"
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_species:mouse": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641115+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_species:mouse",
+      "edge_type": "dataset_has_species",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:source_id:allen_mouse_motor_cortex_cells",
+          "evidence_text": "allen_mouse_motor_cortex_cells",
+          "extractor_name": "rule_based_scientific_label_extractor",
+          "extractor_version": "v0.3.0",
+          "source_field": "source_id",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "species"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:species:mouse",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_species:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641077+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_species:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_species",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:species:mouse",
+          "evidence_text": "mouse",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "species"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:species:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_task:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640914+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:has_task:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_task",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:tasks:cell_type_mapping",
+          "evidence_text": "cell_type_mapping",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "tasks"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:task:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:records_region:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641039+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:records_region:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_records_region",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:brain_regions:motor_cortex",
+          "evidence_text": "motor_cortex",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "brain_regions"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:brain_region:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:supports_analysis:cross_modal_prediction": {
+      "confidence": 0.62,
+      "created_at": "2026-05-25T19:23:23.641287+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:supports_analysis:cross_modal_prediction",
+      "edge_type": "dataset_supports_analysis",
+      "evidence": [
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:analysis_affordances:label:modality:single_cell_rna:neural_search.corpus.ingest_manifest; label:modality:transcriptomics:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; single_cell_rna; single_cell_rna:neural_search.corpus.ingest_manifest; transcriptomics; transcriptomics:neural_search.corpus.ingest_manifest",
+          "evidence_text": "label:modality:single_cell_rna:neural_search.corpus.ingest_manifest; label:modality:transcriptomics:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; single_cell_rna; single_cell_rna:neural_search.corpus.ingest_manifest; transcriptomics; transcriptomics:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "support_level": "medium"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:analysis_affordance:cross_modal_prediction",
+      "updated_at": null
+    },
+    "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:uses_standard:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641153+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:cellxgene:allen_mouse_motor_cortex_cells:uses_standard:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_uses_standard",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:data_standards:AnnData",
+          "evidence_text": "AnnData",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:data_standards:cellxgene",
+          "evidence_text": "cellxgene",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "data_standards"
+      },
+      "source_node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.641217+00:00"
+    },
     "edge:dataset:dandi:000020:has_behavioral_event:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557656+00:00",
+      "created_at": "2026-05-25T19:23:23.638096+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_behavioral_event:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_behavioral_event",
@@ -33,11 +253,11 @@
       },
       "source_node_id": "node:dataset:dandi:000020",
       "target_node_id": "node:behavioral_event:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.557788+00:00"
+      "updated_at": "2026-05-25T19:23:23.638157+00:00"
     },
     "edge:dataset:dandi:000020:has_file_format:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557971+00:00",
+      "created_at": "2026-05-25T19:23:23.638339+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_file_format:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_file_format",
@@ -62,7 +282,7 @@
     },
     "edge:dataset:dandi:000020:has_modality:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557358+00:00",
+      "created_at": "2026-05-25T19:23:23.637854+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_modality:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_modality",
@@ -87,7 +307,7 @@
     },
     "edge:dataset:dandi:000020:has_modality:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.85,
-      "created_at": "2026-05-24T20:26:45.557394+00:00",
+      "created_at": "2026-05-25T19:23:23.637897+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_modality:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_has_modality",
@@ -112,7 +332,7 @@
     },
     "edge:dataset:dandi:000020:has_species:mouse": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.557567+00:00",
+      "created_at": "2026-05-25T19:23:23.638052+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_species:mouse",
       "edge_type": "dataset_has_species",
@@ -137,7 +357,7 @@
     },
     "edge:dataset:dandi:000020:has_species:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557480+00:00",
+      "created_at": "2026-05-25T19:23:23.637975+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_species:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_species",
@@ -162,7 +382,7 @@
     },
     "edge:dataset:dandi:000020:has_species:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.92,
-      "created_at": "2026-05-24T20:26:45.557531+00:00",
+      "created_at": "2026-05-25T19:23:23.638009+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_species:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_has_species",
@@ -187,7 +407,7 @@
     },
     "edge:dataset:dandi:000020:has_task:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557316+00:00",
+      "created_at": "2026-05-25T19:23:23.637813+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:has_task:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_task",
@@ -212,7 +432,7 @@
     },
     "edge:dataset:dandi:000020:records_region:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557445+00:00",
+      "created_at": "2026-05-25T19:23:23.637933+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:records_region:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_records_region",
@@ -237,7 +457,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:brain_behavior_alignment": {
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.558251+00:00",
+      "created_at": "2026-05-25T19:23:23.638612+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:brain_behavior_alignment",
       "edge_type": "dataset_supports_analysis",
@@ -262,7 +482,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:cross_modal_prediction": {
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.558186+00:00",
+      "created_at": "2026-05-25T19:23:23.638575+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:cross_modal_prediction",
       "edge_type": "dataset_supports_analysis",
@@ -287,7 +507,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:encoding_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.558388+00:00",
+      "created_at": "2026-05-25T19:23:23.638716+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:encoding_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -312,7 +532,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:event_aligned_analysis": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.558010+00:00",
+      "created_at": "2026-05-25T19:23:23.638381+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:event_aligned_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -337,7 +557,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:functional_connectivity": {
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.558299+00:00",
+      "created_at": "2026-05-25T19:23:23.638648+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:functional_connectivity",
       "edge_type": "dataset_supports_analysis",
@@ -362,7 +582,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:latent_dynamics_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.558429+00:00",
+      "created_at": "2026-05-25T19:23:23.638757+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:latent_dynamics_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -387,7 +607,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:representational_similarity_analysis": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.558357+00:00",
+      "created_at": "2026-05-25T19:23:23.638682+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:representational_similarity_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -412,7 +632,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:spike_train_analysis": {
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.558053+00:00",
+      "created_at": "2026-05-25T19:23:23.638416+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:spike_train_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -437,7 +657,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:state_space_modeling": {
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.558128+00:00",
+      "created_at": "2026-05-25T19:23:23.638491+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:state_space_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -462,7 +682,7 @@
     },
     "edge:dataset:dandi:000020:supports_analysis:trial_averaged_response": {
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.558090+00:00",
+      "created_at": "2026-05-25T19:23:23.638452+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:supports_analysis:trial_averaged_response",
       "edge_type": "dataset_supports_analysis",
@@ -487,7 +707,7 @@
     },
     "edge:dataset:dandi:000020:uses_standard:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.557831+00:00",
+      "created_at": "2026-05-25T19:23:23.638198+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:uses_standard:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_uses_standard",
@@ -518,11 +738,11 @@
       },
       "source_node_id": "node:dataset:dandi:000020",
       "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.557886+00:00"
+      "updated_at": "2026-05-25T19:23:23.638256+00:00"
     },
     "edge:dataset:dandi:000020:uses_standard:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.98,
-      "created_at": "2026-05-24T20:26:45.557923+00:00",
+      "created_at": "2026-05-25T19:23:23.638294+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000020:uses_standard:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_uses_standard",
@@ -547,7 +767,7 @@
     },
     "edge:dataset:dandi:000026:has_behavioral_event:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555903+00:00",
+      "created_at": "2026-05-25T19:23:23.636767+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_behavioral_event:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_behavioral_event",
@@ -598,11 +818,11 @@
       },
       "source_node_id": "node:dataset:dandi:000026",
       "target_node_id": "node:behavioral_event:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.556094+00:00"
+      "updated_at": "2026-05-25T19:23:23.636930+00:00"
     },
     "edge:dataset:dandi:000026:has_file_format:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.556307+00:00",
+      "created_at": "2026-05-25T19:23:23.637108+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_file_format:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_file_format",
@@ -627,7 +847,7 @@
     },
     "edge:dataset:dandi:000026:has_modality:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555426+00:00",
+      "created_at": "2026-05-25T19:23:23.636249+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_modality:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_modality",
@@ -658,11 +878,11 @@
       },
       "source_node_id": "node:dataset:dandi:000026",
       "target_node_id": "node:modality:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.555523+00:00"
+      "updated_at": "2026-05-25T19:23:23.636347+00:00"
     },
     "edge:dataset:dandi:000026:has_modality:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.85,
-      "created_at": "2026-05-24T20:26:45.555579+00:00",
+      "created_at": "2026-05-25T19:23:23.636489+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_modality:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_has_modality",
@@ -687,7 +907,7 @@
     },
     "edge:dataset:dandi:000026:has_species:mouse": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.555841+00:00",
+      "created_at": "2026-05-25T19:23:23.636728+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_species:mouse",
       "edge_type": "dataset_has_species",
@@ -712,7 +932,7 @@
     },
     "edge:dataset:dandi:000026:has_species:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555749+00:00",
+      "created_at": "2026-05-25T19:23:23.636645+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_species:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_species",
@@ -737,7 +957,7 @@
     },
     "edge:dataset:dandi:000026:has_species:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.92,
-      "created_at": "2026-05-24T20:26:45.555792+00:00",
+      "created_at": "2026-05-25T19:23:23.636694+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_species:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_has_species",
@@ -762,7 +982,7 @@
     },
     "edge:dataset:dandi:000026:has_task:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555337+00:00",
+      "created_at": "2026-05-25T19:23:23.636191+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:has_task:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_task",
@@ -787,7 +1007,7 @@
     },
     "edge:dataset:dandi:000026:records_region:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555631+00:00",
+      "created_at": "2026-05-25T19:23:23.636550+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:records_region:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_records_region",
@@ -818,11 +1038,11 @@
       },
       "source_node_id": "node:dataset:dandi:000026",
       "target_node_id": "node:brain_region:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.555704+00:00"
+      "updated_at": "2026-05-25T19:23:23.636609+00:00"
     },
     "edge:dataset:dandi:000026:supports_analysis:brain_behavior_alignment": {
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.556966+00:00",
+      "created_at": "2026-05-25T19:23:23.637444+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:brain_behavior_alignment",
       "edge_type": "dataset_supports_analysis",
@@ -847,7 +1067,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:choice_decoding": {
       "confidence": 0.87,
-      "created_at": "2026-05-24T20:26:45.556644+00:00",
+      "created_at": "2026-05-25T19:23:23.637321+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:choice_decoding",
       "edge_type": "dataset_supports_analysis",
@@ -872,7 +1092,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:cross_modal_prediction": {
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.556844+00:00",
+      "created_at": "2026-05-25T19:23:23.637401+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:cross_modal_prediction",
       "edge_type": "dataset_supports_analysis",
@@ -897,7 +1117,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:encoding_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.557088+00:00",
+      "created_at": "2026-05-25T19:23:23.637607+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:encoding_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -922,7 +1142,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:event_aligned_activity": {
       "confidence": 0.72,
-      "created_at": "2026-05-24T20:26:45.556552+00:00",
+      "created_at": "2026-05-25T19:23:23.637242+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:event_aligned_activity",
       "edge_type": "dataset_supports_analysis",
@@ -947,7 +1167,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:event_aligned_analysis": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.556437+00:00",
+      "created_at": "2026-05-25T19:23:23.637164+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:event_aligned_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -972,7 +1192,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:functional_connectivity": {
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.557004+00:00",
+      "created_at": "2026-05-25T19:23:23.637479+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:functional_connectivity",
       "edge_type": "dataset_supports_analysis",
@@ -997,7 +1217,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:latent_dynamics_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.557124+00:00",
+      "created_at": "2026-05-25T19:23:23.637664+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:latent_dynamics_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -1022,7 +1242,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:representational_similarity_analysis": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.557057+00:00",
+      "created_at": "2026-05-25T19:23:23.637525+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:representational_similarity_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -1047,7 +1267,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:spike_train_analysis": {
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.556504+00:00",
+      "created_at": "2026-05-25T19:23:23.637203+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:spike_train_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -1072,7 +1292,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:state_space_modeling": {
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.556695+00:00",
+      "created_at": "2026-05-25T19:23:23.637367+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:state_space_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -1097,7 +1317,7 @@
     },
     "edge:dataset:dandi:000026:supports_analysis:trial_averaged_response": {
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.556597+00:00",
+      "created_at": "2026-05-25T19:23:23.637282+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:supports_analysis:trial_averaged_response",
       "edge_type": "dataset_supports_analysis",
@@ -1122,7 +1342,7 @@
     },
     "edge:dataset:dandi:000026:uses_standard:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.556140+00:00",
+      "created_at": "2026-05-25T19:23:23.636972+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:uses_standard:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_uses_standard",
@@ -1153,11 +1373,11 @@
       },
       "source_node_id": "node:dataset:dandi:000026",
       "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.556208+00:00"
+      "updated_at": "2026-05-25T19:23:23.637032+00:00"
     },
     "edge:dataset:dandi:000026:uses_standard:neural_search.file_inspection.nwb_fixture": {
       "confidence": 0.98,
-      "created_at": "2026-05-24T20:26:45.556255+00:00",
+      "created_at": "2026-05-25T19:23:23.637069+00:00",
       "directed": true,
       "edge_id": "edge:dataset:dandi:000026:uses_standard:neural_search.file_inspection.nwb_fixture",
       "edge_type": "dataset_uses_standard",
@@ -1180,9 +1400,449 @@
       "target_node_id": "node:data_standard:neural_search.file_inspection.nwb_fixture",
       "updated_at": null
     },
+    "edge:dataset:microns:minnie65_public:has_file_format:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641706+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:has_file_format:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_file_format",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:mesh",
+          "evidence_text": "mesh",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:swc",
+          "evidence_text": "swc",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:zarr",
+          "evidence_text": "zarr",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "file_formats"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:file_format:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.641844+00:00"
+    },
+    "edge:dataset:microns:minnie65_public:has_modality:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641408+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:has_modality:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_modality",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:electron_microscopy",
+          "evidence_text": "electron_microscopy",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:morphology",
+          "evidence_text": "morphology",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:tracing",
+          "evidence_text": "tracing",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "modalities"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:modality:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.641519+00:00"
+    },
+    "edge:dataset:microns:minnie65_public:has_species:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641596+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:has_species:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_species",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:species:mouse",
+          "evidence_text": "mouse",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "species"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:species:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:microns:minnie65_public:has_task:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641365+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:has_task:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_task",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:tasks:circuit_mapping",
+          "evidence_text": "circuit_mapping",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "tasks"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:task:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:microns:minnie65_public:records_region:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641553+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:records_region:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_records_region",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:brain_regions:visual_cortex",
+          "evidence_text": "visual_cortex",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "brain_regions"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:brain_region:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:microns:minnie65_public:supports_analysis:cross_modal_prediction": {
+      "confidence": 0.62,
+      "created_at": "2026-05-25T19:23:23.641885+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:supports_analysis:cross_modal_prediction",
+      "edge_type": "dataset_supports_analysis",
+      "evidence": [
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:analysis_affordances:electron_microscopy; electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:morphology:neural_search.corpus.ingest_manifest; label:modality:tracing:neural_search.corpus.ingest_manifest; morphology; morphology:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; tracing; tracing:neural_search.corpus.ingest_manifest",
+          "evidence_text": "electron_microscopy; electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:morphology:neural_search.corpus.ingest_manifest; label:modality:tracing:neural_search.corpus.ingest_manifest; morphology; morphology:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; tracing; tracing:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "support_level": "medium"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:analysis_affordance:cross_modal_prediction",
+      "updated_at": null
+    },
+    "edge:dataset:microns:minnie65_public:uses_standard:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.641637+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:microns:minnie65_public:uses_standard:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_uses_standard",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:data_standards:MICrONS",
+          "evidence_text": "MICrONS",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "data_standards"
+      },
+      "source_node_id": "node:dataset:microns:minnie65_public",
+      "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:modeldb:modeldb_87284:has_file_format:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640685+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:has_file_format:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_file_format",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:hoc",
+          "evidence_text": "hoc",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:json",
+          "evidence_text": "json",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:mod",
+          "evidence_text": "mod",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "file_formats"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:file_format:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.640797+00:00"
+    },
+    "edge:dataset:modeldb:modeldb_87284:has_modality:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640322+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:has_modality:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_modality",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:computational_model",
+          "evidence_text": "computational_model",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:model_output",
+          "evidence_text": "model_output",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:simulation",
+          "evidence_text": "simulation",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "modalities"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:modality:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.640526+00:00"
+    },
+    "edge:dataset:modeldb:modeldb_87284:has_species:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640608+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:has_species:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_species",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:species:rat",
+          "evidence_text": "rat",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "species"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:species:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:modeldb:modeldb_87284:has_task:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640223+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:has_task:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_has_task",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:tasks:current_injection",
+          "evidence_text": "current_injection",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:tasks:excitability_analysis",
+          "evidence_text": "excitability_analysis",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "tasks"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:task:neural_search.corpus.ingest_manifest",
+      "updated_at": "2026-05-25T19:23:23.640286+00:00"
+    },
+    "edge:dataset:modeldb:modeldb_87284:records_region:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640567+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:records_region:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_records_region",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:brain_regions:hippocampus",
+          "evidence_text": "hippocampus",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "brain_regions"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:brain_region:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
+    "edge:dataset:modeldb:modeldb_87284:supports_analysis:cross_modal_prediction": {
+      "confidence": 0.62,
+      "created_at": "2026-05-25T19:23:23.640829+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:supports_analysis:cross_modal_prediction",
+      "edge_type": "dataset_supports_analysis",
+      "evidence": [
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:analysis_affordances:computational_model; computational_model:neural_search.corpus.ingest_manifest; label:modality:computational_model:neural_search.corpus.ingest_manifest; label:modality:model_output:neural_search.corpus.ingest_manifest; label:modality:simulation:neural_search.corpus.ingest_manifest; model_output; model_output:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; simulation; simulation:neural_search.corpus.ingest_manifest",
+          "evidence_text": "computational_model; computational_model:neural_search.corpus.ingest_manifest; label:modality:computational_model:neural_search.corpus.ingest_manifest; label:modality:model_output:neural_search.corpus.ingest_manifest; label:modality:simulation:neural_search.corpus.ingest_manifest; model_output; model_output:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; simulation; simulation:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "support_level": "medium"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:analysis_affordance:cross_modal_prediction",
+      "updated_at": null
+    },
+    "edge:dataset:modeldb:modeldb_87284:uses_standard:neural_search.corpus.ingest_manifest": {
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.640652+00:00",
+      "directed": true,
+      "edge_id": "edge:dataset:modeldb:modeldb_87284:uses_standard:neural_search.corpus.ingest_manifest",
+      "edge_type": "dataset_uses_standard",
+      "evidence": [
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:data_standards:ModelDB",
+          "evidence_text": "ModelDB",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "properties": {
+        "source_field": "data_standards"
+      },
+      "source_node_id": "node:dataset:modeldb:modeldb_87284",
+      "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
+      "updated_at": null
+    },
     "edge:dataset:openneuro:ds003505:has_behavioral_event:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.559015+00:00",
+      "created_at": "2026-05-25T19:23:23.639117+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_behavioral_event:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_behavioral_event",
@@ -1213,11 +1873,11 @@
       },
       "source_node_id": "node:dataset:openneuro:ds003505",
       "target_node_id": "node:behavioral_event:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.559187+00:00"
+      "updated_at": "2026-05-25T19:23:23.639268+00:00"
     },
     "edge:dataset:openneuro:ds003505:has_behavioral_event:neural_search.file_inspection.bids_fixture": {
       "confidence": 0.8,
-      "created_at": "2026-05-24T20:26:45.559054+00:00",
+      "created_at": "2026-05-25T19:23:23.639162+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_behavioral_event:neural_search.file_inspection.bids_fixture",
       "edge_type": "dataset_has_behavioral_event",
@@ -1258,11 +1918,11 @@
       },
       "source_node_id": "node:dataset:openneuro:ds003505",
       "target_node_id": "node:behavioral_event:neural_search.file_inspection.bids_fixture",
-      "updated_at": "2026-05-24T20:26:45.559237+00:00"
+      "updated_at": "2026-05-25T19:23:23.639331+00:00"
     },
     "edge:dataset:openneuro:ds003505:has_file_format:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.559403+00:00",
+      "created_at": "2026-05-25T19:23:23.639539+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_file_format:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_file_format",
@@ -1293,11 +1953,11 @@
       },
       "source_node_id": "node:dataset:openneuro:ds003505",
       "target_node_id": "node:file_format:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.559456+00:00"
+      "updated_at": "2026-05-25T19:23:23.639609+00:00"
     },
     "edge:dataset:openneuro:ds003505:has_modality:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.558671+00:00",
+      "created_at": "2026-05-25T19:23:23.638883+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_modality:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_modality",
@@ -1322,7 +1982,7 @@
     },
     "edge:dataset:openneuro:ds003505:has_modality:neural_search.file_inspection.bids_fixture": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.558743+00:00",
+      "created_at": "2026-05-25T19:23:23.638921+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_modality:neural_search.file_inspection.bids_fixture",
       "edge_type": "dataset_has_modality",
@@ -1347,7 +2007,7 @@
     },
     "edge:dataset:openneuro:ds003505:has_species:human": {
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.558970+00:00",
+      "created_at": "2026-05-25T19:23:23.639079+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_species:human",
       "edge_type": "dataset_has_species",
@@ -1372,7 +2032,7 @@
     },
     "edge:dataset:openneuro:ds003505:has_species:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.558888+00:00",
+      "created_at": "2026-05-25T19:23:23.639008+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_species:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_species",
@@ -1397,7 +2057,7 @@
     },
     "edge:dataset:openneuro:ds003505:has_species:neural_search.file_inspection.bids_fixture": {
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.558934+00:00",
+      "created_at": "2026-05-25T19:23:23.639042+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_species:neural_search.file_inspection.bids_fixture",
       "edge_type": "dataset_has_species",
@@ -1422,7 +2082,7 @@
     },
     "edge:dataset:openneuro:ds003505:has_task:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.558601+00:00",
+      "created_at": "2026-05-25T19:23:23.638844+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:has_task:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_has_task",
@@ -1447,7 +2107,7 @@
     },
     "edge:dataset:openneuro:ds003505:records_region:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.558821+00:00",
+      "created_at": "2026-05-25T19:23:23.638970+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:records_region:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_records_region",
@@ -1472,7 +2132,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:bci_decoding": {
       "confidence": 0.86,
-      "created_at": "2026-05-24T20:26:45.559824+00:00",
+      "created_at": "2026-05-25T19:23:23.640107+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:bci_decoding",
       "edge_type": "dataset_supports_analysis",
@@ -1497,7 +2157,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:brain_behavior_alignment": {
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.559686+00:00",
+      "created_at": "2026-05-25T19:23:23.639950+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:brain_behavior_alignment",
       "edge_type": "dataset_supports_analysis",
@@ -1522,7 +2182,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:cross_modal_prediction": {
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.559640+00:00",
+      "created_at": "2026-05-25T19:23:23.639915+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:cross_modal_prediction",
       "edge_type": "dataset_supports_analysis",
@@ -1547,7 +2207,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:encoding_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.559786+00:00",
+      "created_at": "2026-05-25T19:23:23.640068+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:encoding_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -1572,7 +2232,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:event_aligned_activity": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559535+00:00",
+      "created_at": "2026-05-25T19:23:23.639684+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:event_aligned_activity",
       "edge_type": "dataset_supports_analysis",
@@ -1597,7 +2257,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:event_aligned_analysis": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.559495+00:00",
+      "created_at": "2026-05-25T19:23:23.639646+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:event_aligned_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -1622,7 +2282,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:functional_connectivity": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.559718+00:00",
+      "created_at": "2026-05-25T19:23:23.639987+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:functional_connectivity",
       "edge_type": "dataset_supports_analysis",
@@ -1647,7 +2307,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:latent_dynamics_modeling": {
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.559868+00:00",
+      "created_at": "2026-05-25T19:23:23.640141+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:latent_dynamics_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -1672,7 +2332,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:representational_similarity_analysis": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.559756+00:00",
+      "created_at": "2026-05-25T19:23:23.640027+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:representational_similarity_analysis",
       "edge_type": "dataset_supports_analysis",
@@ -1697,7 +2357,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:state_space_modeling": {
       "confidence": 0.64,
-      "created_at": "2026-05-24T20:26:45.559608+00:00",
+      "created_at": "2026-05-25T19:23:23.639753+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:state_space_modeling",
       "edge_type": "dataset_supports_analysis",
@@ -1722,7 +2382,7 @@
     },
     "edge:dataset:openneuro:ds003505:supports_analysis:trial_averaged_response": {
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.559567+00:00",
+      "created_at": "2026-05-25T19:23:23.639715+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:supports_analysis:trial_averaged_response",
       "edge_type": "dataset_supports_analysis",
@@ -1747,7 +2407,7 @@
     },
     "edge:dataset:openneuro:ds003505:uses_standard:neural_search.corpus.ingest_manifest": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.559273+00:00",
+      "created_at": "2026-05-25T19:23:23.639365+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:uses_standard:neural_search.corpus.ingest_manifest",
       "edge_type": "dataset_uses_standard",
@@ -1778,11 +2438,11 @@
       },
       "source_node_id": "node:dataset:openneuro:ds003505",
       "target_node_id": "node:data_standard:neural_search.corpus.ingest_manifest",
-      "updated_at": "2026-05-24T20:26:45.559365+00:00"
+      "updated_at": "2026-05-25T19:23:23.639475+00:00"
     },
     "edge:dataset:openneuro:ds003505:uses_standard:neural_search.file_inspection.bids_fixture": {
       "confidence": 0.98,
-      "created_at": "2026-05-24T20:26:45.559315+00:00",
+      "created_at": "2026-05-25T19:23:23.639417+00:00",
       "directed": true,
       "edge_id": "edge:dataset:openneuro:ds003505:uses_standard:neural_search.file_inspection.bids_fixture",
       "edge_type": "dataset_uses_standard",
@@ -1807,7 +2467,7 @@
     },
     "edge:paper:openalex:W2963345511:has_author:kenneth_harris": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.560039+00:00",
+      "created_at": "2026-05-25T19:23:23.642238+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:has_author:kenneth_harris",
       "edge_type": "paper_has_author",
@@ -1832,7 +2492,7 @@
     },
     "edge:paper:openalex:W2963345511:has_author:matteo_carandini": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.560013+00:00",
+      "created_at": "2026-05-25T19:23:23.642194+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:has_author:matteo_carandini",
       "edge_type": "paper_has_author",
@@ -1857,7 +2517,7 @@
     },
     "edge:paper:openalex:W2963345511:has_author:nicholas_steinmetz": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559949+00:00",
+      "created_at": "2026-05-25T19:23:23.641956+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:has_author:nicholas_steinmetz",
       "edge_type": "paper_has_author",
@@ -1882,7 +2542,7 @@
     },
     "edge:paper:openalex:W2963345511:has_author:peter_zatka_haas": {
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559979+00:00",
+      "created_at": "2026-05-25T19:23:23.642129+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:has_author:peter_zatka_haas",
       "edge_type": "paper_has_author",
@@ -1907,7 +2567,7 @@
     },
     "edge:paper:openalex:W2963345511:mentions_analysis_goal:decoding": {
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560091+00:00",
+      "created_at": "2026-05-25T19:23:23.642295+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:mentions_analysis_goal:decoding",
       "edge_type": "paper_mentions_analysis_goal",
@@ -1932,7 +2592,7 @@
     },
     "edge:paper:openalex:W2963345511:mentions_behavioral_event:choice": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.560131+00:00",
+      "created_at": "2026-05-25T19:23:23.642346+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:mentions_behavioral_event:choice",
       "edge_type": "paper_mentions_behavioral_event",
@@ -1957,7 +2617,7 @@
     },
     "edge:paper:openalex:W2963345511:mentions_dataset:dandi:000026": {
       "confidence": 0.7,
-      "created_at": "2026-05-24T20:26:45.557166+00:00",
+      "created_at": "2026-05-25T19:23:23.637707+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:mentions_dataset:dandi:000026",
       "edge_type": "paper_mentions_dataset",
@@ -1983,7 +2643,7 @@
     },
     "edge:paper:openalex:W2963345511:mentions_species:mouse": {
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.560211+00:00",
+      "created_at": "2026-05-25T19:23:23.642438+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:mentions_species:mouse",
       "edge_type": "paper_mentions_species",
@@ -2008,7 +2668,7 @@
     },
     "edge:paper:openalex:W2963345511:studies_task:visual_decision_making": {
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560254+00:00",
+      "created_at": "2026-05-25T19:23:23.642494+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:studies_task:visual_decision_making",
       "edge_type": "paper_studies_task",
@@ -2033,7 +2693,7 @@
     },
     "edge:paper:openalex:W2963345511:uses_dataset:dandi:000026": {
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.560284+00:00",
+      "created_at": "2026-05-25T19:23:23.642533+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:uses_dataset:dandi:000026",
       "edge_type": "paper_uses_dataset",
@@ -2059,7 +2719,7 @@
     },
     "edge:paper:openalex:W2963345511:uses_modality:neuropixels": {
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560173+00:00",
+      "created_at": "2026-05-25T19:23:23.642394+00:00",
       "directed": true,
       "edge_id": "edge:paper:openalex:W2963345511:uses_modality:neuropixels",
       "edge_type": "paper_uses_modality",
@@ -2085,15 +2745,15 @@
   },
   "metadata": {
     "builder": "neural_search.graph.builder",
-    "created_at": "2026-05-24T20:26:45.560822+00:00",
-    "dataset_count": 3,
-    "edge_count": 78,
+    "created_at": "2026-05-25T19:23:23.643214+00:00",
+    "dataset_count": 6,
+    "edge_count": 100,
     "graph_version": "v0.5.0",
-    "merged_graph_count": 4,
+    "merged_graph_count": 7,
     "min_confidence": 0.5,
-    "node_count": 41,
+    "node_count": 44,
     "paper_count": 1,
-    "record_count": 4
+    "record_count": 7
   },
   "nodes": {
     "node:analysis_affordance:bci_decoding": {
@@ -2101,7 +2761,7 @@
         "bci_decoding"
       ],
       "confidence": 0.86,
-      "created_at": "2026-05-24T20:26:45.559808+00:00",
+      "created_at": "2026-05-25T19:23:23.640087+00:00",
       "evidence": [
         {
           "confidence": 0.86,
@@ -2137,7 +2797,7 @@
         "brain_behavior_alignment"
       ],
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.556936+00:00",
+      "created_at": "2026-05-25T19:23:23.637425+00:00",
       "evidence": [
         {
           "confidence": 0.88,
@@ -2187,14 +2847,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560768+00:00"
+      "updated_at": "2026-05-25T19:23:23.642842+00:00"
     },
     "node:analysis_affordance:choice_decoding": {
       "aliases": [
         "choice_decoding"
       ],
       "confidence": 0.87,
-      "created_at": "2026-05-24T20:26:45.556618+00:00",
+      "created_at": "2026-05-25T19:23:23.637299+00:00",
       "evidence": [
         {
           "confidence": 0.87,
@@ -2229,7 +2889,7 @@
         "cross_modal_prediction"
       ],
       "confidence": 0.62,
-      "created_at": "2026-05-24T20:26:45.556715+00:00",
+      "created_at": "2026-05-25T19:23:23.637384+00:00",
       "evidence": [
         {
           "confidence": 0.62,
@@ -2260,6 +2920,36 @@
           "source_field": "analysis_affordances",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:analysis_affordances:computational_model; computational_model:neural_search.corpus.ingest_manifest; label:modality:computational_model:neural_search.corpus.ingest_manifest; label:modality:model_output:neural_search.corpus.ingest_manifest; label:modality:simulation:neural_search.corpus.ingest_manifest; model_output; model_output:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; simulation; simulation:neural_search.corpus.ingest_manifest",
+          "evidence_text": "computational_model; computational_model:neural_search.corpus.ingest_manifest; label:modality:computational_model:neural_search.corpus.ingest_manifest; label:modality:model_output:neural_search.corpus.ingest_manifest; label:modality:simulation:neural_search.corpus.ingest_manifest; model_output; model_output:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; simulation; simulation:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:analysis_affordances:label:modality:single_cell_rna:neural_search.corpus.ingest_manifest; label:modality:transcriptomics:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; single_cell_rna; single_cell_rna:neural_search.corpus.ingest_manifest; transcriptomics; transcriptomics:neural_search.corpus.ingest_manifest",
+          "evidence_text": "label:modality:single_cell_rna:neural_search.corpus.ingest_manifest; label:modality:transcriptomics:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; single_cell_rna; single_cell_rna:neural_search.corpus.ingest_manifest; transcriptomics; transcriptomics:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.62,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:analysis_affordances:electron_microscopy; electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:morphology:neural_search.corpus.ingest_manifest; label:modality:tracing:neural_search.corpus.ingest_manifest; morphology; morphology:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; tracing; tracing:neural_search.corpus.ingest_manifest",
+          "evidence_text": "electron_microscopy; electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:electron_microscopy:neural_search.corpus.ingest_manifest; label:modality:morphology:neural_search.corpus.ingest_manifest; label:modality:tracing:neural_search.corpus.ingest_manifest; morphology; morphology:neural_search.corpus.ingest_manifest; neural_search.corpus.ingest_manifest; tracing; tracing:neural_search.corpus.ingest_manifest",
+          "extractor_name": "rule_based_analysis_affordance_detector",
+          "extractor_version": "v0.3.0",
+          "source_field": "analysis_affordances",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "Cross Modal Prediction",
@@ -2278,16 +2968,19 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560764+00:00"
+      "updated_at": "2026-05-25T19:23:23.643178+00:00"
     },
     "node:analysis_affordance:encoding_modeling": {
       "aliases": [
         "encoding_modeling"
       ],
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.557073+00:00",
+      "created_at": "2026-05-25T19:23:23.637541+00:00",
       "evidence": [
         {
           "confidence": 0.82,
@@ -2337,14 +3030,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560783+00:00"
+      "updated_at": "2026-05-25T19:23:23.642860+00:00"
     },
     "node:analysis_affordance:event_aligned_activity": {
       "aliases": [
         "event_aligned_activity"
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.556525+00:00",
+      "created_at": "2026-05-25T19:23:23.637223+00:00",
       "evidence": [
         {
           "confidence": 0.72,
@@ -2383,14 +3076,14 @@
         "dataset:dandi:000026",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560747+00:00"
+      "updated_at": "2026-05-25T19:23:23.642816+00:00"
     },
     "node:analysis_affordance:event_aligned_analysis": {
       "aliases": [
         "event_aligned_analysis"
       ],
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.556336+00:00",
+      "created_at": "2026-05-25T19:23:23.637142+00:00",
       "evidence": [
         {
           "confidence": 0.82,
@@ -2439,14 +3132,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560741+00:00"
+      "updated_at": "2026-05-25T19:23:23.642809+00:00"
     },
     "node:analysis_affordance:functional_connectivity": {
       "aliases": [
         "functional_connectivity"
       ],
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.556987+00:00",
+      "created_at": "2026-05-25T19:23:23.637463+00:00",
       "evidence": [
         {
           "confidence": 0.62,
@@ -2500,14 +3193,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560773+00:00"
+      "updated_at": "2026-05-25T19:23:23.642848+00:00"
     },
     "node:analysis_affordance:latent_dynamics_modeling": {
       "aliases": [
         "latent_dynamics_modeling"
       ],
       "confidence": 0.82,
-      "created_at": "2026-05-24T20:26:45.557109+00:00",
+      "created_at": "2026-05-25T19:23:23.637635+00:00",
       "evidence": [
         {
           "confidence": 0.82,
@@ -2557,14 +3250,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560788+00:00"
+      "updated_at": "2026-05-25T19:23:23.642871+00:00"
     },
     "node:analysis_affordance:representational_similarity_analysis": {
       "aliases": [
         "representational_similarity_analysis"
       ],
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.557032+00:00",
+      "created_at": "2026-05-25T19:23:23.637501+00:00",
       "evidence": [
         {
           "confidence": 0.78,
@@ -2614,14 +3307,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560778+00:00"
+      "updated_at": "2026-05-25T19:23:23.642854+00:00"
     },
     "node:analysis_affordance:spike_train_analysis": {
       "aliases": [
         "spike_train_analysis"
       ],
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.556482+00:00",
+      "created_at": "2026-05-25T19:23:23.637183+00:00",
       "evidence": [
         {
           "confidence": 0.84,
@@ -2659,14 +3352,14 @@
         "dataset:dandi:000026",
         "dataset:dandi:000020"
       ],
-      "updated_at": "2026-05-24T20:26:45.560612+00:00"
+      "updated_at": "2026-05-25T19:23:23.642685+00:00"
     },
     "node:analysis_affordance:state_space_modeling": {
       "aliases": [
         "state_space_modeling"
       ],
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.556676+00:00",
+      "created_at": "2026-05-25T19:23:23.637338+00:00",
       "evidence": [
         {
           "confidence": 0.84,
@@ -2717,14 +3410,14 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560758+00:00"
+      "updated_at": "2026-05-25T19:23:23.642829+00:00"
     },
     "node:analysis_affordance:trial_averaged_response": {
       "aliases": [
         "trial_averaged_response"
       ],
       "confidence": 0.88,
-      "created_at": "2026-05-24T20:26:45.556577+00:00",
+      "created_at": "2026-05-25T19:23:23.637260+00:00",
       "evidence": [
         {
           "confidence": 0.88,
@@ -2780,7 +3473,7 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560753+00:00"
+      "updated_at": "2026-05-25T19:23:23.642823+00:00"
     },
     "node:analysis_goal:decoding": {
       "aliases": [
@@ -2789,7 +3482,7 @@
         "ual decision-making task support choice decoding, spike-train analysis, and event-aligned analysis."
       ],
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560059+00:00",
+      "created_at": "2026-05-25T19:23:23.642269+00:00",
       "evidence": [
         {
           "confidence": 0.68,
@@ -2818,7 +3511,7 @@
         "Kenneth Harris"
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.560029+00:00",
+      "created_at": "2026-05-25T19:23:23.642222+00:00",
       "evidence": [
         {
           "confidence": 0.9,
@@ -2845,7 +3538,7 @@
         "Matteo Carandini"
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559999+00:00",
+      "created_at": "2026-05-25T19:23:23.642176+00:00",
       "evidence": [
         {
           "confidence": 0.9,
@@ -2872,7 +3565,7 @@
         "Nicholas Steinmetz"
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559933+00:00",
+      "created_at": "2026-05-25T19:23:23.641940+00:00",
       "evidence": [
         {
           "confidence": 0.9,
@@ -2899,7 +3592,7 @@
         "Peter Zatka-Haas"
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.559968+00:00",
+      "created_at": "2026-05-25T19:23:23.641974+00:00",
       "evidence": [
         {
           "confidence": 0.9,
@@ -2928,7 +3621,7 @@
         "Distributed coding of choice, action and engagement across the mouse brain"
       ],
       "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.560111+00:00",
+      "created_at": "2026-05-25T19:23:23.642322+00:00",
       "evidence": [
         {
           "confidence": 0.78,
@@ -2972,7 +3665,7 @@
         "right_hand_imagery"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555872+00:00",
+      "created_at": "2026-05-25T19:23:23.636751+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3066,7 +3759,7 @@
         "dataset:dandi:000020",
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.560723+00:00"
+      "updated_at": "2026-05-25T19:23:23.642788+00:00"
     },
     "node:behavioral_event:neural_search.file_inspection.bids_fixture": {
       "aliases": [
@@ -3081,7 +3774,7 @@
         "claim:dataset:openneuro:ds003505:behavioral_events:536729ab002a: events.tsv trial_type includes right_hand_imagery."
       ],
       "confidence": 0.8,
-      "created_at": "2026-05-24T20:26:45.559038+00:00",
+      "created_at": "2026-05-25T19:23:23.639140+00:00",
       "evidence": [
         {
           "confidence": 0.8,
@@ -3123,7 +3816,7 @@
       "source_ids": [
         "dataset:openneuro:ds003505"
       ],
-      "updated_at": "2026-05-24T20:26:45.559219+00:00"
+      "updated_at": "2026-05-25T19:23:23.639311+00:00"
     },
     "node:brain_region:neural_search.corpus.ingest_manifest": {
       "aliases": [
@@ -3137,7 +3830,7 @@
         "motor_cortex"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555610+00:00",
+      "created_at": "2026-05-25T19:23:23.636526+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3178,6 +3871,36 @@
           "source_field": "manifest:brain_regions",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:brain_regions:hippocampus",
+          "evidence_text": "hippocampus",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:brain_regions:motor_cortex",
+          "evidence_text": "motor_cortex",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:brain_regions:visual_cortex",
+          "evidence_text": "visual_cortex",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:brain_regions",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "thalamus",
@@ -3189,9 +3912,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560711+00:00"
+      "updated_at": "2026-05-25T19:23:23.643148+00:00"
     },
     "node:data_standard:neural_search.corpus.ingest_manifest": {
       "aliases": [
@@ -3202,10 +3928,18 @@
         "label:data_standard:bids:neural_search.corpus.ingest_manifest",
         "BIDS",
         "label:data_standard:openneuro:neural_search.corpus.ingest_manifest",
-        "OpenNeuro"
+        "OpenNeuro",
+        "label:data_standard:modeldb:neural_search.corpus.ingest_manifest",
+        "ModelDB",
+        "label:data_standard:anndata:neural_search.corpus.ingest_manifest",
+        "AnnData",
+        "label:data_standard:cellxgene:neural_search.corpus.ingest_manifest",
+        "cellxgene",
+        "label:data_standard:microns:neural_search.corpus.ingest_manifest",
+        "MICrONS"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.556116+00:00",
+      "created_at": "2026-05-25T19:23:23.636951+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3266,6 +4000,46 @@
           "source_field": "manifest:data_standards",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:data_standards:ModelDB",
+          "evidence_text": "ModelDB",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:data_standards:AnnData",
+          "evidence_text": "AnnData",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:data_standards:cellxgene",
+          "evidence_text": "cellxgene",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:data_standards:MICrONS",
+          "evidence_text": "MICrONS",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:data_standards",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "DANDI",
@@ -3277,9 +4051,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560730+00:00"
+      "updated_at": "2026-05-25T19:23:23.643163+00:00"
     },
     "node:data_standard:neural_search.file_inspection.bids_fixture": {
       "aliases": [
@@ -3288,7 +4065,7 @@
         "claim:dataset:openneuro:ds003505:data_standards:54bcbb6aff17: dataset_description.json present."
       ],
       "confidence": 0.98,
-      "created_at": "2026-05-24T20:26:45.559296+00:00",
+      "created_at": "2026-05-25T19:23:23.639389+00:00",
       "evidence": [
         {
           "confidence": 0.98,
@@ -3320,7 +4097,7 @@
         "claim:dataset:dandi:000020:data_standards:98dca085cda5: NWB metadata sidecar was present."
       ],
       "confidence": 0.98,
-      "created_at": "2026-05-24T20:26:45.556231+00:00",
+      "created_at": "2026-05-25T19:23:23.637051+00:00",
       "evidence": [
         {
           "confidence": 0.98,
@@ -3353,7 +4130,54 @@
         "dataset:dandi:000026",
         "dataset:dandi:000020"
       ],
-      "updated_at": "2026-05-24T20:26:45.560574+00:00"
+      "updated_at": "2026-05-25T19:23:23.642653+00:00"
+    },
+    "node:dataset:cellxgene:allen_mouse_motor_cortex_cells": {
+      "aliases": [
+        "allen_mouse_motor_cortex_cells",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells"
+      ],
+      "confidence": 1.0,
+      "created_at": "2026-05-24T00:00:00+00:00",
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:title:cellxgene mouse motor cortex single-cell transcriptomics",
+          "evidence_text": "cellxgene mouse motor cortex single-cell transcriptomics",
+          "extractor_name": "neural_search.graph.builder",
+          "extractor_version": "v0.7.0",
+          "source_field": "title",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "label": "cellxgene mouse motor cortex single-cell transcriptomics",
+      "node_id": "node:dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "node_type": "dataset",
+      "properties": {
+        "extractor_version": "v0.7.0",
+        "missing_fields": [
+          "trials"
+        ],
+        "raw_payload_path": "data/corpus/fixtures/real_v07/cellxgene/allen_mouse_motor_cortex_cells.json",
+        "source": "cellxgene",
+        "source_id": "allen_mouse_motor_cortex_cells",
+        "url": "https://cellxgene.cziscience.com/",
+        "usability_flags": {
+          "has_behavior": false,
+          "has_continuous_behavior": false,
+          "has_event_timestamps": false,
+          "has_neural_data": false,
+          "has_processed_data": true,
+          "has_raw_data": true,
+          "has_standard_format": false,
+          "has_trials": false
+        }
+      },
+      "source_ids": [
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells"
+      ],
+      "updated_at": null
     },
     "node:dataset:dandi:000020": {
       "aliases": [
@@ -3444,7 +4268,101 @@
       "source_ids": [
         "dataset:dandi:000026"
       ],
-      "updated_at": "2026-05-24T20:26:45.560815+00:00"
+      "updated_at": "2026-05-25T19:23:23.643206+00:00"
+    },
+    "node:dataset:microns:minnie65_public": {
+      "aliases": [
+        "minnie65_public",
+        "dataset:microns:minnie65_public"
+      ],
+      "confidence": 1.0,
+      "created_at": "2026-05-24T00:00:00+00:00",
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:title:MICrONS visual cortex connectomics and morphology",
+          "evidence_text": "MICrONS visual cortex connectomics and morphology",
+          "extractor_name": "neural_search.graph.builder",
+          "extractor_version": "v0.7.0",
+          "source_field": "title",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "label": "MICrONS visual cortex connectomics and morphology",
+      "node_id": "node:dataset:microns:minnie65_public",
+      "node_type": "dataset",
+      "properties": {
+        "extractor_version": "v0.7.0",
+        "missing_fields": [
+          "trials"
+        ],
+        "raw_payload_path": "data/corpus/fixtures/real_v07/microns/minnie65_public.json",
+        "source": "microns",
+        "source_id": "minnie65_public",
+        "url": "https://www.microns-explorer.org/",
+        "usability_flags": {
+          "has_behavior": false,
+          "has_continuous_behavior": false,
+          "has_event_timestamps": false,
+          "has_neural_data": false,
+          "has_processed_data": true,
+          "has_raw_data": true,
+          "has_standard_format": false,
+          "has_trials": false
+        }
+      },
+      "source_ids": [
+        "dataset:microns:minnie65_public"
+      ],
+      "updated_at": null
+    },
+    "node:dataset:modeldb:modeldb_87284": {
+      "aliases": [
+        "modeldb_87284",
+        "dataset:modeldb:modeldb_87284"
+      ],
+      "confidence": 1.0,
+      "created_at": "2026-05-24T00:00:00+00:00",
+      "evidence": [
+        {
+          "confidence": 1.0,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:title:ModelDB hippocampal CA1 pyramidal neuron biophysical simulation",
+          "evidence_text": "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation",
+          "extractor_name": "neural_search.graph.builder",
+          "extractor_version": "v0.7.0",
+          "source_field": "title",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        }
+      ],
+      "label": "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation",
+      "node_id": "node:dataset:modeldb:modeldb_87284",
+      "node_type": "dataset",
+      "properties": {
+        "extractor_version": "v0.7.0",
+        "missing_fields": [
+          "trials"
+        ],
+        "raw_payload_path": "data/corpus/fixtures/real_v07/modeldb/modeldb_87284.json",
+        "source": "modeldb",
+        "source_id": "modeldb_87284",
+        "url": "https://modeldb.science/87284",
+        "usability_flags": {
+          "has_behavior": false,
+          "has_continuous_behavior": false,
+          "has_event_timestamps": false,
+          "has_neural_data": false,
+          "has_processed_data": true,
+          "has_raw_data": true,
+          "has_standard_format": false,
+          "has_trials": false
+        }
+      },
+      "source_ids": [
+        "dataset:modeldb:modeldb_87284"
+      ],
+      "updated_at": null
     },
     "node:dataset:openneuro:ds003505": {
       "aliases": [
@@ -3500,10 +4418,22 @@
         "label:file_format:json:neural_search.corpus.ingest_manifest",
         "json",
         "label:file_format:tsv:neural_search.corpus.ingest_manifest",
-        "tsv"
+        "tsv",
+        "label:file_format:hoc:neural_search.corpus.ingest_manifest",
+        "hoc",
+        "label:file_format:mod:neural_search.corpus.ingest_manifest",
+        "mod",
+        "label:file_format:h5ad:neural_search.corpus.ingest_manifest",
+        "h5ad",
+        "label:file_format:mesh:neural_search.corpus.ingest_manifest",
+        "mesh",
+        "label:file_format:swc:neural_search.corpus.ingest_manifest",
+        "swc",
+        "label:file_format:zarr:neural_search.corpus.ingest_manifest",
+        "zarr"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.556284+00:00",
+      "created_at": "2026-05-25T19:23:23.637088+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3544,6 +4474,76 @@
           "source_field": "manifest:file_formats",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:hoc",
+          "evidence_text": "hoc",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:json",
+          "evidence_text": "json",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:file_formats:mod",
+          "evidence_text": "mod",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:file_formats:h5ad",
+          "evidence_text": "h5ad",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:mesh",
+          "evidence_text": "mesh",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:swc",
+          "evidence_text": "swc",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:file_formats:zarr",
+          "evidence_text": "zarr",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:file_formats",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "nwb",
@@ -3555,9 +4555,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560736+00:00"
+      "updated_at": "2026-05-25T19:23:23.643171+00:00"
     },
     "node:modality:neural_search.corpus.ingest_manifest": {
       "aliases": [
@@ -3566,10 +4569,26 @@
         "label:modality:neuropixels:neural_search.corpus.ingest_manifest",
         "neuropixels",
         "label:modality:eeg:neural_search.corpus.ingest_manifest",
-        "eeg"
+        "eeg",
+        "label:modality:computational_model:neural_search.corpus.ingest_manifest",
+        "computational_model",
+        "label:modality:model_output:neural_search.corpus.ingest_manifest",
+        "model_output",
+        "label:modality:simulation:neural_search.corpus.ingest_manifest",
+        "simulation",
+        "label:modality:single_cell_rna:neural_search.corpus.ingest_manifest",
+        "single_cell_rna",
+        "label:modality:transcriptomics:neural_search.corpus.ingest_manifest",
+        "transcriptomics",
+        "label:modality:electron_microscopy:neural_search.corpus.ingest_manifest",
+        "electron_microscopy",
+        "label:modality:morphology:neural_search.corpus.ingest_manifest",
+        "morphology",
+        "label:modality:tracing:neural_search.corpus.ingest_manifest",
+        "tracing"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555380+00:00",
+      "created_at": "2026-05-25T19:23:23.636228+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3610,6 +4629,86 @@
           "source_field": "manifest:modalities",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:computational_model",
+          "evidence_text": "computational_model",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:model_output",
+          "evidence_text": "model_output",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:modalities:simulation",
+          "evidence_text": "simulation",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:modalities:single_cell_rna",
+          "evidence_text": "single_cell_rna",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:modalities:transcriptomics",
+          "evidence_text": "transcriptomics",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:electron_microscopy",
+          "evidence_text": "electron_microscopy",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:morphology",
+          "evidence_text": "morphology",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:modalities:tracing",
+          "evidence_text": "tracing",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:modalities",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "extracellular_ephys",
@@ -3621,9 +4720,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560704+00:00"
+      "updated_at": "2026-05-25T19:23:23.643141+00:00"
     },
     "node:modality:neural_search.file_inspection.bids_fixture": {
       "aliases": [
@@ -3632,7 +4734,7 @@
         "claim:dataset:openneuro:ds003505:modalities:c4c4dca9cb83: sub-01_task-motorimagery_channels.tsv includes EEG channels."
       ],
       "confidence": 0.9,
-      "created_at": "2026-05-24T20:26:45.558713+00:00",
+      "created_at": "2026-05-25T19:23:23.638905+00:00",
       "evidence": [
         {
           "confidence": 0.9,
@@ -3664,7 +4766,7 @@
         "claim:dataset:dandi:000020:modalities:3986223ec50f: acquisition contains ElectricalSeries"
       ],
       "confidence": 0.85,
-      "created_at": "2026-05-24T20:26:45.555557+00:00",
+      "created_at": "2026-05-25T19:23:23.636457+00:00",
       "evidence": [
         {
           "confidence": 0.85,
@@ -3697,7 +4799,7 @@
         "dataset:dandi:000026",
         "dataset:dandi:000020"
       ],
-      "updated_at": "2026-05-24T20:26:45.560442+00:00"
+      "updated_at": "2026-05-25T19:23:23.642598+00:00"
     },
     "node:modality:neuropixels": {
       "aliases": [
@@ -3706,7 +4808,7 @@
         "Neuropixels recordings across mouse brain regions during a visual decis"
       ],
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560150+00:00",
+      "created_at": "2026-05-25T19:23:23.642372+00:00",
       "evidence": [
         {
           "confidence": 0.68,
@@ -3736,7 +4838,7 @@
         "W2963345511"
       ],
       "confidence": 1.0,
-      "created_at": "2026-05-24T20:26:45.557145+00:00",
+      "created_at": "2026-05-25T19:23:23.637684+00:00",
       "evidence": [
         {
           "confidence": 1.0,
@@ -3764,7 +4866,7 @@
       "source_ids": [
         "paper:openalex:W2963345511"
       ],
-      "updated_at": "2026-05-24T20:26:45.560797+00:00"
+      "updated_at": "2026-05-25T19:23:23.643189+00:00"
     },
     "node:species:human": {
       "aliases": [
@@ -3773,7 +4875,7 @@
         "Human EEG BCI motor-imagery BIDS fixture with events and EEG chan"
       ],
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.558955+00:00",
+      "created_at": "2026-05-25T19:23:23.639058+00:00",
       "evidence": [
         {
           "confidence": 0.68,
@@ -3803,10 +4905,11 @@
         "mouse",
         "Steinmetz 2019 mouse Neuropixels visual decision-making",
         "Mouse hippocampus extracellular electrophysiology",
+        "allen_mouse_motor_cortex_cells",
         "hoice, action and engagement across the mouse brain"
       ],
-      "confidence": 0.78,
-      "created_at": "2026-05-24T20:26:45.555818+00:00",
+      "confidence": 0.95,
+      "created_at": "2026-05-25T19:23:23.636712+00:00",
       "evidence": [
         {
           "confidence": 0.78,
@@ -3829,6 +4932,16 @@
           "source_type": "normalized_dataset"
         },
         {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:source_id:allen_mouse_motor_cortex_cells",
+          "evidence_text": "allen_mouse_motor_cortex_cells",
+          "extractor_name": "rule_based_scientific_label_extractor",
+          "extractor_version": "v0.3.0",
+          "source_field": "source_id",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
           "confidence": 0.78,
           "evidence_id": "evidence:normalized_paper:paper:openalex:W2963345511:title:hoice, action and engagement across the mouse brain",
           "evidence_text": "hoice, action and engagement across the mouse brain",
@@ -3848,19 +4961,22 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
         "paper:openalex:W2963345511"
       ],
-      "updated_at": "2026-05-24T20:26:45.560808+00:00"
+      "updated_at": "2026-05-25T19:23:23.643199+00:00"
     },
     "node:species:neural_search.corpus.ingest_manifest": {
       "aliases": [
         "label:species:mouse:neural_search.corpus.ingest_manifest",
         "mouse",
         "label:species:human:neural_search.corpus.ingest_manifest",
-        "human"
+        "human",
+        "label:species:rat:neural_search.corpus.ingest_manifest",
+        "rat"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555728+00:00",
+      "created_at": "2026-05-25T19:23:23.636629+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -3891,6 +5007,36 @@
           "source_field": "manifest:species",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:species:rat",
+          "evidence_text": "rat",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:species:mouse",
+          "evidence_text": "mouse",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:species:mouse",
+          "evidence_text": "mouse",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:species",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "mouse",
@@ -3902,9 +5048,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560716+00:00"
+      "updated_at": "2026-05-25T19:23:23.643155+00:00"
     },
     "node:species:neural_search.file_inspection.bids_fixture": {
       "aliases": [
@@ -3913,7 +5062,7 @@
         "claim:dataset:openneuro:ds003505:species:80c89a01c100: participants.tsv provides participant-level metadata."
       ],
       "confidence": 0.84,
-      "created_at": "2026-05-24T20:26:45.558912+00:00",
+      "created_at": "2026-05-25T19:23:23.639026+00:00",
       "evidence": [
         {
           "confidence": 0.84,
@@ -3945,7 +5094,7 @@
         "claim:dataset:dandi:000020:species:8961d4ad3050: subject.species present in NWB metadata."
       ],
       "confidence": 0.92,
-      "created_at": "2026-05-24T20:26:45.555773+00:00",
+      "created_at": "2026-05-25T19:23:23.636669+00:00",
       "evidence": [
         {
           "confidence": 0.92,
@@ -3978,7 +5127,7 @@
         "dataset:dandi:000026",
         "dataset:dandi:000020"
       ],
-      "updated_at": "2026-05-24T20:26:45.560488+00:00"
+      "updated_at": "2026-05-25T19:23:23.642621+00:00"
     },
     "node:task:neural_search.corpus.ingest_manifest": {
       "aliases": [
@@ -3987,10 +5136,18 @@
         "label:task:spatial_navigation:neural_search.corpus.ingest_manifest",
         "spatial_navigation",
         "label:task:motor_imagery:neural_search.corpus.ingest_manifest",
-        "motor_imagery"
+        "motor_imagery",
+        "label:task:current_injection:neural_search.corpus.ingest_manifest",
+        "current_injection",
+        "label:task:excitability_analysis:neural_search.corpus.ingest_manifest",
+        "excitability_analysis",
+        "label:task:cell_type_mapping:neural_search.corpus.ingest_manifest",
+        "cell_type_mapping",
+        "label:task:circuit_mapping:neural_search.corpus.ingest_manifest",
+        "circuit_mapping"
       ],
       "confidence": 0.95,
-      "created_at": "2026-05-24T20:26:45.555291+00:00",
+      "created_at": "2026-05-25T19:23:23.636148+00:00",
       "evidence": [
         {
           "confidence": 0.95,
@@ -4021,6 +5178,46 @@
           "source_field": "manifest:tasks",
           "source_id": "dataset:openneuro:ds003505",
           "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:tasks:current_injection",
+          "evidence_text": "current_injection",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:modeldb:modeldb_87284:manifest:tasks:excitability_analysis",
+          "evidence_text": "excitability_analysis",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:modeldb:modeldb_87284",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:cellxgene:allen_mouse_motor_cortex_cells:manifest:tasks:cell_type_mapping",
+          "evidence_text": "cell_type_mapping",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+          "source_type": "normalized_dataset"
+        },
+        {
+          "confidence": 0.95,
+          "evidence_id": "evidence:normalized_dataset:dataset:microns:minnie65_public:manifest:tasks:circuit_mapping",
+          "evidence_text": "circuit_mapping",
+          "extractor_name": "neural_search.corpus.ingest_manifest",
+          "extractor_version": "v0.7.0",
+          "source_field": "manifest:tasks",
+          "source_id": "dataset:microns:minnie65_public",
+          "source_type": "normalized_dataset"
         }
       ],
       "label": "visual_decision_making",
@@ -4032,9 +5229,12 @@
       "source_ids": [
         "dataset:dandi:000026",
         "dataset:dandi:000020",
-        "dataset:openneuro:ds003505"
+        "dataset:openneuro:ds003505",
+        "dataset:modeldb:modeldb_87284",
+        "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+        "dataset:microns:minnie65_public"
       ],
-      "updated_at": "2026-05-24T20:26:45.560693+00:00"
+      "updated_at": "2026-05-25T19:23:23.643131+00:00"
     },
     "node:task:visual_decision_making": {
       "aliases": [
@@ -4043,7 +5243,7 @@
         "ngs across mouse brain regions during a visual decision-making task support choice decoding, spike-train analysis,"
       ],
       "confidence": 0.68,
-      "created_at": "2026-05-24T20:26:45.560234+00:00",
+      "created_at": "2026-05-25T19:23:23.642462+00:00",
       "evidence": [
         {
           "confidence": 0.68,

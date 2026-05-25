@@ -1,12 +1,15 @@
 # Corpus and Knowledge Base Expansion Plan
 
-- Dataset records: 3
+- Dataset records: 6
 - Paper records: 1
-- Expansion tasks: 13
+- Expansion tasks: 12
 
 ## Source Counts
 
+- cellxgene: 1
 - dandi: 2
+- microns: 1
+- modeldb: 1
 - openalex: 1
 - openneuro: 1
 
@@ -20,7 +23,7 @@
 - behavioral_event: 3
 - brain_region: 1
 - data_standard: 3
-- dataset: 3
+- dataset: 6
 - file_format: 1
 - modality: 4
 - paper: 1
@@ -30,13 +33,13 @@
 ### Edge Types
 
 - dataset_has_behavioral_event: 4
-- dataset_has_file_format: 3
-- dataset_has_modality: 6
-- dataset_has_species: 9
-- dataset_has_task: 3
-- dataset_records_region: 3
-- dataset_supports_analysis: 33
-- dataset_uses_standard: 6
+- dataset_has_file_format: 6
+- dataset_has_modality: 9
+- dataset_has_species: 13
+- dataset_has_task: 6
+- dataset_records_region: 6
+- dataset_supports_analysis: 36
+- dataset_uses_standard: 9
 - paper_has_author: 4
 - paper_mentions_analysis_goal: 1
 - paper_mentions_behavioral_event: 1
@@ -62,7 +65,6 @@
 | critical | Expand Molecular and single-cell neuroscience corpus and benchmark coverage | corpus_and_benchmark | cellxgene, Allen Brain Cell Atlas, single_cell_rna, transcriptomics, proteomics, h5ad, dataset_has_modality, dataset_supports_analysis, dataset_uses_standard |
 | critical | Expand MRI and fMRI corpus and benchmark coverage | corpus_and_benchmark | OpenNeuro, Human Connectome Project, fmri, mri, diffusion_mri, bids, dataset_has_modality, dataset_supports_analysis, dataset_uses_standard |
 | critical | Expand Optical neural imaging corpus and benchmark coverage | corpus_and_benchmark | DANDI, Allen Brain Observatory, calcium_imaging, two_photon, widefield_imaging, nwb, dataset_has_modality, dataset_supports_analysis, dataset_uses_standard |
-| critical | Add missing source families to corpus intake | source_intake | modeldb, cellxgene, microns, computational model coverage, single-cell molecular coverage, connectomics coverage |
 
 ## Acceptance Checks
 
@@ -79,13 +81,13 @@ Clinical neuroscience has 1/5 target corpus records and 1/3 target benchmark que
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
 
 ### task24_expand_computational_model
-Computational model or simulation has 0/5 target corpus records and 0/3 target benchmark queries.
+Computational model or simulation has 1/5 target corpus records and 1/3 target benchmark queries.
 - normalized records include source, source_id, title, labels, and provenance
 - graph artifact contains modality, analysis, and standard edges for new records
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
 
 ### task24_expand_connectomics
-Connectomics and morphology has 0/5 target corpus records and 0/3 target benchmark queries.
+Connectomics and morphology has 1/5 target corpus records and 1/3 target benchmark queries.
 - normalized records include source, source_id, title, labels, and provenance
 - graph artifact contains modality, analysis, and standard edges for new records
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
@@ -121,7 +123,7 @@ Human intracranial electrophysiology has 0/5 target corpus records and 0/3 targe
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
 
 ### task24_expand_molecular
-Molecular and single-cell neuroscience has 0/5 target corpus records and 0/3 target benchmark queries.
+Molecular and single-cell neuroscience has 1/5 target corpus records and 1/3 target benchmark queries.
 - normalized records include source, source_id, title, labels, and provenance
 - graph artifact contains modality, analysis, and standard edges for new records
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
@@ -137,9 +139,3 @@ Optical neural imaging has 0/5 target corpus records and 0/3 target benchmark qu
 - normalized records include source, source_id, title, labels, and provenance
 - graph artifact contains modality, analysis, and standard edges for new records
 - benchmark seeds include reviewed expected IDs or explicit review_required notes
-
-### task26_add_source_families
-A general neuroscience search corpus needs public-source coverage across physiology, imaging, literature, models, molecular data, and connectomics.
-- each source family has fixture-backed normalized records
-- network-backed ingestion remains optional outside CI
-- source counts appear in expansion and corpus reports

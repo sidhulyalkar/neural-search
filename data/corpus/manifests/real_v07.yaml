@@ -1,7 +1,9 @@
 corpus_tag: real_v07
 description: >
   Deterministic v0.7 real-corpus fixture slice covering DANDI, OpenNeuro,
-  OpenAlex, landmark electrophysiology, behavior, BCI, and file inspection.
+  OpenAlex, ModelDB, cellxgene, MICrONS, landmark electrophysiology,
+  behavior, BCI, molecular data, connectomics, computational models,
+  and file inspection.
 entries:
   - source: dandi
     source_id: "000026"
@@ -100,3 +102,84 @@ entries:
       year: 2019
       authors: [Nicholas Steinmetz, Peter Zatka-Haas, Matteo Carandini, Kenneth Harris]
       linked_dataset_ids: ["dataset:dandi:000026"]
+
+  - source: modeldb
+    source_id: "modeldb_87284"
+    record_type: dataset
+    priority: 1
+    status: fixture
+    tags: [modeldb, computational_model, biophysical_model, hippocampus]
+    fetch:
+      mode: fixture
+      url: https://modeldb.science/87284
+    review_notes: "Compact fixture record for computational model search coverage; no network fetch required in CI."
+    scientific_rationale: "ModelDB-style hippocampal CA1 pyramidal neuron simulation exercises computational-model retrieval and model-parameter graph concepts."
+    metadata:
+      title: "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation"
+      description: "Compartmental hippocampal CA1 pyramidal neuron model with membrane parameters, ion-channel conductances, current injection sweeps, voltage traces, and reproducible simulation outputs for excitability analysis."
+      url: https://modeldb.science/87284
+      raw_payload_path: data/corpus/fixtures/real_v07/modeldb/modeldb_87284.json
+      species: [rat]
+      modalities: [computational_model, model_output, simulation]
+      brain_regions: [hippocampus]
+      tasks: [current_injection, excitability_analysis]
+      behaviors: []
+      data_standards: [ModelDB]
+      file_formats: [hoc, mod, json]
+      has_raw_data: true
+      has_processed_data: true
+      has_standard_format: true
+
+  - source: cellxgene
+    source_id: "allen_mouse_motor_cortex_cells"
+    record_type: dataset
+    priority: 1
+    status: fixture
+    tags: [cellxgene, molecular, single_cell, transcriptomics, motor_cortex]
+    fetch:
+      mode: fixture
+      url: https://cellxgene.cziscience.com/
+    review_notes: "Compact fixture record for molecular neuroscience and single-cell search coverage."
+    scientific_rationale: "Single-cell transcriptomic cell-type atlas fixture supports molecular neuroscience queries and gene/cell metadata graph concepts."
+    metadata:
+      title: "cellxgene mouse motor cortex single-cell transcriptomics"
+      description: "Single-cell RNA sequencing atlas from mouse motor cortex with cells, genes, cell type annotations, donor metadata, h5ad matrices, and differential expression support."
+      url: https://cellxgene.cziscience.com/
+      raw_payload_path: data/corpus/fixtures/real_v07/cellxgene/allen_mouse_motor_cortex_cells.json
+      species: [mouse]
+      modalities: [single_cell_rna, transcriptomics]
+      brain_regions: [motor_cortex]
+      tasks: [cell_type_mapping]
+      behaviors: []
+      data_standards: [AnnData, cellxgene]
+      file_formats: [h5ad]
+      has_raw_data: true
+      has_processed_data: true
+      has_standard_format: true
+
+  - source: microns
+    source_id: "minnie65_public"
+    record_type: dataset
+    priority: 1
+    status: fixture
+    tags: [microns, connectomics, morphology, visual_cortex]
+    fetch:
+      mode: fixture
+      url: https://www.microns-explorer.org/
+    review_notes: "Compact fixture record for connectomics and morphology search coverage."
+    scientific_rationale: "MICrONS-style cortical connectomics fixture covers electron microscopy, synapse graph, morphology, and visual-cortex circuit search."
+    metadata:
+      title: "MICrONS visual cortex connectomics and morphology"
+      description: "Public visual cortex electron microscopy reconstruction with cells, synapses, morphology meshes, connectivity edges, proofreading metadata, and circuit mapping affordances."
+      url: https://www.microns-explorer.org/
+      raw_payload_path: data/corpus/fixtures/real_v07/microns/minnie65_public.json
+      species: [mouse]
+      modalities: [electron_microscopy, morphology, tracing]
+      brain_regions: [visual_cortex]
+      tasks: [circuit_mapping]
+      behaviors: []
+      data_standards: [MICrONS]
+      file_formats: [zarr, mesh, swc]
+      has_raw_data: true
+      has_processed_data: true
+      has_standard_format: true

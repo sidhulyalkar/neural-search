@@ -16,6 +16,7 @@ Search quality cannot be fixed only by reranking. The engine needs representativ
 - [x] Generate tasks from data-form coverage gaps, source balance, and optional graph artifacts.
 - [x] Write `corpus_knowledge_expansion_plan.json` and `.md` reports.
 - [x] Add `make corpus-knowledge-plan`.
+- [x] Resolve the first missing-source-family task with ModelDB, cellxgene, and MICrONS fixtures.
 - [ ] Review generated tasks and turn the highest-priority gaps into fixture-backed normalized records.
 - [ ] Add expected dataset IDs and hard negatives for new benchmark seeds after record review.
 

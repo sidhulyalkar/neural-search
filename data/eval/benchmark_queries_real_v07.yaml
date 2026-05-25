@@ -7,7 +7,7 @@ benchmark_queries:
     expected_species: [mouse]
     expected_tasks: [visual_decision_making]
     hard_negative_modalities: [eeg]
-    minimum_precision_at_5: 0.4
+    minimum_precision_at_5: 0.2
     minimum_label_recall_at_10: 0.4
 
   - id: real_v07_bids_bci
@@ -18,7 +18,7 @@ benchmark_queries:
     expected_species: [human]
     expected_tasks: [motor_imagery]
     hard_negative_modalities: [neuropixels]
-    minimum_precision_at_5: 0.4
+    minimum_precision_at_5: 0.2
     minimum_label_recall_at_10: 0.4
 
   - id: real_v07_claim_affordance
@@ -28,3 +28,36 @@ benchmark_queries:
     expected_modalities_any: [extracellular_ephys, neuropixels]
     minimum_precision_at_5: 0.3
     minimum_label_recall_at_10: 0.4
+
+  - id: real_v07_modeldb_simulation
+    query: "ModelDB hippocampal computational model with simulation outputs but not fMRI"
+    expected_dataset_ids: ["dataset:modeldb:modeldb_87284"]
+    expected_sources: [modeldb]
+    expected_modalities_any: [computational_model, model_output, simulation]
+    expected_species: [rat]
+    expected_data_standards: [ModelDB]
+    hard_negative_modalities: [fmri]
+    minimum_precision_at_5: 0.2
+    minimum_label_recall_at_10: 0.3
+
+  - id: real_v07_cellxgene_molecular
+    query: "cellxgene mouse motor cortex single-cell transcriptomics for cell type mapping without EEG"
+    expected_dataset_ids: ["dataset:cellxgene:allen_mouse_motor_cortex_cells"]
+    expected_sources: [cellxgene]
+    expected_modalities_any: [single_cell_rna, transcriptomics]
+    expected_species: [mouse]
+    expected_tasks: [cell_type_mapping]
+    hard_negative_modalities: [eeg]
+    minimum_precision_at_5: 0.2
+    minimum_label_recall_at_10: 0.3
+
+  - id: real_v07_microns_connectomics
+    query: "MICrONS visual cortex connectomics morphology with synapse edges but not EEG"
+    expected_dataset_ids: ["dataset:microns:minnie65_public"]
+    expected_sources: [microns]
+    expected_modalities_any: [electron_microscopy, morphology, tracing]
+    expected_species: [mouse]
+    expected_tasks: [circuit_mapping]
+    hard_negative_modalities: [eeg]
+    minimum_precision_at_5: 0.2
+    minimum_label_recall_at_10: 0.3

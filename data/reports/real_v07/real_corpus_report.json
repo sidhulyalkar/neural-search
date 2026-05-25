@@ -25,13 +25,13 @@
   },
   "corpus_tag": "real_v07",
   "dataset_label_counts": {
-    "analysis_affordances": 53,
+    "analysis_affordances": 101,
     "behavioral_events": 11,
-    "brain_regions": 4,
-    "data_standards": 9,
-    "modalities": 7,
-    "species": 9,
-    "tasks": 3
+    "brain_regions": 7,
+    "data_standards": 13,
+    "modalities": 15,
+    "species": 13,
+    "tasks": 7
   },
   "datasets": [
     {
@@ -56,19 +56,49 @@
       ],
       "source": "openneuro",
       "title": "OpenNeuro ds003505 motor imagery EEG BCI"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:modeldb:modeldb_87284",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "modeldb",
+      "title": "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "cellxgene",
+      "title": "cellxgene mouse motor cortex single-cell transcriptomics"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:microns:minnie65_public",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "microns",
+      "title": "MICrONS visual cortex connectomics and morphology"
     }
   ],
-  "manifest_entries": 4,
+  "manifest_entries": 7,
   "missing_metadata": {
-    "trials": 1
+    "trials": 4
   },
-  "normalized_dataset_count": 3,
+  "normalized_dataset_count": 6,
   "record_type_counts": {
-    "dataset": 3,
+    "dataset": 6,
     "paper": 1
   },
   "source_counts": {
+    "cellxgene": 1,
     "dandi": 2,
+    "microns": 1,
+    "modeldb": 1,
     "openalex": 1,
     "openneuro": 1
   }

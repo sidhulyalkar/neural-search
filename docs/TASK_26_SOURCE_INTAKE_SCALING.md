@@ -18,11 +18,21 @@ Scale Neural Search beyond a narrow real-corpus fixture by adding source familie
 
 ## First Implementation Slices
 
-- [ ] Add fixture-backed normalizers for ModelDB, cellxgene, MICrONS, and curated landmark records.
+- [x] Add fixture-backed source records for ModelDB, cellxgene, and MICrONS.
+- [x] Add real_v07 benchmark queries for computational-model, molecular/single-cell, and connectomics lookup.
+- [ ] Add fixture-backed curated landmark records for benchmark-critical gaps.
 - [ ] Add source-specific manifest entries with explicit reason-for-inclusion notes.
 - [ ] Add normalized examples for undercovered forms before tuning ranking weights.
 - [ ] Add source-balance summaries to corpus and search-intelligence reports.
 - [ ] Add benchmark seeds with expected IDs only after representative records exist.
+
+## Current Fixture Expansion
+
+- ModelDB fixture: `dataset:modeldb:modeldb_87284` for computational model and simulation search.
+- cellxgene fixture: `dataset:cellxgene:allen_mouse_motor_cortex_cells` for molecular and single-cell transcriptomics search.
+- MICrONS fixture: `dataset:microns:minnie65_public` for connectomics and morphology search.
+
+The local `real_v07` corpus now contains 6 dataset records, 1 paper record, 44 graph nodes, and 100 graph edges after `make real-artifacts-build`.
 
 ## Acceptance Criteria
 
