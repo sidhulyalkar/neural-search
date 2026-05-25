@@ -137,17 +137,19 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 ## Phase 16: Task 21 Query Plan Evaluation Harness
 
-- [ ] Compare baseline, awareness, and intelligence retrieval across benchmark suites.
-- [ ] Group metric deltas by planner intent and data form.
-- [ ] Block promotion when hard-negative violations increase.
-- [ ] Track planning in `docs/TASK_21_QUERY_PLAN_EVALUATION_HARNESS.md`.
+- [x] Compare baseline, awareness, and intelligence retrieval for benchmark query files.
+- [x] Group metric deltas by planner intent.
+- [x] Block promotion when hard-negative violations increase.
+- [x] Add JSON and Markdown query-plan evaluation reports.
+- [x] Track implementation in `docs/TASK_21_QUERY_PLAN_EVALUATION_HARNESS.md`.
 
 ## Phase 17: Task 22 Retrieval Default Promotion
 
-- [ ] Add an intent-specific promotion manifest.
+- [x] Add an intent-specific promotion manifest.
+- [x] Add deterministic promotion gate reports from query-plan evaluation output.
 - [ ] Define CI/local/exploratory config presets.
 - [ ] Promote planner metadata into standard search traces after Task 21 review.
-- [ ] Track planning in `docs/TASK_22_RETRIEVAL_DEFAULT_PROMOTION.md`.
+- [x] Track implementation in `docs/TASK_22_RETRIEVAL_DEFAULT_PROMOTION.md`.
 
 ## Quality Gates
 

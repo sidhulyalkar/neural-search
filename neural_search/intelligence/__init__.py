@@ -8,14 +8,21 @@ __all__ = [
     "CoverageGap",
     "SearchCoveragePlan",
     "SearchIntelligencePlan",
+    "EvaluationQuery",
+    "PromotionGateReport",
     "apply_search_intelligence_config",
     "build_search_coverage_plan",
     "build_benchmark_query_seeds",
     "build_review_queue",
+    "evaluate_promotion_gates",
+    "evaluate_query_plan",
     "load_relevance_judgments",
     "plan_search_intelligence",
+    "run_query_plan_evaluation",
     "search_datasets_with_intelligence",
     "summarize_relevance_judgments",
+    "write_promotion_gate_report",
+    "write_query_plan_evaluation_report",
     "write_search_coverage_plan",
     "write_review_queue",
 ]
@@ -39,6 +46,15 @@ def __getattr__(name: str) -> Any:
         from neural_search.intelligence import integration
 
         return getattr(integration, name)
+    if name in {
+        "EvaluationQuery",
+        "evaluate_query_plan",
+        "run_query_plan_evaluation",
+        "write_query_plan_evaluation_report",
+    }:
+        from neural_search.intelligence import evaluation
+
+        return getattr(evaluation, name)
     if name in {"SearchIntelligencePlan", "plan_search_intelligence"}:
         from neural_search.intelligence import planner
 
@@ -52,4 +68,12 @@ def __getattr__(name: str) -> Any:
         from neural_search.intelligence import review
 
         return getattr(review, name)
+    if name in {
+        "PromotionGateReport",
+        "evaluate_promotion_gates",
+        "write_promotion_gate_report",
+    }:
+        from neural_search.intelligence import promotion
+
+        return getattr(promotion, name)
     raise AttributeError(name)

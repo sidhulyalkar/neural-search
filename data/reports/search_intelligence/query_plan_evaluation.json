@@ -1,0 +1,232 @@
+{
+  "grouped_by_intent": {
+    "analysis_affordance": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "dataset_lookup": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "hard_negative": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    }
+  },
+  "mean_delta": {
+    "hard_negative_violations": 0.0,
+    "hit_at_5": 0.0,
+    "mrr": 0.0
+  },
+  "promotion_safe": true,
+  "queries": [
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_VISUAL_DECISION_NEUROPIXELS",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_WORKING_MEMORY_EPHYS",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_AUDITORY_PROCESSING",
+          "DEMO_TRIAL_ALIGNED_EPHYS",
+          "DEMO_REVERSAL_EPHYS",
+          "DEMO_TRIAL_OUTCOME_PREDICTION"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_VISUAL_DECISION_NEUROPIXELS",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_WORKING_MEMORY_EPHYS",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_AUDITORY_PROCESSING",
+          "DEMO_TRIAL_ALIGNED_EPHYS",
+          "DEMO_REVERSAL_EPHYS",
+          "DEMO_TRIAL_OUTCOME_PREDICTION"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_VISUAL_DECISION_NEUROPIXELS",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_WORKING_MEMORY_EPHYS",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_REVERSAL_EPHYS",
+          "DEMO_TRIAL_OUTCOME_PREDICTION",
+          "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "DEMO_AUDITORY_PROCESSING"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "hard_negative",
+      "planner_mode": "constraint_filter_first",
+      "promotion_blocked": false,
+      "query": "Find mouse Neuropixels visual decision-making data but not EEG",
+      "query_id": "real_v07_lookup_steinmetz"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_MOTOR_IMAGERY_EEG",
+          "DEMO_OPENNEURO_BIDS_IEEG",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_SEIZURE_IEEG",
+          "DEMO_SPEECH_ECOG",
+          "DEMO_COGNITIVE_CONTROL_FMRI",
+          "DEMO_OPENNEURO_BIDS_FMRI",
+          "DEMO_NHP_REACHING_UTAH",
+          "DEMO_SLEEP_EPHYS",
+          "DEMO_HIPPOCAMPUS_NAVIGATION"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_MOTOR_IMAGERY_EEG",
+          "DEMO_SEIZURE_IEEG",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_OPENNEURO_BIDS_IEEG",
+          "DEMO_SPEECH_ECOG",
+          "DEMO_COGNITIVE_CONTROL_FMRI",
+          "DEMO_NHP_REACHING_UTAH",
+          "DEMO_OPENNEURO_BIDS_FMRI",
+          "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "DEMO_OPERANT_CONDITIONING"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_MOTOR_IMAGERY_EEG",
+          "DEMO_OPENNEURO_BIDS_IEEG",
+          "DEMO_REACHING_ECOG_IEEG",
+          "DEMO_SEIZURE_IEEG",
+          "DEMO_SPEECH_ECOG",
+          "DEMO_COGNITIVE_CONTROL_FMRI",
+          "DEMO_OPENNEURO_BIDS_FMRI",
+          "DEMO_SLEEP_EPHYS",
+          "DEMO_GONOGO_CALCIUM",
+          "DEMO_REVERSAL_EPHYS"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "dataset_lookup",
+      "planner_mode": "cross_modal_fit",
+      "promotion_blocked": false,
+      "query": "OpenNeuro human EEG motor imagery BCI without Neuropixels",
+      "query_id": "real_v07_bids_bci"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_TRIAL_ALIGNED_EPHYS",
+          "DEMO_OPERANT_CONDITIONING",
+          "DEMO_SLEEP_EPHYS",
+          "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "DEMO_NHP_REACHING_UTAH",
+          "DEMO_TRIAL_OUTCOME_PREDICTION",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_REVERSAL_EPHYS"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_TRIAL_ALIGNED_EPHYS",
+          "DEMO_OPERANT_CONDITIONING",
+          "DEMO_TRIAL_OUTCOME_PREDICTION",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "DEMO_NHP_REACHING_UTAH",
+          "DEMO_REVERSAL_EPHYS",
+          "DEMO_WORKING_MEMORY_EPHYS",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "DEMO_SLEEP_EPHYS",
+          "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "DEMO_NHP_REACHING_UTAH",
+          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "DEMO_TRIAL_ALIGNED_EPHYS",
+          "DEMO_TRIAL_OUTCOME_PREDICTION",
+          "DEMO_DANDI_NWB_EPHYS",
+          "DEMO_FORAGING_EPHYS",
+          "DEMO_REVERSAL_EPHYS",
+          "DEMO_OPERANT_CONDITIONING"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "analysis_affordance",
+      "planner_mode": "cross_modal_fit",
+      "promotion_blocked": false,
+      "query": "Datasets suitable for event aligned analysis with trial events and spikes",
+      "query_id": "real_v07_claim_affordance"
+    }
+  ],
+  "query_count": 3
+}

@@ -5,18 +5,26 @@ from pathlib import Path
 import yaml
 
 from neural_search.intelligence import (
+    EvaluationQuery,
     apply_search_intelligence_config,
     build_benchmark_query_seeds,
     build_review_queue,
     build_search_coverage_plan,
+    evaluate_promotion_gates,
+    evaluate_query_plan,
     load_relevance_judgments,
     plan_search_intelligence,
+    run_query_plan_evaluation,
     search_datasets_with_intelligence,
     summarize_relevance_judgments,
+    write_promotion_gate_report,
+    write_query_plan_evaluation_report,
     write_review_queue,
     write_search_coverage_plan,
 )
+from neural_search.intelligence.evaluation import main as evaluation_main
 from neural_search.intelligence.planner import main as planner_main
+from neural_search.intelligence.promotion import main as promotion_main
 from neural_search.intelligence.review import main as review_main
 from neural_search.normalized import make_dataset_id, write_jsonl
 from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord
@@ -306,3 +314,149 @@ def test_review_queue_cli_writes_reports(tmp_path: Path) -> None:
 
     assert exit_code == 0
     assert (out_dir / "human_review_queue.json").exists()
+
+
+def test_query_plan_evaluation_compares_variants(tmp_path: Path) -> None:
+    datasets = [
+        _search_record(
+            "GOOD_EEG",
+            "Human EEG BCI motor imagery",
+            "Human EEG channels, events, labels, sampling rate, and behavior trials.",
+            species=["human"],
+            modalities=["eeg"],
+            behaviors=["motor imagery"],
+            tasks=["bci_decoding"],
+        ),
+        _search_record(
+            "BAD_FMRI",
+            "Human fMRI behavior task",
+            "Human BOLD fMRI images and behavior events.",
+            species=["human"],
+            modalities=["fmri"],
+            behaviors=["button press"],
+            tasks=["decision making"],
+        ),
+    ]
+    query = EvaluationQuery(
+        id="q_eeg",
+        query="human EEG BCI decoding with behavior without fMRI",
+        expected_dataset_ids=("GOOD_EEG",),
+        hard_negative_dataset_ids=("BAD_FMRI",),
+    )
+
+    evaluation = evaluate_query_plan(query, datasets=datasets, limit=2)
+    report = run_query_plan_evaluation([query], datasets=datasets, limit=2)
+    paths = write_query_plan_evaluation_report(report, tmp_path / "eval")
+
+    assert evaluation.planner_intent == "hard_negative"
+    assert evaluation.intelligence.result_ids[0] == "GOOD_EEG"
+    assert evaluation.intelligence_delta["hard_negative_violations"] == 0.0
+    assert report.promotion_safe is True
+    assert report.grouped_by_intent["hard_negative"]["promotion_safe"] is True
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_query_plan_evaluation_cli_writes_reports(tmp_path: Path) -> None:
+    benchmark_path = tmp_path / "benchmark.yaml"
+    out_dir = tmp_path / "report"
+    benchmark_path.write_text(
+        yaml.safe_dump(
+            {
+                "benchmark_queries": [
+                    {
+                        "id": "q1",
+                        "query": "mouse Neuropixels decision making",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = evaluation_main(
+        [
+            "--benchmark",
+            str(benchmark_path),
+            "--out",
+            str(out_dir),
+            "--limit",
+            "3",
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "query_plan_evaluation.json").exists()
+
+
+def test_promotion_gates_block_until_manifest_and_counts_allow(tmp_path: Path) -> None:
+    evaluation_report = {
+        "query_count": 3,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {
+            "hard_negative": {
+                "query_count": 3,
+                "mean_mrr_delta": 0.1,
+                "hard_negative_violation_delta": 0,
+            }
+        },
+    }
+    manifest = {
+        "default_enabled": False,
+        "global_gates": {
+            "min_total_queries": 5,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "intents": {
+            "hard_negative": {
+                "enabled": False,
+                "min_query_count": 5,
+                "min_mean_mrr_delta": 0.0,
+                "max_hard_negative_violation_delta": 0,
+            }
+        },
+    }
+
+    report = evaluate_promotion_gates(evaluation_report, manifest)
+    paths = write_promotion_gate_report(report, tmp_path / "promotion")
+
+    assert report.promotion_ready is False
+    assert "default promotion disabled in manifest" in report.blockers
+    assert report.intent_decisions[0].ready is False
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:
+    evaluation_path = tmp_path / "evaluation.json"
+    manifest_path = tmp_path / "manifest.yaml"
+    out_dir = tmp_path / "promotion"
+    evaluation_path.write_text(
+        '{"query_count":1,"mean_delta":{"hard_negative_violations":0},'
+        '"grouped_by_intent":{}}',
+        encoding="utf-8",
+    )
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "default_enabled": False,
+                "global_gates": {"min_total_queries": 1},
+                "intents": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = promotion_main(
+        [
+            "--manifest",
+            str(manifest_path),
+            "--evaluation",
+            str(evaluation_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "promotion_gate_report.json").exists()

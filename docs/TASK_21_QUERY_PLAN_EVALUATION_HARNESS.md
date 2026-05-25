@@ -1,6 +1,6 @@
 # Task 21: Query Plan Evaluation Harness
 
-Status: planned
+Status: first implementation slice complete
 
 ## Goal
 
@@ -21,5 +21,15 @@ Evaluate whether planner-selected modes and weights improve retrieval quality be
 
 ## First Slice
 
-- Add a small evaluation module that runs a fixed list of queries through baseline and intelligence wrappers.
-- Emit per-query deltas and grouped intent summaries.
+- [x] Add a deterministic evaluation module comparing baseline, awareness, and intelligence wrappers.
+- [x] Emit per-query hit@5, MRR, result IDs, hard-negative violation deltas, and promotion blockers.
+- [x] Group summaries by planner intent.
+- [x] Add JSON and Markdown report writing.
+- [x] Add CLI: `python -m neural_search.intelligence.evaluation`.
+- [x] Add `make query-plan-eval`.
+
+## Next Slice
+
+- Add suite-aware dataset loading for `real_v07` instead of the demo seed fallback.
+- Integrate human-labeled metrics from Task 20.
+- Add promotion recommendations per intent once enough judged queries exist.

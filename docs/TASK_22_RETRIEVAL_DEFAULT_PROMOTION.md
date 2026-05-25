@@ -1,6 +1,6 @@
 # Task 22: Retrieval Default Promotion
 
-Status: planned
+Status: first implementation slice complete
 
 ## Goal
 
@@ -22,5 +22,15 @@ Promote intelligence and awareness features from wrappers into the default retri
 
 ## First Slice
 
-- Add a promotion manifest describing enabled intents, weights, gates, and rollback notes.
-- Keep all new behavior disabled by default until Task 21 reports are reviewed.
+- [x] Add `data/config/search_intelligence_promotion.yaml`.
+- [x] Keep default promotion disabled.
+- [x] Add deterministic promotion gate evaluation from Task 21 reports.
+- [x] Emit JSON and Markdown promotion reports.
+- [x] Add CLI: `python -m neural_search.intelligence.promotion`.
+- [x] Add `make promotion-check`.
+
+## Next Slice
+
+- Add human-label minimums per intent once Task 20 has reviewed judgments.
+- Add rollback notes and owner metadata to each intent gate.
+- Wire promotion checks into release reporting without failing CI until gates mature.
