@@ -80,6 +80,7 @@ def graph_scientific_coverage_report(graph: KnowledgeGraph) -> str:
         "species",
         "behavioral_event",
         "analysis_affordance",
+        "required_signal",
         "data_standard",
     ]:
         rows = [
@@ -91,6 +92,39 @@ def graph_scientific_coverage_report(graph: KnowledgeGraph) -> str:
         sections.append(_table(["Node ID", "Label", "Sources", "Confidence"], rows))
         sections.append("\n")
     return "".join(sections)
+
+
+def graph_requirement_report(graph: KnowledgeGraph) -> str:
+    """Return analysis requirement edges as Markdown."""
+
+    requirement_edges = [
+        edge
+        for edge in graph.edges.values()
+        if edge.edge_type.startswith("analysis_requires_")
+    ]
+    rows = []
+    for edge in requirement_edges:
+        source = graph.nodes[edge.source_node_id]
+        target = graph.nodes[edge.target_node_id]
+        rows.append(
+            [
+                edge.edge_type,
+                source.label,
+                target.node_type,
+                target.label,
+                str(edge.properties.get("data_form", "")),
+                f"{edge.confidence:.2f}",
+            ]
+        )
+    rows.sort(key=lambda row: (row[0], row[4], row[1], row[3]))
+    return (
+        _heading("Graph Requirement Report")
+        + f"- Analysis requirement edges: {len(requirement_edges)}\n\n"
+        + _table(
+            ["Edge Type", "Analysis", "Target Type", "Requirement", "Data Form", "Confidence"],
+            rows,
+        )
+    )
 
 
 def graph_linking_report(graph: KnowledgeGraph) -> str:
@@ -158,6 +192,7 @@ def generate_graph_reports(graph: KnowledgeGraph) -> dict[str, str]:
     return {
         "graph_summary_report.md": graph_summary_report(graph),
         "graph_scientific_coverage_report.md": graph_scientific_coverage_report(graph),
+        "graph_requirement_report.md": graph_requirement_report(graph),
         "graph_linking_report.md": graph_linking_report(graph),
         "graph_gap_report.md": graph_gap_report(graph),
     }

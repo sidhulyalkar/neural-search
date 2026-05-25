@@ -17,21 +17,25 @@
 
 ### Node Types
 
-- analysis_affordance: 13
+- analysis_affordance: 36
 - analysis_goal: 1
 - author: 4
-- behavioral_event: 3
+- behavioral_event: 7
 - brain_region: 1
-- data_standard: 3
+- data_standard: 17
 - dataset: 6
 - file_format: 1
-- modality: 4
+- modality: 34
 - paper: 1
+- required_signal: 22
 - species: 5
 - task: 2
 
 ### Edge Types
 
+- analysis_requires_behavioral_event: 23
+- analysis_requires_modality: 99
+- analysis_requires_task_structure: 159
 - dataset_has_behavioral_event: 4
 - dataset_has_file_format: 6
 - dataset_has_modality: 9

@@ -40,11 +40,13 @@ def test_generate_graph_reports_returns_required_markdown_reports():
     assert set(reports) == {
         "graph_summary_report.md",
         "graph_scientific_coverage_report.md",
+        "graph_requirement_report.md",
         "graph_linking_report.md",
         "graph_gap_report.md",
     }
     assert "Graph Summary Report" in reports["graph_summary_report.md"]
     assert "reversal_learning" in reports["graph_scientific_coverage_report.md"]
+    assert "analysis_requires_modality" in reports["graph_requirement_report.md"]
     assert "license" in reports["graph_gap_report.md"]
 
 
@@ -55,5 +57,5 @@ def test_write_graph_reports_and_cli_inputs_roundtrip(tmp_path):
 
     paths = write_graph_reports(graph, tmp_path / "reports")
 
-    assert len(paths) == 4
+    assert len(paths) == 5
     assert (tmp_path / "reports" / "graph_linking_report.md").exists()

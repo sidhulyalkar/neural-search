@@ -2,6 +2,7 @@ from neural_search.graph import (
     build_dataset_subgraph,
     build_graph_from_records,
     build_paper_subgraph,
+    build_taxonomy_requirement_subgraph,
     dataset_node_id,
     make_edge_id,
     make_node_id,
@@ -143,6 +144,28 @@ def test_build_graph_merges_placeholders_and_filters_low_confidence_labels():
     assert low_region_id not in graph.nodes
     assert graph.metadata["dataset_count"] == 1
     assert graph.metadata["paper_count"] == 1
+    assert graph.metadata["taxonomy_requirement_edges"] > 0
+
+
+def test_taxonomy_requirement_subgraph_adds_analysis_requirement_edges():
+    graph = build_taxonomy_requirement_subgraph()
+    analysis_id = make_node_id("analysis_affordance", "decoding")
+    modality_id = make_node_id("modality", "neuropixels")
+    signal_id = make_node_id("required_signal", "spike_times")
+
+    assert analysis_id in graph.nodes
+    assert modality_id in graph.nodes
+    assert signal_id in graph.nodes
+    assert make_edge_id(
+        analysis_id,
+        "analysis_requires_modality",
+        modality_id,
+    ) in graph.edges
+    assert make_edge_id(
+        analysis_id,
+        "analysis_requires_task_structure",
+        signal_id,
+    ) in graph.edges
 
 
 def test_build_graph_cli_writes_readable_graph(tmp_path):

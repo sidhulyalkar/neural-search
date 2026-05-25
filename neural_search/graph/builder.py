@@ -6,6 +6,7 @@ from collections.abc import Iterable, Mapping
 from datetime import UTC, datetime
 from typing import Any
 
+from neural_search.awareness.taxonomy import DATA_FORMS, DataForm
 from neural_search.graph.schema import (
     GraphEvidence,
     KnowledgeGraph,
@@ -26,6 +27,8 @@ from neural_search.schemas import (
 
 GRAPH_BUILDER_NAME = "neural_search.graph.builder"
 GRAPH_BUILDER_VERSION = "v0.5.0"
+TAXONOMY_EXTRACTOR_NAME = "neural_search.awareness.taxonomy"
+TAXONOMY_EXTRACTOR_VERSION = "v0.7.0"
 
 DATASET_LABEL_FIELDS: Mapping[str, tuple[str, str]] = {
     "tasks": ("task", "dataset_has_task"),
@@ -44,6 +47,13 @@ PAPER_LABEL_FIELDS: Mapping[str, tuple[str, str]] = {
     "analysis_method": ("analysis_method", "paper_uses_method"),
     "modeling_method": ("modeling_method", "paper_uses_method"),
     "finding": ("finding", "paper_reports_finding"),
+}
+
+BEHAVIORAL_REQUIREMENT_SIGNALS = {
+    "events",
+    "trials",
+    "spike_times",
+    "sweeps",
 }
 
 
@@ -291,6 +301,87 @@ def _author_node(author: str, *, source_id: str) -> KnowledgeGraphNode:
                 confidence=0.9,
             )
         ],
+        confidence=0.9,
+        created_at=_now(),
+    )
+
+
+def _taxonomy_evidence(
+    *,
+    data_form: DataForm,
+    source_field: str,
+    evidence_text: str,
+) -> GraphEvidence:
+    return _record_evidence(
+        source_type="awareness_taxonomy",
+        source_id=data_form.id,
+        source_field=source_field,
+        evidence_text=evidence_text,
+        confidence=0.9,
+        extractor_name=TAXONOMY_EXTRACTOR_NAME,
+        extractor_version=TAXONOMY_EXTRACTOR_VERSION,
+    )
+
+
+def _taxonomy_label(
+    *,
+    label_type: str,
+    label: str,
+    data_form: DataForm,
+    source_field: str,
+) -> EvidenceLabel:
+    return EvidenceLabel(
+        id=f"label:{label_type}:{normalize_node_type(label)}",
+        label=label,
+        label_type=label_type,
+        confidence=0.9,
+        evidence_text=f"{data_form.label} requires {label}",
+        source_field=source_field,
+        source_value=label,
+        extractor_name=TAXONOMY_EXTRACTOR_NAME,
+        extractor_version=TAXONOMY_EXTRACTOR_VERSION,
+    )
+
+
+def _taxonomy_concept_node(
+    *,
+    node_type: str,
+    label_type: str,
+    label: str,
+    data_form: DataForm,
+    source_field: str,
+) -> KnowledgeGraphNode:
+    return _concept_node(
+        node_type,
+        _taxonomy_label(
+            label_type=label_type,
+            label=label,
+            data_form=data_form,
+            source_field=source_field,
+        ),
+        source_id=data_form.id,
+        source_type="awareness_taxonomy",
+        source_field=source_field,
+    )
+
+
+def _taxonomy_analysis_node(
+    analysis_id: str,
+    data_form: DataForm,
+) -> KnowledgeGraphNode:
+    evidence = _taxonomy_evidence(
+        data_form=data_form,
+        source_field="analysis_families",
+        evidence_text=f"{data_form.label} supports {analysis_id}",
+    )
+    return KnowledgeGraphNode(
+        node_id=make_node_id("analysis_affordance", analysis_id),
+        node_type="analysis_affordance",
+        label=analysis_id.replace("_", " ").title(),
+        aliases=[analysis_id, data_form.label],
+        source_ids=[data_form.id],
+        properties={"taxonomy_data_form": data_form.id},
+        evidence=[evidence],
         confidence=0.9,
         created_at=_now(),
     )
@@ -575,6 +666,140 @@ def build_paper_subgraph(
     )
 
 
+def build_taxonomy_requirement_subgraph() -> KnowledgeGraph:
+    """Build graph edges that encode data-form analysis requirements."""
+
+    nodes: dict[str, KnowledgeGraphNode] = {}
+    edges: dict[str, KnowledgeGraphEdge] = {}
+    for data_form in DATA_FORMS.values():
+        for analysis_id in data_form.analysis_families:
+            analysis_node = _taxonomy_analysis_node(analysis_id, data_form)
+            _add_node(nodes, analysis_node)
+
+            for modality in data_form.modalities:
+                modality_node = _taxonomy_concept_node(
+                    node_type="modality",
+                    label_type="modality",
+                    label=modality,
+                    data_form=data_form,
+                    source_field="modalities",
+                )
+                evidence = _taxonomy_evidence(
+                    data_form=data_form,
+                    source_field="modalities",
+                    evidence_text=f"{analysis_id} requires modality {modality}",
+                )
+                _add_node(nodes, modality_node)
+                _add_edge(
+                    edges,
+                    _edge(
+                        analysis_node.node_id,
+                        "analysis_requires_modality",
+                        modality_node.node_id,
+                        confidence=0.9,
+                        evidence=[evidence],
+                        properties={
+                            "data_form": data_form.id,
+                            "requirement_type": "modality",
+                        },
+                    ),
+                )
+
+            for standard in data_form.standards:
+                standard_node = _taxonomy_concept_node(
+                    node_type="data_standard",
+                    label_type="data_standard",
+                    label=standard,
+                    data_form=data_form,
+                    source_field="standards",
+                )
+                evidence = _taxonomy_evidence(
+                    data_form=data_form,
+                    source_field="standards",
+                    evidence_text=f"{analysis_id} benefits from standard {standard}",
+                )
+                _add_node(nodes, standard_node)
+                _add_edge(
+                    edges,
+                    _edge(
+                        analysis_node.node_id,
+                        "analysis_requires_task_structure",
+                        standard_node.node_id,
+                        confidence=0.82,
+                        evidence=[evidence],
+                        properties={
+                            "data_form": data_form.id,
+                            "requirement_type": "data_standard",
+                        },
+                    ),
+                )
+
+            for signal in data_form.required_signals:
+                signal_node = _taxonomy_concept_node(
+                    node_type="required_signal",
+                    label_type="required_signal",
+                    label=signal,
+                    data_form=data_form,
+                    source_field="required_signals",
+                )
+                evidence = _taxonomy_evidence(
+                    data_form=data_form,
+                    source_field="required_signals",
+                    evidence_text=f"{analysis_id} requires signal {signal}",
+                )
+                _add_node(nodes, signal_node)
+                _add_edge(
+                    edges,
+                    _edge(
+                        analysis_node.node_id,
+                        "analysis_requires_task_structure",
+                        signal_node.node_id,
+                        confidence=0.86,
+                        evidence=[evidence],
+                        properties={
+                            "data_form": data_form.id,
+                            "requirement_type": "required_signal",
+                        },
+                    ),
+                )
+                if signal in BEHAVIORAL_REQUIREMENT_SIGNALS:
+                    event_node = _taxonomy_concept_node(
+                        node_type="behavioral_event",
+                        label_type="behavioral_event",
+                        label=signal,
+                        data_form=data_form,
+                        source_field="required_signals",
+                    )
+                    _add_node(nodes, event_node)
+                    _add_edge(
+                        edges,
+                        _edge(
+                            analysis_node.node_id,
+                            "analysis_requires_behavioral_event",
+                            event_node.node_id,
+                            confidence=0.8,
+                            evidence=[evidence],
+                            properties={
+                                "data_form": data_form.id,
+                                "requirement_type": "required_signal",
+                            },
+                        ),
+                    )
+
+    return _graph_from_parts(
+        nodes,
+        edges,
+        metadata={
+            "graph_version": GRAPH_BUILDER_VERSION,
+            "builder": GRAPH_BUILDER_NAME,
+            "taxonomy_source": TAXONOMY_EXTRACTOR_NAME,
+            "taxonomy_data_form_count": len(DATA_FORMS),
+            "node_count": len(nodes),
+            "edge_count": len(edges),
+        },
+    )
+
+
 def merge_graphs(graphs: Iterable[KnowledgeGraph]) -> KnowledgeGraph:
     """Merge graph slices while preserving evidence and resolving placeholders."""
 
@@ -621,6 +846,7 @@ def build_graph_from_records(
         build_paper_subgraph(paper, min_confidence=min_confidence)
         for paper in paper_records
     )
+    subgraphs.append(build_taxonomy_requirement_subgraph())
     graph = merge_graphs(subgraphs)
     graph.metadata.update(
         {
@@ -628,6 +854,13 @@ def build_graph_from_records(
             "paper_count": len(paper_records),
             "record_count": len(dataset_records) + len(paper_records),
             "min_confidence": min_confidence,
+            "taxonomy_requirement_edges": len(
+                [
+                    edge
+                    for edge in graph.edges.values()
+                    if edge.edge_type.startswith("analysis_requires_")
+                ]
+            ),
         }
     )
     return validate_graph(graph)

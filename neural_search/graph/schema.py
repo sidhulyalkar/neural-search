@@ -20,6 +20,7 @@ SUPPORTED_NODE_TYPES = {
     "species",
     "behavioral_event",
     "analysis_affordance",
+    "required_signal",
     "data_standard",
     "file_format",
     "modeling_method",

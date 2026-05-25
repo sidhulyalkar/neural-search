@@ -4,6 +4,7 @@ from neural_search.graph.builder import (
     build_dataset_subgraph,
     build_graph_from_records,
     build_paper_subgraph,
+    build_taxonomy_requirement_subgraph,
     dataset_node_id,
     merge_graphs,
     paper_node_id,
@@ -60,6 +61,15 @@ from neural_search.graph.search_features import (
     graph_context_score,
     load_graph_if_exists,
 )
+from neural_search.graph.semantic_edges import (
+    SemanticEdgeConfig,
+    SemanticEdgeResult,
+    add_semantic_edges_to_graph,
+    build_concept_similarity_edges,
+    build_semantic_dataset_edges,
+    get_semantic_neighbors,
+    load_and_add_semantic_edges,
+)
 from neural_search.graph.similarity import (
     DatasetSimilarity,
     SimilarityWeights,
@@ -81,6 +91,7 @@ _REPORT_EXPORTS = {
     "generate_graph_reports",
     "graph_gap_report",
     "graph_linking_report",
+    "graph_requirement_report",
     "graph_scientific_coverage_report",
     "graph_summary_report",
     "write_graph_reports",
@@ -118,6 +129,7 @@ __all__ = [
     "build_dataset_subgraph",
     "build_graph_from_records",
     "build_paper_subgraph",
+    "build_taxonomy_requirement_subgraph",
     "dataset_node_id",
     "merge_graphs",
     "paper_node_id",
@@ -143,6 +155,7 @@ __all__ = [
     "graph_context_score",
     "graph_gap_report",
     "graph_linking_report",
+    "graph_requirement_report",
     "graph_scientific_coverage_report",
     "graph_summary_report",
     "load_graph_if_exists",
@@ -170,4 +183,12 @@ __all__ = [
     "build_similarity_edges",
     "compute_dataset_similarity",
     "find_similar_datasets",
+    # Semantic Edges
+    "SemanticEdgeConfig",
+    "SemanticEdgeResult",
+    "add_semantic_edges_to_graph",
+    "build_concept_similarity_edges",
+    "build_semantic_dataset_edges",
+    "get_semantic_neighbors",
+    "load_and_add_semantic_edges",
 ]

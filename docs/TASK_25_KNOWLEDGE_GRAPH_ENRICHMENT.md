@@ -1,6 +1,6 @@
 # Task 25: Knowledge Graph Enrichment
 
-Status: planned
+Status: in progress
 
 ## Goal
 
@@ -17,9 +17,10 @@ Make the knowledge graph useful for scientific retrieval, not just artifact insp
 ## First Implementation Slices
 
 - [ ] Add graph coverage thresholds to reports and release checks.
-- [ ] Add `analysis_requires_modality`, `analysis_requires_behavioral_event`, and `analysis_requires_task_structure` edges from the deterministic awareness taxonomy.
+- [x] Add `analysis_requires_modality`, `analysis_requires_behavioral_event`, and `analysis_requires_task_structure` edges from the deterministic awareness taxonomy.
+- [x] Add a graph requirement report for analysis-to-requirement edges.
 - [ ] Add graph report sections for unresolved placeholder nodes and weak dataset-paper links.
-- [ ] Add tests that verify required graph edges exist for representative records.
+- [x] Add tests that verify required graph edges exist for representative records.
 
 ## Acceptance Criteria
 
