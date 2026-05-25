@@ -87,9 +87,19 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 - [x] Infer query awareness for data forms, analysis families, scales, species, and exclusions.
 - [x] Score dataset awareness separately from the main retrieval score.
 - [x] Add corpus awareness reports for coverage and underrepresented data forms.
+- [x] Add an awareness-aware search wrapper with optional reranking while concurrent Task 12 search-core work settles.
 - [ ] Wire awareness scoring into the main retrieval path after concurrent Task 12 search-core work settles.
 - [ ] Add real-corpus benchmarks for fMRI, MEG, connectomics, molecular, clinical, and computational-model searches.
 - [x] Track implementation in `docs/TASK_13_GENERAL_NEUROSCIENCE_SEARCH_INTELLIGENCE.md`.
+
+## Phase 11: Task 14 Awareness-Integrated Retrieval
+
+- [x] Preserve the existing `search_datasets` API and add a reversible awareness wrapper.
+- [x] Expose `query_awareness`, `awareness_score`, and data-form evidence in search responses.
+- [x] Support opt-in awareness reranking with bounded weights.
+- [x] Add tests for annotation, reranking, and warning propagation.
+- [ ] Promote awareness scoring into the primary retrieval core once Task 12 semantic changes are stable.
+- [x] Track implementation in `docs/TASK_14_AWARENESS_INTEGRATED_RETRIEVAL.md`.
 
 ## Quality Gates
 

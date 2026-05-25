@@ -5,6 +5,7 @@ from neural_search.awareness.scoring import (
     DatasetAwareness,
     score_dataset_awareness,
 )
+from neural_search.awareness.search import search_datasets_with_awareness
 from neural_search.awareness.taxonomy import (
     DataForm,
     QueryAwareness,
@@ -20,4 +21,5 @@ __all__ = [
     "detect_data_forms",
     "infer_query_awareness",
     "score_dataset_awareness",
+    "search_datasets_with_awareness",
 ]
