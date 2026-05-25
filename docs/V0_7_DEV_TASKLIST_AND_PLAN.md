@@ -138,6 +138,7 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 ## Phase 16: Task 21 Query Plan Evaluation Harness
 
 - [x] Compare baseline, awareness, and intelligence retrieval for benchmark query files.
+- [x] Evaluate against normalized real_v07 records instead of demo fallback when records are supplied.
 - [x] Group metric deltas by planner intent.
 - [x] Block promotion when hard-negative violations increase.
 - [x] Add JSON and Markdown query-plan evaluation reports.
@@ -147,9 +148,18 @@ Move Neural Search from a canonical demo corpus into a real public corpus with f
 
 - [x] Add an intent-specific promotion manifest.
 - [x] Add deterministic promotion gate reports from query-plan evaluation output.
+- [x] Add global human-label gates for promotion readiness.
 - [ ] Define CI/local/exploratory config presets.
 - [ ] Promote planner metadata into standard search traces after Task 21 review.
 - [x] Track implementation in `docs/TASK_22_RETRIEVAL_DEFAULT_PROMOTION.md`.
+
+## Phase 18: Task 23 Adaptive Realistic Search Optimization
+
+- [ ] Add per-intent human-label gates once reviewed judgment files exist.
+- [ ] Add modality/data-form grouped query-plan evaluation.
+- [ ] Add score calibration reports against human relevance judgments.
+- [ ] Add realistic fixtures for underrepresented neuroscience data forms.
+- [ ] Track planning in `docs/TASK_23_ADAPTIVE_REALISTIC_SEARCH_OPTIMIZATION.md`.
 
 ## Quality Gates
 

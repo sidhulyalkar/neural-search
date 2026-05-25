@@ -1,4 +1,8 @@
 {
+  "corpus": {
+    "label": "data/corpus/normalized/real_v07.datasets.jsonl",
+    "record_count": 3
+  },
   "grouped_by_intent": {
     "analysis_affordance": {
       "hard_negative_violation_delta": 0,
@@ -32,55 +36,31 @@
     {
       "awareness": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_VISUAL_DECISION_NEUROPIXELS",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_WORKING_MEMORY_EPHYS",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_AUDITORY_PROCESSING",
-          "DEMO_TRIAL_ALIGNED_EPHYS",
-          "DEMO_REVERSAL_EPHYS",
-          "DEMO_TRIAL_OUTCOME_PREDICTION"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
         ],
         "variant": "awareness"
       },
       "baseline": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_VISUAL_DECISION_NEUROPIXELS",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_WORKING_MEMORY_EPHYS",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_AUDITORY_PROCESSING",
-          "DEMO_TRIAL_ALIGNED_EPHYS",
-          "DEMO_REVERSAL_EPHYS",
-          "DEMO_TRIAL_OUTCOME_PREDICTION"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
         ],
         "variant": "baseline"
       },
       "intelligence": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_VISUAL_DECISION_NEUROPIXELS",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_WORKING_MEMORY_EPHYS",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_REVERSAL_EPHYS",
-          "DEMO_TRIAL_OUTCOME_PREDICTION",
-          "DEMO_HIPPOCAMPUS_NAVIGATION",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
-          "DEMO_AUDITORY_PROCESSING"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
         ],
         "variant": "intelligence"
       },
@@ -98,55 +78,28 @@
     {
       "awareness": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_MOTOR_IMAGERY_EEG",
-          "DEMO_OPENNEURO_BIDS_IEEG",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_SEIZURE_IEEG",
-          "DEMO_SPEECH_ECOG",
-          "DEMO_COGNITIVE_CONTROL_FMRI",
-          "DEMO_OPENNEURO_BIDS_FMRI",
-          "DEMO_NHP_REACHING_UTAH",
-          "DEMO_SLEEP_EPHYS",
-          "DEMO_HIPPOCAMPUS_NAVIGATION"
+          "dataset:openneuro:ds003505"
         ],
         "variant": "awareness"
       },
       "baseline": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_MOTOR_IMAGERY_EEG",
-          "DEMO_SEIZURE_IEEG",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_OPENNEURO_BIDS_IEEG",
-          "DEMO_SPEECH_ECOG",
-          "DEMO_COGNITIVE_CONTROL_FMRI",
-          "DEMO_NHP_REACHING_UTAH",
-          "DEMO_OPENNEURO_BIDS_FMRI",
-          "DEMO_HIPPOCAMPUS_NAVIGATION",
-          "DEMO_OPERANT_CONDITIONING"
+          "dataset:openneuro:ds003505"
         ],
         "variant": "baseline"
       },
       "intelligence": {
         "hard_negative_violations": 0,
-        "hit_at_5": 0.0,
-        "mrr": 0.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
         "result_ids": [
-          "DEMO_MOTOR_IMAGERY_EEG",
-          "DEMO_OPENNEURO_BIDS_IEEG",
-          "DEMO_REACHING_ECOG_IEEG",
-          "DEMO_SEIZURE_IEEG",
-          "DEMO_SPEECH_ECOG",
-          "DEMO_COGNITIVE_CONTROL_FMRI",
-          "DEMO_OPENNEURO_BIDS_FMRI",
-          "DEMO_SLEEP_EPHYS",
-          "DEMO_GONOGO_CALCIUM",
-          "DEMO_REVERSAL_EPHYS"
+          "dataset:openneuro:ds003505"
         ],
         "variant": "intelligence"
       },
@@ -167,16 +120,9 @@
         "hit_at_5": 0.0,
         "mrr": 0.0,
         "result_ids": [
-          "DEMO_TRIAL_ALIGNED_EPHYS",
-          "DEMO_OPERANT_CONDITIONING",
-          "DEMO_SLEEP_EPHYS",
-          "DEMO_HIPPOCAMPUS_NAVIGATION",
-          "DEMO_NHP_REACHING_UTAH",
-          "DEMO_TRIAL_OUTCOME_PREDICTION",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_REVERSAL_EPHYS"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
         ],
         "variant": "awareness"
       },
@@ -185,16 +131,9 @@
         "hit_at_5": 0.0,
         "mrr": 0.0,
         "result_ids": [
-          "DEMO_TRIAL_ALIGNED_EPHYS",
-          "DEMO_OPERANT_CONDITIONING",
-          "DEMO_TRIAL_OUTCOME_PREDICTION",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_HIPPOCAMPUS_NAVIGATION",
-          "DEMO_NHP_REACHING_UTAH",
-          "DEMO_REVERSAL_EPHYS",
-          "DEMO_WORKING_MEMORY_EPHYS",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
         ],
         "variant": "baseline"
       },
@@ -203,16 +142,9 @@
         "hit_at_5": 0.0,
         "mrr": 0.0,
         "result_ids": [
-          "DEMO_SLEEP_EPHYS",
-          "DEMO_HIPPOCAMPUS_NAVIGATION",
-          "DEMO_NHP_REACHING_UTAH",
-          "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
-          "DEMO_TRIAL_ALIGNED_EPHYS",
-          "DEMO_TRIAL_OUTCOME_PREDICTION",
-          "DEMO_DANDI_NWB_EPHYS",
-          "DEMO_FORAGING_EPHYS",
-          "DEMO_REVERSAL_EPHYS",
-          "DEMO_OPERANT_CONDITIONING"
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
         ],
         "variant": "intelligence"
       },

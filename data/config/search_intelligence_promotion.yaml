@@ -7,6 +7,9 @@ description: >
 global_gates:
   min_total_queries: 10
   max_hard_negative_violation_delta: 0
+human_label_gates:
+  min_judgments: 0
+  max_hard_negative_count: 0
 intents:
   hard_negative:
     enabled: false

@@ -14,6 +14,8 @@ import yaml
 from neural_search.awareness.search import search_datasets_with_awareness
 from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.intelligence.integration import search_datasets_with_intelligence
+from neural_search.normalized import load_normalized_records
+from neural_search.schemas import NormalizedDatasetRecord
 from neural_search.search.core import search_datasets
 
 
@@ -81,6 +83,7 @@ class QueryPlanEvaluationReport:
 
     query_count: int
     promotion_safe: bool
+    corpus: dict[str, Any]
     mean_delta: dict[str, float]
     grouped_by_intent: dict[str, dict[str, Any]]
     queries: tuple[QueryPlanEvaluation, ...]
@@ -89,6 +92,7 @@ class QueryPlanEvaluationReport:
         return {
             "query_count": self.query_count,
             "promotion_safe": self.promotion_safe,
+            "corpus": dict(self.corpus),
             "mean_delta": dict(self.mean_delta),
             "grouped_by_intent": self.grouped_by_intent,
             "queries": [query.model_dump() for query in self.queries],
@@ -110,6 +114,88 @@ def _load_queries(path: str | Path) -> list[EvaluationQuery]:
             )
         )
     return queries
+
+
+def _labels_as_strings(values: list[Any]) -> list[str]:
+    return [str(getattr(value, "label", value)) for value in values]
+
+
+def load_search_records_from_normalized(path: str | Path) -> list[dict[str, Any]]:
+    """Load normalized dataset records into the legacy search record shape."""
+
+    normalized = load_normalized_records(path)
+    datasets = [
+        record
+        for record in normalized
+        if isinstance(record, NormalizedDatasetRecord)
+    ]
+    records: list[dict[str, Any]] = []
+    for dataset in datasets:
+        analyses = [item.analysis_id for item in dataset.analysis_affordances]
+        description = dataset.description or dataset.title
+        records.append(
+            {
+                "dataset": {
+                    "id": dataset.dataset_id,
+                    "source": dataset.source,
+                    "source_id": dataset.source_id,
+                    "title": dataset.title,
+                    "description": description,
+                    "url": dataset.url,
+                    "species": _labels_as_strings(dataset.species),
+                    "modalities": _labels_as_strings(dataset.modalities),
+                    "brain_regions": _labels_as_strings(dataset.brain_regions),
+                    "tasks": _labels_as_strings(dataset.tasks),
+                    "behaviors": _labels_as_strings(dataset.behavioral_events),
+                    "data_standards": _labels_as_strings(dataset.data_standards),
+                    "analysis_affordances": analyses,
+                    "has_trials": bool(dataset.usability_flags.has_trials),
+                    "has_behavior": bool(dataset.usability_flags.has_behavior),
+                    "has_raw_data": bool(dataset.usability_flags.has_raw_data),
+                    "has_processed_data": bool(dataset.usability_flags.has_processed_data),
+                    "linked_paper_ids": list(dataset.linked_papers),
+                    "metadata_json": {
+                        "missing_fields": list(dataset.missing_fields),
+                        "analysis_affordances": analyses,
+                    },
+                },
+                "card": {
+                    "summary": description,
+                    "why_relevant": [
+                        f"{dataset.source} normalized corpus record",
+                        "Evidence-backed metadata is available",
+                    ],
+                    "analysis_readiness": {
+                        "score": 85 if dataset.usability_flags.has_trials else 65,
+                    },
+                    "suggested_analyses": analyses,
+                    "missing_fields": list(dataset.missing_fields),
+                    "scientific_labels": {
+                        "tasks": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.tasks
+                        ],
+                        "modalities": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.modalities
+                        ],
+                        "behaviors": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.behavioral_events
+                        ],
+                        "brain_regions": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.brain_regions
+                        ],
+                        "species": [
+                            {"id": label.label, "label": label.label}
+                            for label in dataset.species
+                        ],
+                    },
+                },
+            }
+        )
+    return records
 
 
 def _mrr(result_ids: tuple[str, ...], expected_ids: tuple[str, ...]) -> float:
@@ -206,6 +292,7 @@ def run_query_plan_evaluation(
     queries: list[EvaluationQuery],
     *,
     datasets: list[dict[str, Any]] | None = None,
+    corpus_label: str = "demo_seed",
     limit: int = 10,
     retrieval_config: dict[str, Any] | None = None,
 ) -> QueryPlanEvaluationReport:
@@ -263,6 +350,10 @@ def run_query_plan_evaluation(
     return QueryPlanEvaluationReport(
         query_count=query_count,
         promotion_safe=not any(item.promotion_blocked for item in evaluations),
+        corpus={
+            "label": corpus_label,
+            "record_count": len(datasets) if datasets is not None else len(build_demo_seed()),
+        },
         mean_delta=mean_delta,
         grouped_by_intent=grouped_summary,
         queries=evaluations,
@@ -274,6 +365,7 @@ def _markdown(report: QueryPlanEvaluationReport) -> str:
         "# Query Plan Evaluation",
         "",
         f"- Queries: {report.query_count}",
+        f"- Corpus: {report.corpus.get('label')} ({report.corpus.get('record_count')} records)",
         f"- Promotion safe: {str(report.promotion_safe).lower()}",
         f"- Mean hit@5 delta: {report.mean_delta['hit_at_5']}",
         f"- Mean MRR delta: {report.mean_delta['mrr']}",
@@ -331,12 +423,19 @@ def main(argv: list[str] | None = None) -> int:
         description="Compare baseline, awareness, and intelligence retrieval."
     )
     parser.add_argument("--benchmark", required=True)
+    parser.add_argument(
+        "--records",
+        help="Optional normalized dataset/records JSONL path or directory.",
+    )
     parser.add_argument("--out", required=True)
     parser.add_argument("--limit", type=int, default=10)
     args = parser.parse_args(argv)
 
+    records = load_search_records_from_normalized(args.records) if args.records else None
     report = run_query_plan_evaluation(
         _load_queries(args.benchmark),
+        datasets=records,
+        corpus_label=str(args.records) if args.records else "demo_seed",
         limit=args.limit,
     )
     print(

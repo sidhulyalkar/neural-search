@@ -16,6 +16,7 @@ __all__ = [
     "build_review_queue",
     "evaluate_promotion_gates",
     "evaluate_query_plan",
+    "load_search_records_from_normalized",
     "load_relevance_judgments",
     "plan_search_intelligence",
     "run_query_plan_evaluation",
@@ -49,6 +50,7 @@ def __getattr__(name: str) -> Any:
     if name in {
         "EvaluationQuery",
         "evaluate_query_plan",
+        "load_search_records_from_normalized",
         "run_query_plan_evaluation",
         "write_query_plan_evaluation_report",
     }:

@@ -31,6 +31,7 @@ Promote intelligence and awareness features from wrappers into the default retri
 
 ## Next Slice
 
-- Add human-label minimums per intent once Task 20 has reviewed judgments.
+- [x] Add global human-label minimum gates.
+- Add per-intent human-label minimums once Task 20 has reviewed judgments.
 - Add rollback notes and owner metadata to each intent gate.
 - Wire promotion checks into release reporting without failing CI until gates mature.

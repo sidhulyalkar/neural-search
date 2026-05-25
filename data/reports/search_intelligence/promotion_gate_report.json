@@ -4,6 +4,7 @@
     "default promotion disabled in manifest"
   ],
   "default_enabled": false,
+  "human_label_summary": {},
   "intent_decisions": [
     {
       "blockers": [

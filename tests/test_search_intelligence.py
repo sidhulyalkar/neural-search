@@ -13,6 +13,7 @@ from neural_search.intelligence import (
     evaluate_promotion_gates,
     evaluate_query_plan,
     load_relevance_judgments,
+    load_search_records_from_normalized,
     plan_search_intelligence,
     run_query_plan_evaluation,
     search_datasets_with_intelligence,
@@ -357,6 +358,41 @@ def test_query_plan_evaluation_compares_variants(tmp_path: Path) -> None:
     assert Path(paths["markdown"]).exists()
 
 
+def test_query_plan_evaluation_loads_normalized_records(tmp_path: Path) -> None:
+    records_path = tmp_path / "normalized.jsonl"
+    record = NormalizedDatasetRecord(
+        dataset_id=make_dataset_id("fixture", "eeg001"),
+        source="fixture",
+        source_id="eeg001",
+        title="Human BIDS EEG BCI",
+        description="BIDS EEG channels, events, sampling rate, and behavior labels.",
+        species=[_label("species", "human")],
+        modalities=[_label("modality", "eeg")],
+        tasks=[_label("task", "motor_imagery")],
+        behavioral_events=[_label("behavior", "button_press")],
+        data_standards=[_label("data_standard", "BIDS")],
+    )
+    write_jsonl([record], records_path)
+
+    datasets = load_search_records_from_normalized(records_path)
+    report = run_query_plan_evaluation(
+        [
+            EvaluationQuery(
+                id="q_eeg",
+                query="human EEG motor imagery",
+                expected_dataset_ids=(record.dataset_id,),
+            )
+        ],
+        datasets=datasets,
+        corpus_label=str(records_path),
+        limit=3,
+    )
+
+    assert datasets[0]["dataset"]["id"] == record.dataset_id
+    assert report.corpus["record_count"] == 1
+    assert report.queries[0].intelligence.hit_at_5 == 1.0
+
+
 def test_query_plan_evaluation_cli_writes_reports(tmp_path: Path) -> None:
     benchmark_path = tmp_path / "benchmark.yaml"
     out_dir = tmp_path / "report"
@@ -425,6 +461,35 @@ def test_promotion_gates_block_until_manifest_and_counts_allow(tmp_path: Path) -
     assert report.intent_decisions[0].ready is False
     assert Path(paths["json"]).exists()
     assert Path(paths["markdown"]).exists()
+
+
+def test_promotion_gates_use_human_label_summary() -> None:
+    evaluation_report = {
+        "query_count": 10,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {},
+    }
+    manifest = {
+        "default_enabled": True,
+        "global_gates": {
+            "min_total_queries": 10,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "human_label_gates": {
+            "min_judgments": 2,
+            "max_hard_negative_count": 0,
+        },
+        "intents": {},
+    }
+
+    report = evaluate_promotion_gates(
+        evaluation_report,
+        manifest,
+        human_label_summary={"judgment_count": 1, "hard_negative_count": 0},
+    )
+
+    assert report.promotion_ready is False
+    assert "human judgment_count 1 < required 2" in report.blockers
 
 
 def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:

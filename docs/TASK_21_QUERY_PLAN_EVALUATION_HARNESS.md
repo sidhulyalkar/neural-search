@@ -30,6 +30,6 @@ Evaluate whether planner-selected modes and weights improve retrieval quality be
 
 ## Next Slice
 
-- Add suite-aware dataset loading for `real_v07` instead of the demo seed fallback.
+- [x] Add normalized record loading for `real_v07` instead of the demo seed fallback.
 - Integrate human-labeled metrics from Task 20.
 - Add promotion recommendations per intent once enough judged queries exist.

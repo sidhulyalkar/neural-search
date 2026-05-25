@@ -10,6 +10,11 @@ from typing import Any
 
 import yaml
 
+from neural_search.intelligence.review import (
+    load_relevance_judgments,
+    summarize_relevance_judgments,
+)
+
 
 @dataclass(frozen=True)
 class IntentPromotionDecision:
@@ -38,6 +43,7 @@ class PromotionGateReport:
     default_enabled: bool
     promotion_ready: bool
     blockers: tuple[str, ...]
+    human_label_summary: dict[str, Any]
     intent_decisions: tuple[IntentPromotionDecision, ...]
 
     def model_dump(self) -> dict[str, Any]:
@@ -45,6 +51,7 @@ class PromotionGateReport:
             "default_enabled": self.default_enabled,
             "promotion_ready": self.promotion_ready,
             "blockers": list(self.blockers),
+            "human_label_summary": dict(self.human_label_summary),
             "intent_decisions": [
                 decision.model_dump() for decision in self.intent_decisions
             ],
@@ -111,10 +118,14 @@ def _intent_decision(
 def evaluate_promotion_gates(
     evaluation_report: dict[str, Any],
     manifest: dict[str, Any],
+    *,
+    human_label_summary: dict[str, Any] | None = None,
 ) -> PromotionGateReport:
     """Evaluate whether planner intents are ready for default promotion."""
 
     global_gates = manifest.get("global_gates", {})
+    human_gates = manifest.get("human_label_gates", {})
+    human_summary = dict(human_label_summary or {})
     blockers: list[str] = []
     total_queries = int(evaluation_report.get("query_count", 0) or 0)
     min_total_queries = int(global_gates.get("min_total_queries", 1) or 1)
@@ -133,6 +144,23 @@ def evaluate_promotion_gates(
             f"{hard_negative_delta} > allowed {max_hard_negative_delta}"
         )
 
+    min_human_judgments = int(human_gates.get("min_judgments", 0) or 0)
+    judgment_count = int(human_summary.get("judgment_count", 0) or 0)
+    if judgment_count < min_human_judgments:
+        blockers.append(
+            f"human judgment_count {judgment_count} < required {min_human_judgments}"
+        )
+
+    max_human_hard_negatives = int(
+        human_gates.get("max_hard_negative_count", 0) or 0
+    )
+    human_hard_negatives = int(human_summary.get("hard_negative_count", 0) or 0)
+    if human_hard_negatives > max_human_hard_negatives:
+        blockers.append(
+            f"human hard_negative_count {human_hard_negatives} > allowed "
+            f"{max_human_hard_negatives}"
+        )
+
     grouped = evaluation_report.get("grouped_by_intent", {})
     decisions = tuple(
         _intent_decision(intent, dict(gate), grouped.get(intent))
@@ -146,6 +174,7 @@ def evaluate_promotion_gates(
         default_enabled=default_enabled,
         promotion_ready=not blockers and all(decision.ready for decision in decisions),
         blockers=tuple(blockers),
+        human_label_summary=human_summary,
         intent_decisions=decisions,
     )
 
@@ -156,6 +185,7 @@ def _markdown(report: PromotionGateReport) -> str:
         "",
         f"- Default enabled: {str(report.default_enabled).lower()}",
         f"- Promotion ready: {str(report.promotion_ready).lower()}",
+        f"- Human judgments: {report.human_label_summary.get('judgment_count', 0)}",
         "",
         "## Global Blockers",
         "",
@@ -214,13 +244,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--evaluation", required=True)
+    parser.add_argument("--judgments", help="Optional human relevance judgments JSONL.")
     parser.add_argument("--out", required=True)
     parser.add_argument("--fail-on-blockers", action="store_true")
     args = parser.parse_args(argv)
 
+    human_summary = (
+        summarize_relevance_judgments(load_relevance_judgments(args.judgments))
+        if args.judgments
+        else None
+    )
     report = evaluate_promotion_gates(
         load_evaluation_report(args.evaluation),
         load_promotion_manifest(args.manifest),
+        human_label_summary=human_summary,
     )
     print(
         json.dumps(

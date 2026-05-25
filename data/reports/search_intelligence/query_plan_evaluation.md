@@ -1,6 +1,7 @@
 # Query Plan Evaluation
 
 - Queries: 3
+- Corpus: data/corpus/normalized/real_v07.datasets.jsonl (3 records)
 - Promotion safe: true
 - Mean hit@5 delta: 0.0
 - Mean MRR delta: 0.0

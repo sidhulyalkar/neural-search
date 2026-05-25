@@ -2,6 +2,7 @@
 
 - Default enabled: false
 - Promotion ready: false
+- Human judgments: 0
 
 ## Global Blockers
 

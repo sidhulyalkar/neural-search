@@ -226,6 +226,7 @@ human-review-queue: search-intelligence-report
 query-plan-eval:
 	python -m neural_search.intelligence.evaluation \
 		--benchmark data/eval/benchmark_queries_real_v07.yaml \
+		--records data/corpus/normalized/real_v07.datasets.jsonl \
 		--out data/reports/search_intelligence
 
 promotion-check: query-plan-eval
