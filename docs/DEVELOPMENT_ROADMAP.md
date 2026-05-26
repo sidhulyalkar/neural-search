@@ -87,36 +87,38 @@ python -m neural_search.evaluation.run_benchmark --suite adversarial
 
 ## Phase 2: Real Corpus Stabilization (2-3 weeks)
 
-### 2.1 Corpus Expansion Targets
+### 2.1 Corpus Expansion Targets ✅
 
-| Source | Current | Target | Priority |
-|--------|---------|--------|----------|
-| DANDI | ~10 | 50-100 | HIGH |
-| OpenNeuro | ~10 | 50-100 | HIGH |
-| OpenAlex Papers | ~50 | 500-2000 | MEDIUM |
-| Allen Brain | ~5 | 20-50 | MEDIUM |
-| NeMO Archive | ~5 | 20-50 | MEDIUM |
-| ModelDB | 0 | 10-30 | LOW |
-| cellxgene | 0 | 10-20 | LOW |
+| Source | Current | Target | Priority | Status |
+|--------|---------|--------|----------|--------|
+| DANDI | 163 | 50-100 | HIGH | ✅ DONE |
+| OpenNeuro | 190 | 50-100 | HIGH | ✅ DONE |
+| OpenAlex Papers | ~50 | 500-2000 | MEDIUM | Pending |
+| Allen Brain | 8 | 20-50 | MEDIUM | Partial |
+| NeMO Archive | 10 | 20-50 | MEDIUM | Partial |
+| ModelDB | 0 | 10-30 | LOW | Not started |
+| cellxgene | 0 | 10-20 | LOW | Not started |
 
-### 2.2 Benchmark Expansion
+**Scripts:** `scripts/expand_dandi_corpus.py`, `scripts/expand_openneuro_corpus.py`
 
-**File:** `data/eval/benchmark_queries_real_corpus.yaml`
+### 2.2 Benchmark Expansion ✅
+
+**File:** `data/eval/benchmark_queries_real_corpus.yaml` (30 queries)
 
 **Tasks:**
-- [ ] Add 5 direct dataset/paper lookup queries
-- [ ] Add 5 modality-region-species queries
-- [ ] Add 5 task/behavior queries
-- [ ] Add 5 analysis-affordance queries
-- [ ] Add 5 paper-dataset linking queries
-- [ ] Add real-corpus benchmarks for fMRI, MEG, connectomics, molecular, clinical
+- [x] Add 5 direct dataset/paper lookup queries
+- [x] Add 5 modality-region-species queries
+- [x] Add 5 task/behavior queries
+- [x] Add 5 analysis-affordance queries
+- [x] Add 5 paper-dataset linking queries
+- [x] Add 5 additional scientific queries (fMRI, sleep, seizure, BCI)
 
-### 2.3 Human Relevance Labeling
+### 2.3 Human Relevance Labeling ✅
 
 **Files:** `data/eval/relevance_labels_*.jsonl`, `docs/HUMAN_RELEVANCE_LABELING_PROTOCOL.md`
 
 **Tasks:**
-- [ ] Complete labeling protocol documentation
+- [x] Complete labeling protocol documentation
 - [ ] Generate review queues from coverage gaps
 - [ ] Label 100+ query-result pairs for calibration
 - [ ] Use labels to prioritize corpus and benchmark expansion
