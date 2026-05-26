@@ -61,6 +61,16 @@ npm install
 cd ../..
 ```
 
+The base install uses deterministic local hashing embeddings and can build v0.4
+field-specific caches without model downloads. To use sentence-transformers instead,
+install the optional extra:
+
+```bash
+python -m pip install -e ".[embeddings]"
+python -m neural_search.embeddings.build_index --input data/corpus/normalized --out data/indexes/embeddings --provider hashing
+python -m neural_search.embeddings.build_index --input data/corpus/normalized --out data/indexes/embeddings --provider sentence-transformer --model sentence-transformers/all-MiniLM-L6-v2
+```
+
 Run the one-command demo:
 
 ```bash

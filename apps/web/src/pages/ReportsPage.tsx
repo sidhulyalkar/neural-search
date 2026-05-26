@@ -44,8 +44,20 @@ export function ReportsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <SpinnerIcon className="w-8 h-8 text-accent-cyan" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-live="polite" aria-busy="true">
+        <div className="flex items-center gap-3 text-neural-400 mb-6">
+          <SpinnerIcon className="w-5 h-5 text-accent-cyan" />
+          <span>Loading corpus coverage, readiness, and missing metadata report...</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-pulse">
+          {[0, 1, 2, 3].map((item) => (
+            <div key={item} className="card h-24" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-pulse">
+          <div className="card h-64" />
+          <div className="card h-64" />
+        </div>
       </div>
     )
   }
@@ -53,7 +65,12 @@ export function ReportsPage() {
   if (error || !report) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <p className="text-red-400 mb-4">Failed to load compilation report</p>
+        <p className="text-red-300 font-medium mb-2">Failed to load compilation report</p>
+        <p className="text-sm text-neural-400 mb-4">
+          {error instanceof Error
+            ? error.message
+            : 'The API could not return corpus report data.'}
+        </p>
         <Link to="/" className="text-accent-cyan hover:underline">
           Return to search
         </Link>
@@ -179,6 +196,15 @@ export function ReportsPage() {
           </section>
         )}
       </div>
+
+      {report.total_datasets === 0 && (
+        <div className="card text-center py-12 mb-8">
+          <p className="text-neural-200 font-medium mb-2">No datasets have been compiled yet</p>
+          <p className="text-sm text-neural-500">
+            Run <code className="text-accent-cyan">make demo</code> or <code className="text-accent-cyan">make reports</code> to generate demo corpus artifacts.
+          </p>
+        </div>
+      )}
 
       {/* Top Demo-Ready Datasets */}
       {report.top_demo_ready && report.top_demo_ready.length > 0 && (

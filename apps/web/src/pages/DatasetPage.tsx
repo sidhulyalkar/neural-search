@@ -125,8 +125,22 @@ export function DatasetPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <SpinnerIcon className="w-8 h-8 text-accent-cyan" />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-live="polite" aria-busy="true">
+        <div className="flex items-center gap-3 text-neural-400 mb-6">
+          <SpinnerIcon className="w-5 h-5 text-accent-cyan" />
+          <span>Loading dataset card, provenance, and reuse instructions...</span>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-pulse">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="h-10 w-3/4 rounded bg-neural-800" />
+            <div className="card h-44" />
+            <div className="card h-56" />
+          </div>
+          <div className="space-y-4">
+            <div className="card h-40" />
+            <div className="card h-56" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -134,7 +148,12 @@ export function DatasetPage() {
   if (error || !card) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <p className="text-red-400 mb-4">Failed to load dataset</p>
+        <p className="text-red-300 font-medium mb-2">Failed to load dataset card</p>
+        <p className="text-sm text-neural-400 mb-4">
+          {error instanceof Error
+            ? error.message
+            : 'The API could not return this generated dataset card.'}
+        </p>
         <Link to="/" className="text-accent-cyan hover:underline">
           Return to search
         </Link>
@@ -243,6 +262,20 @@ export function DatasetPage() {
           Template unavailable: {selectedTemplate.missing_requirements.join('; ')}
         </div>
       )}
+      {notebookMutation.error && (
+        <div className="mb-8 text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded px-3 py-2">
+          {notebookMutation.error instanceof Error
+            ? notebookMutation.error.message
+            : 'Notebook generation failed for this dataset.'}
+        </div>
+      )}
+      {(markdownExportMutation.error || jsonExportMutation.error) && (
+        <div className="mb-8 text-sm text-red-300 bg-red-500/10 border border-red-500/30 rounded px-3 py-2">
+          {(markdownExportMutation.error || jsonExportMutation.error) instanceof Error
+            ? (markdownExportMutation.error || jsonExportMutation.error)?.message
+            : 'Dataset card export failed.'}
+        </div>
+      )}
 
       {/* Content grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -311,6 +344,15 @@ export function DatasetPage() {
           {/* Scientific Labels */}
           <section className="card">
             <h2 className="text-lg font-semibold mb-4">Scientific Labels</h2>
+            {card.tasks.length === 0 &&
+              card.modalities.length === 0 &&
+              (!card.behaviors || card.behaviors.length === 0) &&
+              card.brain_regions.length === 0 &&
+              card.species.length === 0 && (
+                <div className="text-sm text-neural-500 bg-neural-950 border border-neural-800 rounded p-3">
+                  No scientific labels were extracted yet. Review the source metadata or linked papers to improve ontology coverage.
+                </div>
+              )}
             <dl className="space-y-4">
               {card.tasks.length > 0 && (
                 <div>

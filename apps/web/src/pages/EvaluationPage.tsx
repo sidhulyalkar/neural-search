@@ -12,7 +12,7 @@ import {
 export function EvaluationPage() {
   const queryClient = useQueryClient()
 
-  const { data: report, isLoading } = useQuery({
+  const { data: report, isLoading, error } = useQuery({
     queryKey: ['evaluation-report'],
     queryFn: getEvaluationReport,
   })
@@ -26,7 +26,7 @@ export function EvaluationPage() {
 
   const avgPrecision = report?.avg_precision_at_5 ?? 0
   const avgRecall = report?.avg_label_recall_at_10 ?? 0
-  const passRate = report ? (report.passed_queries / report.total_queries) * 100 : 0
+  const passRate = report && report.total_queries > 0 ? (report.passed_queries / report.total_queries) * 100 : 0
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -70,13 +70,44 @@ export function EvaluationPage() {
 
       {/* Loading state */}
       {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <SpinnerIcon className="w-8 h-8 text-accent-cyan" />
+        <div className="space-y-4" aria-live="polite" aria-busy="true">
+          <div className="flex items-center gap-3 text-neural-400">
+            <SpinnerIcon className="w-5 h-5 text-accent-cyan" />
+            <span>Preparing benchmark report for the demo corpus...</span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="card h-24" />
+            ))}
+          </div>
+          <div className="card h-40 animate-pulse" />
+        </div>
+      )}
+
+      {error && (
+        <div className="card border-red-500/50 py-10 mb-8">
+          <p className="text-red-300 font-medium mb-2">Benchmark report could not load</p>
+          <p className="text-sm text-neural-400">
+            {error instanceof Error
+              ? error.message
+              : 'The API did not return a benchmark report.'}
+          </p>
+        </div>
+      )}
+
+      {runMutation.error && (
+        <div className="card border-red-500/50 py-6 mb-8">
+          <p className="text-red-300 font-medium mb-2">Benchmark run failed</p>
+          <p className="text-sm text-neural-400">
+            {runMutation.error instanceof Error
+              ? runMutation.error.message
+              : 'The benchmark runner returned an unexpected error.'}
+          </p>
         </div>
       )}
 
       {/* Results summary */}
-      {report && (
+      {report && !isLoading && (
         <>
           {/* Summary cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -100,10 +131,16 @@ export function EvaluationPage() {
             </div>
             <div className="card text-center">
               <div className="text-3xl font-bold text-neural-300">
-                {report.passed_queries}/{report.total_queries}
+                {report.queries_with_results ?? report.passed_queries}/{report.total_queries}
               </div>
-              <div className="text-sm text-neural-400">Queries Passed</div>
+              <div className="text-sm text-neural-400">Queries With Results</div>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <MetricStrip label="Task match" value={report.avg_task_match_rate} />
+            <MetricStrip label="Modality match" value={report.avg_modality_match_rate} />
+            <MetricStrip label="Behavior match" value={report.avg_behavior_match_rate} />
           </div>
 
           {/* Progress bar */}
@@ -123,6 +160,32 @@ export function EvaluationPage() {
               </span>
             </div>
           </div>
+
+          {((report.summary_warnings && report.summary_warnings.length > 0) ||
+            (report.recommendations && report.recommendations.length > 0)) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              {report.summary_warnings && report.summary_warnings.length > 0 && (
+                <section className="card border-amber-500/30">
+                  <h3 className="font-medium text-amber-300 mb-3">Benchmark Warnings</h3>
+                  <ul className="space-y-2 text-sm text-neural-400">
+                    {report.summary_warnings.map((warning) => (
+                      <li key={warning}>{warning}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+              {report.recommendations && report.recommendations.length > 0 && (
+                <section className="card border-accent-cyan/30">
+                  <h3 className="font-medium text-accent-cyan mb-3">Recommendations</h3>
+                  <ul className="space-y-2 text-sm text-neural-400">
+                    {report.recommendations.map((recommendation) => (
+                      <li key={recommendation}>{recommendation}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
+          )}
 
           {/* Query results */}
           <h2 className="text-lg font-semibold text-neural-100 mb-4">
@@ -151,7 +214,7 @@ export function EvaluationPage() {
                     </div>
 
                     {/* Expected vs Found */}
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-neural-500">Expected tasks: </span>
                         <div className="flex flex-wrap gap-1 mt-1">
@@ -228,6 +291,17 @@ export function EvaluationPage() {
                     </div>
                   </div>
                 )}
+
+                {evaluation.warnings && evaluation.warnings.length > 0 && (
+                  <div className="border-t border-neural-800 pt-3 mt-3">
+                    <h4 className="text-xs text-amber-300 mb-2">Warnings</h4>
+                    <ul className="space-y-1 text-xs text-neural-500">
+                      {evaluation.warnings.slice(0, 3).map((warning) => (
+                        <li key={warning}>{warning}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -257,6 +331,26 @@ export function EvaluationPage() {
           Benchmark queries are defined in{' '}
           <code className="text-accent-cyan">benchmark_queries.yaml</code>
         </p>
+      </div>
+    </div>
+  )
+}
+
+function MetricStrip({ label, value }: { label: string; value?: number }) {
+  const percent = value === undefined ? 0 : value * 100
+  return (
+    <div className="card">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-neural-400">{label}</span>
+        <span className="text-sm font-medium text-neural-200">
+          {value === undefined ? 'n/a' : `${percent.toFixed(0)}%`}
+        </span>
+      </div>
+      <div className="h-2 rounded-full bg-neural-800 overflow-hidden">
+        <div
+          className="h-full bg-accent-cyan transition-all duration-500"
+          style={{ width: `${percent}%` }}
+        />
       </div>
     </div>
   )
