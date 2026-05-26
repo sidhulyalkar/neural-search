@@ -16,6 +16,11 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.normalized import (
+    evidence_label_from_extraction,
+    stable_normalized_id,
+)
+from neural_search.schemas import NormalizedDatasetRecord, UsabilityFlags
 
 OPENNEURO_API_URL = "https://openneuro.org/crn/graphql"
 
@@ -123,6 +128,80 @@ def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
             "created": node.get("created"),
         },
     }
+
+
+def normalize_openneuro_record(
+    node: dict[str, Any],
+    raw_payload_path: str | None = None,
+) -> NormalizedDatasetRecord:
+    """Normalize a raw OpenNeuro node into the v0.3 provenance-aware schema."""
+
+    legacy = normalize_openneuro_dataset(node)
+    metadata = legacy.get("metadata_json", {})
+    extraction = extract_dataset_labels(
+        title=legacy.get("title"),
+        description=legacy.get("description"),
+        file_paths=[],
+        source_metadata={**metadata, "standard": "BIDS"},
+        linked_paper_abstracts=[],
+    )
+    source_value = " ".join(
+        str(part) for part in [legacy.get("title"), legacy.get("description"), metadata] if part
+    )
+    return NormalizedDatasetRecord(
+        dataset_id=stable_normalized_id("dataset", "openneuro", legacy["source_id"]),
+        source="openneuro",
+        source_id=legacy["source_id"],
+        title=legacy["title"],
+        description=legacy.get("description"),
+        url=legacy.get("url"),
+        raw_payload_path=raw_payload_path,
+        species=[
+            evidence_label_from_extraction(
+                label, "species", source_field="summary", source_value=source_value
+            )
+            for label in extraction.species
+        ],
+        modalities=[
+            evidence_label_from_extraction(
+                label, "modality", source_field="summary", source_value=source_value
+            )
+            for label in extraction.modalities
+        ],
+        brain_regions=[
+            evidence_label_from_extraction(
+                label, "brain_region", source_field="summary", source_value=source_value
+            )
+            for label in extraction.brain_regions
+        ],
+        tasks=[
+            evidence_label_from_extraction(
+                label, "task", source_field="summary", source_value=source_value
+            )
+            for label in extraction.tasks
+        ],
+        behavioral_events=[
+            evidence_label_from_extraction(
+                label, "behavioral_event", source_field="summary", source_value=source_value
+            )
+            for label in extraction.behaviors
+        ],
+        data_standards=[
+            evidence_label_from_extraction(
+                label, "data_standard", source_field="summary", source_value=source_value
+            )
+            for label in extraction.data_standards
+        ],
+        usability_flags=UsabilityFlags(
+            has_trials=legacy.get("has_trials"),
+            has_behavior=legacy.get("has_behavior"),
+            has_neural_data=bool(legacy.get("modalities")),
+            has_raw_data=legacy.get("has_raw_data"),
+            has_processed_data=legacy.get("has_processed_data"),
+            has_standard_format=True,
+        ),
+        missing_fields=extraction.missing_fields,
+    )
 
 
 def records_from_response(data: dict[str, Any], limit: int) -> list[dict[str, Any]]:

@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 
+from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
 from neural_search.ingestion.live import (
     print_cli_error,
@@ -15,6 +16,11 @@ from neural_search.ingestion.live import (
     save_paper_records,
     save_raw_response,
 )
+from neural_search.normalized import (
+    evidence_label_from_extraction,
+    stable_normalized_id,
+)
+from neural_search.schemas import NormalizedPaperRecord
 
 OPENALEX_API_URL = "https://api.openalex.org"
 
@@ -141,6 +147,62 @@ def normalize_work(work: dict[str, Any]) -> dict[str, Any]:
             "venue": work.get("primary_location", {}).get("source", {}).get("display_name"),
         },
     }
+
+
+def normalize_work_record(
+    work: dict[str, Any],
+    raw_payload_path: str | None = None,
+) -> NormalizedPaperRecord:
+    """Normalize an OpenAlex work into the v0.3 provenance-aware paper schema."""
+
+    legacy = normalize_work(work)
+    abstract = legacy.get("abstract")
+    extraction = extract_dataset_labels(
+        title=legacy.get("title"),
+        description=abstract,
+        source_metadata={"concepts": legacy.get("concepts", [])},
+        linked_paper_abstracts=[],
+    )
+    labels = []
+    for label_type, extracted in [
+        ("species", extraction.species),
+        ("modality", extraction.modalities),
+        ("brain_region", extraction.brain_regions),
+        ("task", extraction.tasks),
+        ("behavioral_event", extraction.behaviors),
+        ("data_standard", extraction.data_standards),
+    ]:
+        labels.extend(
+            evidence_label_from_extraction(
+                label,
+                label_type,
+                source_field="title_abstract_concepts",
+                source_value=" ".join(
+                    str(part)
+                    for part in [legacy.get("title"), abstract, legacy.get("concepts", [])]
+                    if part
+                ),
+            )
+            for label in extracted
+        )
+    authors = [
+        str(author.get("name"))
+        for author in legacy.get("authors_json", [])
+        if author.get("name")
+    ]
+    return NormalizedPaperRecord(
+        paper_id=stable_normalized_id("paper", "openalex", legacy["source_id"]),
+        source="openalex",
+        source_id=legacy["source_id"],
+        title=legacy["title"],
+        abstract=abstract,
+        doi=legacy.get("doi"),
+        url=legacy.get("url"),
+        year=legacy.get("publication_year"),
+        authors=authors,
+        extracted_labels=labels,
+        raw_payload_path=raw_payload_path,
+    )
 
 
 def records_from_response(data: dict[str, Any], limit: int) -> list[dict[str, Any]]:

@@ -16,6 +16,11 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.normalized import (
+    evidence_label_from_extraction,
+    stable_normalized_id,
+)
+from neural_search.schemas import NormalizedDatasetRecord, UsabilityFlags
 
 DANDI_API_URL = "https://api.dandiarchive.org/api"
 
@@ -79,6 +84,80 @@ def normalize_dandiset(raw: dict[str, Any]) -> dict[str, Any]:
             "measurement_technique": _as_list(metadata.get("measurementTechnique")),
         },
     }
+
+
+def normalize_dandiset_record(
+    raw: dict[str, Any],
+    raw_payload_path: str | None = None,
+) -> NormalizedDatasetRecord:
+    """Normalize a raw DANDI payload into the v0.3 provenance-aware schema."""
+
+    legacy = normalize_dandiset(raw)
+    metadata = legacy.get("metadata_json", {})
+    extraction = extract_dataset_labels(
+        title=legacy.get("title"),
+        description=legacy.get("description"),
+        file_paths=[],
+        source_metadata=metadata,
+        linked_paper_abstracts=[],
+    )
+    source_value = " ".join(
+        str(part) for part in [legacy.get("title"), legacy.get("description")] if part
+    )
+    return NormalizedDatasetRecord(
+        dataset_id=stable_normalized_id("dataset", "dandi", legacy["source_id"]),
+        source="dandi",
+        source_id=legacy["source_id"],
+        title=legacy["title"],
+        description=legacy.get("description"),
+        url=legacy.get("url"),
+        raw_payload_path=raw_payload_path,
+        species=[
+            evidence_label_from_extraction(
+                label, "species", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.species
+        ],
+        modalities=[
+            evidence_label_from_extraction(
+                label, "modality", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.modalities
+        ],
+        brain_regions=[
+            evidence_label_from_extraction(
+                label, "brain_region", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.brain_regions
+        ],
+        tasks=[
+            evidence_label_from_extraction(
+                label, "task", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.tasks
+        ],
+        behavioral_events=[
+            evidence_label_from_extraction(
+                label, "behavioral_event", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.behaviors
+        ],
+        data_standards=[
+            evidence_label_from_extraction(
+                label, "data_standard", source_field="metadata", source_value=source_value
+            )
+            for label in extraction.data_standards
+        ],
+        usability_flags=UsabilityFlags(
+            has_trials=legacy.get("has_trials"),
+            has_behavior=legacy.get("has_behavior"),
+            has_neural_data=bool(legacy.get("modalities")),
+            has_raw_data=legacy.get("has_raw_data"),
+            has_processed_data=legacy.get("has_processed_data"),
+            has_standard_format="NWB" in legacy.get("data_standards", []),
+        ),
+        missing_fields=extraction.missing_fields,
+    )
 
 
 def fetch_dandi(query: str, limit: int) -> dict[str, Any]:

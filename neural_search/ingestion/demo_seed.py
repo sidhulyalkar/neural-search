@@ -326,6 +326,130 @@ def _merge_records(session: Session, records: list[dict]) -> None:
         session.merge(_embedding_model(record, dataset.id))
 
 
+NORMALIZED_CORPUS_DIR = Path(__file__).resolve().parents[2] / "data" / "corpus" / "normalized"
+
+
+def build_combined_corpus(
+    include_demo: bool = True,
+    include_real: bool = True,
+    datasets_path: str | Path = FIXTURE_PATH,
+    papers_path: str | Path | None = None,
+    corpus_dir: str | Path = NORMALIZED_CORPUS_DIR,
+) -> list[dict]:
+    """Build corpus combining demo fixtures and real normalized records.
+
+    Args:
+        include_demo: Include demo fixture datasets
+        include_real: Include real normalized corpus
+        datasets_path: Path to demo datasets YAML
+        papers_path: Path to demo papers YAML
+        corpus_dir: Directory containing normalized JSONL files
+
+    Returns:
+        List of dataset records ready for search
+    """
+    records: list[dict] = []
+    seen_ids: set[str] = set()
+
+    # Add demo fixtures
+    if include_demo:
+        for record in build_demo_seed(datasets_path, papers_path):
+            dataset_id = record.get("dataset", {}).get("id", "")
+            if dataset_id and dataset_id not in seen_ids:
+                seen_ids.add(dataset_id)
+                records.append(record)
+
+    # Add real normalized corpus (only non-demo, non-duplicate records)
+    if include_real:
+        corpus_path = Path(corpus_dir)
+        if corpus_path.exists() and corpus_path.is_dir():
+            for jsonl_file in corpus_path.glob("*.jsonl"):
+                # Skip demo-derived normalized files
+                if "demo" in jsonl_file.name.lower():
+                    continue
+                with open(jsonl_file, encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip():
+                            data = json.loads(line)
+                            # Skip demo datasets that might be in normalized corpus
+                            source_id = data.get("source_id", "")
+                            if source_id.startswith("DEMO_"):
+                                continue
+                            # Convert normalized record to search format
+                            record = _normalized_to_search_record(data)
+                            if record:
+                                dataset_id = record.get("dataset", {}).get("id", "")
+                                if dataset_id and dataset_id not in seen_ids:
+                                    seen_ids.add(dataset_id)
+                                    records.append(record)
+
+    return records
+
+
+def _normalized_to_search_record(data: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert a normalized record to the search record format."""
+    # Handle both NormalizedDatasetRecord format and legacy format
+    dataset_id = data.get("dataset_id") or data.get("source_id")
+    if not dataset_id:
+        return None
+
+    # Extract label values from EvidenceLabel format
+    def extract_labels(items: list) -> list[str]:
+        if not items:
+            return []
+        result = []
+        for item in items:
+            if isinstance(item, dict):
+                label = item.get("label") or item.get("id")
+                if label:
+                    result.append(label)
+            elif isinstance(item, str):
+                result.append(item)
+        return result
+
+    # Build dataset record
+    dataset = {
+        "id": dataset_id,
+        "source": data.get("source", "unknown"),
+        "source_id": data.get("source_id", dataset_id),
+        "title": data.get("title", "Untitled"),
+        "description": data.get("description"),
+        "url": data.get("url"),
+        "species": extract_labels(data.get("species", [])),
+        "modalities": extract_labels(data.get("modalities", [])),
+        "brain_regions": extract_labels(data.get("brain_regions", [])),
+        "tasks": extract_labels(data.get("tasks", [])),
+        "behaviors": extract_labels(data.get("behavioral_events", [])),
+        "data_standards": extract_labels(data.get("data_standards", [])),
+        "analysis_goals": extract_labels(data.get("analysis_goals", [])),
+        "linked_paper_ids": data.get("linked_papers", []),
+        "has_raw_data": data.get("usability_flags", {}).get("has_raw_data", True),
+        "has_processed_data": data.get("usability_flags", {}).get("has_processed_data", False),
+        "has_trials": data.get("usability_flags", {}).get("has_trials", False),
+        "has_behavior": data.get("usability_flags", {}).get("has_behavior", False),
+        "metadata_json": {
+            "source": "normalized_corpus",
+            "created_at": data.get("created_at"),
+        },
+    }
+
+    # Create extraction placeholder
+    extraction = extract_dataset_labels(
+        title=dataset["title"],
+        description=dataset.get("description"),
+        file_paths=[],
+        source_metadata=dataset,
+        linked_paper_abstracts=[],
+    )
+
+    return {
+        "dataset": dataset,
+        "assets": [],
+        "papers": [],
+        "extraction": extraction,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m neural_search.ingestion.demo_seed")
     parser.add_argument(
