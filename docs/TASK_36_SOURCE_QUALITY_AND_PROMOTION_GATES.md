@@ -11,9 +11,9 @@ Implemented behavior:
 - Readiness reports now include a `source_quality` section and warnings for unknown, low-trust, or low-mean-quality source coverage.
 - Promotion reports can optionally consume a scientific readiness JSON report and enforce source-quality gates for mean quality, unknown sources, low-trust sources, and source warnings.
 - Default promotion config keeps source-quality gates disabled until reviewed labels and release policy are mature.
+- Release summaries can include source-quality status and non-failing release warnings from the scientific readiness report.
 
 Next development:
 
 - Add registry-backed profile loading once the parallel `database_registry.yaml` work stabilizes.
-- Wire source-quality summaries into release reports as non-failing warnings.
 - Keep source quality out of ranking defaults until intent-specific evaluation labels show a measurable benefit.

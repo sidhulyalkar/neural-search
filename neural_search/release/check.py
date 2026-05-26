@@ -11,6 +11,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 RELEASE_REPORT_DIR = ROOT / "data" / "reports" / "release"
+READINESS_REPORT = (
+    ROOT / "data" / "reports" / "readiness" / "scientific_readiness_report.json"
+)
 
 ARTIFACTS = {
     "demo_datasets": ROOT / "data" / "corpus" / "normalized" / "demo_v05.datasets.jsonl",
@@ -95,6 +98,32 @@ def _load_benchmark(path: Path) -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_source_quality(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.exists():
+        return {"available": False}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    source_quality = payload.get("source_quality", {})
+    if not isinstance(source_quality, dict):
+        return {"available": False}
+    return {"available": True, **source_quality}
+
+
+def _source_quality_warnings(source_quality: dict[str, Any]) -> list[str]:
+    if not source_quality.get("available"):
+        return ["readiness report unavailable; source quality not included"]
+    warnings: list[str] = []
+    trust_counts = source_quality.get("trust_level_counts", {})
+    if trust_counts.get("unknown", 0):
+        warnings.append("source quality includes records from unknown sources")
+    if trust_counts.get("low", 0):
+        warnings.append("source quality includes low-trust fixture/demo records")
+    if float(source_quality.get("mean_quality_score", 0.0) or 0.0) < 0.7:
+        warnings.append("mean source quality is below 0.70")
+    if int(source_quality.get("warning_count", 0) or 0):
+        warnings.append("source quality report contains record-level warnings")
+    return warnings
+
+
 def _iter_existing_inputs(paths: list[Path]) -> list[Path]:
     inputs: list[Path] = []
     for path in paths:
@@ -128,7 +157,9 @@ def _staleness(path: Path, inputs: list[Path]) -> dict[str, Any]:
     }
 
 
-def build_release_summary() -> dict[str, Any]:
+def build_release_summary(
+    readiness_report: str | Path | None = READINESS_REPORT,
+) -> dict[str, Any]:
     artifact_summary: dict[str, Any] = {}
     missing_artifacts: list[str] = []
     stale_artifacts: list[str] = []
@@ -192,6 +223,11 @@ def build_release_summary() -> dict[str, Any]:
             f"hard-negative violations across release benchmarks: {hard_negative_violations}"
         )
 
+    source_quality = _load_source_quality(
+        Path(readiness_report) if readiness_report else None
+    )
+    release_warnings = _source_quality_warnings(source_quality)
+
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "commit": _git_commit(),
@@ -203,6 +239,8 @@ def build_release_summary() -> dict[str, Any]:
         },
         "artifacts": artifact_summary,
         "benchmarks": benchmark_summary,
+        "source_quality": source_quality,
+        "release_warnings": release_warnings,
         "known_failures": known_failures,
         "release_ready": not missing_artifacts
         and not stale_artifacts
@@ -251,13 +289,35 @@ def markdown_summary(summary: dict[str, Any]) -> str:
         lines.extend(f"- {failure}" for failure in summary["known_failures"])
     else:
         lines.append("- None recorded.")
+
+    lines.extend(["", "## Release Warnings", ""])
+    if summary.get("release_warnings"):
+        lines.extend(f"- {warning}" for warning in summary["release_warnings"])
+    else:
+        lines.append("- None recorded.")
+
+    source_quality = summary.get("source_quality", {})
+    lines.extend(
+        [
+            "",
+            "## Source Quality",
+            "",
+            f"- Available: {source_quality.get('available', False)}",
+            f"- Mean quality score: {source_quality.get('mean_quality_score')}",
+            f"- Trust levels: {source_quality.get('trust_level_counts', {})}",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
-def write_release_summary(out_dir: str | Path = RELEASE_REPORT_DIR) -> dict[str, str]:
+def write_release_summary(
+    out_dir: str | Path = RELEASE_REPORT_DIR,
+    *,
+    readiness_report: str | Path | None = READINESS_REPORT,
+) -> dict[str, str]:
     output = Path(out_dir)
     output.mkdir(parents=True, exist_ok=True)
-    summary = build_release_summary()
+    summary = build_release_summary(readiness_report=readiness_report)
     json_path = output / "release_summary.json"
     md_path = output / "release_summary.md"
     json_path.write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -269,6 +329,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate release-readiness reports.")
     parser.add_argument("--out", default=str(RELEASE_REPORT_DIR))
     parser.add_argument(
+        "--readiness-report",
+        default=str(READINESS_REPORT),
+        help="Optional scientific readiness JSON report for non-failing source warnings.",
+    )
+    parser.add_argument(
         "--summary-only",
         action="store_true",
         help="Write reports and do not fail on missing artifacts or benchmark violations.",
@@ -278,7 +343,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    paths = write_release_summary(args.out)
+    paths = write_release_summary(args.out, readiness_report=args.readiness_report)
     summary = json.loads(Path(paths["json"]).read_text(encoding="utf-8"))
     print(json.dumps(paths, indent=2, sort_keys=True))
     if args.summary_only:

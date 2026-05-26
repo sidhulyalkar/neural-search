@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from neural_search.contracts import SearchResponseV1, SearchResultV1
 from neural_search.release.check import build_release_summary, write_release_summary
 from neural_search.schemas import SearchResponse, SearchResult
@@ -112,3 +114,33 @@ def test_release_summary_records_artifacts_and_can_be_written(tmp_path) -> None:
     assert "real_datasets" in summary["artifacts"]
     assert "staleness" in summary["artifacts"]["real_datasets"]
     assert "demo_v02" in summary["benchmarks"]
+    assert "source_quality" in summary
+    assert "release_warnings" in summary
+
+
+def test_release_summary_includes_non_failing_source_quality_warnings(tmp_path) -> None:
+    readiness_path = tmp_path / "scientific_readiness_report.json"
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "source_quality": {
+                    "mean_quality_score": 0.62,
+                    "trust_level_counts": {"unknown": 1, "low": 1},
+                    "warning_count": 2,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = build_release_summary(readiness_report=readiness_path)
+    markdown = write_release_summary(
+        tmp_path / "release",
+        readiness_report=readiness_path,
+    )
+
+    assert summary["source_quality"]["available"] is True
+    assert "mean source quality is below 0.70" in summary["release_warnings"]
+    assert not any("source quality" in failure for failure in summary["known_failures"])
+    assert (tmp_path / "release" / "release_summary.md").exists()
+    assert markdown["markdown"].endswith("release_summary.md")
