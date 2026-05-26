@@ -1,0 +1,10 @@
+[
+  {
+    "confidence": 0.65,
+    "evidence_text": "lick",
+    "label_id": "lick",
+    "label_type": "behavioral_event",
+    "record_id": "dataset:dandi:000001:fixture",
+    "source": "dandi"
+  }
+]

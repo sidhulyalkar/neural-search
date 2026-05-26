@@ -1,13 +1,13 @@
 {
-  "report_generated_at": "2026-05-23T18:25:39.271450+00:00",
+  "report_generated_at": "2026-05-23T22:12:40.173591+00:00",
   "summary": {
-    "total_datasets": 5,
-    "total_papers_linked": 5,
-    "total_dataset_cards": 5,
-    "average_readiness_score": 95.0,
-    "datasets_with_behavior": 5,
-    "datasets_with_trials": 5,
-    "datasets_with_linked_papers": 5,
+    "total_datasets": 26,
+    "total_papers_linked": 26,
+    "total_dataset_cards": 26,
+    "average_readiness_score": 94.6,
+    "datasets_with_behavior": 26,
+    "datasets_with_trials": 26,
+    "datasets_with_linked_papers": 26,
     "number_reviewed": 0,
     "number_trusted": 0,
     "number_rejected": 0
@@ -28,55 +28,174 @@
     }
   },
   "by_source": {
-    "demo": 5
+    "demo": 23,
+    "openneuro": 2,
+    "dandi": 1
   },
   "by_task": {
-    "go_nogo": 1,
+    "go_nogo": 3,
+    "passive_viewing": 3,
+    "reaching": 2,
+    "center_out_reaching": 2,
+    "bci_control": 2,
+    "visual_decision_making": 2,
+    "two_alternative_forced_choice": 2,
+    "spatial_navigation": 2,
+    "foraging": 2,
+    "working_memory": 2,
+    "cognitive_control": 2,
+    "resting_state": 2,
+    "arousal_modulation": 2,
+    "response_inhibition": 1,
     "reversal_learning": 1,
+    "probabilistic_reversal_learning": 1,
     "delay_discounting": 1,
-    "reaching": 1,
-    "center_out_reaching": 1,
+    "intertemporal_choice": 1,
     "grasping": 1,
-    "visual_decision_making": 1,
-    "visual_discrimination": 1
+    "visual_discrimination": 1,
+    "motor_imagery": 1,
+    "imagined_movement": 1,
+    "arm_movement": 1,
+    "place_cell_recording": 1,
+    "spatial_memory": 1,
+    "virtual_reality": 1,
+    "delayed_match_to_sample": 1,
+    "delayed_response": 1,
+    "stroop": 1,
+    "flanker": 1,
+    "conflict_monitoring": 1,
+    "speech": 1,
+    "speech_production": 1,
+    "speech_perception": 1,
+    "language": 1,
+    "word_reading": 1,
+    "auditory_processing": 1,
+    "auditory_discrimination": 1,
+    "passive_listening": 1,
+    "seizure_monitoring": 1,
+    "epilepsy_monitoring": 1,
+    "naturalistic_vision": 1,
+    "sleep": 1,
+    "social_interaction": 1,
+    "free_behavior": 1,
+    "social_approach": 1,
+    "spontaneous_behavior": 1,
+    "memory_encoding": 1,
+    "memory_retrieval": 1,
+    "recognition_memory": 1,
+    "pavlovian_conditioning": 1,
+    "classical_conditioning": 1,
+    "reward_learning": 1,
+    "patch_foraging": 1,
+    "explore_exploit": 1,
+    "operant_conditioning": 1,
+    "instrumental_conditioning": 1,
+    "lever_press": 1,
+    "sensorimotor_task": 1,
+    "decision_making": 1
   },
   "by_modality": {
-    "behavior_video": 2,
-    "extracellular_ephys": 2,
-    "calcium_imaging": 1,
-    "fiber_photometry": 1,
-    "ecog": 1,
-    "ieeg": 1,
-    "pose_tracking": 1,
+    "extracellular_ephys": 13,
+    "spikes": 13,
+    "neuropixels": 7,
+    "behavior_video": 5,
+    "LFP": 4,
+    "ieeg": 4,
+    "calcium_imaging": 3,
+    "pupil_tracking": 3,
+    "two_photon": 2,
+    "fiber_photometry": 2,
+    "ecog": 2,
+    "pose_tracking": 2,
+    "eeg": 2,
+    "emg": 2,
+    "running_wheel": 2,
+    "fmri": 2,
+    "functional_mri": 2,
+    "bold": 2,
+    "seeg": 2,
     "bci": 1,
-    "neuropixels": 1
+    "scalp_eeg": 1,
+    "utah_array": 1,
+    "tetrode": 1,
+    "position_tracking": 1,
+    "audio": 1,
+    "deeplabcut": 1,
+    "sleap": 1,
+    "facemap": 1,
+    "whisker_tracking": 1
   },
   "by_species": {
-    "mouse": 3,
-    "rat": 1,
-    "human": 1
+    "mouse": 16,
+    "human": 7,
+    "rat": 2,
+    "macaque": 1,
+    "non_human_primate": 1,
+    "rhesus": 1
   },
   "by_brain_region": {
-    "mPFC": 2,
-    "OFC": 1,
-    "striatum": 1,
-    "nucleus_accumbens": 1,
-    "motor_cortex": 1,
+    "visual_cortex": 7,
+    "hippocampus": 6,
+    "striatum": 5,
+    "motor_cortex": 5,
+    "medial_prefrontal_cortex": 4,
+    "mPFC": 4,
+    "CA1": 4,
+    "M1": 3,
+    "anterior_cingulate_cortex": 3,
+    "ACC": 3,
+    "orbitofrontal_cortex": 2,
+    "OFC": 2,
+    "dorsal_striatum": 2,
+    "ventral_striatum": 2,
+    "nucleus_accumbens": 2,
+    "parietal_cortex": 2,
+    "V1": 2,
+    "primary_visual_cortex": 2,
+    "premotor_cortex": 2,
+    "inferior_frontal_gyrus": 2,
+    "auditory_cortex": 2,
+    "temporal_lobe": 2,
+    "amygdala": 2,
+    "prefrontal_cortex": 2,
+    "prelimbic_cortex": 1,
+    "primary_motor_cortex": 1,
     "somatosensory_cortex": 1,
-    "parietal_cortex": 1,
-    "visual_cortex": 1,
-    "PPC": 1
+    "posterior_parietal_cortex": 1,
+    "PPC": 1,
+    "supplementary_motor_area": 1,
+    "PMd": 1,
+    "PMv": 1,
+    "CA3": 1,
+    "dentate_gyrus": 1,
+    "entorhinal_cortex": 1,
+    "medial_entorhinal_cortex": 1,
+    "dorsolateral_prefrontal_cortex": 1,
+    "DLPFC": 1,
+    "sensorimotor_cortex": 1,
+    "Brocas_area": 1,
+    "A1": 1,
+    "primary_auditory_cortex": 1,
+    "inferior_colliculus": 1,
+    "frontal_lobe": 1,
+    "higher_visual_areas": 1,
+    "ventral_tegmental_area": 1,
+    "VTA": 1,
+    "dorsolateral_striatum": 1,
+    "substantia_nigra": 1
   },
   "by_data_standard": {
-    "NWB": 3,
-    "BIDS": 2
+    "NWB": 18,
+    "BIDS": 8,
+    "OpenNeuro": 2,
+    "DANDI": 1
   },
   "has_behavior": {
-    "true": 5,
+    "true": 26,
     "false": 0
   },
   "has_trials": {
-    "true": 5,
+    "true": 26,
     "false": 0
   },
   "top_20_analysis_readiness": [
@@ -174,22 +293,320 @@
       "limitations": [
         "Processed data availability is unclear."
       ]
+    },
+    {
+      "source_id": "DEMO_MOTOR_IMAGERY_EEG",
+      "title": "Demo motor imagery EEG dataset for BCI",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_NHP_REACHING_UTAH",
+      "title": "Demo non-human primate reaching with Utah array",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_HIPPOCAMPUS_NAVIGATION",
+      "title": "Demo hippocampus spatial navigation dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+      "title": "Demo virtual reality navigation Neuropixels",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_WORKING_MEMORY_EPHYS",
+      "title": "Demo working memory prefrontal electrophysiology",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_COGNITIVE_CONTROL_FMRI",
+      "title": "Demo cognitive control fMRI dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_SPEECH_ECOG",
+      "title": "Demo speech production ECoG dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_AUDITORY_PROCESSING",
+      "title": "Demo auditory processing electrophysiology",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_SEIZURE_IEEG",
+      "title": "Demo seizure monitoring iEEG dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_NATURALISTIC_VISION",
+      "title": "Demo naturalistic vision with pupil tracking",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_SLEEP_EPHYS",
+      "title": "Demo sleep state electrophysiology",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_FACEMAP_PUPIL",
+      "title": "Demo facemap and pupil arousal dataset",
+      "source": "demo",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_DANDI_NWB_EPHYS",
+      "title": "Demo DANDI-style NWB electrophysiology",
+      "source": "dandi",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_OPENNEURO_BIDS_FMRI",
+      "title": "Demo OpenNeuro BIDS fMRI dataset",
+      "source": "openneuro",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
+    },
+    {
+      "source_id": "DEMO_OPENNEURO_BIDS_IEEG",
+      "title": "Demo OpenNeuro BIDS iEEG dataset",
+      "source": "openneuro",
+      "score": 95,
+      "strengths": [
+        "Uses NWB or BIDS metadata standards.",
+        "Behavioral variables are present or inferable.",
+        "Trial or event structure is available.",
+        "Neural or behavioral modality is identified.",
+        "Behavioral task label is identified.",
+        "Brain region metadata is present.",
+        "Linked paper or abstract is available.",
+        "License information is present."
+      ],
+      "limitations": [
+        "Processed data availability is unclear."
+      ]
     }
   ],
   "top_datasets_ready_for_demo": [],
   "qa_review_counts": {
     "unreviewed": 0,
-    "auto_generated": 5,
+    "auto_generated": 26,
     "needs_review": 0,
     "reviewed": 0,
     "trusted": 0,
     "rejected": 0
   },
-  "common_missing_metadata": {},
+  "common_missing_metadata": {
+    "brain_regions": 1
+  },
   "missing_metadata": {
-    "fields_missing_count": {},
-    "datasets_with_incomplete_metadata": 0,
-    "datasets_by_missing_field_count": {},
-    "incomplete_datasets": []
+    "fields_missing_count": {
+      "brain_regions": 1
+    },
+    "datasets_with_incomplete_metadata": 1,
+    "datasets_by_missing_field_count": {
+      "1": 1
+    },
+    "incomplete_datasets": [
+      {
+        "source_id": "DEMO_POSE_TRACKING_BEHAVIOR",
+        "missing_fields": [
+          "brain_regions"
+        ]
+      }
+    ]
   }
 }
