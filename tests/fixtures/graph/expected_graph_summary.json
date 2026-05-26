@@ -1,0 +1,33 @@
+{
+  "edge_count": 66,
+  "edge_counts": {
+    "dataset_has_behavioral_event": 9,
+    "dataset_has_file_format": 1,
+    "dataset_has_modality": 5,
+    "dataset_has_species": 5,
+    "dataset_has_task": 5,
+    "dataset_records_region": 5,
+    "dataset_supports_analysis": 8,
+    "dataset_uses_standard": 5,
+    "paper_has_author": 4,
+    "paper_mentions_dataset": 4,
+    "paper_mentions_region": 3,
+    "paper_studies_task": 4,
+    "paper_uses_dataset": 4,
+    "paper_uses_modality": 4
+  },
+  "node_count": 47,
+  "node_counts": {
+    "analysis_affordance": 8,
+    "author": 4,
+    "behavioral_event": 7,
+    "brain_region": 5,
+    "data_standard": 2,
+    "dataset": 5,
+    "file_format": 1,
+    "modality": 4,
+    "paper": 4,
+    "species": 2,
+    "task": 5
+  }
+}
