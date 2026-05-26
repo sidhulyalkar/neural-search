@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from hashlib import sha256
 
 import neural_search.release.check as release_check
 from neural_search.contracts import SearchResponseV1, SearchResultV1
@@ -118,6 +119,7 @@ def test_release_summary_records_artifacts_and_can_be_written(tmp_path) -> None:
     assert summary["artifact_versions"]["embedding_provider"] == "hashing"
     assert "real_datasets" in summary["artifacts"]
     assert "staleness" in summary["artifacts"]["real_datasets"]
+    assert "sha256" in summary["artifacts"]["real_datasets"]
     assert "demo_v02" in summary["benchmarks"]
     assert "graph_quality" in summary
     assert "source_quality" in summary
@@ -197,5 +199,8 @@ def test_release_summary_includes_non_failing_graph_quality_warnings(
         "weak_edge": 1,
     }
     assert summary["release_ready"] is True
+    assert summary["artifacts"]["demo_graph"]["sha256"] == sha256(
+        graph_path.read_bytes()
+    ).hexdigest()
     assert summary["graph_quality"]["demo_graph"]["error_count"] == 2
     assert "demo_graph graph QA has 2 error(s)" in summary["release_warnings"]

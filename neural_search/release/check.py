@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 from collections import Counter
@@ -83,6 +84,16 @@ def _line_count(path: Path) -> int | None:
         return None
     with path.open("r", encoding="utf-8") as handle:
         return sum(1 for line in handle if line.strip())
+
+
+def _sha256(path: Path) -> str | None:
+    if not path.exists() or path.is_dir():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _display_path(path: Path) -> str:
@@ -218,6 +229,7 @@ def build_release_summary(
             "path": _display_path(path),
             "exists": exists,
             "line_count": _line_count(path),
+            "sha256": _sha256(path),
             "graph_counts": _graph_counts(path) if "graph" in name else None,
             "staleness": staleness,
             "modified_at": (

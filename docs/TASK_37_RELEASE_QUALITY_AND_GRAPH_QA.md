@@ -10,6 +10,7 @@ Implemented behavior:
 - Graph QA issues are summarized by availability, pass status, node/edge count, error count, warning count, and issue-code counts.
 - Release warnings include graph QA errors and warnings, but `release_ready` remains governed by existing hard blockers until explicit promotion policy changes.
 - Release artifact path rendering now supports repo-local and temporary/external artifact paths.
+- Release artifact summaries include SHA-256 digests for reproducibility and rollback inspection.
 
 Next development:
 
