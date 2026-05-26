@@ -33,18 +33,18 @@ def _label(label_type: str, label: str) -> EvidenceLabel:
 
 def test_scientific_readiness_report_summarizes_corpus_graph_and_warnings(tmp_path):
     dataset = NormalizedDatasetRecord(
-        dataset_id=make_dataset_id("demo", "MAC"),
-        source="demo",
+        dataset_id=make_dataset_id("dandi", "MAC"),
+        source="dandi",
         source_id="MAC",
         title="Macaque visual cortex Neuropixels",
         species=[_label("species", "macaque")],
         modalities=[_label("modality", "neuropixels")],
         data_standards=[_label("data_standard", "NWB")],
-        linked_papers=[make_paper_id("demo", "P1")],
+        linked_papers=[make_paper_id("openalex", "P1")],
     )
     paper = NormalizedPaperRecord(
-        paper_id=make_paper_id("demo", "P1"),
-        source="demo",
+        paper_id=make_paper_id("openalex", "P1"),
+        source="openalex",
         source_id="P1",
         title="Macaque paper",
         linked_datasets=[dataset.dataset_id],
@@ -64,11 +64,16 @@ def test_scientific_readiness_report_summarizes_corpus_graph_and_warnings(tmp_pa
     assert report["corpus"]["paper_records"] == 1
     assert report["corpus"]["canonical_species_counts"] == {"macaque": 1}
     assert report["graph"]["species_context_edge_count"] > 0
+    assert report["source_quality"]["trust_level_counts"] == {
+        "high": 1,
+        "medium": 1,
+    }
     assert "Corpus is still small" in " ".join(report["warnings"])
 
     markdown = render_scientific_readiness_markdown(report)
     assert "# Scientific Readiness Report" in markdown
     assert "Species context edges" in markdown
+    assert "## Source Quality" in markdown
 
     paths = write_scientific_readiness_reports(report, tmp_path / "reports")
     assert json.loads((tmp_path / "reports" / "scientific_readiness_report.json").read_text(

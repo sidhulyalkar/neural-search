@@ -13,6 +13,7 @@ from typing import Any
 from neural_search.graph.schema import KnowledgeGraph, read_graph_json
 from neural_search.normalized import NormalizedRecord, load_normalized_records
 from neural_search.schemas import NormalizedDatasetRecord, NormalizedPaperRecord
+from neural_search.source_quality import summarize_source_quality
 from neural_search.species import get_species_profile
 
 DEFAULT_CORPUS_PATH = (
@@ -226,6 +227,18 @@ def _warnings(corpus: dict[str, Any], graph: dict[str, Any], evaluation: dict[st
     return warnings
 
 
+def _source_quality_warnings(source_quality: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+    trust_counts = source_quality.get("trust_level_counts", {})
+    if trust_counts.get("unknown", 0):
+        warnings.append("Some records use sources without registered quality profiles.")
+    if trust_counts.get("low", 0):
+        warnings.append("Some records come from low-trust fixture/demo sources.")
+    if float(source_quality.get("mean_quality_score", 0.0)) < 0.7:
+        warnings.append("Mean source quality score is below promotion-ready threshold.")
+    return warnings
+
+
 def build_scientific_readiness_report(
     records: list[NormalizedRecord] | None = None,
     *,
@@ -247,6 +260,7 @@ def build_scientific_readiness_report(
     corpus = _corpus_section(loaded_records)
     graph_summary = _graph_section(graph)
     evaluation = _evaluation_section(benchmark_reports, calibration_report)
+    source_quality = summarize_source_quality(loaded_records)
     report = {
         "report": "scientific_readiness",
         "version": "v0.8.0",
@@ -254,8 +268,12 @@ def build_scientific_readiness_report(
         "corpus": corpus,
         "graph": graph_summary,
         "evaluation": evaluation,
+        "source_quality": source_quality,
         "agent_readiness": _agent_section(),
-        "warnings": _warnings(corpus, graph_summary, evaluation),
+        "warnings": [
+            *_warnings(corpus, graph_summary, evaluation),
+            *_source_quality_warnings(source_quality),
+        ],
     }
     return report
 
@@ -266,6 +284,7 @@ def render_scientific_readiness_markdown(report: dict[str, Any]) -> str:
     corpus = report["corpus"]
     graph = report["graph"]
     evaluation = report["evaluation"]
+    source_quality = report.get("source_quality", {})
     lines = [
         "# Scientific Readiness Report",
         "",
@@ -293,6 +312,12 @@ def render_scientific_readiness_markdown(report: dict[str, Any]) -> str:
         "",
         f"- Benchmark reports: {evaluation['benchmark_report_count']}",
         f"- Calibration available: {evaluation['calibration_available']}",
+        "",
+        "## Source Quality",
+        "",
+        f"- Mean quality score: {source_quality.get('mean_quality_score', 0.0)}",
+        f"- Trust levels: {source_quality.get('trust_level_counts', {})}",
+        f"- Records with warnings: {source_quality.get('warning_count', 0)}",
         "",
         "## Warnings",
         "",
