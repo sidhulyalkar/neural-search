@@ -18,6 +18,11 @@ from neural_search.graph.experimental_design import (
     list_experimental_designs,
     load_experimental_design_seeds,
 )
+from neural_search.graph.quality import (
+    GraphQualityIssue,
+    GraphQualityReport,
+    audit_graph_quality,
+)
 from neural_search.graph.query import (
     DEFAULT_WEIGHTS,
     RelatedItem,
@@ -111,6 +116,8 @@ __all__ = [
     "SUPPORTED_EDGE_TYPES",
     "SUPPORTED_NODE_TYPES",
     "GraphEvidence",
+    "GraphQualityIssue",
+    "GraphQualityReport",
     "KnowledgeGraph",
     "KnowledgeGraphEdge",
     "KnowledgeGraphNode",
@@ -180,6 +187,7 @@ __all__ = [
     "DatasetSimilarity",
     "SimilarityWeights",
     "add_similarity_edges_to_graph",
+    "audit_graph_quality",
     "build_similarity_edges",
     "compute_dataset_similarity",
     "find_similar_datasets",
