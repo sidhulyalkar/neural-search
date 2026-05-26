@@ -93,6 +93,28 @@ class BehaviorLabel(BaseModel):
         return [value.strip() for value in values]
 
 
+class AnalysisAffordance(BaseModel):
+    """Analysis affordance schema for what analyses a dataset can support."""
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str
+    label: str
+    definition: str = ""
+    required_signals: list[str] = Field(default_factory=list)
+    helpful_signals: list[str] = Field(default_factory=list)
+    typical_outputs: list[str] = Field(default_factory=list)
+    relevant_tasks: list[str] = Field(default_factory=list)
+
+    @field_validator("id", "label")
+    @classmethod
+    def non_empty_string(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be empty")
+        return value
+
+
 class Ontology(BaseModel):
     """Complete behavioral ontology loaded from YAML."""
 
@@ -100,20 +122,40 @@ class Ontology(BaseModel):
 
     tasks: list[Task]
     behavior_labels: list[BehaviorLabel] = Field(default_factory=list)
-    analysis_affordances: list[dict[str, Any]] = Field(default_factory=list)
+    analysis_affordances: list[AnalysisAffordance] = Field(default_factory=list)
+
+    @field_validator("analysis_affordances", mode="before")
+    @classmethod
+    def parse_affordances(cls, values: list[Any]) -> list[AnalysisAffordance]:
+        """Parse affordances from dict or model instances."""
+        if not values:
+            return []
+        parsed = []
+        for value in values:
+            if isinstance(value, AnalysisAffordance):
+                parsed.append(value)
+            elif isinstance(value, dict):
+                parsed.append(AnalysisAffordance.model_validate(value))
+        return parsed
 
     @model_validator(mode="after")
     def validate_unique_ids(self) -> Ontology:
         task_ids = [task.id for task in self.tasks]
         behavior_ids = [behavior.id for behavior in self.behavior_labels]
+        affordance_ids = [aff.id for aff in self.analysis_affordances]
         duplicate_tasks = {item for item in task_ids if task_ids.count(item) > 1}
         duplicate_behaviors = {
             item for item in behavior_ids if behavior_ids.count(item) > 1
+        }
+        duplicate_affordances = {
+            item for item in affordance_ids if affordance_ids.count(item) > 1
         }
         if duplicate_tasks:
             raise ValueError(f"duplicate task ids: {sorted(duplicate_tasks)}")
         if duplicate_behaviors:
             raise ValueError(f"duplicate behavior ids: {sorted(duplicate_behaviors)}")
+        if duplicate_affordances:
+            raise ValueError(f"duplicate affordance ids: {sorted(duplicate_affordances)}")
         return self
 
     @property
@@ -125,6 +167,10 @@ class Ontology(BaseModel):
         return {behavior.id: behavior for behavior in self.behavior_labels}
 
     @property
+    def affordance_by_id(self) -> dict[str, AnalysisAffordance]:
+        return {aff.id: aff for aff in self.analysis_affordances}
+
+    @property
     def modality_names(self) -> list[str]:
         values = {value for task in self.tasks for value in task.relevant_modalities}
         return sorted(values)
@@ -133,3 +179,7 @@ class Ontology(BaseModel):
     def region_names(self) -> list[str]:
         values = {value for task in self.tasks for value in task.relevant_regions}
         return sorted(values)
+
+    @property
+    def affordance_names(self) -> list[str]:
+        return sorted({aff.id for aff in self.analysis_affordances})

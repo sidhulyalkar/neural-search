@@ -43,6 +43,30 @@ NEURAL_MODALITIES = {
     "fmri",
     "fiber_photometry",
 }
+
+# Genomic modalities for transcriptomics and epigenomics
+GENOMIC_MODALITIES = {
+    "single_cell_rnaseq",
+    "single_nucleus_rnaseq",
+    "bulk_rnaseq",
+    "spatial_transcriptomics",
+    "merfish",
+    "visium",
+    "slide_seq",
+    "single_cell_atacseq",
+    "single_nucleus_atacseq",
+    "multiome",
+    "chip_seq",
+    "methylation",
+    "patch_seq",
+    # Title case variants for matching
+    "Single Cell Rnaseq",
+    "Single Nucleus Rnaseq",
+    "Spatial Transcriptomics",
+    "Merfish",
+    "Single Nucleus Atacseq",
+    "Multiome",
+}
 EVENTS = {
     "stimulus_onset",
     "reward",

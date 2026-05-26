@@ -4,11 +4,20 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
+import yaml
+
 from neural_search.ontology import normalize_text
+
+# Default path to intent profiles config
+DEFAULT_INTENT_PROFILES_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "config" / "intent_profiles.yaml"
+)
 
 
 class QueryIntent(Enum):
@@ -76,7 +85,94 @@ INTENT_PATTERNS: dict[QueryIntent, list[str]] = {
     ],
 }
 
-# Weight profiles per intent type - these override base weights
+@dataclass
+class IntentProfile:
+    """Configuration for an intent-specific scoring profile."""
+
+    name: str
+    description: str
+    weights: dict[str, float]
+    scoring_mode: str = "weighted_sum"
+    min_confidence: float = 0.70
+    result_limit: int | None = None
+    strict_exclusion: bool = False
+    use_graph_expansion: bool = False
+    use_semantic_fingerprint: bool = False
+    penalties: dict[str, float] = field(default_factory=dict)
+
+
+@lru_cache(maxsize=1)
+def load_intent_profiles(
+    path: str | Path | None = None,
+) -> dict[str, IntentProfile]:
+    """Load intent profiles from YAML configuration.
+
+    Args:
+        path: Path to intent profiles YAML file
+
+    Returns:
+        Dict mapping profile name to IntentProfile
+    """
+    if path is None:
+        path = DEFAULT_INTENT_PROFILES_PATH
+
+    path = Path(path)
+    if not path.exists():
+        return {}
+
+    with open(path, encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+
+    profiles = {}
+    for name, config in data.get("profiles", {}).items():
+        profiles[name] = IntentProfile(
+            name=name,
+            description=config.get("description", ""),
+            weights=config.get("weights", {}),
+            scoring_mode=config.get("scoring_mode", "weighted_sum"),
+            min_confidence=config.get("min_confidence", 0.70),
+            result_limit=config.get("result_limit"),
+            strict_exclusion=config.get("strict_exclusion", False),
+            use_graph_expansion=config.get("use_graph_expansion", False),
+            use_semantic_fingerprint=config.get("use_semantic_fingerprint", False),
+            penalties=config.get("penalties", {}),
+        )
+
+    return profiles
+
+
+def get_intent_profile(intent: QueryIntent) -> IntentProfile | None:
+    """Get the profile for a given intent.
+
+    Args:
+        intent: QueryIntent enum value
+
+    Returns:
+        IntentProfile if found, None otherwise
+    """
+    profiles = load_intent_profiles()
+    intent_name = intent.value  # e.g., "task_search"
+    return profiles.get(intent_name)
+
+
+def get_weights_for_intent(intent: QueryIntent) -> dict[str, float]:
+    """Get weight overrides for a given intent.
+
+    Args:
+        intent: QueryIntent enum value
+
+    Returns:
+        Weight dictionary from profile, or fallback to hardcoded weights
+    """
+    profile = get_intent_profile(intent)
+    if profile:
+        return profile.weights
+
+    # Fall back to hardcoded weights
+    return INTENT_WEIGHT_PROFILES.get(intent, {})
+
+
+# Weight profiles per intent type - these override base weights (legacy/fallback)
 INTENT_WEIGHT_PROFILES: dict[QueryIntent, dict[str, float]] = {
     QueryIntent.DATASET_LOOKUP: {
         "metadata": 0.25,
@@ -199,11 +295,14 @@ def classify_query_intent(
     primary = unique_matches[0][0]
     primary_conf = unique_matches[0][1]
 
+    # Get weight overrides from YAML profile or fallback to hardcoded
+    weight_overrides = get_weights_for_intent(primary)
+
     return IntentClassification(
         primary_intent=primary,
         confidence=primary_conf,
         secondary_intents=[m[0] for m in unique_matches[1:3]],
-        weight_overrides=INTENT_WEIGHT_PROFILES.get(primary, {}),
+        weight_overrides=weight_overrides,
     )
 
 

@@ -18,9 +18,13 @@ from neural_search.graph.search_features import (
     graph_context_score,
     load_graph_if_exists,
 )
-from neural_search.ingestion.demo_seed import build_demo_seed
+from neural_search.graph.transitive import (
+    expand_query_with_graph,
+)
+from neural_search.ingestion.demo_seed import build_combined_corpus
 from neural_search.ontology import (
     expand_query_terms,
+    match_affordances,
     match_behavior_labels,
     match_brain_regions,
     match_modalities,
@@ -35,6 +39,10 @@ from neural_search.search.constraints import (
 from neural_search.search.field_semantic import (
     field_semantic_score_for_result,
     load_field_semantic_index,
+)
+from neural_search.search.intent import (
+    blend_weights,
+    classify_query_intent,
 )
 from neural_search.search.query_builder import (
     combine_query_and_structured_text,
@@ -52,14 +60,15 @@ RETRIEVAL_CONFIG_PATH = (
 
 DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
     "weights": {
-        "ontology": 0.30,
-        "behavior": 0.22,
-        "modality": 0.14,
+        "ontology": 0.28,
+        "behavior": 0.20,
+        "modality": 0.12,
+        "affordance": 0.10,
         "metadata": 0.10,
-        "semantic": 0.10,
+        "semantic": 0.08,
         "field_semantic": 0.06,
         "graph": 0.04,
-        "readiness": 0.10,
+        "readiness": 0.08,
         "paper_confidence": 0.04,
     },
     "penalties": {
@@ -94,6 +103,7 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
 }
 
 MODALITY_TERMS: dict[str, list[str]] = {
+    # Electrophysiology
     "neuropixels": ["neuropixels", "neuropixel"],
     "calcium_imaging": ["calcium imaging", "two photon", "2p", "gcamp", "optical imaging"],
     "extracellular_ephys": ["extracellular ephys", "ephys", "spikes", "electrophysiology"],
@@ -103,8 +113,27 @@ MODALITY_TERMS: dict[str, list[str]] = {
     "meg": ["meg", "magnetoencephalography"],
     "fmri": ["fmri", "functional mri", "bold"],
     "fiber_photometry": ["fiber photometry", "photometry"],
+    "patch_clamp": ["patch clamp", "whole cell recording", "intracellular"],
+    # Behavioral
     "behavior_video": ["behavior video", "video"],
     "pose_tracking": ["pose tracking", "kinematics", "deeplabcut", "dlc"],
+    # Transcriptomics
+    "single_cell_rnaseq": ["single cell rna", "scrna-seq", "scrnaseq", "single cell rna-seq",
+                          "single cell transcriptomics", "10x genomics"],
+    "single_nucleus_rnaseq": ["single nucleus rna", "snrna-seq", "snrnaseq",
+                              "single nuclei rna", "nuclear rna-seq"],
+    "bulk_rnaseq": ["bulk rna-seq", "rnaseq", "rna sequencing", "transcriptome"],
+    "spatial_transcriptomics": ["spatial transcriptomics", "spatial rna", "spatial gene expression"],
+    "merfish": ["merfish"],
+    "visium": ["visium"],
+    # Epigenomics
+    "single_cell_atacseq": ["single cell atac", "scatac-seq", "scatacseq", "chromatin accessibility"],
+    "single_nucleus_atacseq": ["single nucleus atac", "snatac-seq", "snatacsec"],
+    "multiome": ["multiome", "multi-omic", "multiomic", "rna atac"],
+    "chip_seq": ["chip-seq", "chipseq", "histone modification"],
+    "methylation": ["methylation", "bisulfite", "methylome"],
+    # Multi-modal genomics
+    "patch_seq": ["patch-seq", "patchseq", "ephys transcriptomics"],
 }
 
 # Generic phrases that expand to multiple modalities
@@ -118,6 +147,14 @@ GENERIC_MODALITY_PHRASES: dict[str, list[str]] = {
         "fiber_photometry", "ecog", "ieeg", "eeg", "fmri",
     ],
     "electrophysiology": ["extracellular_ephys", "neuropixels", "ecog", "ieeg", "eeg"],
+    # Genomic expansions
+    "transcriptomics": ["single_cell_rnaseq", "single_nucleus_rnaseq", "bulk_rnaseq",
+                        "spatial_transcriptomics"],
+    "single cell": ["single_cell_rnaseq", "single_cell_atacseq"],
+    "single nucleus": ["single_nucleus_rnaseq", "single_nucleus_atacseq"],
+    "cell type atlas": ["single_cell_rnaseq", "single_nucleus_rnaseq", "spatial_transcriptomics"],
+    "epigenomics": ["single_cell_atacseq", "single_nucleus_atacseq", "chip_seq", "methylation"],
+    "chromatin": ["single_cell_atacseq", "single_nucleus_atacseq", "chip_seq"],
 }
 
 
@@ -276,6 +313,7 @@ def parse_query(
     task_matches = match_tasks(query)
     behavior_matches = match_behavior_labels(query)
     brain_region_matches = match_brain_regions(query)
+    affordance_matches = match_affordances(query)
     normalized = normalize_text(query)
 
     # Parse exclusions first
@@ -317,11 +355,27 @@ def parse_query(
         config.get("analysis_intents", {}),
     )
     analysis_ids = [match["id"] for match in analysis_intents]
+
+    # Add affordance matches to analysis intents
+    for match in affordance_matches:
+        if match.id not in analysis_ids:
+            analysis_intents.append(
+                {
+                    "id": match.id,
+                    "label": match.label,
+                    "confidence": match.confidence,
+                    "evidence": match.evidence,
+                    "match_type": "affordance",
+                }
+            )
+            analysis_ids.append(match.id)
+
     query_analysis_terms = {
         normalize_text(value)
         for value in [
             *analysis_ids,
             *expanded.get("suggested_analyses", []),
+            *expanded.get("affordance_ids", []),
         ]
     }
     for suggested in expanded.get("suggested_analyses", []):
@@ -402,12 +456,14 @@ def parse_query(
         ],
         "species_intent": species_intents,
         "brain_region_intent": _match_dumps(brain_region_matches),
+        "affordance_intent": _match_dumps(affordance_matches),
         "analysis_intent": analysis_intents,
         "inferred_concepts": sorted(
             query_analysis_terms
             | {normalize_text(match.category or "") for match in task_matches}
         ),
         "expanded": expanded,
+        "affordances": [match.id for match in affordance_matches],
     }
 
 
@@ -436,6 +492,7 @@ def _linked_paper_score(dataset: Any, card: DatasetCardRead | Mapping[str, Any] 
 
 def _missing_required_fields(
     dataset: Any,
+    card: DatasetCardRead | Mapping[str, Any] | None,
     parsed_query: Mapping[str, Any],
     retrieval_config: Mapping[str, Any],
 ) -> list[str]:
@@ -448,6 +505,10 @@ def _missing_required_fields(
     missing: list[str] = []
     for field in sorted(required):
         value = _get_value(dataset, field, None)
+        if value in (None, "", [], {}, False) and card is not None:
+            label_group = "behaviors" if field == "behaviors" else field
+            if _card_labels(card, label_group):
+                value = "card_label"
         if value in (None, "", [], {}, False):
             missing.append(field)
     return missing
@@ -538,6 +599,7 @@ def score_dataset_against_query(
     }
     region_terms = {normalize_text(value) for value in parsed_query.get("brain_regions", [])}
     analysis_terms = {normalize_text(value) for value in parsed_query.get("analysis", [])}
+    affordance_terms = {normalize_text(value) for value in parsed_query.get("affordances", [])}
 
     dataset_tasks = _normalize_values(_get_value(dataset, "tasks", [])) | (
         _card_labels(card, "tasks") if card else set()
@@ -561,6 +623,15 @@ def score_dataset_against_query(
         _card_labels(card, "brain_regions") if card else set()
     )
     dataset_analyses = _normalize_values(_get_value(card, "suggested_analyses", [])) if card else set()
+    # Get affordances from dataset and card
+    dataset_affordances = _normalize_values(_get_value(dataset, "analysis_affordances", []))
+    if card:
+        card_affordances = _get_value(card, "suggested_analyses", [])
+        dataset_affordances |= _normalize_values(card_affordances)
+        # Also check scientific labels for affordances
+        labels = _get_value(card, "scientific_labels", {}) or {}
+        if isinstance(labels, Mapping):
+            dataset_affordances |= _normalize_values(labels.get("analysis_affordances", []))
 
     keyword_hits = [term for term in query_terms if term and term in text]
     keyword_similarity = min(len(keyword_hits) / max(len(query_terms), 1), 1.0)
@@ -575,6 +646,7 @@ def score_dataset_against_query(
     species_score, matched_species = _field_score(species_terms, dataset_species)
     region_score, matched_regions = _field_score(region_terms, dataset_regions)
     analysis_score, matched_analyses = _field_score(analysis_terms, dataset_analyses)
+    affordance_score, matched_affordances = _field_score(affordance_terms, dataset_affordances)
 
     ontology_match = task_score if task_terms else 0.0
     behavior_match = behavior_score if behavior_terms else 0.0
@@ -597,6 +669,7 @@ def score_dataset_against_query(
         *matched_species,
         *matched_regions,
         *matched_analyses,
+        *matched_affordances,
     ]
 
     why.extend(f"Task matched: {value}" for value in matched_tasks)
@@ -605,6 +678,7 @@ def score_dataset_against_query(
     why.extend(f"Species matched: {value}" for value in matched_species)
     why.extend(f"Brain region matched: {value}" for value in matched_regions)
     why.extend(f"Analysis matched: {value}" for value in matched_analyses)
+    why.extend(f"Affordance matched: {value}" for value in matched_affordances)
 
     modality_penalty = 0.0
     if modality_terms and dataset_modalities and not matched_modalities:
@@ -646,7 +720,7 @@ def score_dataset_against_query(
 
     missing_fields = sorted(
         set(_get_value(card, "missing_fields", []) if card else [])
-        | set(_missing_required_fields(dataset, parsed_query, config))
+        | set(_missing_required_fields(dataset, card, parsed_query, config))
     )
     max_missing = max(int(penalties.get("max_missing_required_fields", 5)), 1)
     missing_penalty = min(
@@ -661,10 +735,14 @@ def score_dataset_against_query(
         config.get("thresholds", {}).get("high_analysis_readiness", 0.80)
     )
 
+    # Affordance match contributes when query specifies affordances
+    affordance_match = affordance_score if affordance_terms else 0.0
+
     final_score = (
         float(weights.get("ontology", 0.0)) * ontology_match
         + float(weights.get("behavior", 0.0)) * behavior_match
         + float(weights.get("modality", 0.0)) * modality_score
+        + float(weights.get("affordance", 0.0)) * affordance_match
         + float(weights.get("metadata", 0.0)) * metadata_match
         + float(weights.get("semantic", 0.0)) * semantic_similarity
         + float(weights.get("readiness", 0.0)) * readiness_score
@@ -692,12 +770,14 @@ def score_dataset_against_query(
         "provenance_score": round(provenance_score, 3),
         "usability_score": round(usability_score, 3),
         "analysis_fit_score": round(analysis_fit_score, 3),
+        "affordance_score": round(affordance_match, 3),
         "negative_constraint_score": round(negative_constraint_score, 3),
         "final_score": round(final_score, 3),
         # Backward-compatible aliases for v0.2 UI/tests.
         "ontology": round(ontology_match, 3),
         "behavior": round(behavior_match, 3),
         "modality": round(modality_score, 3),
+        "affordance": round(affordance_match, 3),
         "metadata": round(metadata_match, 3),
         "semantic": round(semantic_similarity, 3),
         "keyword_semantic": round(keyword_similarity, 3),
@@ -708,6 +788,8 @@ def score_dataset_against_query(
     }
     if keyword_hits:
         why.append("Keyword evidence: " + ", ".join(sorted(keyword_hits)[:6]))
+    if matched_affordances:
+        why.append(f"Supports analysis: {', '.join(matched_affordances[:3])}")
     if readiness_score >= readiness_threshold:
         why.append(f"High analysis readiness: {int(readiness_score * 100)}/100")
     if paper_score > 0:
@@ -723,6 +805,7 @@ def score_dataset_against_query(
             "summary": _get_value(card, "summary", ""),
             "analysis_readiness_score": int(readiness_score * 100),
             "suggested_analyses": _get_value(card, "suggested_analyses", [])[:5],
+            "matched_affordances": matched_affordances[:5],
             "score_breakdown": score_breakdown,
         }
     evidence_text = " ".join(
@@ -743,6 +826,7 @@ def score_dataset_against_query(
         inferred_concepts=list(parsed_query.get("inferred_concepts", [])),
         evidence_snippets=_evidence_snippets(evidence_text, [*matched_labels, *keyword_hits]),
         missing_metadata_warnings=missing_metadata_warnings,
+        missing_metadata=missing_fields,
         missing_requirements=missing_fields,
         negative_constraint_matches=sorted(violated_exclusions),
         evidence=[
@@ -821,6 +905,7 @@ def _augment_result_with_optional_scores(
             str(result.dataset_id),
             dict(parsed_query),
             weights=dict(graph_config.get("weights", {})),
+            use_edge_confidence=bool(graph_config.get("use_edge_confidence", False)),
         )
         result.score_breakdown["graph_score"] = round(graph_score, 3)
         if graph_score > 0:
@@ -883,8 +968,26 @@ def search_datasets(
     config = _retrieval_config_with_defaults(retrieval_config)
     combined_query = combine_query_and_structured_text(query, structured_query)
     parsed = parse_query(combined_query, config)
+
+    # Classify query intent and adjust weights
+    intent = classify_query_intent(combined_query, parsed)
+    if intent.weight_overrides:
+        base_weights = config.get("weights", {})
+        blended_weights = blend_weights(
+            base_weights,
+            intent.weight_overrides,
+            intent.confidence,
+            confidence_threshold=0.70,
+        )
+        config = _deep_merge(config, {"weights": blended_weights})
+    parsed["query_intent"] = {
+        "primary": intent.primary_intent.value,
+        "confidence": round(intent.confidence, 3),
+        "secondary": [i.value for i in intent.secondary_intents],
+    }
+
     filters = merge_filters(filters, structured_query)
-    records = list(datasets) if datasets is not None else build_demo_seed()
+    records = list(datasets) if datasets is not None else build_combined_corpus()
     results: list[SearchResult] = []
     filtered_constraints: list[dict[str, Any]] = []
     hard_filters_enabled = bool(config.get("hard_negative_filters", {}).get("enabled", True))
@@ -894,6 +997,12 @@ def search_datasets(
         if graph_config.get("enabled")
         else None
     )
+
+    # Expand query with graph relationships
+    if graph is not None:
+        max_hops = int(graph_config.get("max_transitive_hops", 2))
+        parsed = expand_query_with_graph(graph, parsed, max_hops=max_hops)
+
     field_config = (
         config.get("field_embeddings", {})
         if isinstance(config.get("field_embeddings", {}), Mapping)
@@ -944,7 +1053,12 @@ def search_datasets(
     parsed_response = dict(parsed)
     if filtered_constraints:
         parsed_response["filtered_negative_constraints"] = filtered_constraints
-    return SearchResponse(query=combined_query, parsed_query=parsed_response, results=results[:limit])
+    return SearchResponse(
+        query=combined_query,
+        parsed_query=parsed_response,
+        results=results[:limit],
+        filtered_constraints=filtered_constraints,
+    )
 
 
 def hybrid_search_with_latent(
@@ -995,7 +1109,7 @@ def hybrid_search_with_latent(
         return base_response
 
     # Build latent index for all datasets
-    records = list(datasets) if datasets is not None else build_demo_seed()
+    records = list(datasets) if datasets is not None else build_combined_corpus()
     sessions = []
     query_session = None
 

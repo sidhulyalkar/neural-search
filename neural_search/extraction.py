@@ -16,6 +16,7 @@ from neural_search.ontology import (
 from neural_search.schemas import ExtractionResult, LabelEvidence
 
 MODALITY_SYNONYMS: dict[str, list[str]] = {
+    # Electrophysiology
     "calcium_imaging": ["calcium imaging", "two photon", "2 photon", "2p", "gcamp"],
     "extracellular_ephys": ["extracellular", "spike sorting", "electrophysiology", "ephys"],
     "neuropixels": ["neuropixels", "neuropixel"],
@@ -26,23 +27,51 @@ MODALITY_SYNONYMS: dict[str, list[str]] = {
     "fmri": ["fmri", "functional mri", "bold"],
     "lfp": ["lfp", "local field potential"],
     "fiber_photometry": ["fiber photometry", "photometry"],
+    "patch_clamp": ["patch clamp", "whole cell", "intracellular recording"],
+    # Behavioral
     "behavior_video": ["behavior video", "behaviour video", "video tracking", "camera"],
     "pose_tracking": ["pose tracking", "deeplabcut", "sleap", "kinematics"],
     "emg": ["emg", "electromyography"],
     "audio": ["audio", "sound recording", "microphone"],
+    # Transcriptomics
+    "single_cell_rnaseq": ["single cell rna", "scrna-seq", "scrnaseq", "single cell rnaseq",
+                          "single cell transcriptomics", "10x genomics", "dropseq", "smart-seq"],
+    "single_nucleus_rnaseq": ["single nucleus rna", "snrna-seq", "snrnaseq", "single nucleus rnaseq",
+                              "single nuclei rna", "nuclear rna"],
+    "bulk_rnaseq": ["bulk rna", "bulk rnaseq", "rna-seq", "transcriptome sequencing"],
+    "spatial_transcriptomics": ["spatial transcriptomics", "spatial rna", "spatial gene expression",
+                                "in situ sequencing"],
+    "merfish": ["merfish"],
+    "visium": ["visium"],
+    "slide_seq": ["slide-seq", "slideseq"],
+    # Epigenomics
+    "single_cell_atacseq": ["single cell atac", "scatac-seq", "scatacseq", "chromatin accessibility"],
+    "single_nucleus_atacseq": ["single nucleus atac", "snatac-seq", "snatacsec"],
+    "multiome": ["multiome", "joint rna atac", "multi-omic", "multiomic", "multi omic"],
+    "chip_seq": ["chip-seq", "chipseq", "chromatin immunoprecipitation", "cut&run", "cut&tag"],
+    "methylation": ["methylation", "bisulfite sequencing", "methylome", "dna methylation"],
+    # Multi-modal genomics
+    "patch_seq": ["patch-seq", "patchseq", "electrophysiology transcriptomics"],
 }
 
 SPECIES_SYNONYMS: dict[str, list[str]] = {
     "mouse": ["mouse", "mice", "mus musculus"],
     "rat": ["rat", "rats", "rattus"],
-    "human": ["human", "humans", "participant", "subject"],
-    "macaque": ["macaque", "monkey", "non human primate", "nhp"],
+    "human": ["human", "humans", "participant", "subject", "patient"],
+    "macaque": ["macaque", "monkey", "non human primate", "nhp", "rhesus"],
+    "marmoset": ["marmoset", "callithrix jacchus"],
     "zebrafish": ["zebrafish", "danio rerio"],
+    "drosophila": ["drosophila", "fly", "fruit fly"],
 }
 
 DATA_STANDARD_SYNONYMS: dict[str, list[str]] = {
     "NWB": [".nwb", "nwb", "neurodata without borders"],
     "BIDS": ["bids", "dataset_description.json", "participants.tsv", "events.tsv"],
+    # Single-cell data formats
+    "h5ad": ["h5ad", "anndata", ".h5ad"],
+    "loom": ["loom", ".loom"],
+    "zarr": ["zarr", ".zarr"],
+    "10x_h5": ["10x_h5", ".h5", "10x genomics"],
 }
 
 BRAIN_REGION_SYNONYMS: dict[str, list[str]] = {
