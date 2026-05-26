@@ -27,13 +27,12 @@ OPENNEURO_API_URL = "https://openneuro.org/crn/graphql"
 
 def _search_query() -> str:
     return """
-    query SearchDatasets($query: String, $first: Int) {
-        datasets(first: $first, query: $query) {
+    query SearchDatasets($modality: String, $first: Int) {
+        datasets(first: $first, modality: $modality, filterBy: {public: true}) {
             edges {
                 node {
                     id
                     name
-                    description
                     created
                     public
                     latestSnapshot {
@@ -54,13 +53,20 @@ def _search_query() -> str:
     """
 
 
-def fetch_openneuro(query: str | None, limit: int) -> dict[str, Any]:
+def fetch_openneuro(modality: str | None, limit: int) -> dict[str, Any]:
+    """Fetch datasets from OpenNeuro, optionally filtered by modality.
+
+    Args:
+        modality: BIDS modality to filter by (e.g., 'eeg', 'func', 'anat', 'meg', 'ieeg')
+                  Pass None to get all public datasets.
+        limit: Maximum number of datasets to fetch.
+    """
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
         response = client.post(
             OPENNEURO_API_URL,
             json={
                 "query": _search_query(),
-                "variables": {"query": query, "first": limit},
+                "variables": {"modality": modality, "first": limit},
             },
         )
         response.raise_for_status()
