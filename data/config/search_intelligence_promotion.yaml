@@ -10,6 +10,12 @@ global_gates:
 human_label_gates:
   min_judgments: 0
   min_hard_negative_judgments: 0
+source_quality_gates:
+  enabled: false
+  min_mean_quality_score: 0.70
+  max_unknown_source_count: 0
+  max_low_trust_count: 0
+  max_source_warning_count: 0
 intents:
   hard_negative:
     enabled: false

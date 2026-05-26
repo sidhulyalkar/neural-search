@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import yaml
@@ -40,6 +41,7 @@ from neural_search.intelligence.fixtures import (
     write_realistic_fixture_files,
 )
 from neural_search.intelligence.planner import main as planner_main
+from neural_search.intelligence.promotion import load_source_quality_summary
 from neural_search.intelligence.promotion import main as promotion_main
 from neural_search.intelligence.review import judgment_from_dict
 from neural_search.intelligence.review import main as review_main
@@ -568,6 +570,68 @@ def test_promotion_gates_use_human_label_summary() -> None:
     assert "human judgment_count 1 < required 2" in report.blockers
 
 
+def test_promotion_gates_can_block_on_source_quality_summary() -> None:
+    evaluation_report = {
+        "query_count": 10,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {},
+    }
+    manifest = {
+        "default_enabled": True,
+        "global_gates": {
+            "min_total_queries": 10,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "source_quality_gates": {
+            "enabled": True,
+            "min_mean_quality_score": 0.7,
+            "max_unknown_source_count": 0,
+            "max_low_trust_count": 0,
+            "max_source_warning_count": 0,
+        },
+        "intents": {},
+    }
+
+    report = evaluate_promotion_gates(
+        evaluation_report,
+        manifest,
+        source_quality_summary={
+            "mean_quality_score": 0.62,
+            "trust_level_counts": {"unknown": 1, "low": 1},
+            "warning_count": 2,
+        },
+    )
+
+    assert report.promotion_ready is False
+    assert "mean source quality 0.62 < required 0.7" in report.blockers
+    assert "unknown source count 1 > allowed 0" in report.blockers
+    assert "low-trust source count 1 > allowed 0" in report.blockers
+    assert "source warning count 2 > allowed 0" in report.blockers
+
+
+def test_load_source_quality_summary_accepts_readiness_report(tmp_path: Path) -> None:
+    readiness_path = tmp_path / "readiness.json"
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "report": "scientific_readiness",
+                "source_quality": {
+                    "mean_quality_score": 0.91,
+                    "trust_level_counts": {"high": 3},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = load_source_quality_summary(readiness_path)
+
+    assert summary == {
+        "mean_quality_score": 0.91,
+        "trust_level_counts": {"high": 3},
+    }
+
+
 def test_task23_realistic_fixtures_cover_underrepresented_forms(tmp_path: Path) -> None:
     records_path = tmp_path / "records.jsonl"
     benchmark_path = tmp_path / "benchmark.yaml"
@@ -700,6 +764,7 @@ def test_score_calibration_cli_writes_reports(tmp_path: Path) -> None:
 def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:
     evaluation_path = tmp_path / "evaluation.json"
     manifest_path = tmp_path / "manifest.yaml"
+    readiness_path = tmp_path / "readiness.json"
     out_dir = tmp_path / "promotion"
     evaluation_path.write_text(
         '{"query_count":1,"mean_delta":{"hard_negative_violations":0},'
@@ -711,7 +776,26 @@ def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:
             {
                 "default_enabled": False,
                 "global_gates": {"min_total_queries": 1},
+                "source_quality_gates": {
+                    "enabled": True,
+                    "min_mean_quality_score": 0.7,
+                    "max_unknown_source_count": 0,
+                    "max_low_trust_count": 0,
+                    "max_source_warning_count": 0,
+                },
                 "intents": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "source_quality": {
+                    "mean_quality_score": 0.95,
+                    "trust_level_counts": {"high": 2},
+                    "warning_count": 0,
+                }
             }
         ),
         encoding="utf-8",
@@ -723,6 +807,8 @@ def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:
             str(manifest_path),
             "--evaluation",
             str(evaluation_path),
+            "--readiness-report",
+            str(readiness_path),
             "--out",
             str(out_dir),
         ]

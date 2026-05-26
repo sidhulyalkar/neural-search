@@ -45,6 +45,7 @@ class PromotionGateReport:
     promotion_ready: bool
     blockers: tuple[str, ...]
     human_label_summary: dict[str, Any]
+    source_quality_summary: dict[str, Any]
     intent_decisions: tuple[IntentPromotionDecision, ...]
 
     def model_dump(self) -> dict[str, Any]:
@@ -53,6 +54,7 @@ class PromotionGateReport:
             "promotion_ready": self.promotion_ready,
             "blockers": list(self.blockers),
             "human_label_summary": dict(self.human_label_summary),
+            "source_quality_summary": dict(self.source_quality_summary),
             "intent_decisions": [
                 decision.model_dump() for decision in self.intent_decisions
             ],
@@ -65,6 +67,52 @@ def load_promotion_manifest(path: str | Path) -> dict[str, Any]:
 
 def load_evaluation_report(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def load_source_quality_summary(path: str | Path) -> dict[str, Any]:
+    """Load source-quality summary from a readiness report or direct summary JSON."""
+
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    source_quality = payload.get("source_quality", payload)
+    return dict(source_quality) if isinstance(source_quality, dict) else {}
+
+
+def _source_quality_blockers(
+    source_quality: dict[str, Any] | None,
+    gates: dict[str, Any],
+) -> tuple[str, ...]:
+    if not gates or not bool(gates.get("enabled", False)):
+        return ()
+    if not source_quality:
+        return ("missing source quality summary",)
+
+    blockers: list[str] = []
+    trust_counts = source_quality.get("trust_level_counts", {})
+    mean_quality = float(source_quality.get("mean_quality_score", 0.0) or 0.0)
+    min_mean_quality = float(gates.get("min_mean_quality_score", 0.0) or 0.0)
+    if mean_quality < min_mean_quality:
+        blockers.append(
+            f"mean source quality {mean_quality} < required {min_mean_quality}"
+        )
+
+    unknown_count = int(trust_counts.get("unknown", 0) or 0)
+    max_unknown = int(gates.get("max_unknown_source_count", 0) or 0)
+    if unknown_count > max_unknown:
+        blockers.append(f"unknown source count {unknown_count} > allowed {max_unknown}")
+
+    low_count = int(trust_counts.get("low", 0) or 0)
+    max_low = int(gates.get("max_low_trust_count", 0) or 0)
+    if low_count > max_low:
+        blockers.append(f"low-trust source count {low_count} > allowed {max_low}")
+
+    warning_count = int(source_quality.get("warning_count", 0) or 0)
+    max_warnings = int(gates.get("max_source_warning_count", warning_count) or 0)
+    if warning_count > max_warnings:
+        blockers.append(
+            f"source warning count {warning_count} > allowed {max_warnings}"
+        )
+
+    return tuple(blockers)
 
 
 def _intent_decision(
@@ -162,12 +210,15 @@ def evaluate_promotion_gates(
     manifest: dict[str, Any],
     *,
     human_label_summary: dict[str, Any] | None = None,
+    source_quality_summary: dict[str, Any] | None = None,
 ) -> PromotionGateReport:
     """Evaluate whether planner intents are ready for default promotion."""
 
     global_gates = manifest.get("global_gates", {})
     human_gates = manifest.get("human_label_gates", {})
+    source_quality_gates = manifest.get("source_quality_gates", {})
     human_summary = dict(human_label_summary or {})
+    source_summary = dict(source_quality_summary or {})
     blockers: list[str] = []
     total_queries = int(evaluation_report.get("query_count", 0) or 0)
     min_total_queries = int(global_gates.get("min_total_queries", 1) or 1)
@@ -203,6 +254,8 @@ def evaluate_promotion_gates(
             f"{min_human_hard_negatives}"
         )
 
+    blockers.extend(_source_quality_blockers(source_summary, source_quality_gates))
+
     grouped = evaluation_report.get("grouped_by_intent", {})
     human_by_intent = human_summary.get("by_intent", {})
     decisions = tuple(
@@ -223,6 +276,7 @@ def evaluate_promotion_gates(
         promotion_ready=not blockers and all(decision.ready for decision in decisions),
         blockers=tuple(blockers),
         human_label_summary=human_summary,
+        source_quality_summary=source_summary,
         intent_decisions=decisions,
     )
 
@@ -234,6 +288,8 @@ def _markdown(report: PromotionGateReport) -> str:
         f"- Default enabled: {str(report.default_enabled).lower()}",
         f"- Promotion ready: {str(report.promotion_ready).lower()}",
         f"- Human judgments: {report.human_label_summary.get('judgment_count', 0)}",
+        "- Source quality mean: "
+        f"{report.source_quality_summary.get('mean_quality_score', 'not supplied')}",
         "",
         "## Global Blockers",
         "",
@@ -293,6 +349,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--evaluation", required=True)
     parser.add_argument("--judgments", help="Optional human relevance judgments JSONL.")
+    parser.add_argument(
+        "--readiness-report",
+        help="Optional scientific readiness JSON report with a source_quality section.",
+    )
     parser.add_argument("--out", required=True)
     parser.add_argument("--fail-on-blockers", action="store_true")
     args = parser.parse_args(argv)
@@ -309,10 +369,16 @@ def main(argv: list[str] | None = None) -> int:
             **summarize_relevance_judgments(judgments),
             "by_intent": summarize_human_labels_by_intent(judgments, evaluation_report),
         }
+    source_quality_summary = (
+        load_source_quality_summary(args.readiness_report)
+        if args.readiness_report
+        else None
+    )
     report = evaluate_promotion_gates(
         evaluation_report,
         load_promotion_manifest(args.manifest),
         human_label_summary=human_summary,
+        source_quality_summary=source_quality_summary,
     )
     print(
         json.dumps(
