@@ -121,7 +121,7 @@ analysis_intents:
 
 graph:
   enabled: true
-  path: data/graph/neural_search_graph.v07_genomics.json
+  path: data/graph/neural_search_graph.real_corpus.json
   weights:
     linked_paper: 0.04
     analysis_affordance: 0.03
