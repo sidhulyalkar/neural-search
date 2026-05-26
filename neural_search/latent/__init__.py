@@ -20,12 +20,22 @@ from neural_search.latent.embedding_schema import (
     LatentSearchResult,
     SessionFeatures,
 )
+from neural_search.latent.signature_schema import (
+    EventAlignedLatentSignature,
+    LatentQCMetadata,
+    LatentSignatureVector,
+    LatentSourceFile,
+)
 from neural_search.latent.summary_features import extract_session_features
 
 __all__ = [
+    "EventAlignedLatentSignature",
     "FeatureSummary",
     "LatentIndex",
+    "LatentQCMetadata",
     "LatentSearchResult",
+    "LatentSignatureVector",
+    "LatentSourceFile",
     "SessionFeatures",
     "extract_session_features",
 ]
