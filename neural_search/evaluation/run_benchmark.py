@@ -474,6 +474,7 @@ def evaluate_query(
     query: BenchmarkQuery,
     datasets: list[dict[str, Any]] | None = None,
     k: int = 10,
+    retrieval_config: dict[str, Any] | None = None,
 ) -> QueryEvaluation:
     """Evaluate a single benchmark query."""
     response = search_datasets(
@@ -481,6 +482,7 @@ def evaluate_query(
         filters={},
         datasets=datasets,
         limit=k,
+        retrieval_config=retrieval_config,
     )
 
     results = [
@@ -661,13 +663,14 @@ def run_full_benchmark(
     benchmark_path: Path | None = None,
     datasets: list[dict[str, Any]] | None = None,
     suite: str = "demo_v02",
+    retrieval_config: dict[str, Any] | None = None,
 ) -> EvaluationReport:
     """Run complete benchmark evaluation."""
     queries = load_benchmark_queries(benchmark_path)
     if datasets is None:
         datasets = _datasets_for_suite(suite)
 
-    evaluations = [evaluate_query(q, datasets) for q in queries]
+    evaluations = [evaluate_query(q, datasets, retrieval_config=retrieval_config) for q in queries]
 
     queries_with_results = sum(1 for e in evaluations if e.num_results > 0)
 

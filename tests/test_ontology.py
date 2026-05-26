@@ -75,4 +75,4 @@ def test_match_all_returns_requested_groups():
     assert "reversal_learning" in {match.id for match in matches["tasks"]}
     assert {"reward", "omission"} <= {match.id for match in matches["behaviors"]}
     assert "OFC" in {match.id for match in matches["regions"]}
-    assert set(matches) == {"tasks", "behaviors", "regions", "modalities"}
+    assert set(matches) == {"tasks", "behaviors", "regions", "modalities", "affordances"}
