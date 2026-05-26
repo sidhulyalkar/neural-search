@@ -1,0 +1,185 @@
+# Affordance Validation Rubric
+# Defines requirements for each analysis affordance
+
+affordances:
+  choice_decoding:
+    description: "Decoding choice/decision from neural activity"
+    required_fields:
+      - neural_activity
+      - trial_labels
+      - choice_labels
+    optional_fields:
+      - reaction_time
+      - stimulus_type
+      - confidence_rating
+    minimum_trials: 100
+    confidence_threshold: 0.80
+    evidence_fields:
+      - has_neural_data
+      - has_trials
+      - has_choice_labels
+    failure_reasons:
+      - "Missing neural recordings"
+      - "No trial structure"
+      - "No choice/response labels"
+      - "Insufficient trial count"
+
+  q_learning:
+    description: "Q-learning or reinforcement learning modeling"
+    required_fields:
+      - choices
+      - rewards
+      - trial_order
+      - subject_id
+      - session_id
+    optional_fields:
+      - block_structure
+      - task_state
+      - stimulus_features
+      - response_time
+    minimum_trials: 50
+    confidence_threshold: 0.80
+    evidence_fields:
+      - has_choice_sequence
+      - has_reward_feedback
+      - has_trial_outcome
+    failure_reasons:
+      - "Missing choice sequence"
+      - "Missing reward information"
+      - "No trial order information"
+      - "No subject/session identifiers"
+
+  state_space_modeling:
+    description: "State-space or latent dynamics modeling"
+    required_fields:
+      - continuous_time_series
+      - timestamps
+      - sampling_rate
+    optional_fields:
+      - trial_boundaries
+      - behavior_labels
+      - unit_metadata
+    minimum_duration_seconds: 60
+    confidence_threshold: 0.75
+    evidence_fields:
+      - has_neural_timeseries
+      - has_timestamps
+    failure_reasons:
+      - "No continuous time series data"
+      - "Missing timestamps"
+      - "Unknown sampling rate"
+      - "Insufficient recording duration"
+
+  cross_session_analysis:
+    description: "Cross-session comparison or longitudinal analysis"
+    required_fields:
+      - subject_id
+      - session_dates
+      - unit_metadata
+    optional_fields:
+      - drift_metrics
+      - electrode_coordinates
+      - unit_stability
+    minimum_sessions: 2
+    confidence_threshold: 0.70
+    evidence_fields:
+      - has_multiple_sessions
+      - has_unit_tracking
+    failure_reasons:
+      - "Only single session"
+      - "No session date information"
+      - "No unit metadata for tracking"
+
+  causal_perturbation:
+    description: "Causal analysis with interventions"
+    required_fields:
+      - intervention_labels
+      - intervention_timing
+      - control_condition
+    optional_fields:
+      - dose_response
+      - stimulation_parameters
+      - behavioral_effect
+    confidence_threshold: 0.85
+    evidence_fields:
+      - has_intervention
+      - has_control
+    failure_reasons:
+      - "No intervention/perturbation data"
+      - "Missing timing information"
+      - "No control condition"
+
+  rsa:
+    description: "Representational Similarity Analysis"
+    required_fields:
+      - aligned_stimuli
+      - population_responses
+    optional_fields:
+      - model_features
+      - train_test_split
+      - noise_ceiling
+    minimum_conditions: 4
+    confidence_threshold: 0.75
+    evidence_fields:
+      - has_stimulus_conditions
+      - has_population_activity
+    failure_reasons:
+      - "No stimulus condition labels"
+      - "Insufficient population data"
+      - "Too few conditions"
+
+  neural_behavior_alignment:
+    description: "Joint neural-behavioral analysis"
+    required_fields:
+      - neural_time_series
+      - behavior_time_series
+      - shared_timestamps
+    optional_fields:
+      - event_labels
+      - pose_coordinates
+      - kinematic_features
+    confidence_threshold: 0.70
+    evidence_fields:
+      - has_neural_data
+      - has_behavior
+      - has_aligned_timestamps
+    failure_reasons:
+      - "Missing neural data"
+      - "Missing behavioral data"
+      - "Timestamps not aligned"
+
+# Validation levels
+support_levels:
+  high:
+    min_confidence: 0.80
+    description: "Strong evidence for affordance support"
+  medium:
+    min_confidence: 0.60
+    description: "Partial evidence, some fields missing"
+  low:
+    min_confidence: 0.30
+    description: "Weak evidence, key fields missing"
+  unsupported:
+    min_confidence: 0.0
+    description: "Cannot support this analysis"
+
+# Field mappings to dataset schema
+field_mappings:
+  neural_activity:
+    schema_fields: [neural_data, time_series, spike_times, fluorescence]
+    usability_flags: [has_neural_data]
+  trial_labels:
+    schema_fields: [trial_id, trial_type, trial_number]
+    usability_flags: [has_trials]
+  choice_labels:
+    schema_fields: [choice, response, decision, selection]
+    usability_flags: [has_choice_labels]
+  rewards:
+    schema_fields: [reward, outcome, feedback]
+    usability_flags: [has_reward_feedback]
+  timestamps:
+    schema_fields: [time, timestamps, t, time_stamps]
+    usability_flags: []
+  behavior_time_series:
+    schema_fields: [position, velocity, pose, kinematics]
+    usability_flags: [has_behavior, has_continuous_behavior]
