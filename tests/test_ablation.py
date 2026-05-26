@@ -149,16 +149,23 @@ class TestComponentImpact:
         report = EvaluationReport(
             generated_at="2024-01-01",
             suite="test",
-            benchmark_path="test.yaml",
             queries=[],
             total_queries=10,
+            queries_with_results=10,
+            mean_precision_at_1=0.70,
+            mean_precision_at_3=0.68,
             mean_precision_at_5=0.65,
             mean_precision_at_10=0.60,
+            mean_recall_at_5=0.50,
+            mean_recall_at_10=0.55,
             mean_label_recall_at_10=0.55,
             mean_mrr=0.70,
             mean_ndcg_at_10=0.68,
-            hard_negative_violations=0,
-            query_category_breakdown={},
+            mean_task_match_rate=0.60,
+            mean_modality_match_rate=0.55,
+            mean_behavior_match_rate=0.50,
+            summary_warnings=[],
+            recommendations=[],
         )
 
         return AblationResult(mode="hybrid_default", config={}, report=report)
@@ -171,16 +178,23 @@ class TestComponentImpact:
         report = EvaluationReport(
             generated_at="2024-01-01",
             suite="test",
-            benchmark_path="test.yaml",
             queries=[],
             total_queries=10,
+            queries_with_results=10,
+            mean_precision_at_1=0.50,
+            mean_precision_at_3=0.48,
             mean_precision_at_5=0.45,  # -20% from baseline
             mean_precision_at_10=0.40,
+            mean_recall_at_5=0.30,
+            mean_recall_at_10=0.35,
             mean_label_recall_at_10=0.35,
             mean_mrr=0.50,
             mean_ndcg_at_10=0.48,
-            hard_negative_violations=0,
-            query_category_breakdown={},
+            mean_task_match_rate=0.40,
+            mean_modality_match_rate=0.35,
+            mean_behavior_match_rate=0.30,
+            summary_warnings=[],
+            recommendations=[],
         )
 
         return AblationResult(mode="no_ontology", config={}, report=report)
@@ -193,16 +207,23 @@ class TestComponentImpact:
         report = EvaluationReport(
             generated_at="2024-01-01",
             suite="test",
-            benchmark_path="test.yaml",
             queries=[],
             total_queries=10,
+            queries_with_results=10,
+            mean_precision_at_1=0.68,
+            mean_precision_at_3=0.65,
             mean_precision_at_5=0.63,  # -2% from baseline
             mean_precision_at_10=0.58,
+            mean_recall_at_5=0.48,
+            mean_recall_at_10=0.53,
             mean_label_recall_at_10=0.53,
             mean_mrr=0.68,
             mean_ndcg_at_10=0.66,
-            hard_negative_violations=0,
-            query_category_breakdown={},
+            mean_task_match_rate=0.58,
+            mean_modality_match_rate=0.53,
+            mean_behavior_match_rate=0.48,
+            summary_warnings=[],
+            recommendations=[],
         )
 
         return AblationResult(mode="no_readiness", config={}, report=report)

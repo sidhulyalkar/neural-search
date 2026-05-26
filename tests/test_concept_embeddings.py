@@ -3,7 +3,6 @@
 import pytest
 
 from neural_search.embeddings import (
-    ConceptEmbedding,
     ConceptEmbeddingBuilder,
     ConceptEmbeddingIndex,
     concept_similarity,
@@ -228,7 +227,7 @@ class TestQuerySemanticExpansion:
         # Should include extracellular ephys as similar
         labels = [m.matched_label.lower() for m in expansion.expanded_modalities]
         # Neuropixels should be there (exact match)
-        assert any("neuropixels" in l for l in labels)
+        assert any("neuropixels" in lbl for lbl in labels)
 
     def test_expansion_count(self, concept_index):
         """Should count total expansions."""
