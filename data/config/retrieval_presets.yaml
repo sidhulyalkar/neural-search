@@ -1,0 +1,177 @@
+# Retrieval Configuration Presets
+# Environment-specific configurations for different use cases
+#
+# Usage:
+#   from neural_search.search.presets import load_preset
+#   config = load_preset("ci")  # or "local", "exploratory"
+
+version: "1.0"
+
+presets:
+  # CI preset - deterministic, fast, no external dependencies
+  ci:
+    description: "Continuous Integration - deterministic scoring without model inference"
+    weights:
+      ontology: 0.30
+      behavior: 0.22
+      modality: 0.14
+      affordance: 0.12
+      metadata: 0.12
+      semantic: 0.04  # Hashing-only semantic
+      field_semantic: 0.00  # Disabled - requires precomputed embeddings
+      graph: 0.00  # Disabled - graph optional in CI
+      readiness: 0.06
+      paper_confidence: 0.00
+
+    graph:
+      enabled: false
+
+    field_embeddings:
+      enabled: false
+
+    awareness:
+      enabled: false
+      weight: 0.0
+
+    planner:
+      enabled: false
+
+    hard_negative_filters:
+      enabled: true
+
+  # Local development - full features with local artifacts
+  local:
+    description: "Local development - full features with local embeddings and graph"
+    weights:
+      ontology: 0.28
+      behavior: 0.20
+      modality: 0.12
+      affordance: 0.10
+      metadata: 0.10
+      semantic: 0.04
+      field_semantic: 0.10
+      graph: 0.04
+      readiness: 0.08
+      paper_confidence: 0.04
+
+    graph:
+      enabled: true
+      path: data/graph/neural_search_graph.v07_genomics.json
+      weights:
+        linked_paper: 0.04
+        analysis_affordance: 0.03
+        task_match: 0.03
+        modality_match: 0.02
+        brain_region_match: 0.02
+        degree: 0.01
+      use_edge_confidence: true
+      max_transitive_hops: 2
+
+    field_embeddings:
+      enabled: true
+      path: data/embeddings/v07_genomics.field_embeddings.jsonl
+      field_weights:
+        title: 0.20
+        description: 0.18
+        combined_scientific_summary: 0.22
+        tasks: 0.15
+        modalities: 0.10
+        brain_regions: 0.08
+        behavioral_events: 0.12
+        analysis_goals: 0.10
+        data_standards: 0.05
+
+    awareness:
+      enabled: true
+      weight: 0.08
+
+    planner:
+      enabled: true
+      blend_factor: 0.5
+
+    hard_negative_filters:
+      enabled: true
+
+  # Exploratory preset - maximum recall, less aggressive filtering
+  exploratory:
+    description: "Exploratory search - prioritize recall over precision"
+    weights:
+      semantic: 0.22
+      awareness: 0.18
+      ontology: 0.16
+      field_semantic: 0.14
+      metadata: 0.12
+      behavior: 0.08
+      modality: 0.05
+      readiness: 0.03
+      graph: 0.02
+      affordance: 0.00
+      paper_confidence: 0.00
+
+    penalties:
+      modality_mismatch: 0.08  # Reduced penalty for exploratory
+      missing_required_field: 0.02
+      max_missing_required_fields: 8
+      exclusion_violation: 0.20  # Reduced penalty
+
+    graph:
+      enabled: true
+      path: data/graph/neural_search_graph.v07_genomics.json
+      weights:
+        linked_paper: 0.02
+        analysis_affordance: 0.02
+        task_match: 0.02
+        modality_match: 0.01
+        brain_region_match: 0.01
+        degree: 0.01
+      use_edge_confidence: false
+      max_transitive_hops: 3
+
+    field_embeddings:
+      enabled: true
+      path: data/embeddings/v07_genomics.field_embeddings.jsonl
+
+    awareness:
+      enabled: true
+      weight: 0.12  # Higher weight for exploratory
+
+    planner:
+      enabled: true
+      blend_factor: 0.7  # Trust planner more in exploratory mode
+
+    hard_negative_filters:
+      enabled: false  # Disabled for maximum recall
+
+  # Benchmark preset - used for evaluation runs
+  benchmark:
+    description: "Benchmark evaluation - consistent settings for reproducible metrics"
+    weights:
+      ontology: 0.28
+      behavior: 0.20
+      modality: 0.12
+      affordance: 0.10
+      metadata: 0.10
+      semantic: 0.08
+      field_semantic: 0.06
+      graph: 0.04
+      readiness: 0.08
+      paper_confidence: 0.04
+
+    graph:
+      enabled: true
+      path: data/graph/neural_search_graph.demo_v05.json
+      use_edge_confidence: true
+
+    field_embeddings:
+      enabled: true
+      path: data/embeddings/demo_v05.field_embeddings.jsonl
+
+    awareness:
+      enabled: false
+      weight: 0.0
+
+    planner:
+      enabled: false
+
+    hard_negative_filters:
+      enabled: true

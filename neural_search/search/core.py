@@ -54,6 +54,20 @@ from neural_search.species import (
     species_terms_for_values,
 )
 
+
+# Lazy import for awareness to avoid circular imports
+def _get_awareness_modules():
+    from neural_search.awareness.scoring import score_dataset_awareness
+    from neural_search.awareness.taxonomy import infer_query_awareness
+    return infer_query_awareness, score_dataset_awareness
+
+
+# Lazy import for planner to avoid circular imports
+def _get_planner():
+    from neural_search.intelligence.planner import plan_search_intelligence
+    return plan_search_intelligence
+
+
 RETRIEVAL_CONFIG_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "config" / "retrieval.yaml"
 )
@@ -98,6 +112,15 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
         "enabled": False,
         "path": "data/embeddings/demo_v05.field_embeddings.jsonl",
         "field_weights": {},
+    },
+    "awareness": {
+        "enabled": False,
+        "weight": 0.0,
+        "rerank": False,
+    },
+    "planner": {
+        "enabled": False,
+        "blend_factor": 0.5,  # How much to weight planner weights vs base (0=base, 1=planner)
     },
     "hard_negative_filters": {"enabled": True},
 }
@@ -880,6 +903,9 @@ def _augment_result_with_optional_scores(
     graph_config: Mapping[str, Any],
     field_index: Any,
     field_config: Mapping[str, Any],
+    dataset: Any = None,
+    awareness_config: Mapping[str, Any] | None = None,
+    query_awareness: Any = None,
 ) -> None:
     weights = retrieval_config.get("weights", {})
     base_final = float(result.score_breakdown.get("final_score", result.score / 100.0))
@@ -949,6 +975,39 @@ def _augment_result_with_optional_scores(
             result.linked_papers = graph_features.get("linked_papers", [])[:5]
         extra_score += float(weights.get("graph", 0.0)) * graph_score
 
+    # Awareness scoring
+    if awareness_config and awareness_config.get("enabled") and dataset is not None:
+        try:
+            _, score_dataset_awareness = _get_awareness_modules()
+            if query_awareness is not None:
+                awareness_result = score_dataset_awareness(dataset, query_awareness)
+                awareness_score = awareness_result.score
+                result.score_breakdown["awareness_score"] = round(awareness_score, 3)
+                result.dataset_card_preview["data_form_awareness"] = awareness_result.model_dump()
+
+                if awareness_result.matched_data_forms:
+                    result.why_matched.append(
+                        "Data forms matched: " + ", ".join(awareness_result.matched_data_forms)
+                    )
+                if awareness_result.matched_analysis_families:
+                    result.why_matched.append(
+                        "Analysis families matched: "
+                        + ", ".join(awareness_result.matched_analysis_families)
+                    )
+                if awareness_result.cross_modal_opportunities:
+                    result.why_matched.append(
+                        "Cross-modal opportunities: "
+                        + ", ".join(awareness_result.cross_modal_opportunities[:4])
+                    )
+                for warning in awareness_result.warnings:
+                    result.warnings.append(f"Awareness: {warning}")
+
+                awareness_weight = float(awareness_config.get("weight", 0.0))
+                extra_score += awareness_weight * awareness_score
+        except Exception:
+            # Awareness scoring is optional; don't fail retrieval if it errors
+            result.score_breakdown["awareness_score"] = 0.0
+
     if extra_score:
         final_score = max(0.0, min(base_final + extra_score, 1.0))
         result.score_breakdown["final_score"] = round(final_score, 3)
@@ -986,6 +1045,38 @@ def search_datasets(
         "secondary": [i.value for i in intent.secondary_intents],
     }
 
+    # Search intelligence planner integration
+    planner_config = (
+        config.get("planner", {})
+        if isinstance(config.get("planner", {}), Mapping)
+        else {}
+    )
+    if planner_config.get("enabled"):
+        try:
+            plan_search_intelligence = _get_planner()
+            plan = plan_search_intelligence(combined_query)
+            parsed["search_plan"] = plan.model_dump()
+
+            # Blend planner weights with current weights
+            blend_factor = float(planner_config.get("blend_factor", 0.5))
+            if blend_factor > 0 and plan.retrieval_weights:
+                base_weights = dict(config.get("weights", {}))
+                planner_weights = dict(plan.retrieval_weights)
+                blended = {}
+                all_keys = set(base_weights.keys()) | set(planner_weights.keys())
+                for key in all_keys:
+                    base_val = base_weights.get(key, 0.0)
+                    plan_val = planner_weights.get(key, 0.0)
+                    blended[key] = (1.0 - blend_factor) * base_val + blend_factor * plan_val
+                config = _deep_merge(config, {"weights": blended})
+
+            # Add planner warnings to parsed query
+            if plan.warnings:
+                parsed["planner_warnings"] = list(plan.warnings)
+        except Exception:
+            # Planner is optional; don't fail retrieval if it errors
+            pass
+
     filters = merge_filters(filters, structured_query)
     records = list(datasets) if datasets is not None else build_combined_corpus()
     results: list[SearchResult] = []
@@ -1013,6 +1104,22 @@ def search_datasets(
         if field_config.get("enabled")
         else None
     )
+
+    # Awareness scoring setup
+    awareness_config = (
+        config.get("awareness", {})
+        if isinstance(config.get("awareness", {}), Mapping)
+        else {}
+    )
+    query_awareness = None
+    if awareness_config.get("enabled"):
+        try:
+            infer_query_awareness, _ = _get_awareness_modules()
+            query_awareness = infer_query_awareness(combined_query)
+            parsed["query_awareness"] = query_awareness.model_dump()
+        except Exception:
+            # Awareness is optional; don't fail retrieval if it errors
+            pass
 
     for record in records:
         dataset = record.get("dataset", record)
@@ -1046,6 +1153,9 @@ def search_datasets(
             graph_config=graph_config,
             field_index=field_index,
             field_config=field_config,
+            dataset=dataset,
+            awareness_config=awareness_config,
+            query_awareness=query_awareness,
         )
         results.append(result)
 

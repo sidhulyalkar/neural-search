@@ -150,6 +150,17 @@ field_embeddings:
 hard_negative_filters:
   enabled: true
 
+# Awareness scoring for broad neuroscience data-form matching
+awareness:
+  enabled: false  # Disabled by default until validated
+  weight: 0.0     # Weight contribution to final score (0.0-0.15 recommended)
+  rerank: false   # Whether to rerank results by awareness score
+
+# Search intelligence planner for intent-aware weight selection
+planner:
+  enabled: false  # Disabled by default until validated
+  blend_factor: 0.5  # How much to weight planner weights vs base (0=base, 1=planner)
+
 # Adaptive weight optimization
 adaptive_weights:
   enabled: true
