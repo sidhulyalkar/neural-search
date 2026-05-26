@@ -279,7 +279,6 @@ class TestQualityMetrics:
         from neural_search.evaluation.relevance import (
             create_judgment,
             save_relevance_labels,
-            load_relevance_labels,
         )
 
         # Create test judgment

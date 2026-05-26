@@ -9,10 +9,9 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
-
 
 # Relevance levels from most to least relevant
 RELEVANCE_LEVELS = [
@@ -125,7 +124,7 @@ class RelevanceJudgment:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "RelevanceJudgment":
+    def from_dict(cls, data: dict[str, Any]) -> RelevanceJudgment:
         """Create from dictionary."""
         return cls(**data)
 
@@ -214,7 +213,7 @@ def create_judgment(
         species_match=species_match,
         analysis_fit=analysis_fit,
         reviewer_id=reviewer_id,
-        review_timestamp=datetime.now(timezone.utc).isoformat(),
+        review_timestamp=datetime.now(UTC).isoformat(),
         review_notes=notes,
         confidence=confidence,
     )

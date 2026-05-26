@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 from pathlib import Path
 
 import pytest
 
 from neural_search.evaluation.relevance import (
-    RELEVANCE_LEVELS,
-    RELEVANCE_SCORES,
     HumanEvaluationMetrics,
     RelevanceJudgment,
     RelevanceLabelSet,

@@ -517,7 +517,7 @@ def main(argv: list[str] | None = None) -> int:
     # Print comparison table
     headers = ["Metric"] + modes
     col_widths = [max(len(h), 18) for h in headers]
-    header_row = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
+    header_row = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths, strict=False))
     print(header_row)
     print("-" * len(header_row))
 
@@ -529,7 +529,7 @@ def main(argv: list[str] | None = None) -> int:
                 cells.append(f"{value:.1f}" if isinstance(value, float) else str(value))
             else:
                 cells.append(f"{value:.1%}" if value <= 1.0 else f"{value:.3f}")
-        print(" | ".join(c.ljust(w) for c, w in zip(cells, col_widths)))
+        print(" | ".join(c.ljust(w) for c, w in zip(cells, col_widths, strict=False)))
     print()
 
     # Summary

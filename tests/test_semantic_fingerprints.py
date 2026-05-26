@@ -345,7 +345,7 @@ class TestFingerprintSerialization:
         loaded_fps = read_semantic_fingerprints(output_path)
 
         assert len(loaded_fps) == len(original_fps)
-        for orig, loaded in zip(original_fps, loaded_fps):
+        for orig, loaded in zip(original_fps, loaded_fps, strict=False):
             assert orig.dataset_id == loaded.dataset_id
             assert len(orig.text_embedding) == len(loaded.text_embedding)
             assert len(orig.combined_embedding) == len(loaded.combined_embedding)

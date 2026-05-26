@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from neural_search.embeddings.concept_embeddings import (
         ConceptEmbeddingIndex,
-        ConceptSimilarity,
     )
 
 
@@ -55,7 +54,7 @@ class SemanticExpansion:
 
 def expand_query_with_concepts(
     parsed_query: dict[str, Any],
-    concept_index: "ConceptEmbeddingIndex",
+    concept_index: ConceptEmbeddingIndex,
     min_similarity: float = 0.65,
     max_expansions_per_concept: int = 3,
 ) -> SemanticExpansion:
@@ -131,7 +130,7 @@ def expand_query_with_concepts(
 def _find_related_concepts(
     concept_label: str,
     concept_type: str,
-    index: "ConceptEmbeddingIndex",
+    index: ConceptEmbeddingIndex,
     min_similarity: float,
     max_results: int,
 ) -> list[tuple[str, float]]:
@@ -216,7 +215,7 @@ def merge_expansion_into_query(
 def enrich_query_with_semantic_context(
     query: str,
     parsed_query: dict[str, Any],
-    concept_index: "ConceptEmbeddingIndex | None" = None,
+    concept_index: ConceptEmbeddingIndex | None = None,
     min_similarity: float = 0.65,
     max_expansions: int = 3,
 ) -> tuple[dict[str, Any], list[str]]:
@@ -279,10 +278,10 @@ def compute_expansion_boost(
     if total_expansions == 0:
         return 0.0
 
-    dataset_tasks = set(t.lower() for t in dataset_labels.get("tasks", []))
-    dataset_modalities = set(m.lower() for m in dataset_labels.get("modalities", []))
-    dataset_behaviors = set(b.lower() for b in dataset_labels.get("behaviors", []))
-    dataset_affordances = set(a.lower() for a in dataset_labels.get("affordances", []))
+    dataset_tasks = {t.lower() for t in dataset_labels.get("tasks", [])}
+    dataset_modalities = {m.lower() for m in dataset_labels.get("modalities", [])}
+    dataset_behaviors = {b.lower() for b in dataset_labels.get("behaviors", [])}
+    dataset_affordances = {a.lower() for a in dataset_labels.get("affordances", [])}
 
     # Check expansion matches
     for task, _ in expansion.expanded_tasks:

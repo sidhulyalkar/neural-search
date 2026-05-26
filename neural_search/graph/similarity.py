@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 from neural_search.graph.query import get_neighbors
 from neural_search.graph.schema import (

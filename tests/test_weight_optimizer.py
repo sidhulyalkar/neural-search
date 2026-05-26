@@ -1,12 +1,10 @@
 """Tests for weight optimizer module."""
 
-import pytest
 
 from neural_search.search.intent import QueryIntent
 from neural_search.search.weight_optimizer import (
-    QueryAnalysis,
-    QueryComplexity,
     WEIGHT_PROFILES,
+    QueryComplexity,
     analyze_query_for_weights,
     boost_weights_for_constraints,
     get_adaptive_weights,

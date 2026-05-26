@@ -21,12 +21,13 @@ individual Rank Learning Methods" (SIGIR 2009)
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Mapping, Protocol, Sequence
+from enum import StrEnum
+from typing import Any, Protocol
 
 
-class FusionMethod(str, Enum):
+class FusionMethod(StrEnum):
     """Available fusion methods."""
 
     RRF = "rrf"  # Reciprocal Rank Fusion
@@ -173,7 +174,7 @@ def reciprocal_rank_fusion(
     # Normalize source weights
     sources = list(ranked_lists.keys())
     if source_weights is None:
-        weights = {s: 1.0 for s in sources}
+        weights = dict.fromkeys(sources, 1.0)
     else:
         weights = {s: source_weights.get(s, 1.0) for s in sources}
 
@@ -265,7 +266,7 @@ def weighted_sum_fusion(
 
     sources = list(ranked_lists.keys())
     if source_weights is None:
-        weights = {s: 1.0 for s in sources}
+        weights = dict.fromkeys(sources, 1.0)
     else:
         weights = {s: source_weights.get(s, 1.0) for s in sources}
 
@@ -373,7 +374,7 @@ def borda_count_fusion(
 
     sources = list(ranked_lists.keys())
     if source_weights is None:
-        weights = {s: 1.0 for s in sources}
+        weights = dict.fromkeys(sources, 1.0)
     else:
         weights = {s: source_weights.get(s, 1.0) for s in sources}
 
@@ -468,7 +469,7 @@ def combmnz_fusion(
 
     sources = list(ranked_lists.keys())
     if source_weights is None:
-        weights = {s: 1.0 for s in sources}
+        weights = dict.fromkeys(sources, 1.0)
     else:
         weights = {s: source_weights.get(s, 1.0) for s in sources}
 

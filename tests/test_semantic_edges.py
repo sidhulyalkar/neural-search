@@ -5,10 +5,7 @@ from __future__ import annotations
 import pytest
 
 from neural_search.embeddings import (
-    ConceptEmbedding,
-    ConceptEmbeddingIndex,
     SemanticDatasetFingerprint,
-    SemanticFingerprintBuilder,
 )
 from neural_search.graph import (
     KnowledgeGraph,
@@ -216,7 +213,7 @@ class TestAddSemanticEdgesToGraph:
 
         fingerprints_with_fake = sample_fingerprints + [fake_fp]
 
-        result = add_semantic_edges_to_graph(
+        add_semantic_edges_to_graph(
             sample_graph,
             fingerprints=fingerprints_with_fake,
             config=SemanticEdgeConfig(min_combined_similarity=0.0),
@@ -242,7 +239,7 @@ class TestGetSemanticNeighbors:
 
         # Get neighbors
         node_id = make_node_id("dataset", "dataset_001")
-        neighbors = get_semantic_neighbors(
+        get_semantic_neighbors(
             sample_graph,
             node_id,
             min_similarity=0.3,

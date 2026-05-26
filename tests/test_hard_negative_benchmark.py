@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
-from pathlib import Path
 
 import pytest
 import yaml
@@ -107,7 +105,7 @@ class TestExclusionDetection:
         )
         # After normalization, "homo_sapiens" matches "homo sapiens"
         results = [{"dataset_id": "d1", "species": ["homo sapiens"]}]
-        violations = check_violations(query, results, {})
+        check_violations(query, results, {})
         # This depends on normalize_text behavior
         # For now, underscore vs space may not match
         # This test documents expected behavior

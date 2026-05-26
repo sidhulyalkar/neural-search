@@ -10,12 +10,11 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 if TYPE_CHECKING:
-    from neural_search.embeddings.semantic_fingerprint import (
-        SemanticDatasetFingerprint,
-        SemanticSimilarity,
-    )
     from neural_search.embeddings.concept_embeddings import (
         ConceptEmbeddingIndex,
+    )
+    from neural_search.embeddings.semantic_fingerprint import (
+        SemanticDatasetFingerprint,
     )
 
 
@@ -37,10 +36,10 @@ class SemanticScoreResult:
 class SemanticSearchIndex:
     """Index for semantic search scoring."""
 
-    fingerprints: dict[str, "SemanticDatasetFingerprint"]
-    concept_index: "ConceptEmbeddingIndex | None"
+    fingerprints: dict[str, SemanticDatasetFingerprint]
+    concept_index: ConceptEmbeddingIndex | None
 
-    def get_fingerprint(self, dataset_id: str) -> "SemanticDatasetFingerprint | None":
+    def get_fingerprint(self, dataset_id: str) -> SemanticDatasetFingerprint | None:
         """Get fingerprint for a dataset."""
         return self.fingerprints.get(dataset_id)
 
@@ -94,7 +93,7 @@ def load_semantic_index(
         read_semantic_fingerprints,
     )
 
-    fingerprints: dict[str, "SemanticDatasetFingerprint"] = {}
+    fingerprints: dict[str, SemanticDatasetFingerprint] = {}
     concept_index = None
 
     if fingerprints_path:
@@ -220,7 +219,7 @@ def _extract_label_core(label: str) -> str:
 
 
 def _compute_task_relevance(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     parsed_query: dict[str, Any],
     index: SemanticSearchIndex,
 ) -> float:
@@ -230,8 +229,8 @@ def _compute_task_relevance(
         return 0.5  # Neutral if no task specified
 
     # Extract core labels from fingerprint task labels
-    dataset_tasks = set(_extract_label_core(t) for t in (fingerprint.task_labels or []))
-    query_tasks_lower = set(t.lower().replace("_", " ") for t in query_tasks)
+    dataset_tasks = {_extract_label_core(t) for t in (fingerprint.task_labels or [])}
+    query_tasks_lower = {t.lower().replace("_", " ") for t in query_tasks}
 
     # Direct match
     direct_match = len(query_tasks_lower & dataset_tasks) / len(query_tasks_lower)
@@ -263,7 +262,7 @@ def _compute_task_relevance(
 
 
 def _compute_modality_relevance(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     parsed_query: dict[str, Any],
     index: SemanticSearchIndex,
 ) -> float:
@@ -273,8 +272,8 @@ def _compute_modality_relevance(
         return 0.5  # Neutral if no modality specified
 
     # Extract core labels from fingerprint modality labels
-    dataset_modalities = set(_extract_label_core(m) for m in (fingerprint.modality_labels or []))
-    query_modalities_lower = set(m.lower().replace("_", " ") for m in query_modalities)
+    dataset_modalities = {_extract_label_core(m) for m in (fingerprint.modality_labels or [])}
+    query_modalities_lower = {m.lower().replace("_", " ") for m in query_modalities}
 
     # Direct match
     direct_match = len(query_modalities_lower & dataset_modalities) / len(
@@ -308,7 +307,7 @@ def _compute_modality_relevance(
 
 
 def _compute_behavior_relevance(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     parsed_query: dict[str, Any],
 ) -> float:
     """Compute behavior dimension relevance."""
@@ -317,8 +316,8 @@ def _compute_behavior_relevance(
         return 0.5  # Neutral if no behavior specified
 
     # Extract core labels
-    dataset_behaviors = set(_extract_label_core(b) for b in (fingerprint.behavior_labels or []))
-    query_behaviors_lower = set(b.lower().replace("_", " ") for b in query_behaviors)
+    dataset_behaviors = {_extract_label_core(b) for b in (fingerprint.behavior_labels or [])}
+    query_behaviors_lower = {b.lower().replace("_", " ") for b in query_behaviors}
 
     # Direct match
     if dataset_behaviors and query_behaviors_lower:
@@ -335,7 +334,7 @@ def _compute_behavior_relevance(
 
 
 def _compute_analysis_relevance(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     parsed_query: dict[str, Any],
 ) -> float:
     """Compute analysis/affordance dimension relevance."""
@@ -347,10 +346,10 @@ def _compute_analysis_relevance(
         return 0.5  # Neutral if no analysis specified
 
     # Extract core labels
-    dataset_affordances = set(
+    dataset_affordances = {
         _extract_label_core(a) for a in (fingerprint.analysis_affordance_ids or [])
-    )
-    query_terms_lower = set(t.lower().replace("_", " ") for t in query_terms)
+    }
+    query_terms_lower = {t.lower().replace("_", " ") for t in query_terms}
 
     # Direct match
     if dataset_affordances and query_terms_lower:
@@ -364,7 +363,7 @@ def _compute_analysis_relevance(
 
 
 def _compute_design_relevance(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     parsed_query: dict[str, Any],
 ) -> float:
     """Compute experimental design type relevance."""
@@ -406,7 +405,7 @@ def _compute_design_relevance(
 
 
 def _find_semantically_similar_datasets(
-    fingerprint: "SemanticDatasetFingerprint",
+    fingerprint: SemanticDatasetFingerprint,
     index: SemanticSearchIndex,
     top_k: int = 3,
     min_similarity: float = 0.6,

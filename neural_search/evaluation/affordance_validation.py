@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -20,11 +20,9 @@ from typing import Any
 import yaml
 
 from neural_search.analysis_affordances import (
-    AFFORDANCE_IDS,
     detect_analysis_affordances,
 )
 from neural_search.ingestion.demo_seed import build_demo_seed
-from neural_search.normalized import load_normalized_records
 from neural_search.schemas import NormalizedDatasetRecord
 
 CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"

@@ -10,7 +10,6 @@ from neural_search.search.compatibility import (
     CompatibilityScore,
     CompatibilityScorer,
     CompatibilityType,
-    SlotMatch,
     compute_compatibility,
     explain_compatibility,
 )

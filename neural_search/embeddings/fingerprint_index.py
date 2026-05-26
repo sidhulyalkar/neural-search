@@ -163,7 +163,7 @@ class FingerprintIndex:
 
         # Build results
         results = []
-        for i, (dataset_id, sim) in enumerate(zip(self._ids, similarities)):
+        for _i, (dataset_id, sim) in enumerate(zip(self._ids, similarities, strict=False)):
             if exclude_self and dataset_id == query_fingerprint.dataset_id:
                 continue
             if sim < min_similarity:

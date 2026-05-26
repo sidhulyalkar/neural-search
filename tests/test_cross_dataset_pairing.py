@@ -235,7 +235,9 @@ class TestReportGeneration:
 
     def test_markdown_has_sections(self, mock_pair):
         """Markdown should have expected sections."""
-        from neural_search.evaluation.cross_dataset_pairing import CrossDatasetPairingReport
+        from neural_search.evaluation.cross_dataset_pairing import (
+            CrossDatasetPairingReport,
+        )
 
         report = CrossDatasetPairingReport(
             generated_at="2026-01-01T00:00:00",
@@ -252,7 +254,9 @@ class TestReportGeneration:
 
     def test_json_valid(self, mock_pair):
         """JSON should be valid."""
-        from neural_search.evaluation.cross_dataset_pairing import CrossDatasetPairingReport
+        from neural_search.evaluation.cross_dataset_pairing import (
+            CrossDatasetPairingReport,
+        )
 
         report = CrossDatasetPairingReport(
             generated_at="2026-01-01T00:00:00",

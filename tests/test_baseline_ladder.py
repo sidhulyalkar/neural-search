@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -79,7 +78,6 @@ class TestLadderReportGeneration:
         """Create a mock ladder report for testing."""
         from dataclasses import dataclass, field
         from datetime import UTC, datetime
-        from typing import Any
 
         from neural_search.evaluation.run_benchmark import EvaluationReport
 

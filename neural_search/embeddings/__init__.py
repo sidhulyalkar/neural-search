@@ -13,23 +13,6 @@ from neural_search.embeddings.concept_embeddings import (
     read_concept_embeddings,
     write_concept_embeddings,
 )
-from neural_search.embeddings.semantic_fingerprint import (
-    SemanticDatasetFingerprint,
-    SemanticFingerprintBuilder,
-    SemanticSimilarity,
-    compute_semantic_similarity,
-    read_semantic_fingerprints,
-    write_semantic_fingerprints,
-)
-from neural_search.embeddings.semantic_similarity import (
-    QuerySemanticExpansion,
-    SemanticMatch,
-    compute_query_concept_similarity,
-    concept_similarity,
-    expand_query_semantically,
-    find_semantically_similar,
-    merge_query_with_expansion,
-)
 from neural_search.embeddings.field_index import (
     DATASET_EMBEDDING_FIELDS,
     PAPER_EMBEDDING_FIELDS,
@@ -58,6 +41,23 @@ from neural_search.embeddings.fingerprint_index import (
 )
 from neural_search.embeddings.hashing import HashingEmbeddingProvider
 from neural_search.embeddings.index import cosine_similarity
+from neural_search.embeddings.semantic_fingerprint import (
+    SemanticDatasetFingerprint,
+    SemanticFingerprintBuilder,
+    SemanticSimilarity,
+    compute_semantic_similarity,
+    read_semantic_fingerprints,
+    write_semantic_fingerprints,
+)
+from neural_search.embeddings.semantic_similarity import (
+    QuerySemanticExpansion,
+    SemanticMatch,
+    compute_query_concept_similarity,
+    concept_similarity,
+    expand_query_semantically,
+    find_semantically_similar,
+    merge_query_with_expansion,
+)
 from neural_search.embeddings.sentence_transformers import (
     SentenceTransformerEmbeddingProvider,
     SentenceTransformerProvider,

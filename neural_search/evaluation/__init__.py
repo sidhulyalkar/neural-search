@@ -11,9 +11,9 @@ from neural_search.evaluation.benchmark import (
     run_benchmark,
 )
 from neural_search.evaluation.relevance import (
-    HumanEvaluationMetrics,
     RELEVANCE_LEVELS,
     RELEVANCE_SCORES,
+    HumanEvaluationMetrics,
     RelevanceJudgment,
     RelevanceLabelSet,
     compute_hard_negative_violations,

@@ -7,14 +7,12 @@ import pytest
 from neural_search.graph.metapath import (
     ALL_TEMPLATES,
     ANALYSIS_METAPATHS,
-    MetapathMatch,
+    SIMILARITY_METAPATHS,
     MetapathScorer,
     MetapathScoreResult,
     MetapathStep,
     MetapathTemplate,
-    PathInstance,
     QueryIntent,
-    SIMILARITY_METAPATHS,
     explain_path,
     score_metapaths,
 )
@@ -372,7 +370,7 @@ class TestMetapathScorer:
         result = scorer.score_paths(d1_id, QueryIntent.SIMILAR_DATASET)
 
         # Most paths should be filtered
-        total_paths = sum(m.path_count for m in result.matches)
+        sum(m.path_count for m in result.matches)
         # May have zero paths if all below threshold
 
     def test_max_paths_limit(self, simple_graph):
@@ -572,7 +570,7 @@ class TestEdgeCases:
         # Try to find dataset similarity starting from a task node
         t1_id = make_node_id("task", "decision_making")
 
-        result = scorer.score_paths(t1_id, QueryIntent.SIMILAR_DATASET)
+        scorer.score_paths(t1_id, QueryIntent.SIMILAR_DATASET)
 
         # Should not match dataset-starting templates
         # May have some matches from other templates

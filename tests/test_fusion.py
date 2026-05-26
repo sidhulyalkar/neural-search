@@ -426,7 +426,7 @@ class TestStability:
         })
 
         assert len(result1.candidates) == len(result2.candidates)
-        for c1, c2 in zip(result1.candidates, result2.candidates):
+        for c1, c2 in zip(result1.candidates, result2.candidates, strict=False):
             assert c1.id == c2.id
             assert abs(c1.fused_score - c2.fused_score) < 0.0001
 

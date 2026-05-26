@@ -12,13 +12,12 @@ import argparse
 import copy
 import json
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from neural_search.evaluation.run_benchmark import (
-    EvaluationReport,
     benchmark_path_for_suite,
     run_full_benchmark,
 )

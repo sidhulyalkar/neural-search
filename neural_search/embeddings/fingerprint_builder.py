@@ -48,7 +48,9 @@ class DatasetFingerprintBuilder:
             self.text_encoder = HashingEmbeddingProvider(dimensions=combined_dim)
         else:
             try:
-                from neural_search.embeddings import SentenceTransformerEmbeddingProvider
+                from neural_search.embeddings import (
+                    SentenceTransformerEmbeddingProvider,
+                )
                 self.text_encoder = SentenceTransformerEmbeddingProvider(text_model)
             except RuntimeError:
                 # Fallback to hashing
@@ -70,7 +72,7 @@ class DatasetFingerprintBuilder:
                 result.append(label)
         return result
 
-    def _build_text(self, record: "NormalizedDatasetRecord") -> str:
+    def _build_text(self, record: NormalizedDatasetRecord) -> str:
         """Build combined text for text embedding."""
         parts = [record.title]
         if record.description:
@@ -132,7 +134,7 @@ class DatasetFingerprintBuilder:
             min_dim = min(len(e) for e in embeddings)
             truncated = [np.array(e[:min_dim]) for e in embeddings]
 
-            combined = sum(w * e for w, e in zip(weights, truncated))
+            combined = sum(w * e for w, e in zip(weights, truncated, strict=False))
 
             # L2 normalize
             norm = np.linalg.norm(combined)
@@ -145,7 +147,7 @@ class DatasetFingerprintBuilder:
 
     def build_fingerprint(
         self,
-        record: "NormalizedDatasetRecord",
+        record: NormalizedDatasetRecord,
     ) -> DatasetFingerprint:
         """Generate fingerprint for a single dataset.
 
@@ -199,7 +201,7 @@ class DatasetFingerprintBuilder:
 
     def build_fingerprints(
         self,
-        records: "Iterable[NormalizedDatasetRecord]",
+        records: Iterable[NormalizedDatasetRecord],
     ) -> list[DatasetFingerprint]:
         """Generate fingerprints for multiple datasets.
 

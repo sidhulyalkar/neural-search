@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
 import numpy as np
+import pytest
 
 from neural_search.embeddings import (
     ConceptEmbedding,
@@ -13,9 +13,9 @@ from neural_search.embeddings import (
 from neural_search.search.semantic_scoring import (
     SemanticScoreResult,
     SemanticSearchIndex,
+    _extract_label_core,
     compute_semantic_score_for_result,
     load_semantic_index,
-    _extract_label_core,
 )
 
 

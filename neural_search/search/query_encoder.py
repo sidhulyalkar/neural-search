@@ -75,8 +75,8 @@ def enrich_query_with_context(
 def encode_query_with_context(
     query: str,
     parsed_query: dict[str, Any],
-    provider: "EmbeddingProvider",
-    intent: "QueryIntent | None" = None,
+    provider: EmbeddingProvider,
+    intent: QueryIntent | None = None,
 ) -> EncodedQuery:
     """Encode query with task/modality context for better matching.
 

@@ -21,18 +21,17 @@ Heterogeneous Information Networks" (VLDB 2011)
 from __future__ import annotations
 
 from collections import defaultdict
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Mapping, Sequence
+from dataclasses import dataclass
+from enum import StrEnum
+from typing import Any
 
 from neural_search.graph.schema import (
     KnowledgeGraph,
     KnowledgeGraphEdge,
-    KnowledgeGraphNode,
 )
 
 
-class QueryIntent(str, Enum):
+class QueryIntent(StrEnum):
     """Query intents that map to specific metapath templates."""
 
     DATASET_FOR_ANALYSIS = "dataset_for_analysis"

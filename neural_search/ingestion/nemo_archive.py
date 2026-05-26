@@ -6,8 +6,6 @@ import argparse
 import json
 from typing import Any
 
-import httpx
-
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
 from neural_search.ingestion.live import (
     print_cli_error,

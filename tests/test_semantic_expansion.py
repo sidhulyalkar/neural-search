@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
 import numpy as np
+import pytest
 
 from neural_search.embeddings import (
     ConceptEmbedding,
@@ -148,7 +148,7 @@ class TestExpandQueryWithConcepts:
 
         assert expansion.original_tasks == ["reversal_learning"]
         # Should find set_shifting as similar to reversal_learning
-        expanded_task_ids = [t[0] for t in expansion.expanded_tasks]
+        [t[0] for t in expansion.expanded_tasks]
         # May or may not find expansions depending on similarity
         assert isinstance(expansion.expanded_tasks, list)
 
@@ -170,7 +170,7 @@ class TestExpandQueryWithConcepts:
 
         assert expansion.original_modalities == ["neuropixels"]
         # Should find extracellular_ephys as related
-        expanded_mod_ids = [m[0] for m in expansion.expanded_modalities]
+        [m[0] for m in expansion.expanded_modalities]
         assert isinstance(expansion.expanded_modalities, list)
 
     def test_no_duplicates_in_expansion(self, sample_concept_index):

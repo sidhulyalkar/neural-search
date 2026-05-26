@@ -32,19 +32,12 @@ from neural_search.search.query_encoder import (
     enrich_query_with_context,
     expand_query_terms,
 )
-from neural_search.search.weight_optimizer import (
-    QueryAnalysis,
-    QueryComplexity,
-    WeightProfile,
-    WeightSensitivity,
-    WEIGHT_PROFILES,
-    analyze_query_for_weights,
-    analyze_weight_sensitivity,
-    boost_weights_for_constraints,
-    compute_weight_sensitivity,
-    get_adaptive_weights,
-    interpolate_weights,
-    normalize_weights,
+from neural_search.search.semantic_expansion import (
+    SemanticExpansion,
+    compute_expansion_boost,
+    enrich_query_with_semantic_context,
+    expand_query_with_concepts,
+    merge_expansion_into_query,
 )
 from neural_search.search.semantic_scoring import (
     SemanticScoreResult,
@@ -53,12 +46,19 @@ from neural_search.search.semantic_scoring import (
     compute_semantic_score_for_result,
     load_semantic_index,
 )
-from neural_search.search.semantic_expansion import (
-    SemanticExpansion,
-    compute_expansion_boost,
-    enrich_query_with_semantic_context,
-    expand_query_with_concepts,
-    merge_expansion_into_query,
+from neural_search.search.weight_optimizer import (
+    WEIGHT_PROFILES,
+    QueryAnalysis,
+    QueryComplexity,
+    WeightProfile,
+    WeightSensitivity,
+    analyze_query_for_weights,
+    analyze_weight_sensitivity,
+    boost_weights_for_constraints,
+    compute_weight_sensitivity,
+    get_adaptive_weights,
+    interpolate_weights,
+    normalize_weights,
 )
 
 __all__ = [

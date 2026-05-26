@@ -9,7 +9,6 @@ This tool runs a search query, displays results, and prompts for human relevance
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 from typing import Any
 

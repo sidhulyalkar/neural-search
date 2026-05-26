@@ -3,17 +3,14 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
 import yaml
 
 from neural_search.evaluation.affordance_validation import (
-    AffordanceRequirement,
     AffordanceValidationReport,
     AffordanceValidationResult,
     DatasetValidationSummary,
-    FieldMapping,
     generate_validation_json,
     generate_validation_markdown,
     load_rubric,

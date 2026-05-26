@@ -8,7 +8,6 @@ from typing import Any
 
 import httpx
 
-from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
 from neural_search.ingestion.live import (
     print_cli_error,
@@ -17,7 +16,6 @@ from neural_search.ingestion.live import (
     save_raw_response,
 )
 from neural_search.normalized import (
-    evidence_label_from_extraction,
     stable_normalized_id,
 )
 from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord, UsabilityFlags
@@ -172,14 +170,13 @@ def normalize_allen_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
     description = dataset.get("description", "").strip()
 
     # Build full text for extraction
-    text = f"{title} {description}"
 
     return {
         "source": "allen",
         "source_id": source_id,
         "title": title,
         "description": description,
-        "url": dataset.get("url", f"https://portal.brain-map.org/"),
+        "url": dataset.get("url", "https://portal.brain-map.org/"),
         "license": "Allen Institute Terms of Use",
         "species": dataset.get("species", []),
         "modalities": dataset.get("modalities", []),

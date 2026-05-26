@@ -23,14 +23,15 @@ Mathematical formalization:
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Mapping, Sequence
+from enum import StrEnum
+from typing import Any
 
 from neural_search.ontology import normalize_text
 
 
-class CompatibilityType(str, Enum):
+class CompatibilityType(StrEnum):
     """Types of dataset compatibility relationships."""
 
     EQUIVALENT = "equivalent"  # Same experimental context, good for replication
@@ -598,9 +599,7 @@ class CompatibilityScorer:
         all_scores.sort(key=lambda s: -s.overall_score)
 
         # Find best of each type
-        best_by_type: dict[CompatibilityType, CompatibilityScore | None] = {
-            compat_type: None for compat_type in CompatibilityType
-        }
+        best_by_type: dict[CompatibilityType, CompatibilityScore | None] = dict.fromkeys(CompatibilityType)
 
         for score in all_scores:
             if best_by_type[score.compatibility_type] is None:

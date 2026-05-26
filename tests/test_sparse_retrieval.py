@@ -342,7 +342,7 @@ class TestStability:
         results2 = index2.search("mouse neuropixels visual", top_k=5)
 
         assert len(results1) == len(results2)
-        for r1, r2 in zip(results1, results2):
+        for r1, r2 in zip(results1, results2, strict=False):
             assert r1.dataset_id == r2.dataset_id
             assert abs(r1.score - r2.score) < 0.0001
 

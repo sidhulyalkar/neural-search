@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any
 from neural_search.graph.schema import (
     KnowledgeGraph,
     KnowledgeGraphEdge,
-    KnowledgeGraphNode,
     make_edge_id,
     make_node_id,
 )
@@ -17,7 +16,6 @@ from neural_search.graph.schema import (
 if TYPE_CHECKING:
     from neural_search.embeddings.concept_embeddings import (
         ConceptEmbeddingIndex,
-        ConceptSimilarity,
     )
     from neural_search.embeddings.semantic_fingerprint import (
         SemanticDatasetFingerprint,
@@ -59,9 +57,9 @@ class SemanticEdgeResult:
 
 
 def _compute_fingerprint_similarity(
-    source: "SemanticDatasetFingerprint",
-    target: "SemanticDatasetFingerprint",
-) -> "SemanticSimilarity":
+    source: SemanticDatasetFingerprint,
+    target: SemanticDatasetFingerprint,
+) -> SemanticSimilarity:
     """Compute semantic similarity between two fingerprints."""
     from neural_search.embeddings.semantic_fingerprint import (
         compute_semantic_similarity,
@@ -71,7 +69,7 @@ def _compute_fingerprint_similarity(
 
 
 def build_semantic_dataset_edges(
-    fingerprints: list["SemanticDatasetFingerprint"],
+    fingerprints: list[SemanticDatasetFingerprint],
     config: SemanticEdgeConfig | None = None,
 ) -> list[KnowledgeGraphEdge]:
     """Build semantic similarity edges between datasets from fingerprints.
@@ -91,7 +89,7 @@ def build_semantic_dataset_edges(
 
     # Compare all pairs
     for i, source_fp in enumerate(fingerprints):
-        similar_targets: list[tuple[str, "SemanticSimilarity"]] = []
+        similar_targets: list[tuple[str, SemanticSimilarity]] = []
 
         for target_fp in fingerprints[i + 1:]:
             sim = _compute_fingerprint_similarity(source_fp, target_fp)
@@ -149,7 +147,7 @@ def build_semantic_dataset_edges(
 
 
 def build_concept_similarity_edges(
-    concept_index: "ConceptEmbeddingIndex",
+    concept_index: ConceptEmbeddingIndex,
     config: SemanticEdgeConfig | None = None,
 ) -> list[KnowledgeGraphEdge]:
     """Build similarity edges between concepts from embedding index.
@@ -207,8 +205,8 @@ def build_concept_similarity_edges(
 
 def add_semantic_edges_to_graph(
     graph: KnowledgeGraph,
-    fingerprints: list["SemanticDatasetFingerprint"] | None = None,
-    concept_index: "ConceptEmbeddingIndex | None" = None,
+    fingerprints: list[SemanticDatasetFingerprint] | None = None,
+    concept_index: ConceptEmbeddingIndex | None = None,
     config: SemanticEdgeConfig | None = None,
 ) -> SemanticEdgeResult:
     """Add semantic similarity edges to an existing graph.
