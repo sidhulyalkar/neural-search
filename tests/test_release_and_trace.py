@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import json
 
+import neural_search.release.check as release_check
 from neural_search.contracts import SearchResponseV1, SearchResultV1
-from neural_search.release.check import build_release_summary, write_release_summary
+from neural_search.release.check import (
+    build_release_summary,
+    summarize_graph_quality_artifact,
+    write_release_summary,
+)
 from neural_search.schemas import SearchResponse, SearchResult
 from neural_search.search.trace import capture_search_trace, write_search_trace
 
@@ -114,6 +119,7 @@ def test_release_summary_records_artifacts_and_can_be_written(tmp_path) -> None:
     assert "real_datasets" in summary["artifacts"]
     assert "staleness" in summary["artifacts"]["real_datasets"]
     assert "demo_v02" in summary["benchmarks"]
+    assert "graph_quality" in summary
     assert "source_quality" in summary
     assert "release_warnings" in summary
 
@@ -144,3 +150,52 @@ def test_release_summary_includes_non_failing_source_quality_warnings(tmp_path) 
     assert not any("source quality" in failure for failure in summary["known_failures"])
     assert (tmp_path / "release" / "release_summary.md").exists()
     assert markdown["markdown"].endswith("release_summary.md")
+
+
+def test_release_summary_includes_non_failing_graph_quality_warnings(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    graph_path = tmp_path / "graph.json"
+    graph_path.write_text(
+        json.dumps(
+            {
+                "nodes": {
+                    "node:dataset:D1": {
+                        "node_id": "node:dataset:D1",
+                        "node_type": "dataset",
+                        "label": "D1",
+                        "confidence": 1.2,
+                    }
+                },
+                "edges": {
+                    "edge:dataset:D1:has_task:T1": {
+                        "edge_id": "edge:dataset:D1:has_task:T1",
+                        "source_node_id": "node:dataset:D1",
+                        "target_node_id": "node:task:T1",
+                        "edge_type": "dataset_has_task",
+                        "confidence": 0.2,
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    quality = summarize_graph_quality_artifact(graph_path)
+    monkeypatch.setattr(release_check, "ARTIFACTS", {"demo_graph": graph_path})
+    monkeypatch.setattr(release_check, "ARTIFACT_INPUTS", {"demo_graph": []})
+    monkeypatch.setattr(release_check, "BENCHMARK_REPORTS", {})
+    summary = release_check.build_release_summary(readiness_report=None)
+
+    assert quality["available"] is True
+    assert quality["passed"] is False
+    assert quality["error_count"] == 2
+    assert quality["issue_counts"] == {
+        "dangling_edge_reference": 1,
+        "invalid_node_confidence": 1,
+        "weak_edge": 1,
+    }
+    assert summary["release_ready"] is True
+    assert summary["graph_quality"]["demo_graph"]["error_count"] == 2
+    assert "demo_graph graph QA has 2 error(s)" in summary["release_warnings"]

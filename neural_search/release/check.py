@@ -5,9 +5,12 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from neural_search.graph.quality import audit_graph_quality
 
 ROOT = Path(__file__).resolve().parents[2]
 RELEASE_REPORT_DIR = ROOT / "data" / "reports" / "release"
@@ -82,6 +85,13 @@ def _line_count(path: Path) -> int | None:
         return sum(1 for line in handle if line.strip())
 
 
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def _graph_counts(path: Path) -> dict[str, int] | None:
     if not path.exists():
         return None
@@ -96,6 +106,26 @@ def _load_benchmark(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def summarize_graph_quality_artifact(path: Path) -> dict[str, Any]:
+    """Summarize graph QA findings for release reports without changing release gates."""
+
+    if not path.exists():
+        return {"available": False}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    report = audit_graph_quality(payload)
+    issue_counts = Counter(issue.code for issue in report.issues)
+    return {
+        "available": True,
+        "passed": report.passed,
+        "node_count": report.node_count,
+        "edge_count": report.edge_count,
+        "issue_count": report.issue_count,
+        "error_count": report.error_count,
+        "warning_count": report.warning_count,
+        "issue_counts": dict(sorted(issue_counts.items())),
+    }
 
 
 def _load_source_quality(path: Path | None) -> dict[str, Any]:
@@ -121,6 +151,20 @@ def _source_quality_warnings(source_quality: dict[str, Any]) -> list[str]:
         warnings.append("mean source quality is below 0.70")
     if int(source_quality.get("warning_count", 0) or 0):
         warnings.append("source quality report contains record-level warnings")
+    return warnings
+
+
+def _graph_quality_warnings(graph_quality: dict[str, dict[str, Any]]) -> list[str]:
+    warnings: list[str] = []
+    for name, summary in sorted(graph_quality.items()):
+        if not summary.get("available"):
+            continue
+        error_count = int(summary.get("error_count", 0) or 0)
+        warning_count = int(summary.get("warning_count", 0) or 0)
+        if error_count:
+            warnings.append(f"{name} graph QA has {error_count} error(s)")
+        if warning_count:
+            warnings.append(f"{name} graph QA has {warning_count} warning(s)")
     return warnings
 
 
@@ -151,7 +195,7 @@ def _staleness(path: Path, inputs: list[Path]) -> dict[str, Any]:
     newest_input_mtime = newest_input.stat().st_mtime
     return {
         "stale": newest_input_mtime > artifact_mtime,
-        "newest_input": str(newest_input.relative_to(ROOT)),
+        "newest_input": _display_path(newest_input),
         "newest_input_mtime": datetime.fromtimestamp(newest_input_mtime, UTC).isoformat(),
         "artifact_mtime": datetime.fromtimestamp(artifact_mtime, UTC).isoformat(),
     }
@@ -171,7 +215,7 @@ def build_release_summary(
         if staleness["stale"]:
             stale_artifacts.append(name)
         artifact_summary[name] = {
-            "path": str(path.relative_to(ROOT)),
+            "path": _display_path(path),
             "exists": exists,
             "line_count": _line_count(path),
             "graph_counts": _graph_counts(path) if "graph" in name else None,
@@ -190,7 +234,7 @@ def build_release_summary(
         report = _load_benchmark(path)
         if report is None:
             missing_benchmarks.append(suite)
-            benchmark_summary[suite] = {"path": str(path.relative_to(ROOT)), "exists": False}
+            benchmark_summary[suite] = {"path": _display_path(path), "exists": False}
             continue
         suite_violations = sum(
             len(query.get("hard_negative_violations", []))
@@ -198,7 +242,7 @@ def build_release_summary(
         )
         hard_negative_violations += suite_violations
         benchmark_summary[suite] = {
-            "path": str(path.relative_to(ROOT)),
+            "path": _display_path(path),
             "exists": True,
             "total_queries": report.get("total_queries"),
             "mean_precision_at_5": report.get("mean_precision_at_5"),
@@ -223,10 +267,18 @@ def build_release_summary(
             f"hard-negative violations across release benchmarks: {hard_negative_violations}"
         )
 
+    graph_quality = {
+        name: summarize_graph_quality_artifact(path)
+        for name, path in ARTIFACTS.items()
+        if "graph" in name
+    }
     source_quality = _load_source_quality(
         Path(readiness_report) if readiness_report else None
     )
-    release_warnings = _source_quality_warnings(source_quality)
+    release_warnings = [
+        *_source_quality_warnings(source_quality),
+        *_graph_quality_warnings(graph_quality),
+    ]
 
     return {
         "generated_at": datetime.now(UTC).isoformat(),
@@ -239,6 +291,7 @@ def build_release_summary(
         },
         "artifacts": artifact_summary,
         "benchmarks": benchmark_summary,
+        "graph_quality": graph_quality,
         "source_quality": source_quality,
         "release_warnings": release_warnings,
         "known_failures": known_failures,
@@ -297,6 +350,15 @@ def markdown_summary(summary: dict[str, Any]) -> str:
         lines.append("- None recorded.")
 
     source_quality = summary.get("source_quality", {})
+    graph_quality = summary.get("graph_quality", {})
+    lines.extend(["", "## Graph Quality", ""])
+    for name, quality in sorted(graph_quality.items()):
+        lines.append(
+            f"- `{name}`: available={quality.get('available', False)}, "
+            f"errors={quality.get('error_count')}, "
+            f"warnings={quality.get('warning_count')}"
+        )
+
     lines.extend(
         [
             "",
