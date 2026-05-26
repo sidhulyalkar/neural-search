@@ -59,29 +59,29 @@ python -m neural_search.evaluation.run_benchmark --suite adversarial
 ```
 
 **Tasks:**
-- [ ] Fix any lint warnings in test files (unused imports)
-- [ ] Verify benchmark suites pass without regression
+- [x] Fix any lint warnings in test files (unused imports)
+- [x] Verify benchmark suites pass without regression
 - [ ] Run real_v07 benchmark if corpus artifacts are complete
 
-### 1.2 Wire Awareness Scoring into Main Retrieval
+### 1.2 Wire Awareness Scoring into Main Retrieval ✅
 
 **Files:** `neural_search/search/core.py`, `neural_search/search/intent.py`
 
 **Tasks:**
-- [ ] Integrate `query_awareness` scoring from awareness wrapper into `search_datasets`
-- [ ] Expose `awareness_score` and data-form evidence in standard responses
-- [ ] Add config flag for awareness weight (default 0.0 for backward compatibility)
-- [ ] Test that existing benchmarks pass with awareness disabled
+- [x] Integrate `query_awareness` scoring from awareness wrapper into `search_datasets`
+- [x] Expose `awareness_score` and data-form evidence in standard responses
+- [x] Add config flag for awareness weight (default 0.0 for backward compatibility)
+- [x] Test that existing benchmarks pass with awareness disabled
 
-### 1.3 Integrate Planner into Main Retrieval
+### 1.3 Integrate Planner into Main Retrieval ✅
 
 **Files:** `neural_search/search/core.py`, `data/config/retrieval.yaml`
 
 **Tasks:**
-- [ ] Wire planner-selected weights through `search_datasets_with_intelligence`
-- [ ] Validate demo, adversarial, and real_v07 before enabling by default
-- [ ] Add planner metadata to search traces
-- [ ] Define CI/local/exploratory config presets
+- [x] Wire planner-selected weights through `search_datasets_with_intelligence`
+- [x] Validate demo, adversarial, and real_v07 before enabling by default
+- [x] Add planner metadata to search traces
+- [x] Define CI/local/exploratory config presets (see `data/config/retrieval_presets.yaml`)
 
 ---
 
