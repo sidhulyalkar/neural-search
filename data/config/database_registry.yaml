@@ -1,0 +1,419 @@
+# Registry of neuroscience and neurogenomics databases
+# Each database entry includes API endpoints, data types, and priority datasets
+
+databases:
+  # === Electrophysiology & Multi-modal ===
+
+  dandi:
+    name: "DANDI Archive"
+    url: "https://dandiarchive.org"
+    api_base: "https://api.dandiarchive.org/api"
+    data_types:
+      - extracellular_ephys
+      - intracellular_ephys
+      - calcium_imaging
+      - behavior
+      - ophys
+    data_standards: ["NWB"]
+    species: ["mouse", "rat", "human", "macaque"]
+    enabled: true
+    priority_datasets:
+      # Neuropixels
+      - "000003"  # Hippocampal granule cells
+      - "000004"  # Human single-unit (Steinmetz)
+      - "000005"  # Thalamic/cortical ephys
+      - "000026"  # Human brain cell census
+      - "000034"  # SpikeInterface benchmark
+      # Calcium imaging
+      - "000037"  # Allen Openscope
+      - "000049"  # Allen TF x SF tuning
+      - "000016"  # Two-photon excitatory/inhibitory
+      # iEEG/ECoG
+      - "000055"  # AJILE12 human iEEG
+      - "000060"  # Finkelstein attractor dynamics
+      # Behavior + ephys
+      - "000045"  # IBL behavioral
+      - "000067"  # Assembly dynamics
+      - "000017"  # Distributed coding choice/action
+      # Multi-modal
+      - "000006"  # ALM delay period
+      - "000008"  # Patch-seq
+      - "000010"  # Motor cortex planning
+      # New additions
+      - "000013"  # Human ECoG speech
+      - "000019"  # Patch-clamp hippocampus
+      - "000020"  # Mouse V1 natural scenes
+      - "000021"  # Visual cortex running
+      - "000023"  # Human single neurons memory
+      - "000027"  # Test retest electrophysiology
+      - "000029"  # Mouse brain observatory
+      - "000035"  # Neuropixels visual cortex
+      - "000039"  # IBL repeated site
+      - "000041"  # Mouse barrel cortex
+      - "000048"  # Steinmetz decision making
+      - "000053"  # Neural dynamics during exploration
+      - "000054"  # Allen visual coding ephys
+      - "000058"  # Patch-seq Tasic
+      - "000064"  # Mouse CA1 theta
+      - "000070"  # Human cortical organoids
+      - "000128"  # Allen Brain Observatory
+      - "000212"  # Human MTL single units
+      - "000213"  # MICrONS cortical mm3
+      - "000221"  # Allen visual behavior
+      - "000230"  # Mouse VISp laminar
+      - "000233"  # Human auditory cortex
+      - "000239"  # IBL brain wide map
+      - "000245"  # Neuropixels NHP
+      - "000251"  # Mouse olfactory bulb
+      - "000288"  # Steinmetz spontaneous
+
+  openneuro:
+    name: "OpenNeuro"
+    url: "https://openneuro.org"
+    api_base: "https://openneuro.org/crn/graphql"
+    data_types:
+      - fmri
+      - structural_mri
+      - dwi
+      - eeg
+      - meg
+      - ieeg
+      - pet
+    data_standards: ["BIDS"]
+    species: ["human"]
+    enabled: true
+    priority_datasets:
+      # fMRI task-based
+      - "ds000001"  # Balloon Analog Risk
+      - "ds000002"  # Classification learning
+      - "ds000003"  # Rhyme judgment
+      - "ds000005"  # Mixed gambles
+      - "ds000007"  # Stop signal
+      - "ds000008"  # Flanker
+      - "ds000011"  # Classification
+      - "ds000017"  # Classification
+      - "ds000030"  # UCLA Consortium
+      - "ds000101"  # Simon task
+      - "ds000102"  # Flanker
+      - "ds000105"  # Object recognition
+      - "ds000107"  # Word/object processing
+      - "ds000109"  # False belief
+      - "ds000113"  # Forrest Gump
+      - "ds000114"  # Repetition priming
+      - "ds000228"  # Child development movie
+      # Resting state
+      - "ds000031"  # MyConnectome
+      - "ds000224"  # Midnight Scan Club
+      - "ds000243"  # NKI Rockland
+      # EEG
+      - "ds002778"  # ERP Core UCSD
+      - "ds003061"  # P300 sound
+      - "ds001787"  # EEG meditation
+      - "ds002680"  # EEG face perception
+      - "ds002691"  # EEG visual attention
+      - "ds002718"  # EEG working memory
+      - "ds002778"  # EEG resting epilepsy
+      - "ds003004"  # Motor imagery EEG
+      - "ds003190"  # BCI competition
+      - "ds003478"  # EEG SSVEP
+      - "ds003505"  # ERN EEG
+      - "ds003645"  # N400 EEG
+      - "ds003670"  # P300 EEG
+      - "ds003710"  # MMN EEG
+      # MEG
+      - "ds000117"  # Multimodal face
+      - "ds000246"  # MEG auditory
+      - "ds000247"  # MEG visual
+      - "ds000248"  # MEG resting
+      # iEEG
+      - "ds003688"  # iEEG visual naming
+      - "ds004100"  # iEEG epilepsy
+      - "ds004584"  # sEEG language
+      # Structural/Connectivity
+      - "ds000201"  # Dunedin longitudinal
+      - "ds000221"  # Leipzig aging
+      - "ds002245"  # CORR multi-site
+
+  # === Brain Atlases & Cell Types ===
+
+  allen_brain:
+    name: "Allen Brain Atlas"
+    url: "https://brain-map.org"
+    api_base: "https://api.brain-map.org"
+    data_types:
+      - in_situ_hybridization
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - patch_seq
+      - connectivity
+      - anatomy
+    data_standards: ["anndata", "NRRD"]
+    species: ["mouse", "human"]
+    enabled: true
+    resources:
+      mouse_brain_atlas:
+        description: "Genome-wide ISH for ~20,000 genes"
+        url: "https://mouse.brain-map.org"
+      cell_types:
+        description: "Single-cell transcriptomics"
+        url: "https://celltypes.brain-map.org"
+      human_brain:
+        description: "Human brain transcriptomics"
+        url: "https://human.brain-map.org"
+      abc_atlas:
+        description: "Allen Brain Cell Atlas - whole-brain transcriptomic"
+        url: "https://alleninstitute.github.io/abc_atlas_access"
+        data_url: "s3://allen-brain-cell-atlas/releases/"
+      connectivity:
+        description: "Mouse brain connectivity atlas"
+        url: "https://connectivity.brain-map.org"
+    priority_datasets:
+      - "mouse_whole_brain_transcriptomic"
+      - "human_mtg_smart_seq"
+      - "human_m1_smart_seq"
+      - "mouse_visual_cortex_connectivity"
+      - "mouse_ccf_atlas"
+      - "human_brain_microarray"
+      - "aging_dementia_tbi"
+      - "developing_human_brain"
+      - "allen_cell_explorer"
+
+  # === Neurogenomics ===
+
+  nemo_archive:
+    name: "NeMO Archive"
+    description: "Neuroscience Multi-Omic Archive - BRAIN Initiative genomic data"
+    url: "https://nemoarchive.org"
+    api_base: "https://portal.nemoarchive.org/api"
+    data_types:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - single_cell_atacseq
+      - single_nucleus_atacseq
+      - snme_seq  # Single nucleus methylation
+      - multiome  # Joint RNA + ATAC
+      - spatial_transcriptomics
+    data_standards: ["anndata", "h5ad", "BAM", "FASTQ"]
+    species: ["mouse", "human", "macaque"]
+    enabled: true
+    projects:
+      - "BRAIN Initiative Cell Census Network (BICCN)"
+      - "BRAIN Initiative Cell Atlas Network (BICAN)"
+      - "PsychENCODE"
+      - "Single Cell Portal"
+    priority_modalities:
+      - "10x_Multiome"
+      - "10x_3prime"
+      - "10x_5prime"
+      - "SMART-seq"
+      - "snmC-seq"
+      - "SHARE-seq"
+
+  geo_brain:
+    name: "GEO Brain/Neuroscience"
+    description: "NCBI GEO datasets filtered for brain/neuroscience"
+    url: "https://www.ncbi.nlm.nih.gov/geo/"
+    api_base: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+    data_types:
+      - bulk_rnaseq
+      - microarray
+      - single_cell_rnaseq
+      - chip_seq
+      - atac_seq
+      - methylation
+    species: ["human", "mouse", "rat"]
+    enabled: true
+    search_terms:
+      - "brain[Title] AND expression profiling[DataSet Type]"
+      - "neuron[Title] AND single cell[Title]"
+      - "cortex[Title] AND RNA-seq[Title]"
+      - "hippocampus[Title] AND transcriptome"
+      - "alzheimer[Title] AND brain"
+      - "schizophrenia[Title] AND brain"
+      - "autism[Title] AND brain"
+      - "parkinson[Title] AND substantia nigra"
+
+  # === Connectomics & EM ===
+
+  bossdb:
+    name: "BossDB"
+    description: "Volumetric electron microscopy and X-ray microtomography"
+    url: "https://bossdb.org"
+    api_base: "https://api.bossdb.io/v1"
+    data_types:
+      - electron_microscopy
+      - connectome
+      - synapse_detection
+      - cell_segmentation
+      - xray_microtomography
+    data_standards: ["CloudVolume", "neuroglancer"]
+    species: ["mouse", "drosophila", "zebrafish"]
+    enabled: true
+    priority_datasets:
+      - "microns_minnie65"      # MICrONS mm3 cortex
+      - "microns_layer23"       # MICrONS L2/3
+      - "flywire"               # Drosophila connectome
+      - "hemibrain"             # Janelia hemibrain
+      - "manc"                  # Male adult nerve cord
+      - "fanc"                  # Female adult nerve cord
+      - "h01"                   # Human 1mm3 cortex
+
+  # === Computational Neuroscience ===
+
+  crcns:
+    name: "CRCNS"
+    description: "Collaborative Research in Computational Neuroscience"
+    url: "https://crcns.org"
+    data_types:
+      - spike_trains
+      - local_field_potential
+      - calcium_imaging
+      - behavior
+      - simulation
+    species: ["mouse", "rat", "macaque", "human", "cat"]
+    enabled: true
+    priority_datasets:
+      # Visual system
+      - "pvc-1"   # Primary visual cortex cat
+      - "pvc-2"   # V1 natural scenes
+      - "pvc-3"   # V1 orientation
+      - "pvc-4"   # LGN-V1 connection
+      - "pvc-7"   # MT motion
+      - "pvc-8"   # V1 V2 natural images
+      - "pvc-11"  # Mouse V1
+      # Motor
+      - "dream"   # Motor cortex decoding
+      - "mt-1"    # Motor cortex reaching
+      - "mt-2"    # Premotor cortex
+      # Hippocampus
+      - "hc-2"    # Hippocampus spatial
+      - "hc-3"    # Hippocampus theta
+      - "hc-5"    # Hippocampus replay
+      - "hc-6"    # Hippocampus running
+      - "hc-11"   # Hippocampus + entorhinal
+      # Prefrontal
+      - "pfc-1"   # Working memory
+      - "pfc-2"   # Decision making
+      - "pfc-3"   # Rule learning
+      # Auditory
+      - "ac-1"    # Auditory cortex
+      - "ac-2"    # Auditory STRFs
+      # Retina
+      - "ret-1"   # Retina
+      - "ret-2"   # Retina natural scenes
+      # Multi-region
+      - "ssc-1"   # Somatosensory cortex
+      - "fcx-1"   # Frontal cortex
+      - "thal-1"  # Thalamus
+
+  # === Human Brain Mapping ===
+
+  hcp:
+    name: "Human Connectome Project"
+    url: "https://www.humanconnectome.org"
+    api_base: "https://db.humanconnectome.org"
+    data_types:
+      - structural_mri
+      - fmri
+      - dwi
+      - meg
+      - behavior
+    data_standards: ["BIDS", "CIFTI"]
+    species: ["human"]
+    enabled: false  # Requires registration
+    datasets:
+      - "HCP Young Adult"
+      - "HCP Aging"
+      - "HCP Development"
+      - "HCP Disease"
+
+  uk_biobank_brain:
+    name: "UK Biobank Brain Imaging"
+    url: "https://www.ukbiobank.ac.uk"
+    data_types:
+      - structural_mri
+      - fmri
+      - dwi
+    species: ["human"]
+    enabled: false  # Requires application
+    note: "100,000 participants brain imaging"
+
+  # === Disease-Specific ===
+
+  adni:
+    name: "ADNI"
+    description: "Alzheimer's Disease Neuroimaging Initiative"
+    url: "https://adni.loni.usc.edu"
+    data_types:
+      - structural_mri
+      - pet
+      - csf_biomarkers
+      - genetics
+      - cognitive_scores
+    species: ["human"]
+    enabled: false  # Requires application
+
+  ppmi:
+    name: "PPMI"
+    description: "Parkinson's Progression Markers Initiative"
+    url: "https://www.ppmi-info.org"
+    data_types:
+      - structural_mri
+      - dat_spect
+      - genetics
+      - biomarkers
+    species: ["human"]
+    enabled: false  # Requires application
+
+# Genomic/Multi-omic modality mappings
+genomic_modalities:
+  transcriptomics:
+    - bulk_rnaseq
+    - single_cell_rnaseq
+    - single_nucleus_rnaseq
+    - spatial_transcriptomics
+    - patch_seq
+  epigenomics:
+    - single_cell_atacseq
+    - single_nucleus_atacseq
+    - chip_seq
+    - methylation
+    - snme_seq
+    - multiome
+  proteomics:
+    - mass_spec
+    - western_blot
+  connectomics:
+    - electron_microscopy
+    - synapse_detection
+    - connectome
+
+# Analysis affordances for genomic data
+genomic_affordances:
+  cell_type_classification:
+    required_modalities: ["single_cell_rnaseq", "single_nucleus_rnaseq"]
+    description: "Classify cell types using marker genes"
+
+  differential_expression:
+    required_modalities: ["bulk_rnaseq", "single_cell_rnaseq"]
+    description: "Identify differentially expressed genes"
+
+  trajectory_inference:
+    required_modalities: ["single_cell_rnaseq"]
+    description: "Infer developmental trajectories"
+
+  chromatin_accessibility:
+    required_modalities: ["single_cell_atacseq", "single_nucleus_atacseq"]
+    description: "Analyze open chromatin regions"
+
+  multimodal_integration:
+    required_modalities: ["multiome"]
+    description: "Joint analysis of RNA and ATAC"
+
+  spatial_mapping:
+    required_modalities: ["spatial_transcriptomics"]
+    description: "Map gene expression to tissue location"
+
+  connectome_analysis:
+    required_modalities: ["electron_microscopy", "connectome"]
+    description: "Analyze synaptic connectivity"

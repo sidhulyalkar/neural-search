@@ -7,17 +7,17 @@ weights:
   modality: 0.12
   affordance: 0.10
   metadata: 0.10
-  semantic: 0.08
-  field_semantic: 0.06
+  semantic: 0.04  # Reduced - hashing embeddings lack differentiation
+  field_semantic: 0.10  # Increased - uses precomputed real embeddings
   graph: 0.04
   readiness: 0.08
   paper_confidence: 0.04
 
 penalties:
-  modality_mismatch: 0.18
+  modality_mismatch: 0.12  # Reduced from 0.18 - less aggressive modality filtering
   missing_required_field: 0.04
   max_missing_required_fields: 5
-  exclusion_violation: 0.50
+  exclusion_violation: 0.35  # Reduced from 0.50 - less aggressive exclusion
 
 thresholds:
   high_analysis_readiness: 0.80
@@ -121,7 +121,7 @@ analysis_intents:
 
 graph:
   enabled: true
-  path: data/graph/neural_search_graph.demo_v05.json
+  path: data/graph/neural_search_graph.v07_genomics.json
   weights:
     linked_paper: 0.04
     analysis_affordance: 0.03
@@ -134,7 +134,7 @@ graph:
 
 field_embeddings:
   enabled: true
-  path: data/embeddings/demo_v05.field_embeddings.jsonl
+  path: data/embeddings/v07_genomics.field_embeddings.jsonl
   # Field-specific weights for semantic matching
   field_weights:
     title: 0.20
@@ -161,7 +161,7 @@ adaptive_weights:
 # Dataset fingerprints for similarity search
 fingerprints:
   enabled: true
-  path: data/embeddings/demo_v05.fingerprints.jsonl
+  path: data/embeddings/v07_genomics.fingerprints.jsonl
   similarity_weight: 0.05
   min_similarity: 0.3
   top_k: 5

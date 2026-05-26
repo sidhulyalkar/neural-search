@@ -1,0 +1,218 @@
+# Intent-specific weight profiles for Neural Search
+# Each profile optimizes scoring weights for a specific query intent
+#
+# Usage: Query intent classification routes to these profiles
+# See: neural_search/search/intent.py
+
+version: "1.0"
+
+profiles:
+  # Direct lookups - boost exact metadata matching
+  dataset_lookup:
+    description: "Direct dataset ID searches (e.g., 'DANDI 000026')"
+    weights:
+      metadata: 0.60
+      ontology: 0.15
+      semantic: 0.15
+      behavior: 0.05
+      modality: 0.05
+      affordance: 0.00
+      readiness: 0.00
+      paper_confidence: 0.00
+    scoring_mode: exact_match_priority
+    min_confidence: 0.90
+    result_limit: 5
+
+  paper_lookup:
+    description: "Paper-based searches (e.g., 'Steinmetz 2019')"
+    weights:
+      paper_confidence: 0.40
+      metadata: 0.30
+      semantic: 0.15
+      ontology: 0.10
+      behavior: 0.05
+      modality: 0.00
+      affordance: 0.00
+      readiness: 0.00
+    scoring_mode: paper_priority
+    min_confidence: 0.85
+
+  # Task-focused searches - boost ontology and behavior
+  task_search:
+    description: "Task-focused searches (e.g., 'reversal learning')"
+    weights:
+      ontology: 0.35
+      behavior: 0.25
+      semantic: 0.15
+      metadata: 0.10
+      affordance: 0.10
+      readiness: 0.05
+      modality: 0.00
+      paper_confidence: 0.00
+    scoring_mode: weighted_sum
+    min_confidence: 0.70
+
+  # Modality-focused searches
+  modality_search:
+    description: "Modality-focused searches (e.g., 'neuropixels recordings')"
+    weights:
+      modality: 0.40
+      ontology: 0.20
+      semantic: 0.15
+      metadata: 0.10
+      behavior: 0.10
+      affordance: 0.05
+      readiness: 0.00
+      paper_confidence: 0.00
+    scoring_mode: weighted_sum
+    min_confidence: 0.75
+
+  # Species + region searches
+  species_region:
+    description: "Species and region searches (e.g., 'mouse hippocampus')"
+    weights:
+      metadata: 0.35
+      ontology: 0.25
+      semantic: 0.15
+      behavior: 0.10
+      modality: 0.10
+      affordance: 0.05
+      readiness: 0.00
+      paper_confidence: 0.00
+    scoring_mode: weighted_sum
+    min_confidence: 0.70
+
+  # Analysis affordance searches - boost affordance scoring
+  analysis_affordance:
+    description: "Analysis capability searches (e.g., 'decoding ready')"
+    weights:
+      affordance: 0.40
+      ontology: 0.20
+      semantic: 0.15
+      readiness: 0.15
+      metadata: 0.10
+      behavior: 0.00
+      modality: 0.00
+      paper_confidence: 0.00
+    scoring_mode: affordance_priority
+    min_confidence: 0.65
+
+  # Paper-to-dataset linking
+  paper_to_dataset:
+    description: "Find datasets from papers (e.g., 'datasets from Steinmetz lab')"
+    weights:
+      paper_confidence: 0.35
+      semantic: 0.20
+      ontology: 0.15
+      metadata: 0.15
+      behavior: 0.10
+      modality: 0.05
+      affordance: 0.00
+      readiness: 0.00
+    scoring_mode: graph_priority
+    use_graph_expansion: true
+    min_confidence: 0.60
+
+  # Dataset similarity searches
+  similar_dataset:
+    description: "Find similar datasets (e.g., 'datasets like 000026')"
+    weights:
+      semantic: 0.40
+      ontology: 0.25
+      behavior: 0.15
+      modality: 0.10
+      metadata: 0.10
+      affordance: 0.00
+      readiness: 0.00
+      paper_confidence: 0.00
+    scoring_mode: similarity_ranking
+    use_semantic_fingerprint: true
+    min_confidence: 0.70
+
+  # Hard negative queries - strict constraint filtering
+  hard_negative:
+    description: "Queries with exclusions (e.g., 'neuropixels NOT calcium')"
+    weights:
+      ontology: 0.25
+      modality: 0.25
+      semantic: 0.15
+      behavior: 0.15
+      metadata: 0.10
+      affordance: 0.05
+      readiness: 0.05
+      paper_confidence: 0.00
+    scoring_mode: constraint_filter_first
+    strict_exclusion: true
+    penalties:
+      exclusion_violation: 1.0
+      modality_mismatch: 0.3
+    min_confidence: 0.80
+
+  # Multi-constraint queries
+  multi_constraint:
+    description: "Complex multi-faceted queries"
+    weights:
+      ontology: 0.25
+      modality: 0.20
+      metadata: 0.15
+      semantic: 0.15
+      behavior: 0.15
+      affordance: 0.05
+      readiness: 0.05
+      paper_confidence: 0.00
+    scoring_mode: all_constraints_weighted
+    require_all_constraints: false
+    min_confidence: 0.60
+
+  # Exploratory queries - favor recall over precision
+  exploratory:
+    description: "Broad exploratory searches (e.g., 'what datasets study attention?')"
+    weights:
+      semantic: 0.30
+      ontology: 0.25
+      metadata: 0.20
+      readiness: 0.15
+      affordance: 0.10
+      behavior: 0.00
+      modality: 0.00
+      paper_confidence: 0.00
+    scoring_mode: recall_priority
+    result_limit: 20
+    min_confidence: 0.50
+
+# Default profile for unclassified queries
+default_profile: task_search
+
+# Intent detection signals
+detection_signals:
+  dataset_lookup:
+    - pattern: "DANDI\\s*\\d{5,6}"
+    - pattern: "ds\\d{5,}"
+    - pattern: "OpenNeuro\\s+ds"
+    - keywords: ["dandiset", "dataset id"]
+
+  paper_lookup:
+    - pattern: "\\d{4}"  # Year
+    - pattern: "et\\s+al"
+    - keywords: ["paper", "publication", "doi", "pmid"]
+    - author_name_detection: true
+
+  task_search:
+    - ontology_task_match: true
+    - keywords: ["task", "paradigm", "protocol"]
+
+  modality_search:
+    - ontology_modality_match: true
+    - keywords: ["recordings", "imaging", "data type"]
+
+  analysis_affordance:
+    - keywords: ["ready for", "suitable for", "supports", "can do"]
+    - affordance_match: true
+
+  hard_negative:
+    - keywords: ["NOT", "without", "excluding", "except"]
+    - pattern: "\\bNOT\\b"
+
+  exploratory:
+    - keywords: ["what", "which", "how many", "list all"]
+    - question_format: true
