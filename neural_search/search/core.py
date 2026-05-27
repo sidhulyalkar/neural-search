@@ -40,6 +40,11 @@ from neural_search.search.field_semantic import (
     field_semantic_score_for_result,
     load_field_semantic_index,
 )
+from neural_search.search.explanation import (
+    ExplanationContext,
+    MatchGroup,
+    generate_explanation,
+)
 from neural_search.search.intent import (
     blend_weights,
     classify_query_intent,
@@ -1014,6 +1019,96 @@ def _augment_result_with_optional_scores(
         result.score = round(final_score * 100, 2)
 
 
+def _generate_rich_explanation(
+    result: SearchResult,
+    query: str,
+    dataset: Any,
+    parsed_query: Mapping[str, Any],
+) -> None:
+    """Generate rich explanation for a search result.
+
+    Updates the result's explanation field with a more detailed explanation
+    generated from the match context.
+    """
+    try:
+        # Build match groups from the result
+        match_groups: list[MatchGroup] = []
+
+        # Tasks
+        task_terms = [normalize_text(t) for t in parsed_query.get("tasks", [])]
+        matched_tasks = [t for t in result.matched_terms if t in task_terms]
+        if task_terms or matched_tasks:
+            match_groups.append(MatchGroup(
+                category="task",
+                query_terms=task_terms,
+                matched_terms=matched_tasks,
+                match_quality="full" if matched_tasks else "none",
+            ))
+
+        # Modalities
+        modality_terms = [normalize_text(m) for m in parsed_query.get("modalities", [])]
+        matched_modalities = [m for m in result.matched_terms if m in modality_terms]
+        if modality_terms or matched_modalities:
+            match_groups.append(MatchGroup(
+                category="modality",
+                query_terms=modality_terms,
+                matched_terms=matched_modalities,
+                match_quality="full" if matched_modalities else "none",
+            ))
+
+        # Species
+        species_terms = [normalize_text(s) for s in parsed_query.get("species", [])]
+        matched_species = [s for s in result.matched_terms if s in species_terms]
+        if species_terms or matched_species:
+            match_groups.append(MatchGroup(
+                category="species",
+                query_terms=species_terms,
+                matched_terms=matched_species,
+                match_quality="full" if matched_species else "none",
+            ))
+
+        # Brain regions
+        region_terms = [normalize_text(r) for r in parsed_query.get("brain_regions", [])]
+        matched_regions = [r for r in result.matched_terms if r in region_terms]
+        if region_terms or matched_regions:
+            match_groups.append(MatchGroup(
+                category="brain_region",
+                query_terms=region_terms,
+                matched_terms=matched_regions,
+                match_quality="full" if matched_regions else "none",
+            ))
+
+        # Build explanation context
+        context = ExplanationContext(
+            query_text=query,
+            dataset_title=_get_value(dataset, "title", str(result.dataset_id)),
+            dataset_id=str(result.dataset_id),
+            match_groups=match_groups,
+            score=result.score,
+            score_breakdown=dict(result.score_breakdown),
+            warnings=list(result.warnings),
+            missing_metadata=list(result.missing_metadata),
+            graph_context=result.graph_context,
+            linked_papers=list(result.linked_papers),
+        )
+
+        # Generate explanation
+        explanation_result = generate_explanation(context)
+
+        # Update result with detailed explanation
+        result.explanation = explanation_result.detailed
+        result.dataset_card_preview["explanation"] = {
+            "brief": explanation_result.brief,
+            "detailed": explanation_result.detailed,
+            "technical": explanation_result.technical,
+            "quality_grade": explanation_result.quality_grade,
+            "match_summary": explanation_result.match_summary,
+        }
+    except Exception:
+        # Explanation generation is optional; don't fail search if it errors
+        pass
+
+
 def search_datasets(
     query: str,
     filters: Mapping[str, Any] | None = None,
@@ -1157,6 +1252,8 @@ def search_datasets(
             awareness_config=awareness_config,
             query_awareness=query_awareness,
         )
+        # Generate rich explanation after all scores are computed
+        _generate_rich_explanation(result, combined_query, dataset, parsed)
         results.append(result)
 
     results.sort(key=lambda item: item.score, reverse=True)
