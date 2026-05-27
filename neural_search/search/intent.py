@@ -21,15 +21,35 @@ DEFAULT_INTENT_PROFILES_PATH = (
 
 
 class QueryIntent(Enum):
-    """Types of search queries with different retrieval profiles."""
+    """Types of search queries with different retrieval profiles.
 
-    DATASET_LOOKUP = "dataset_lookup"  # "DANDI 000026", "OpenNeuro ds000117"
-    TASK_SEARCH = "task_search"  # "reversal learning datasets"
-    ANALYSIS_SEARCH = "analysis_search"  # "choice decoding ready"
-    PAPER_LINK = "paper_link"  # "data from Steinmetz 2019"
-    DESIGN_QUERY = "design_query"  # "design auditory reversal learning"
-    GRAPH_REASONING = "graph_reasoning"  # "datasets from labs that published..."
-    COMPOUND_CONSTRAINT = "compound"  # Multiple constraints with AND/NOT
+    Intent names correspond to profile names in intent_profiles.yaml
+    """
+
+    # Core content intents
+    DATASET_LOOKUP = "dataset_lookup"      # "DANDI 000026", "OpenNeuro ds000117"
+    PAPER_LOOKUP = "paper_lookup"          # "Steinmetz 2019 paper"
+    TASK_SEARCH = "task_search"            # "reversal learning datasets"
+    MODALITY_SEARCH = "modality_search"    # "neuropixels recordings"
+    SPECIES_REGION = "species_region"      # "mouse hippocampus"
+    ANALYSIS_SEARCH = "analysis_affordance"  # "choice decoding ready"
+
+    # Linking and similarity intents
+    PAPER_TO_DATASET = "paper_to_dataset"  # "datasets from Steinmetz lab"
+    SIMILAR_DATASET = "similar_dataset"    # "datasets like 000026"
+
+    # Constraint intents
+    HARD_NEGATIVE = "hard_negative"        # "neuropixels NOT calcium"
+    MULTI_CONSTRAINT = "multi_constraint"  # Complex multi-faceted queries
+
+    # Exploratory intent
+    EXPLORATORY = "exploratory"            # "what datasets study attention?"
+
+    # Legacy aliases (for backwards compatibility)
+    PAPER_LINK = "paper_to_dataset"
+    DESIGN_QUERY = "task_search"
+    GRAPH_REASONING = "paper_to_dataset"
+    COMPOUND_CONSTRAINT = "hard_negative"
 
 
 @dataclass
@@ -49,14 +69,24 @@ INTENT_PATTERNS: dict[QueryIntent, list[str]] = {
         r"openneuro\s*ds\d+",
         r"dataset\s+(id|#|number)\s*\w+",
         r"^[A-Z_]+\d+$",  # ID-like patterns
+        r"\bds\d{5,}\b",
+        r"\b\d{6}\b",  # 6-digit IDs
     ],
-    QueryIntent.PAPER_LINK: [
+    QueryIntent.PAPER_LOOKUP: [
+        r"\w+\s+et\s+al\.?\s*\d{4}",
+        r"\w+\s+\d{4}\s+paper",
+        r"doi:\s*10\.\d+",
+        r"pmid:\s*\d+",
+        r"find\s+paper",
+    ],
+    QueryIntent.PAPER_TO_DATASET: [
         r"data\s+from\s+\w+\s+\d{4}",
         r"papers?\s+using",
         r"publications?\s+citing",
         r"dataset\s+from\s+\w+\s+lab",
         r"steinmetz|churchland|allen\s+institute",
-        r"\w+\s+et\s+al",
+        r"datasets?\s+from\s+labs?\s+that",
+        r"labs?\s+that\s+study",
     ],
     QueryIntent.ANALYSIS_SEARCH: [
         r"ready\s+for\s+\w+",
@@ -65,23 +95,49 @@ INTENT_PATTERNS: dict[QueryIntent, list[str]] = {
         r"suitable\s+for\s+\w+\s+modeling",
         r"can\s+i\s+do\s+\w+\s+with",
         r"datasets?\s+for\s+\w+\s+analysis",
+        r"supports?\s+\w+\s+analysis",
     ],
-    QueryIntent.DESIGN_QUERY: [
-        r"design\s+\w+\s+task",
-        r"paradigm\s+for",
-        r"protocol\s+for",
-        r"setup\s+for",
-        r"how\s+to\s+run",
-        r"experiment\s+design",
+    QueryIntent.MODALITY_SEARCH: [
+        r"neuropixels?\s+recordings?",
+        r"calcium\s+imaging",
+        r"two[\s-]?photon",
+        r"fmri\s+data",
+        r"\beeg\b\s+data",
+        r"\bmeg\b\s+data",
+        r"ecog\s+recordings?",
+        r"patch[\s-]?clamp",
+        r"fiber\s+photometry",
     ],
-    QueryIntent.GRAPH_REASONING: [
-        r"datasets?\s+from\s+labs?\s+that",
-        r"share\s+authors?\s+with",
-        r"citing\s+same",
-        r"similar\s+to",
-        r"related\s+to\s+\w+\s+paper",
+    QueryIntent.SPECIES_REGION: [
+        r"mouse\s+(hippocampus|cortex|striatum|thalamus)",
+        r"human\s+(brain|cortex|hippocampus)",
+        r"macaque\s+(v1|v4|prefrontal|motor)",
+        r"rat\s+(hippocampus|cortex)",
+        r"(hippocampus|cortex|striatum)\s+in\s+(mouse|rat|human)",
+    ],
+    QueryIntent.SIMILAR_DATASET: [
+        r"similar\s+to\s+\w+",
+        r"like\s+\w+\s*\d+",
+        r"datasets?\s+like",
+        r"related\s+to\s+\w+\s+dataset",
         r"same\s+\w+\s+as",
-        r"labs?\s+that\s+study",
+    ],
+    QueryIntent.HARD_NEGATIVE: [
+        r"\bNOT\b",
+        r"\bwithout\b",
+        r"\bexcluding\b",
+        r"\bexcept\b",
+        r"\bnot\s+including\b",
+        r"\b(?<!do\s)not\s+\w+",  # "not calcium" but not "do not"
+    ],
+    QueryIntent.EXPLORATORY: [
+        r"^what\s+datasets?",
+        r"^which\s+datasets?",
+        r"^how\s+many\s+datasets?",
+        r"^list\s+all",
+        r"^show\s+me\s+all",
+        r"^find\s+all",
+        r"available\s+datasets?",
     ],
 }
 
@@ -173,47 +229,69 @@ def get_weights_for_intent(intent: QueryIntent) -> dict[str, float]:
 
 
 # Weight profiles per intent type - these override base weights (legacy/fallback)
+# Note: Profiles from intent_profiles.yaml take precedence over these
 INTENT_WEIGHT_PROFILES: dict[QueryIntent, dict[str, float]] = {
     QueryIntent.DATASET_LOOKUP: {
-        "metadata": 0.25,
-        "semantic": 0.20,
+        "metadata": 0.60,
+        "semantic": 0.15,
         "ontology": 0.15,
-        "graph": 0.02,
+    },
+    QueryIntent.PAPER_LOOKUP: {
+        "paper_confidence": 0.40,
+        "metadata": 0.30,
+        "semantic": 0.15,
     },
     QueryIntent.TASK_SEARCH: {
-        "ontology": 0.32,
-        "behavior": 0.22,
-        "affordance": 0.12,
-        "graph": 0.04,
+        "ontology": 0.35,
+        "behavior": 0.25,
+        "semantic": 0.15,
+        "affordance": 0.10,
+    },
+    QueryIntent.MODALITY_SEARCH: {
+        "modality": 0.40,
+        "ontology": 0.20,
+        "semantic": 0.15,
+    },
+    QueryIntent.SPECIES_REGION: {
+        "metadata": 0.35,
+        "ontology": 0.25,
+        "semantic": 0.15,
     },
     QueryIntent.ANALYSIS_SEARCH: {
-        "affordance": 0.28,
-        "readiness": 0.18,
-        "ontology": 0.18,
-        "behavior": 0.12,
-    },
-    QueryIntent.PAPER_LINK: {
-        "graph": 0.12,
-        "paper_confidence": 0.18,
+        "affordance": 0.40,
+        "ontology": 0.20,
+        "readiness": 0.15,
         "semantic": 0.15,
-        "metadata": 0.12,
     },
-    QueryIntent.GRAPH_REASONING: {
-        "graph": 0.18,
-        "paper_confidence": 0.12,
-        "ontology": 0.18,
-        "semantic": 0.12,
+    QueryIntent.PAPER_TO_DATASET: {
+        "paper_confidence": 0.35,
+        "semantic": 0.20,
+        "ontology": 0.15,
+        "metadata": 0.15,
     },
-    QueryIntent.DESIGN_QUERY: {
+    QueryIntent.SIMILAR_DATASET: {
+        "semantic": 0.40,
         "ontology": 0.25,
-        "behavior": 0.20,
-        "affordance": 0.15,
-        "readiness": 0.12,
+        "behavior": 0.15,
     },
-    QueryIntent.COMPOUND_CONSTRAINT: {
-        # Keep base weights but ensure constraint handling
-        "ontology": 0.28,
-        "behavior": 0.20,
+    QueryIntent.HARD_NEGATIVE: {
+        "ontology": 0.25,
+        "modality": 0.25,
+        "semantic": 0.15,
+        "behavior": 0.15,
+    },
+    QueryIntent.MULTI_CONSTRAINT: {
+        "ontology": 0.25,
+        "modality": 0.20,
+        "metadata": 0.15,
+        "semantic": 0.15,
+        "behavior": 0.15,
+    },
+    QueryIntent.EXPLORATORY: {
+        "semantic": 0.30,
+        "ontology": 0.25,
+        "metadata": 0.20,
+        "readiness": 0.15,
     },
 }
 
@@ -223,6 +301,12 @@ def classify_query_intent(
     parsed_query: Mapping[str, Any] | None = None,
 ) -> IntentClassification:
     """Classify query intent and return weight overrides.
+
+    Uses a multi-signal approach:
+    1. Pattern matching for explicit intent signals
+    2. Keyword detection for analysis/exploratory queries
+    3. Parsed query features (exclusions, modalities, etc.)
+    4. Fallback to exploratory or task search
 
     Args:
         query: The raw query string
@@ -247,7 +331,7 @@ def classify_query_intent(
 
     # Heuristic signals from parsed query
     if parsed_query:
-        # Check for exclusions indicating compound constraint
+        # Check for exclusions indicating hard negative
         has_exclusions = any(
             [
                 parsed_query.get("excluded_modalities"),
@@ -257,15 +341,37 @@ def classify_query_intent(
             ]
         )
         if has_exclusions:
-            matches.append((QueryIntent.COMPOUND_CONSTRAINT, 0.75))
+            matches.append((QueryIntent.HARD_NEGATIVE, 0.88))
 
         # Strong affordance signals
         if parsed_query.get("affordances"):
-            matches.append((QueryIntent.ANALYSIS_SEARCH, 0.72))
+            matches.append((QueryIntent.ANALYSIS_SEARCH, 0.78))
 
-        # Multiple task matches suggest task search
-        if len(parsed_query.get("tasks", [])) >= 2:
-            matches.append((QueryIntent.TASK_SEARCH, 0.70))
+        # Strong modality signals
+        modalities = parsed_query.get("modalities", [])
+        if modalities and len(modalities) >= 1:
+            matches.append((QueryIntent.MODALITY_SEARCH, 0.72))
+
+        # Species + region combination
+        species = parsed_query.get("species", [])
+        regions = parsed_query.get("brain_regions", [])
+        if species and regions:
+            matches.append((QueryIntent.SPECIES_REGION, 0.75))
+
+        # Multiple constraints suggest multi-constraint
+        constraint_count = sum([
+            1 if parsed_query.get("tasks") else 0,
+            1 if parsed_query.get("modalities") else 0,
+            1 if parsed_query.get("species") else 0,
+            1 if parsed_query.get("brain_regions") else 0,
+            1 if parsed_query.get("behaviors") else 0,
+        ])
+        if constraint_count >= 3:
+            matches.append((QueryIntent.MULTI_CONSTRAINT, 0.70))
+
+        # Task matches
+        if len(parsed_query.get("tasks", [])) >= 1:
+            matches.append((QueryIntent.TASK_SEARCH, 0.68))
 
     # Check for explicit analysis keywords
     analysis_keywords = [
@@ -275,9 +381,20 @@ def classify_query_intent(
         "fitting",
         "detection",
         "prediction",
+        "suitable for",
+        "ready for",
     ]
     if any(kw in normalized for kw in analysis_keywords):
-        matches.append((QueryIntent.ANALYSIS_SEARCH, 0.68))
+        matches.append((QueryIntent.ANALYSIS_SEARCH, 0.72))
+
+    # Check for exploratory question patterns
+    exploratory_starters = ["what", "which", "how many", "list", "show", "find all"]
+    if any(normalized.startswith(s) for s in exploratory_starters):
+        matches.append((QueryIntent.EXPLORATORY, 0.65))
+
+    # Check for similarity queries
+    if "similar" in normalized or "like" in normalized:
+        matches.append((QueryIntent.SIMILAR_DATASET, 0.70))
 
     # Default to task search if no strong signals
     if not matches:
