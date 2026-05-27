@@ -508,3 +508,164 @@ def compute_brier_score(
         (float(c) - int(bool(lbl))) ** 2
         for c, lbl in zip(confidences, labels, strict=False)
     ) / n
+
+
+# =============================================================================
+# Calibration-Based Confidence Adjustment
+# =============================================================================
+
+
+@dataclass
+class CalibrationAdjustment:
+    """Calibration adjustment parameters for score correction."""
+
+    temperature: float = 1.0  # Platt scaling temperature
+    slope: float = 1.0  # Linear calibration slope
+    intercept: float = 0.0  # Linear calibration intercept
+    method: str = "temperature"  # "temperature", "linear", "isotonic"
+
+    @classmethod
+    def from_calibration_result(
+        cls,
+        result: CalibrationResult,
+        method: str = "linear",
+    ) -> CalibrationAdjustment:
+        """Create adjustment parameters from calibration analysis.
+
+        Args:
+            result: CalibrationResult from calibration analysis
+            method: Adjustment method to use
+
+        Returns:
+            CalibrationAdjustment with computed parameters
+        """
+        if method == "linear":
+            # Use the calibration slope and intercept directly
+            return cls(
+                slope=result.calibration_slope,
+                intercept=result.calibration_intercept,
+                method="linear",
+            )
+        elif method == "temperature":
+            # Estimate temperature from calibration slope
+            # Higher slope = underconfident = lower temperature
+            # Lower slope = overconfident = higher temperature
+            if result.calibration_slope > 0.1:
+                temperature = 1.0 / result.calibration_slope
+            else:
+                temperature = 1.0
+            return cls(
+                temperature=min(max(temperature, 0.5), 2.0),
+                method="temperature",
+            )
+        else:
+            return cls()
+
+
+def adjust_confidence(
+    score: float,
+    adjustment: CalibrationAdjustment,
+) -> float:
+    """Adjust a confidence score using calibration parameters.
+
+    Args:
+        score: Original confidence score (0-100 or 0-1)
+        adjustment: Calibration adjustment parameters
+
+    Returns:
+        Adjusted confidence score in same scale as input
+    """
+    # Normalize to 0-1 if needed
+    is_percentage = score > 1.0
+    normalized = score / 100.0 if is_percentage else score
+
+    if adjustment.method == "temperature":
+        # Platt scaling: calibrated = sigmoid(logit(score) / T)
+        # Approximate without log for stability
+        shifted = (normalized - 0.5) / adjustment.temperature
+        adjusted = 0.5 + shifted * min(0.5, 0.5 / adjustment.temperature)
+    elif adjustment.method == "linear":
+        # Linear calibration: calibrated = slope * score + intercept
+        adjusted = adjustment.slope * normalized + adjustment.intercept
+    else:
+        adjusted = normalized
+
+    # Clamp to valid range
+    adjusted = max(0.0, min(1.0, adjusted))
+
+    return adjusted * 100.0 if is_percentage else adjusted
+
+
+def adjust_search_results(
+    results: list[dict[str, Any]],
+    adjustment: CalibrationAdjustment,
+    score_key: str = "score",
+) -> list[dict[str, Any]]:
+    """Adjust confidence scores in search results using calibration.
+
+    Args:
+        results: List of search result dicts
+        adjustment: Calibration adjustment parameters
+        score_key: Key for score in result dicts
+
+    Returns:
+        Results with adjusted scores (new list, original unchanged)
+    """
+    adjusted_results = []
+    for result in results:
+        new_result = dict(result)
+        original_score = result.get(score_key, 0)
+        new_result[score_key] = adjust_confidence(original_score, adjustment)
+        new_result["original_score"] = original_score
+        new_result["calibration_method"] = adjustment.method
+        adjusted_results.append(new_result)
+    return adjusted_results
+
+
+def compute_calibration_adjustment(
+    existing_labels: dict[str, Any],
+    search_results: list[dict[str, Any]],
+    method: str = "linear",
+) -> CalibrationAdjustment:
+    """Compute calibration adjustment from labeled data.
+
+    Args:
+        existing_labels: Relevance labels mapping query_id -> labels
+        search_results: Search results with scores
+        method: Adjustment method
+
+    Returns:
+        CalibrationAdjustment parameters
+    """
+    # Collect confidences and labels
+    confidences: list[float] = []
+    labels: list[int] = []
+
+    for result in search_results:
+        query_id = result.get("query_id", "")
+        dataset_id = result.get("dataset_id", "")
+        score = result.get("score", 0)
+
+        # Normalize score to 0-1
+        normalized_score = score / 100.0 if score > 1.0 else score
+
+        # Check if we have a label
+        if query_id in existing_labels:
+            label_set = existing_labels[query_id]
+            # Get relevance for this dataset
+            if hasattr(label_set, "get_judgment_for_dataset"):
+                judgment = label_set.get_judgment_for_dataset(dataset_id)
+                if judgment:
+                    # Convert relevance to binary
+                    is_relevant = judgment.relevance_score > 0
+                    confidences.append(normalized_score)
+                    labels.append(int(is_relevant))
+
+    if len(confidences) < 10:
+        # Not enough data for calibration
+        return CalibrationAdjustment()
+
+    # Compute calibration metrics
+    result = compute_calibration_metrics(confidences, labels)
+
+    return CalibrationAdjustment.from_calibration_result(result, method)

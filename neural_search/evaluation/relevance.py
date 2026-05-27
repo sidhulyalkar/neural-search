@@ -491,3 +491,166 @@ def compute_human_evaluation_metrics(
         relevant_judgments=len(label_set.relevant_dataset_ids),
         exact_match_judgments=len(label_set.exact_match_ids),
     )
+
+
+# =============================================================================
+# Active Learning for Efficient Relevance Labeling
+# =============================================================================
+
+
+@dataclass
+class SamplePriority:
+    """Priority scoring for active learning sample selection."""
+
+    dataset_id: str
+    query_id: str
+    uncertainty_score: float  # Higher = more uncertain
+    diversity_score: float  # Higher = more different from labeled
+    calibration_score: float  # Higher = more useful for calibration
+    overall_priority: float
+
+    @classmethod
+    def compute(
+        cls,
+        dataset_id: str,
+        query_id: str,
+        search_score: float,
+        labeled_ids: set[str],
+        score_range: tuple[float, float],
+    ) -> SamplePriority:
+        """Compute priority scores for a sample.
+
+        Args:
+            dataset_id: Dataset identifier
+            query_id: Query identifier
+            search_score: Search system confidence score
+            labeled_ids: Already labeled dataset IDs
+            score_range: (min, max) scores across all results
+
+        Returns:
+            SamplePriority with computed scores
+        """
+        # Uncertainty: prioritize scores near decision boundary (0.5)
+        min_score, max_score = score_range
+        score_range_val = max_score - min_score if max_score > min_score else 1.0
+        normalized = (search_score - min_score) / score_range_val
+        uncertainty = 1.0 - abs(normalized - 0.5) * 2  # Peak at 0.5
+
+        # Diversity: prioritize unlabeled samples
+        diversity = 0.0 if dataset_id in labeled_ids else 1.0
+
+        # Calibration: prioritize extreme scores for calibration
+        calibration = abs(normalized - 0.5) * 2  # Peak at 0 and 1
+
+        # Weighted combination
+        overall = (
+            0.4 * uncertainty
+            + 0.4 * diversity
+            + 0.2 * calibration
+        )
+
+        return cls(
+            dataset_id=dataset_id,
+            query_id=query_id,
+            uncertainty_score=round(uncertainty, 4),
+            diversity_score=round(diversity, 4),
+            calibration_score=round(calibration, 4),
+            overall_priority=round(overall, 4),
+        )
+
+
+def select_samples_for_labeling(
+    search_results: list[dict[str, Any]],
+    existing_labels: dict[str, RelevanceLabelSet],
+    max_samples: int = 10,
+    strategy: str = "uncertainty",
+) -> list[SamplePriority]:
+    """Select most informative samples for human labeling.
+
+    Implements active learning strategies:
+    - uncertainty: Select samples where model is least confident
+    - diversity: Select samples most different from already labeled
+    - hybrid: Balanced combination of uncertainty and diversity
+
+    Args:
+        search_results: List of search result dicts with dataset_id, query_id, score
+        existing_labels: Already collected relevance labels
+        max_samples: Maximum number of samples to select
+        strategy: Selection strategy (uncertainty, diversity, hybrid)
+
+    Returns:
+        List of SamplePriority sorted by priority (highest first)
+    """
+    # Get already labeled dataset IDs
+    labeled_ids: set[str] = set()
+    for label_set in existing_labels.values():
+        for judgment in label_set.judgments:
+            labeled_ids.add(judgment.dataset_id)
+
+    # Compute score range
+    scores = [r.get("score", 0) for r in search_results]
+    score_range = (min(scores) if scores else 0, max(scores) if scores else 100)
+
+    # Compute priority for each sample
+    priorities: list[SamplePriority] = []
+    for result in search_results:
+        dataset_id = result.get("dataset_id", "")
+        query_id = result.get("query_id", "unknown")
+        score = result.get("score", 0)
+
+        priority = SamplePriority.compute(
+            dataset_id=dataset_id,
+            query_id=query_id,
+            search_score=score,
+            labeled_ids=labeled_ids,
+            score_range=score_range,
+        )
+
+        # Adjust based on strategy
+        if strategy == "uncertainty":
+            priority.overall_priority = priority.uncertainty_score
+        elif strategy == "diversity":
+            priority.overall_priority = priority.diversity_score
+        # hybrid uses the default weighted combination
+
+        priorities.append(priority)
+
+    # Sort by priority and return top samples
+    priorities.sort(key=lambda p: p.overall_priority, reverse=True)
+    return priorities[:max_samples]
+
+
+def compute_labeling_coverage(
+    existing_labels: dict[str, RelevanceLabelSet],
+    total_queries: int,
+    min_labels_per_query: int = 10,
+) -> dict[str, Any]:
+    """Compute coverage statistics for relevance labeling.
+
+    Args:
+        existing_labels: Collected relevance labels
+        total_queries: Total number of benchmark queries
+        min_labels_per_query: Minimum labels needed per query
+
+    Returns:
+        Coverage statistics dict
+    """
+    queries_with_labels = len(existing_labels)
+    total_labels = sum(len(ls.judgments) for ls in existing_labels.values())
+    avg_labels_per_query = total_labels / queries_with_labels if queries_with_labels else 0
+
+    fully_labeled = sum(
+        1 for ls in existing_labels.values()
+        if len(ls.judgments) >= min_labels_per_query
+    )
+
+    return {
+        "total_queries": total_queries,
+        "queries_with_labels": queries_with_labels,
+        "query_coverage_pct": round(queries_with_labels / total_queries * 100, 1) if total_queries else 0,
+        "total_labels": total_labels,
+        "avg_labels_per_query": round(avg_labels_per_query, 1),
+        "fully_labeled_queries": fully_labeled,
+        "fully_labeled_pct": round(fully_labeled / total_queries * 100, 1) if total_queries else 0,
+        "labels_needed": max(0, total_queries * min_labels_per_query - total_labels),
+    }
