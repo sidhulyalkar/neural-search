@@ -15,6 +15,8 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
 from neural_search.graph.builder import build_graph_from_records, split_records
+from neural_search.graph.paper_linking import add_paper_dataset_links_to_graph, generate_linking_report
+from neural_search.graph.provenance import add_provenance_metadata, analyze_graph_provenance
 from neural_search.graph.quality import validate_graph_coverage
 from neural_search.graph.schema import write_graph_json
 from neural_search.normalized import load_normalized_records
@@ -29,6 +31,7 @@ REAL_CORPUS_FILES = [
     "real_openneuro.jsonl",
     "real_allen.jsonl",
     "real_nemo.jsonl",
+    "real_papers.jsonl",
 ]
 
 
@@ -68,6 +71,33 @@ def main() -> int:
     )
 
     print(f"Graph built: {len(graph.nodes)} nodes, {len(graph.edges)} edges")
+
+    # Add semantic paper-dataset linking
+    if all_papers:
+        print("\nAdding semantic paper-dataset links...")
+        links_added = add_paper_dataset_links_to_graph(graph)
+        print(f"  Added {links_added} semantic linking edges")
+
+        # Generate linking report
+        linking_report = generate_linking_report(graph)
+        print(f"  Papers with links: {linking_report.papers_with_links}/{linking_report.total_papers}")
+        print(f"  Datasets with links: {linking_report.datasets_with_links}/{linking_report.total_datasets}")
+        print(f"  Explicit links: {linking_report.explicit_links}")
+        print(f"  Semantic links: {linking_report.semantic_links}")
+
+    # Add provenance tracking
+    print("\nAnalyzing source provenance...")
+    add_provenance_metadata(graph)
+    prov_report = analyze_graph_provenance(graph)
+    print(f"  Source balance score: {prov_report.source_balance_score:.1%}")
+    print(f"  Dominant source: {prov_report.dominant_source}")
+    for source, stats in sorted(prov_report.source_stats.items(), key=lambda x: -x[1].dataset_count):
+        if stats.dataset_count > 0 or stats.paper_count > 0:
+            print(f"    {source}: {stats.dataset_count} datasets, {stats.paper_count} papers")
+    if prov_report.warnings:
+        print("  Warnings:")
+        for warning in prov_report.warnings:
+            print(f"    - {warning}")
 
     # Write output
     output_path = Path(args.output)

@@ -730,7 +730,11 @@ def build_paper_subgraph(
     for author in paper.authors:
         if not author.strip():
             continue
-        author_node = _author_node(author, source_id=paper.paper_id)
+        # Skip authors whose names normalize to empty identifiers
+        try:
+            author_node = _author_node(author, source_id=paper.paper_id)
+        except ValueError:
+            continue
         evidence = author_node.evidence[0]
         _add_node(nodes, author_node)
         _add_edge(
