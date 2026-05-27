@@ -49,6 +49,12 @@ profiles:
       readiness: 0.05
       modality: 0.00
       paper_confidence: 0.00
+    field_weights:
+      tasks: 0.30
+      behavioral_events: 0.25
+      combined_scientific_summary: 0.20
+      description: 0.15
+      title: 0.10
     scoring_mode: weighted_sum
     min_confidence: 0.70
 
@@ -64,6 +70,12 @@ profiles:
       affordance: 0.05
       readiness: 0.00
       paper_confidence: 0.00
+    field_weights:
+      modalities: 0.35
+      data_standards: 0.20
+      title: 0.15
+      description: 0.15
+      combined_scientific_summary: 0.15
     scoring_mode: weighted_sum
     min_confidence: 0.75
 
@@ -79,6 +91,12 @@ profiles:
       affordance: 0.05
       readiness: 0.00
       paper_confidence: 0.00
+    field_weights:
+      brain_regions: 0.30
+      title: 0.20
+      description: 0.20
+      combined_scientific_summary: 0.15
+      modalities: 0.15
     scoring_mode: weighted_sum
     min_confidence: 0.70
 

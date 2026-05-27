@@ -76,6 +76,18 @@ ALIASES: dict[str, list[str]] = {
     "drosophila": ["drosophila", "fruit fly", "fly", "drosophila melanogaster"],
     "zebrafish": ["zebrafish", "danio rerio", "zebrafish larvae"],
     "marmoset": ["marmoset", "callithrix", "common marmoset"],
+    # Behaviors - reward and value
+    "reward_prediction": ["reward prediction", "reward prediction error", "rpe", "prediction error", "reward expectation"],
+    "reward_omission": ["reward omission", "omission", "no reward", "reward absence", "unexpected omission"],
+    "dopamine": ["dopamine", "da", "dopaminergic", "dopamine signal", "dopamine release"],
+    # Behaviors - motor/kinematic
+    "position": ["position", "cursor position", "hand position", "limb position", "spatial position"],
+    "velocity": ["velocity", "movement velocity", "hand velocity", "speed", "movement speed"],
+    "cursor_movement": ["cursor movement", "cursor control", "cursor trajectory"],
+    # Behaviors - choice/decision
+    "choice": ["choice", "decision", "action selection", "behavioral choice"],
+    "trial_outcome": ["trial outcome", "outcome", "success", "failure", "correct", "error"],
+    "learning": ["learning", "acquisition", "rule learning", "task learning"],
 }
 
 

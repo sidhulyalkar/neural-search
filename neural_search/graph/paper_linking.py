@@ -482,3 +482,179 @@ def generate_linking_report(graph: KnowledgeGraph) -> LinkingReport:
         top_linked_datasets=top_linked_datasets,
         top_linked_papers=top_linked_papers,
     )
+
+
+def find_doi_based_links(
+    graph: KnowledgeGraph,
+    datasets: list[dict[str, Any]],
+) -> list[KnowledgeGraphEdge]:
+    """Find explicit links between papers and datasets based on DOI/citation.
+
+    This function creates edges when:
+    1. A dataset record has a linked_publications field with DOIs
+    2. A paper mentions a specific dataset ID
+    3. Author overlap suggests connection
+
+    Args:
+        graph: Knowledge graph
+        datasets: Raw dataset records with metadata
+
+    Returns:
+        List of explicit linking edges
+    """
+    edges: list[KnowledgeGraphEdge] = []
+    seen: set[str] = set()
+
+    # Build a paper index by DOI
+    paper_by_doi: dict[str, str] = {}  # DOI -> node_id
+    for node in graph.nodes.values():
+        if node.node_type == "paper":
+            props = node.properties or {}
+            doi = props.get("doi")
+            if doi:
+                paper_by_doi[doi.lower()] = node.node_id
+
+    # For each dataset, check linked publications
+    for ds in datasets:
+        ds_id = ds.get("id") or ds.get("source_id", "")
+        if not ds_id:
+            continue
+
+        ds_node_id = make_node_id("dataset", ds_id)
+        if ds_node_id not in graph.nodes:
+            continue
+
+        linked_pubs = ds.get("linked_publications", [])
+        if not linked_pubs:
+            linked_pubs = ds.get("publications", [])
+
+        for pub in linked_pubs:
+            doi = pub.get("doi", "") if isinstance(pub, dict) else str(pub)
+            if not doi:
+                continue
+
+            doi_clean = doi.lower().replace("https://doi.org/", "").replace("http://dx.doi.org/", "")
+            paper_node_id = paper_by_doi.get(doi_clean)
+
+            if not paper_node_id:
+                continue
+
+            edge_id = make_edge_id(paper_node_id, "paper_uses_dataset", ds_node_id)
+            if edge_id in seen or edge_id in graph.edges:
+                continue
+            seen.add(edge_id)
+
+            edge = KnowledgeGraphEdge(
+                edge_id=edge_id,
+                source_node_id=paper_node_id,
+                target_node_id=ds_node_id,
+                edge_type="paper_uses_dataset",
+                directed=True,
+                confidence=0.95,  # High confidence for DOI-based links
+                evidence=[
+                    GraphEvidence(
+                        evidence_id=f"evidence:doi_link:{paper_node_id}:{ds_node_id}",
+                        source_type="doi_linking",
+                        source_id=ds_node_id,
+                        source_field="linked_publications",
+                        evidence_text=f"Explicit DOI link: {doi_clean}",
+                        confidence=0.95,
+                        extractor_name="neural_search.graph.paper_linking",
+                        extractor_version="v1.1.0",
+                    )
+                ],
+                properties={
+                    "link_type": "explicit_doi",
+                    "doi": doi_clean,
+                },
+                created_at=_now(),
+            )
+            edges.append(edge)
+
+    return edges
+
+
+def find_author_based_links(
+    graph: KnowledgeGraph,
+    min_author_overlap: int = 2,
+) -> list[KnowledgeGraphEdge]:
+    """Find paper-dataset links based on author overlap.
+
+    Creates links when papers and datasets share multiple authors,
+    suggesting the paper may have used or produced the dataset.
+
+    Args:
+        graph: Knowledge graph
+        min_author_overlap: Minimum number of shared authors
+
+    Returns:
+        List of author-based linking edges
+    """
+    edges: list[KnowledgeGraphEdge] = []
+    seen: set[str] = set()
+
+    # Build author sets for papers and datasets
+    paper_authors: dict[str, set[str]] = {}
+    dataset_authors: dict[str, set[str]] = {}
+
+    for node in graph.nodes.values():
+        props = node.properties or {}
+        authors = props.get("authors", [])
+        if not authors:
+            authors = props.get("contributors", [])
+
+        author_names = set()
+        for author in authors:
+            if isinstance(author, dict):
+                name = author.get("name", "")
+            else:
+                name = str(author)
+            if name:
+                author_names.add(name.lower())
+
+        if node.node_type == "paper" and author_names:
+            paper_authors[node.node_id] = author_names
+        elif node.node_type == "dataset" and author_names:
+            dataset_authors[node.node_id] = author_names
+
+    # Find overlaps
+    for paper_id, paper_auth in paper_authors.items():
+        for ds_id, ds_auth in dataset_authors.items():
+            overlap = paper_auth & ds_auth
+            if len(overlap) >= min_author_overlap:
+                edge_id = make_edge_id(paper_id, "paper_related_to_dataset", ds_id)
+                if edge_id in seen or edge_id in graph.edges:
+                    continue
+                seen.add(edge_id)
+
+                confidence = min(0.5 + len(overlap) * 0.1, 0.85)
+
+                edge = KnowledgeGraphEdge(
+                    edge_id=edge_id,
+                    source_node_id=paper_id,
+                    target_node_id=ds_id,
+                    edge_type="paper_related_to_dataset",
+                    directed=True,
+                    confidence=confidence,
+                    evidence=[
+                        GraphEvidence(
+                            evidence_id=f"evidence:author_overlap:{paper_id}:{ds_id}",
+                            source_type="author_linking",
+                            source_id=paper_id,
+                            source_field="authors",
+                            evidence_text=f"Shared authors: {', '.join(sorted(overlap)[:3])}",
+                            confidence=confidence,
+                            extractor_name="neural_search.graph.paper_linking",
+                            extractor_version="v1.1.0",
+                        )
+                    ],
+                    properties={
+                        "link_type": "author_overlap",
+                        "shared_author_count": len(overlap),
+                        "shared_authors": sorted(overlap)[:5],
+                    },
+                    created_at=_now(),
+                )
+                edges.append(edge)
+
+    return edges

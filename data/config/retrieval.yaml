@@ -152,8 +152,8 @@ hard_negative_filters:
 
 # Awareness scoring for broad neuroscience data-form matching
 awareness:
-  enabled: false  # Disabled by default until validated
-  weight: 0.0     # Weight contribution to final score (0.0-0.15 recommended)
+  enabled: true   # Promoted to primary retrieval
+  weight: 0.06    # Moderate weight contribution to final score
   rerank: false   # Whether to rerank results by awareness score
 
 # Search intelligence planner for intent-aware weight selection

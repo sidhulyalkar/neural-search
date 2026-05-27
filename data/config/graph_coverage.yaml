@@ -55,6 +55,27 @@ required_node_types:
     severity: warning
     description: "Data standards (e.g., NWB, BIDS)"
 
+  # Scientific enrichment nodes
+  experimental_method:
+    min_count: 3
+    severity: warning
+    description: "Experimental methods (e.g., optogenetics, pharmacology)"
+
+  cell_type:
+    min_count: 2
+    severity: warning
+    description: "Cell types (e.g., pyramidal, interneuron)"
+
+  cognitive_domain:
+    min_count: 3
+    severity: warning
+    description: "Cognitive domains (e.g., learning, attention, memory)"
+
+  author:
+    min_count: 0
+    severity: warning
+    description: "Research authors for provenance tracking"
+
 # Required edge types with minimum count thresholds
 required_edge_types:
   # Dataset-to-concept edges (core connectivity)
@@ -99,6 +120,37 @@ required_edge_types:
     min_count: 3
     severity: warning
     description: "Links analysis types to required modalities"
+
+  # Scientific enrichment edges
+  dataset_uses_method:
+    min_count: 0
+    severity: warning
+    description: "Links datasets to experimental methods used"
+
+  dataset_studies_celltype:
+    min_count: 0
+    severity: warning
+    description: "Links datasets to cell types studied"
+
+  dataset_investigates_domain:
+    min_count: 5
+    severity: warning
+    description: "Links datasets to cognitive domains investigated"
+
+  paper_authored_by:
+    min_count: 0
+    severity: warning
+    description: "Links papers to authors for provenance"
+
+  paper_cites_paper:
+    min_count: 0
+    severity: warning
+    description: "Citation relationships between papers"
+
+  task_belongs_to_domain:
+    min_count: 3
+    severity: warning
+    description: "Links tasks to cognitive domains"
 
 # Coverage thresholds
 coverage_thresholds:
