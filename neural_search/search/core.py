@@ -36,14 +36,14 @@ from neural_search.search.constraints import (
     negative_constraint_violations,
     parse_hard_negative_constraints,
 )
-from neural_search.search.field_semantic import (
-    field_semantic_score_for_result,
-    load_field_semantic_index,
-)
 from neural_search.search.explanation import (
     ExplanationContext,
     MatchGroup,
     generate_explanation,
+)
+from neural_search.search.field_semantic import (
+    field_semantic_score_for_result,
+    load_field_semantic_index,
 )
 from neural_search.search.intent import (
     blend_weights,

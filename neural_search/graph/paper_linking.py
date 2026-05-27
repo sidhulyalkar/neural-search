@@ -17,7 +17,6 @@ from neural_search.graph.schema import (
     GraphEvidence,
     KnowledgeGraph,
     KnowledgeGraphEdge,
-    KnowledgeGraphNode,
     make_edge_id,
     make_node_id,
 )
@@ -306,7 +305,6 @@ def build_paper_dataset_linking_edges(
     seen_pairs: set[tuple[str, str]] = set()
 
     paper_nodes = [n for n in graph.nodes.values() if n.node_type == "paper"]
-    dataset_nodes = [n for n in graph.nodes.values() if n.node_type == "dataset"]
 
     for paper in paper_nodes:
         links = find_related_datasets_for_paper(

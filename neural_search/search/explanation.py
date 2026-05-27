@@ -77,7 +77,6 @@ def _calculate_quality_grade(
     score = context.score
     num_matches = sum(len(g.matched_terms) for g in context.match_groups)
     has_warnings = bool(context.warnings)
-    missing_count = len(context.missing_metadata)
 
     if score >= 70 and num_matches >= 3 and not has_warnings:
         return "excellent"

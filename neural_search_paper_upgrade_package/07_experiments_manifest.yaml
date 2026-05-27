@@ -1,0 +1,235 @@
+version: 0.9
+project: neural-search
+principle: "Do not fabricate results. Use TODO placeholders where experiments have not yet run."
+
+baseline_ladder:
+  priority: 1
+  goal: "Measure the contribution of each retrieval layer."
+  systems:
+    - keyword_search
+    - bm25
+    - field_weighted_bm25
+    - dense_only
+    - bm25_dense_rrf
+    - bm25_dense_ontology
+    - bm25_dense_ontology_graph
+    - full_neural_search
+  metrics:
+    - precision_at_5
+    - recall_at_10
+    - mrr
+    - ndcg_at_10
+    - hard_negative_violation_rate
+    - latency_p50
+    - latency_p95
+    - explanation_completeness
+  outputs:
+    - reports/baseline_ladder.json
+    - reports/baseline_ladder.md
+    - reports/baseline_ladder_latex.tex
+
+hard_negative_adversarial_benchmark:
+  priority: 2
+  goal: "Test exclusion constraints and invalid-match prevention."
+  example_queries:
+    - "mouse decision-making NOT visual cortex"
+    - "human EEG excluding fMRI"
+    - "Neuropixels motor cortex but not visual coding"
+    - "calcium imaging with behavior labels, excluding spontaneous-only data"
+    - "reward learning data but not Pavlovian conditioning"
+  violation_types:
+    - species_violation
+    - modality_violation
+    - brain_region_violation
+    - task_family_violation
+    - format_violation
+    - unsupported_analysis_affordance
+    - missing_required_metadata
+  metrics:
+    - violation_rate_at_1
+    - violation_rate_at_5
+    - violation_rate_at_10
+    - violation_source_field
+
+analysis_affordance_validation:
+  priority: 3
+  goal: "Validate predicted analysis affordances against labels or deterministic schema checks."
+  affordances:
+    choice_decoding:
+      required_fields:
+        - neural_activity
+        - trial_labels
+        - choice_labels
+      optional_fields:
+        - reaction_time
+        - stimulus_type
+        - confidence
+    q_learning:
+      required_fields:
+        - choices
+        - rewards
+        - trial_order
+        - subject_id
+        - session_id
+      optional_fields:
+        - reaction_time
+        - block_structure
+        - task_state
+    state_space_modeling:
+      required_fields:
+        - continuous_time_series
+        - timestamps
+        - sampling_rate
+      optional_fields:
+        - trial_boundaries
+        - behavioral_labels
+    neural_behavior_alignment:
+      required_fields:
+        - neural_time_series
+        - behavior_time_series
+        - shared_timestamps
+      optional_fields:
+        - event_labels
+        - pose_coordinates
+    cross_session_analysis:
+      required_fields:
+        - subject_id
+        - session_date
+        - unit_or_channel_metadata
+      optional_fields:
+        - drift_metrics
+        - anatomical_coordinates
+    causal_perturbation_analysis:
+      required_fields:
+        - intervention_labels
+        - intervention_timing
+        - control_condition
+      optional_fields:
+        - dose
+        - stimulation_parameters
+        - randomization
+    representational_similarity_analysis:
+      required_fields:
+        - aligned_stimuli
+        - population_responses
+      optional_fields:
+        - model_features
+        - train_test_split
+  metrics:
+    - precision
+    - recall
+    - f1
+    - calibration_error
+    - false_affordance_rate
+    - missing_affordance_rate
+
+cross_dataset_pairing:
+  priority: 4
+  goal: "Find scientifically useful dataset pairs."
+  pair_types:
+    - same_task_different_region
+    - same_task_different_species
+    - same_modality_different_task
+    - shared_analysis_affordance
+    - complementary_modalities
+    - same_model_benchmark_potential
+  features:
+    - task_similarity
+    - modality_compatibility
+    - species_relationship
+    - brain_region_relationship
+    - shared_affordance
+    - graph_path_confidence
+    - provenance_confidence
+    - novelty_score
+  metrics:
+    - pair_relevance
+    - reason_correctness
+    - graph_path_validity
+    - novelty_score
+    - human_usefulness_rating
+
+metadata_robustness:
+  priority: 5
+  goal: "Measure retrieval degradation under missing or corrupted metadata."
+  perturbations:
+    - drop_description
+    - drop_task_labels
+    - drop_modality_labels
+    - drop_species_labels
+    - drop_paper_links
+    - corrupt_region_fields
+    - synonym_replace_terms
+    - insert_ambiguous_abbreviations
+    - remove_event_labels
+    - remove_provenance_confidence
+  metrics:
+    - precision_at_5_delta
+    - ndcg_at_10_delta
+    - hard_negative_violation_increase
+    - graph_rescue_rate
+    - field_importance_ranking
+
+embedding_bakeoff:
+  priority: 6
+  goal: "Compare embedding families for neuroscience dataset retrieval."
+  candidates:
+    - existing_local_embeddings
+    - general_sentence_transformer
+    - scientific_text_encoder
+    - biomedical_text_encoder
+    - scientific_document_encoder
+    - openai_embedding_provider
+    - field_specific_embeddings
+    - late_interaction_model_optional
+  metrics:
+    - precision_at_5
+    - recall_at_10
+    - ndcg_at_10
+    - synonym_robustness
+    - abbreviation_handling
+    - hard_negative_violation_rate
+    - latency
+
+graph_link_prediction:
+  priority: 7
+  goal: "Test whether graph structure can infer missing scientific relationships."
+  heldout_edges:
+    - dataset_to_task
+    - dataset_to_modality
+    - dataset_to_brain_region
+    - dataset_to_paper
+    - dataset_to_supports_analysis
+    - task_to_cognitive_construct
+    - modality_to_compatible_analysis_method
+  baselines:
+    - random_edge_baseline
+    - node_degree_heuristic
+    - ontology_distance
+    - metapath_count
+    - path_confidence
+  metrics:
+    - hits_at_k
+    - mrr
+    - auc
+    - precision_at_high_confidence
+    - calibration_error
+
+latent_neural_signature_search:
+  priority: 8
+  goal: "Prototype search over measured neural dynamics, not just metadata."
+  features:
+    - firing_rate_statistics
+    - inter_spike_interval_statistics
+    - trial_aligned_psth
+    - population_covariance
+    - neural_behavior_mutual_information
+    - effective_dimensionality
+    - event_aligned_modulation_indices
+    - spectral_features
+    - calcium_transient_statistics
+  metrics:
+    - biological_plausibility_of_neighbors
+    - metadata_similarity_agreement
+    - known_group_recovery
+    - novelty_of_discovered_pairings

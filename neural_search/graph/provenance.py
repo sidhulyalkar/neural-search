@@ -8,7 +8,6 @@ This module provides functionality to:
 
 from __future__ import annotations
 
-from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any
 

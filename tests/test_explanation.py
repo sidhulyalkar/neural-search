@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from neural_search.search.explanation import (
     ExplanationContext,
     ExplanationResult,

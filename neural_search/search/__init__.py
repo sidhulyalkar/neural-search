@@ -7,6 +7,14 @@ from neural_search.search.core import (
     score_dataset_against_query,
     search_datasets,
 )
+from neural_search.search.explanation import (
+    ExplanationContext,
+    ExplanationResult,
+    MatchGroup,
+    build_explanation_context,
+    generate_explanation,
+    generate_result_explanation,
+)
 from neural_search.search.hybrid import (
     FusionMethod,
     HybridRetrievalConfig,
@@ -59,14 +67,6 @@ from neural_search.search.weight_optimizer import (
     get_adaptive_weights,
     interpolate_weights,
     normalize_weights,
-)
-from neural_search.search.explanation import (
-    ExplanationContext,
-    ExplanationResult,
-    MatchGroup,
-    build_explanation_context,
-    generate_explanation,
-    generate_result_explanation,
 )
 
 __all__ = [
