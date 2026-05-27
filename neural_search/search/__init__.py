@@ -60,6 +60,14 @@ from neural_search.search.weight_optimizer import (
     interpolate_weights,
     normalize_weights,
 )
+from neural_search.search.explanation import (
+    ExplanationContext,
+    ExplanationResult,
+    MatchGroup,
+    build_explanation_context,
+    generate_explanation,
+    generate_result_explanation,
+)
 
 __all__ = [
     # Core search
@@ -115,4 +123,11 @@ __all__ = [
     "enrich_query_with_semantic_context",
     "expand_query_with_concepts",
     "merge_expansion_into_query",
+    # Explanation generation
+    "ExplanationContext",
+    "ExplanationResult",
+    "MatchGroup",
+    "build_explanation_context",
+    "generate_explanation",
+    "generate_result_explanation",
 ]
