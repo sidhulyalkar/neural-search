@@ -1,0 +1,451 @@
+# Query Sense Disambiguation Configuration
+# ==========================================
+#
+# This file defines the different scientific meanings (senses) of
+# overloaded terms in neuroscience queries. The goal is to distinguish
+# between different meanings of the same word to improve search precision.
+#
+# Example: "delay" can mean:
+#   - delay_discounting: Intertemporal choice, reward valuation
+#   - motor_delay: Delayed reach, instructed delay period
+#   - signal_delay: Neural propagation delay, conduction latency
+#   - working_memory_delay: WM maintenance during delay period
+#
+# Each sense has:
+#   - positive_terms: Terms that indicate this sense
+#   - required_context_any: At least one must appear for sense to apply
+#   - negative_terms: Terms that contradict this sense
+#   - exclusive_senses: Mutually exclusive meanings
+#   - associated_affordances: Analysis affordances for this sense
+#   - associated_tasks: Experimental tasks associated with this sense
+
+delay:
+  delay_discounting:
+    label: "Delay discounting / Intertemporal choice"
+    description: "Temporal discounting of reward value, choosing between immediate and delayed rewards"
+    positive_terms:
+      - "delay discounting"
+      - "temporal discounting"
+      - "intertemporal choice"
+      - "delayed reward"
+      - "immediate reward"
+      - "impulsive choice"
+      - "impulsivity"
+      - "discounting rate"
+      - "hyperbolic discounting"
+      - "k parameter"
+      - "discount factor"
+      - "sooner smaller"
+      - "larger later"
+      - "delay aversion"
+      - "time preference"
+    required_context_any:
+      - "reward"
+      - "choice"
+      - "value"
+      - "magnitude"
+      - "decision"
+      - "prefer"
+      - "option"
+      - "impuls"
+    negative_terms:
+      - "reach"
+      - "grasp"
+      - "motor"
+      - "movement"
+      - "propagation"
+      - "conduction"
+      - "latency"
+      - "synaptic"
+      - "working memory"
+      - "maintenance"
+      - "retention"
+    exclusive_senses:
+      - "motor_delay"
+      - "signal_delay"
+      - "working_memory_delay"
+    associated_affordances:
+      - "delay_discounting_modeling"
+      - "q_learning"
+    associated_tasks:
+      - "delay_discounting"
+      - "intertemporal_choice"
+      - "impulsivity"
+
+  motor_delay:
+    label: "Motor delay / Instructed delay"
+    description: "Delay period in motor tasks, delayed reach, movement preparation"
+    positive_terms:
+      - "delayed reach"
+      - "instructed delay"
+      - "motor planning"
+      - "movement preparation"
+      - "delay period activity"
+      - "preparatory activity"
+      - "reach to grasp"
+      - "delayed saccade"
+      - "go cue"
+      - "hold period"
+    required_context_any:
+      - "reach"
+      - "grasp"
+      - "motor"
+      - "movement"
+      - "saccade"
+      - "arm"
+      - "hand"
+      - "target"
+    negative_terms:
+      - "discount"
+      - "value"
+      - "impulsive"
+      - "magnitude"
+      - "propagation"
+      - "memory"
+    exclusive_senses:
+      - "delay_discounting"
+      - "signal_delay"
+    associated_affordances:
+      - "motor_decoding"
+      - "choice_decoding"
+    associated_tasks:
+      - "delayed_reach"
+      - "center_out"
+      - "instructed_delay"
+
+  signal_delay:
+    label: "Signal propagation delay"
+    description: "Neural signal propagation time, conduction delay, latency"
+    positive_terms:
+      - "propagation delay"
+      - "conduction delay"
+      - "signal latency"
+      - "transmission delay"
+      - "synaptic delay"
+      - "axonal delay"
+      - "response latency"
+      - "onset latency"
+    required_context_any:
+      - "propagat"
+      - "conduct"
+      - "latenc"
+      - "transmis"
+      - "synap"
+      - "axon"
+    negative_terms:
+      - "discount"
+      - "choice"
+      - "reward"
+      - "motor"
+      - "reach"
+      - "memory"
+    exclusive_senses:
+      - "delay_discounting"
+      - "motor_delay"
+    associated_affordances:
+      - "functional_connectivity"
+      - "cross_area_interaction"
+    associated_tasks: []
+
+  working_memory_delay:
+    label: "Working memory delay period"
+    description: "Delay period in working memory tasks, maintenance, retention"
+    positive_terms:
+      - "delay period"
+      - "working memory"
+      - "maintenance"
+      - "retention interval"
+      - "memory delay"
+      - "delay match"
+      - "delayed match to sample"
+      - "dmts"
+      - "dms task"
+    required_context_any:
+      - "memory"
+      - "maintain"
+      - "retain"
+      - "sample"
+      - "match"
+      - "remember"
+    negative_terms:
+      - "discount"
+      - "reward"
+      - "motor"
+      - "propagation"
+    exclusive_senses:
+      - "delay_discounting"
+      - "signal_delay"
+    associated_affordances:
+      - "trial_aligned_neural_analysis"
+    associated_tasks:
+      - "working_memory"
+      - "delayed_match_to_sample"
+
+reward:
+  reward_value:
+    label: "Reward value / Decision value"
+    description: "Subjective value of rewards for decision making"
+    positive_terms:
+      - "reward value"
+      - "subjective value"
+      - "decision value"
+      - "expected value"
+      - "reward prediction"
+      - "value signal"
+      - "value representation"
+      - "reward prediction error"
+      - "rpe"
+    required_context_any:
+      - "value"
+      - "decision"
+      - "choice"
+      - "expect"
+      - "predict"
+    negative_terms:
+      - "reward delivery"
+      - "juice"
+      - "water"
+      - "pellet"
+    exclusive_senses:
+      - "reward_delivery"
+    associated_affordances:
+      - "q_learning"
+      - "delay_discounting_modeling"
+    associated_tasks:
+      - "value_based_decision"
+      - "reinforcement_learning"
+
+  reward_delivery:
+    label: "Reward delivery / Consummatory"
+    description: "Physical reward delivery, consumption, reinforcement"
+    positive_terms:
+      - "reward delivery"
+      - "juice reward"
+      - "water reward"
+      - "food reward"
+      - "pellet"
+      - "sucrose"
+      - "reward consumption"
+      - "licking"
+    required_context_any:
+      - "deliver"
+      - "juice"
+      - "water"
+      - "food"
+      - "lick"
+      - "consum"
+    negative_terms:
+      - "value"
+      - "subjective"
+      - "expected"
+      - "prediction"
+    exclusive_senses:
+      - "reward_value"
+    associated_affordances:
+      - "q_learning"
+    associated_tasks:
+      - "operant_conditioning"
+      - "pavlovian_conditioning"
+
+choice:
+  binary_choice:
+    label: "Binary choice / Two-alternative"
+    description: "Two-alternative forced choice tasks"
+    positive_terms:
+      - "binary choice"
+      - "two alternative"
+      - "2afc"
+      - "left right"
+      - "go nogo"
+      - "yes no"
+    required_context_any:
+      - "choice"
+      - "decision"
+      - "alternative"
+      - "forced"
+    negative_terms:
+      - "multi"
+      - "multiple"
+      - "continuous"
+    exclusive_senses:
+      - "multi_choice"
+    associated_affordances:
+      - "choice_decoding"
+    associated_tasks:
+      - "two_alternative_forced_choice"
+
+  multi_choice:
+    label: "Multi-alternative choice"
+    description: "Multiple choice options, multi-armed bandit"
+    positive_terms:
+      - "multi armed bandit"
+      - "multiple alternatives"
+      - "n-armed bandit"
+      - "multi choice"
+      - "several options"
+    required_context_any:
+      - "multi"
+      - "several"
+      - "bandit"
+      - "options"
+    negative_terms:
+      - "binary"
+      - "two alternative"
+      - "2afc"
+    exclusive_senses:
+      - "binary_choice"
+    associated_affordances:
+      - "q_learning"
+      - "choice_decoding"
+    associated_tasks:
+      - "multi_armed_bandit"
+      - "foraging"
+
+memory:
+  working_memory:
+    label: "Working memory"
+    description: "Short-term maintenance of information for task performance"
+    positive_terms:
+      - "working memory"
+      - "short term memory"
+      - "maintenance"
+      - "delay period"
+      - "memory load"
+      - "memory capacity"
+      - "n-back"
+      - "delayed match"
+    required_context_any:
+      - "maintain"
+      - "load"
+      - "capacity"
+      - "delay"
+      - "short"
+    negative_terms:
+      - "episodic"
+      - "hippocampus"
+      - "long term"
+      - "consolidation"
+    exclusive_senses:
+      - "episodic_memory"
+      - "spatial_memory"
+    associated_affordances:
+      - "trial_aligned_neural_analysis"
+    associated_tasks:
+      - "working_memory"
+      - "n_back"
+      - "delayed_match_to_sample"
+
+  episodic_memory:
+    label: "Episodic memory"
+    description: "Memory for specific events, hippocampal memory"
+    positive_terms:
+      - "episodic memory"
+      - "hippocampal memory"
+      - "memory encoding"
+      - "memory retrieval"
+      - "recall"
+      - "recognition memory"
+      - "autobiographical"
+      - "contextual memory"
+    required_context_any:
+      - "hippocamp"
+      - "encod"
+      - "retriev"
+      - "recall"
+      - "episod"
+      - "context"
+    negative_terms:
+      - "working"
+      - "maintenance"
+      - "delay period"
+      - "short term"
+    exclusive_senses:
+      - "working_memory"
+    associated_affordances:
+      - "trial_aligned_neural_analysis"
+    associated_tasks:
+      - "episodic_memory"
+      - "recognition"
+      - "free_recall"
+
+  spatial_memory:
+    label: "Spatial memory / Navigation"
+    description: "Memory for spatial locations, place cells, navigation"
+    positive_terms:
+      - "spatial memory"
+      - "place cell"
+      - "grid cell"
+      - "navigation"
+      - "spatial map"
+      - "cognitive map"
+      - "head direction"
+      - "path integration"
+      - "hippocampal place"
+    required_context_any:
+      - "place"
+      - "grid"
+      - "navigat"
+      - "spatial"
+      - "locat"
+      - "map"
+    negative_terms:
+      - "working"
+      - "episodic"
+      - "verbal"
+    exclusive_senses:
+      - "working_memory"
+    associated_affordances:
+      - "pose_neural_correlation"
+    associated_tasks:
+      - "spatial_navigation"
+      - "foraging"
+      - "virtual_navigation"
+
+spike:
+  action_potential:
+    label: "Action potential / Spike"
+    description: "Neural action potentials, single-unit activity"
+    positive_terms:
+      - "action potential"
+      - "spike"
+      - "single unit"
+      - "spike train"
+      - "firing rate"
+      - "spike time"
+      - "unit activity"
+    required_context_any:
+      - "neuron"
+      - "unit"
+      - "firing"
+      - "record"
+      - "electro"
+    negative_terms:
+      - "spike sorting"
+      - "calcium spike"
+    exclusive_senses: []
+    associated_affordances:
+      - "event_aligned_psth"
+      - "choice_decoding"
+    associated_tasks: []
+
+  calcium_spike:
+    label: "Calcium spike / Calcium transient"
+    description: "Calcium imaging signals, calcium transients"
+    positive_terms:
+      - "calcium spike"
+      - "calcium transient"
+      - "calcium event"
+      - "gcamp"
+      - "calcium indicator"
+    required_context_any:
+      - "calcium"
+      - "imaging"
+      - "gcamp"
+      - "fluor"
+    negative_terms:
+      - "action potential"
+      - "electrophysiology"
+    exclusive_senses: []
+    associated_affordances:
+      - "trial_aligned_calcium_analysis"
+    associated_tasks: []
