@@ -47,6 +47,17 @@ from neural_search.search.semantic_expansion import (
     expand_query_with_concepts,
     merge_expansion_into_query,
 )
+from neural_search.search.sense_disambiguation import (
+    DisambiguationResult,
+    SenseDefinition,
+    disambiguate_query,
+    get_associated_affordances,
+    get_associated_tasks,
+    get_sense,
+    get_sense_penalties,
+    get_senses_by_category,
+    list_senses,
+)
 from neural_search.search.semantic_scoring import (
     SemanticScoreResult,
     SemanticSearchIndex,
@@ -130,4 +141,14 @@ __all__ = [
     "build_explanation_context",
     "generate_explanation",
     "generate_result_explanation",
+    # Sense disambiguation
+    "DisambiguationResult",
+    "SenseDefinition",
+    "disambiguate_query",
+    "get_associated_affordances",
+    "get_associated_tasks",
+    "get_sense",
+    "get_sense_penalties",
+    "get_senses_by_category",
+    "list_senses",
 ]

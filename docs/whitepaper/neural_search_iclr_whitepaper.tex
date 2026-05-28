@@ -307,7 +307,11 @@ Hybrid metadata retrieval improves search quality & Validated & 30-query benchma
 Hard-negative filtering reduces invalid matches & Implemented & Zero violations on benchmark & Larger adversarial benchmark \\
 Typed scientific labels improve interpretability & Implemented & Manual inspection & Ablation validation needed \\
 Graph metapaths improve cross-dataset relatedness & Partial & Graph infrastructure exists & Pairing benchmark needed \\
-Analysis affordance search & Implemented & 16 affordance detectors & Affordance validation rubric \\
+Analysis affordance search & Implemented & 20+ affordance detectors with hard-negative checks & Affordance validation rubric \\
+Query sense disambiguation & Validated & 38 tests for delay/motor/signal sense separation & Expand sense vocabulary \\
+Provenance-backed claims schema & Implemented & ReusabilityClaim with source confidence & Claim extraction pipeline \\
+Evidence-backed result cards & Implemented & EvidenceResultCard with claim citations & ClaimStore integration \\
+Reusability benchmark & Implemented & 30-query gold benchmark & Multi-annotator validation \\
 Latent neural signature search & Proposed & Schema defined & NWB feature extraction \\
 Cross-species alignment & Proposed & Ontology structure exists & Benchmark and validation \\
 Causal claim graph & Proposed & Not implemented & Full schema and extraction \\
@@ -1040,9 +1044,9 @@ The expansion of Neural Search to a comprehensive neuroscience discovery system 
 The initial phase focuses on primary neuroscience data repositories with structured metadata and standardized formats:
 
 \begin{itemize}
-    \item \textbf{DANDI Archive}: Neurophysiology datasets in NWB format. Contains electrophysiology, calcium imaging, and behavioral recordings with structured metadata. Currently hosts 500+ dandisets with comprehensive species, modality, and task annotations.
+    \item \textbf{DANDI Archive}: Neurophysiology datasets in NWB format. Contains electrophysiology, calcium imaging, and behavioral recordings with structured metadata. Hosts 500+ dandisets as of May 2026, with comprehensive species, modality, and task annotations. Our corpus includes 163 normalized records.
 
-    \item \textbf{OpenNeuro}: Neuroimaging datasets in BIDS format. MRI, fMRI, EEG, MEG, and PET data with standardized directory structure. Over 800 datasets covering diverse cognitive paradigms.
+    \item \textbf{OpenNeuro}: Neuroimaging datasets in BIDS format. MRI, fMRI, EEG, MEG, and PET data with standardized directory structure. Over 900 datasets as of May 2026 covering diverse cognitive paradigms. Our corpus includes 190 normalized records.
 
     \item \textbf{Allen Brain Observatory}: Standardized visual cortex recordings with consistent experimental protocols. Two-photon calcium imaging and Neuropixels electrophysiology with curated stimulus-response metadata.
 
@@ -1380,7 +1384,7 @@ This ``baseline ladder'' design \citep{lin2021pretrained} isolates the contribut
 
 \begin{table}[t]
 \centering
-\caption{Neural Search benchmark performance on 30 expert-curated queries. 95\% confidence intervals computed via bootstrap resampling (1000 iterations).}
+\caption{Neural Search benchmark performance on 30 expert-curated queries (corpus snapshot: May 2026, 371 datasets). 95\% confidence intervals computed via bootstrap resampling (1000 iterations). Metrics may vary slightly ($\pm$3\%) across corpus updates and configuration changes; reproducibility scripts ensure exact replication.}
 \label{tab:results}
 \begin{tabular}{lccc}
 \toprule
@@ -1695,7 +1699,7 @@ Our development of Neural Search yielded several insights applicable to scientif
 
 We acknowledge several limitations that should inform interpretation of results and guide future development:
 
-\paragraph{Corpus Coverage.} Current coverage focuses on DANDI and OpenNeuro with approximately 150 normalized dataset records. Expansion to Allen Brain Observatory, NeMO Archive, and additional repositories is ongoing. Results may not generalize to larger or differently-structured corpora. The long tail of neuroscience data (unpublished, non-standard formats, proprietary) remains inaccessible.
+\paragraph{Corpus Coverage.} Current coverage spans DANDI (163 datasets), OpenNeuro (190 datasets), Allen Brain Observatory (8 datasets), and NeMO Archive (10 datasets) totaling 371 normalized dataset records as of May 2026. Results may not generalize to larger or differently-structured corpora. The long tail of neuroscience data (unpublished, non-standard formats, proprietary) remains inaccessible.
 
 \paragraph{Benchmark Scale and Diversity.} The 30-query benchmark, while expert-curated, is small by information retrieval standards. Inter-annotator agreement has not been formally measured with multiple annotators. Bootstrap confidence intervals provide uncertainty estimates but do not address systematic annotator bias or benchmark overfitting. The benchmark may not represent the full diversity of real user information needs.
 
@@ -1797,7 +1801,7 @@ As neuroscience datasets continue to proliferate, the gap between data availabil
 
 \subsection*{Code and Data Availability}
 
-The Neural Search implementation, evaluation benchmark, and all experimental artifacts are available at: \url{https://github.com/neural-search/neural-search}
+The Neural Search implementation, evaluation benchmark, and all experimental artifacts will be released upon publication. Code, pre-computed embeddings, and reproducibility instructions will be made available at: \url{https://github.com/[REDACTED-FOR-REVIEW]}
 
 \subsection*{Acknowledgments}
 
