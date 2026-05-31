@@ -90,6 +90,16 @@ _LINKAGE_EXPORTS = {
     "save_benchmark",
 }
 
+_RELATEDNESS_EXPORTS = {
+    "RelatednessScorer",
+    "RelatednessScore",
+    "RelatednessDimension",
+    "DimensionScore",
+    "score_dataset_pair",
+    "compute_corpus_relatedness_matrix",
+    "auto_label_linkage_benchmark",
+}
+
 
 def __getattr__(name: str) -> Any:
     if name in _DETAILED_EXPORTS:
@@ -106,6 +116,9 @@ def __getattr__(name: str) -> Any:
         return getattr(module, name)
     if name in _LINKAGE_EXPORTS:
         module = import_module("neural_search.evaluation.dataset_linkage")
+        return getattr(module, name)
+    if name in _RELATEDNESS_EXPORTS:
+        module = import_module("neural_search.evaluation.relatedness_scorer")
         return getattr(module, name)
     raise AttributeError(f"module 'neural_search.evaluation' has no attribute {name!r}")
 
@@ -184,4 +197,11 @@ __all__ = [
     "evaluate_linkage",
     "load_benchmark",
     "save_benchmark",
+    # Relatedness Scorer API
+    "RelatednessScorer",
+    "RelatednessDimension",
+    "DimensionScore",
+    "score_dataset_pair",
+    "compute_corpus_relatedness_matrix",
+    "auto_label_linkage_benchmark",
 ]
