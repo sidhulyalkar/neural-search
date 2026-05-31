@@ -26,6 +26,70 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
+def _load_dataset_details(graph_path: Path) -> dict[str, dict]:
+    """Load rich dataset details for annotation display."""
+    with open(graph_path) as f:
+        graph = json.load(f)
+
+    nodes = graph.get("nodes", {})
+    edges = graph.get("edges", {})
+
+    # Build dataset info
+    dataset_info: dict[str, dict] = {}
+
+    for node_id, node in nodes.items():
+        if node.get("node_type") != "dataset":
+            continue
+
+        props = node.get("properties", {})
+        dataset_info[node_id] = {
+            "title": node.get("label", "Unknown"),
+            "source": props.get("source", "unknown"),
+            "species": [],
+            "modalities": [],
+            "tasks": [],
+            "regions": [],
+        }
+
+    # Enrich from edges
+    for edge_id, edge in edges.items():
+        source = edge.get("source_node_id", "")
+        target = edge.get("target_node_id", "")
+        edge_type = edge.get("edge_type", "")
+
+        if source not in dataset_info:
+            continue
+
+        # Extract the label from target node
+        target_node = nodes.get(target, {})
+        target_label = target_node.get("label", target.split(":")[-1])
+
+        if edge_type == "dataset_has_species":
+            dataset_info[source]["species"].append(target_label)
+        elif edge_type == "dataset_has_modality":
+            dataset_info[source]["modalities"].append(target_label)
+        elif edge_type == "dataset_has_task":
+            dataset_info[source]["tasks"].append(target_label)
+        elif edge_type == "dataset_records_region":
+            dataset_info[source]["regions"].append(target_label)
+
+    return dataset_info
+
+
+def _compute_shared_attributes(info_a: dict, info_b: dict) -> dict[str, list[str]]:
+    """Find shared attributes between two datasets."""
+    shared = {}
+
+    for attr in ["species", "modalities", "tasks", "regions"]:
+        set_a = set(info_a.get(attr, []))
+        set_b = set(info_b.get(attr, []))
+        common = set_a & set_b
+        if common:
+            shared[attr] = list(common)[:5]
+
+    return shared
+
+
 def load_corpus(graph_path: Path) -> list[dict]:
     """Load corpus datasets."""
     with open(graph_path) as f:
@@ -152,30 +216,35 @@ def linkage_labeling_cli(
     annotator_id: str,
     benchmark_path: Path,
     output_path: Path,
+    graph_path: Path,
     max_pairs: int = 25,
 ):
     """CLI for labeling dataset linkage pairs."""
     from neural_search.evaluation.dataset_linkage import load_benchmark
 
     benchmark = load_benchmark(benchmark_path)
+
+    # Load full dataset metadata for display
+    dataset_info = _load_dataset_details(graph_path)
+
     labels = []
     pairs_labeled = 0
 
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 70)
     print("DATASET LINKAGE LABELING")
-    print("=" * 60)
+    print("=" * 70)
     print(f"Annotator: {annotator_id}")
     print(f"Total pairs: {benchmark.n_pairs}")
     print(f"Target: {max_pairs} pairs")
     print()
     print("Relatedness scale:")
     print("  0 = Unrelated (no meaningful connection)")
-    print("  1 = Topical (same general area)")
+    print("  1 = Topical (same general area, e.g. both neuroscience)")
     print("  2 = Comparable (could compare in meta-analysis)")
-    print("  3 = Reusable (analysis pipeline transfers)")
+    print("  3 = Reusable (same analysis pipeline would work)")
     print()
     print("Commands: 0-3 to grade, s=skip, q=quit")
-    print("=" * 60)
+    print("=" * 70)
     input("\nPress Enter to start...")
 
     # Shuffle pairs
@@ -186,11 +255,47 @@ def linkage_labeling_cli(
         if pairs_labeled >= max_pairs:
             break
 
-        print("\n" + "-" * 60)
-        print(f"Linkage type (hint): {pair.linkage_type}")
-        print()
-        print(f"Dataset A: {pair.source_id}")
-        print(f"Dataset B: {pair.target_id}")
+        # Get rich metadata for both datasets
+        info_a = dataset_info.get(pair.source_id, {})
+        info_b = dataset_info.get(pair.target_id, {})
+
+        print("\n" + "=" * 70)
+        print(f"PAIR {pairs_labeled + 1}/{max_pairs}  |  Hint: {pair.linkage_type}")
+        print("=" * 70)
+
+        # Dataset A
+        print("\n[DATASET A]")
+        print(f"  Title: {info_a.get('title', 'Unknown')}")
+        print(f"  Source: {info_a.get('source', '?')}")
+        if info_a.get('species'):
+            print(f"  Species: {', '.join(info_a['species'][:3])}")
+        if info_a.get('modalities'):
+            print(f"  Modality: {', '.join(info_a['modalities'][:3])}")
+        if info_a.get('tasks'):
+            print(f"  Tasks: {', '.join(info_a['tasks'][:3])}")
+        if info_a.get('regions'):
+            print(f"  Brain regions: {', '.join(info_a['regions'][:5])}")
+
+        # Dataset B
+        print("\n[DATASET B]")
+        print(f"  Title: {info_b.get('title', 'Unknown')}")
+        print(f"  Source: {info_b.get('source', '?')}")
+        if info_b.get('species'):
+            print(f"  Species: {', '.join(info_b['species'][:3])}")
+        if info_b.get('modalities'):
+            print(f"  Modality: {', '.join(info_b['modalities'][:3])}")
+        if info_b.get('tasks'):
+            print(f"  Tasks: {', '.join(info_b['tasks'][:3])}")
+        if info_b.get('regions'):
+            print(f"  Brain regions: {', '.join(info_b['regions'][:5])}")
+
+        # Show shared attributes
+        shared = _compute_shared_attributes(info_a, info_b)
+        if shared:
+            print("\n[SHARED]")
+            for attr, values in shared.items():
+                print(f"  {attr}: {', '.join(values)}")
+
         print()
 
         while True:
@@ -279,6 +384,7 @@ def main():
             annotator_id=args.annotator,
             benchmark_path=args.linkage_benchmark,
             output_path=args.output / f"linkage_labels_{args.annotator}.jsonl",
+            graph_path=args.graph,
             max_pairs=args.max_pairs,
         )
     else:
