@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -228,7 +228,7 @@ def generate_nwb_starter_notebook(
         header_lines.append(f"**URL:** [{source_url}]({source_url})  ")
     header_lines.extend([
         f"**Asset:** `{asset_path}`  ",
-        f"**Generated:** {datetime.now(UTC).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"**Generated:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
         "",
     ])
 
@@ -687,7 +687,7 @@ def generate_nwb_starter_notebook(
                 "template_title": _get_value(notebook_template or {}, "title", "Generic NWB inspection"),
                 "template_warnings": list(template_warnings or []),
                 "recipe_ids": [str(recipe.get("id", "")) for recipe in recipes or []],
-                "generated_at": datetime.now(UTC).isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             },
         },
         cells=cells,

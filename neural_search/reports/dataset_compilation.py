@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -171,7 +171,7 @@ def compile_dataset_report() -> dict[str, Any]:
     )
 
     return {
-        "report_generated_at": datetime.now(UTC).isoformat(),
+        "report_generated_at": datetime.now(timezone.utc).isoformat(),
         "summary": {
             "total_datasets": len(records),
             "total_papers_linked": unique_papers,

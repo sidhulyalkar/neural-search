@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
@@ -213,7 +213,7 @@ def create_judgment(
         species_match=species_match,
         analysis_fit=analysis_fit,
         reviewer_id=reviewer_id,
-        review_timestamp=datetime.now(UTC).isoformat(),
+        review_timestamp=datetime.now(timezone.utc).isoformat(),
         review_notes=notes,
         confidence=confidence,
     )

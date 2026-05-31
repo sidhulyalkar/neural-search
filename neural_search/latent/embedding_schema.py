@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
@@ -56,7 +56,7 @@ class SessionFeatures:
     dataset_id: str
     session_id: str
     features: list[FeatureSummary] = field(default_factory=list)
-    extracted_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    extracted_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     warnings: list[str] = field(default_factory=list)
 
     @property
@@ -110,7 +110,7 @@ class LatentIndex:
     feature_type: FeatureType
     embedding_dim: int
     num_sessions: int = 0
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     index_backend: str = "in_memory"
 
     def to_dict(self) -> dict[str, Any]:

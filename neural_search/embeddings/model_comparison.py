@@ -29,7 +29,7 @@ import logging
 import math
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -408,7 +408,7 @@ def compare_embedding_models(
         corpus_size=len(corpus),
         query_count=len(queries),
         baseline_model=baseline,
-        generated_at=datetime.now(UTC).isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
     )
 
 

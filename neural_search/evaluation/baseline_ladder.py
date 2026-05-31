@@ -423,7 +423,7 @@ def run_baseline_ladder(
     Returns:
         LadderReport with metrics for each level
     """
-    from datetime import UTC, datetime
+    from datetime import datetime, timezone
 
     if levels is None:
         levels = list(LadderLevel)
@@ -496,7 +496,7 @@ def run_baseline_ladder(
         embedding_lift=round(embedding_lift, 4),
         queries_needing_graph=queries_needing_graph[:10],
         queries_hurt_by_graph=queries_hurt_by_graph[:10],
-        generated_at=datetime.now(UTC).isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
     )
 
 

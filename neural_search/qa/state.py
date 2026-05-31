@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
@@ -138,7 +138,7 @@ def update_dataset_status(
     if status not in QA_STATUSES:
         raise ValueError(f"Unsupported QA status: {status}")
     state = load_qa_state(path)
-    now = datetime.now(UTC).isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     existing = _normalize_record(state.get(dataset_id, {}), dataset_id=dataset_id)
     existing["qa_status"] = status
     existing["reviewed_at"] = now
@@ -162,7 +162,7 @@ def update_dataset_qa_fields(
     for key, value in updates.items():
         if key in QA_FIELD_DEFAULTS or key == "qa_status":
             existing[key] = value
-    existing["updated_at"] = datetime.now(UTC).isoformat()
+    existing["updated_at"] = datetime.now(timezone.utc).isoformat()
     state[dataset_id] = _normalize_record(existing, dataset_id=dataset_id)
     save_qa_state(state, path)
     return state[dataset_id]

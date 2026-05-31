@@ -198,3 +198,252 @@ def _scaled_float(value: Any, denominator: float) -> float:
         return max(0.0, min(float(value) / denominator, 1.0))
     except (TypeError, ValueError):
         return 0.0
+
+
+# ============================================================================
+# NWB-based Feature Extraction (scaffolded for future implementation)
+# ============================================================================
+
+
+def extract_features_from_nwb_path(nwb_path: str) -> SessionFeatures | None:
+    """Extract latent features from an NWB file.
+
+    This function extracts neural and behavioral features from NWB files
+    for neural-neural similarity search.
+
+    Args:
+        nwb_path: Path to NWB file
+
+    Returns:
+        SessionFeatures if extraction succeeds, None otherwise
+
+    Note:
+        Requires pynwb to be installed. Falls back to metadata-only
+        extraction if NWB reading fails.
+    """
+    try:
+        from pynwb import NWBHDF5IO
+    except ImportError:
+        return None
+
+    features: list[FeatureSummary] = []
+    warnings: list[str] = []
+
+    try:
+        with NWBHDF5IO(nwb_path, "r") as io:
+            nwbfile = io.read()
+
+            # Extract basic metadata
+            session_id = nwbfile.session_id or "unknown"
+            dataset_id = nwbfile.identifier or nwb_path
+
+            # Extract neural statistics
+            neural_stats = _extract_nwb_neural_stats(nwbfile)
+            if neural_stats:
+                features.append(neural_stats)
+            else:
+                warnings.append("Could not extract neural statistics from NWB")
+
+            # Extract behavioral statistics
+            behavior_stats = _extract_nwb_behavior_stats(nwbfile)
+            if behavior_stats:
+                features.append(behavior_stats)
+            else:
+                warnings.append("No behavioral data found in NWB")
+
+            # Extract trial statistics
+            trial_stats = _extract_nwb_trial_stats(nwbfile)
+            if trial_stats:
+                features.append(trial_stats)
+            else:
+                warnings.append("No trial data found in NWB")
+
+            # Extract electrode information
+            electrode_stats = _extract_nwb_electrode_stats(nwbfile)
+            if electrode_stats:
+                features.append(electrode_stats)
+
+            return SessionFeatures(
+                dataset_id=dataset_id,
+                session_id=session_id,
+                features=features,
+                warnings=warnings,
+            )
+
+    except Exception as e:
+        return SessionFeatures(
+            dataset_id=nwb_path,
+            session_id="unknown",
+            features=[],
+            warnings=[f"NWB extraction failed: {e}"],
+        )
+
+
+def _extract_nwb_neural_stats(nwbfile: Any) -> FeatureSummary | None:
+    """Extract neural recording statistics from NWB file."""
+    values = []
+    metadata = {}
+
+    # Try to get units (sorted spikes)
+    units = getattr(nwbfile, "units", None)
+    if units is not None:
+        try:
+            unit_count = len(units)
+            values.append(_scaled_float(unit_count, 1000))
+            metadata["unit_count"] = unit_count
+
+            # Calculate mean firing rate if spike times available
+            if "spike_times" in units.colnames:
+                total_spikes = sum(len(units["spike_times"][i]) for i in range(unit_count))
+                # Estimate session duration
+                all_spikes = []
+                for i in range(min(unit_count, 10)):  # Sample first 10 units
+                    all_spikes.extend(units["spike_times"][i])
+                if all_spikes:
+                    duration = max(all_spikes) - min(all_spikes)
+                    if duration > 0:
+                        mean_fr = (total_spikes / unit_count) / duration if unit_count > 0 else 0
+                        values.append(_scaled_float(mean_fr, 50))
+                        metadata["mean_firing_rate_hz"] = mean_fr
+        except Exception:
+            pass
+
+    # Try to get acquisition data
+    acquisition = getattr(nwbfile, "acquisition", {})
+    for _name, data in acquisition.items():
+        if hasattr(data, "rate"):
+            values.append(_scaled_float(data.rate, 30000))
+            metadata["sampling_rate_hz"] = data.rate
+            break
+
+    if not values:
+        return None
+
+    return FeatureSummary(
+        feature_type=FeatureType.NEURAL_SUMMARY_STATISTICS,
+        dimensions=len(values),
+        values=values,
+        metadata=metadata,
+    )
+
+
+def _extract_nwb_behavior_stats(nwbfile: Any) -> FeatureSummary | None:
+    """Extract behavioral statistics from NWB file."""
+    values = []
+    metadata = {}
+
+    # Check for behavioral time series
+    behavior = getattr(nwbfile, "processing", {}).get("behavior", None)
+    if behavior is None:
+        return None
+
+    behavior_types = []
+    for name, data in behavior.data_interfaces.items():
+        behavior_types.append(name.lower())
+        if hasattr(data, "data"):
+            try:
+                data_len = len(data.data)
+                values.append(_scaled_float(data_len, 100000))
+            except Exception:
+                pass
+
+    if behavior_types:
+        # Create histogram over common behavior types
+        vocab = ["position", "speed", "velocity", "pupil", "lick", "wheel", "running"]
+        hist_values = normalized_histogram(behavior_types, vocab)
+        values.extend(hist_values)
+        metadata["behavior_types"] = behavior_types
+
+    if not values:
+        return None
+
+    return FeatureSummary(
+        feature_type=FeatureType.BEHAVIOR_TRANSITION_SUMMARY,
+        dimensions=len(values),
+        values=values,
+        metadata=metadata,
+    )
+
+
+def _extract_nwb_trial_stats(nwbfile: Any) -> FeatureSummary | None:
+    """Extract trial statistics from NWB file."""
+    trials = getattr(nwbfile, "trials", None)
+    if trials is None:
+        return None
+
+    values = []
+    metadata = {}
+
+    try:
+        trial_count = len(trials)
+        values.append(_scaled_float(trial_count, 1000))
+        metadata["trial_count"] = trial_count
+
+        # Trial duration statistics
+        if "start_time" in trials.colnames and "stop_time" in trials.colnames:
+            durations = [
+                trials["stop_time"][i] - trials["start_time"][i]
+                for i in range(min(trial_count, 100))
+            ]
+            if durations:
+                mean_duration = sum(durations) / len(durations)
+                values.append(_scaled_float(mean_duration, 30))  # 30 second max
+                metadata["mean_trial_duration_s"] = mean_duration
+
+        # Check for common trial columns
+        common_columns = ["correct", "choice", "stimulus", "response_time"]
+        for col in common_columns:
+            has_col = 1.0 if col in trials.colnames else 0.0
+            values.append(has_col)
+            metadata[f"has_{col}"] = bool(has_col)
+
+    except Exception:
+        return None
+
+    if not values:
+        return None
+
+    return FeatureSummary(
+        feature_type=FeatureType.TASK_STATE_LABELS,
+        dimensions=len(values),
+        values=values,
+        metadata=metadata,
+    )
+
+
+def _extract_nwb_electrode_stats(nwbfile: Any) -> FeatureSummary | None:
+    """Extract electrode/recording location statistics from NWB file."""
+    electrodes = getattr(nwbfile, "electrodes", None)
+    if electrodes is None:
+        return None
+
+    values = []
+    metadata = {}
+
+    try:
+        electrode_count = len(electrodes)
+        values.append(_scaled_float(electrode_count, 1000))
+        metadata["electrode_count"] = electrode_count
+
+        # Extract brain regions
+        if "location" in electrodes.colnames:
+            regions = set()
+            for i in range(electrode_count):
+                loc = electrodes["location"][i]
+                if loc:
+                    regions.add(str(loc).lower())
+            metadata["brain_regions"] = list(regions)
+            values.append(_scaled_float(len(regions), 20))
+
+    except Exception:
+        return None
+
+    if not values:
+        return None
+
+    return FeatureSummary(
+        feature_type=FeatureType.NEURAL_SUMMARY_STATISTICS,
+        dimensions=len(values),
+        values=values,
+        metadata=metadata,
+    )

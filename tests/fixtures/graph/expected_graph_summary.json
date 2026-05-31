@@ -1,6 +1,9 @@
 {
-  "edge_count": 66,
+  "edge_count": 357,
   "edge_counts": {
+    "analysis_requires_behavioral_event": 23,
+    "analysis_requires_modality": 99,
+    "analysis_requires_task_structure": 159,
     "dataset_has_behavioral_event": 9,
     "dataset_has_file_format": 1,
     "dataset_has_modality": 5,
@@ -14,20 +17,26 @@
     "paper_mentions_region": 3,
     "paper_studies_task": 4,
     "paper_uses_dataset": 4,
-    "paper_uses_modality": 4
+    "paper_uses_modality": 4,
+    "species_has_animal_type": 2,
+    "species_has_model_role": 4,
+    "species_in_taxon_group": 4
   },
-  "node_count": 47,
+  "node_count": 146,
   "node_counts": {
-    "analysis_affordance": 8,
+    "analysis_affordance": 32,
     "author": 4,
-    "behavioral_event": 7,
+    "behavioral_event": 11,
     "brain_region": 5,
-    "data_standard": 2,
+    "data_standard": 14,
     "dataset": 5,
     "file_format": 1,
-    "modality": 4,
+    "modality": 31,
+    "organism_model": 6,
     "paper": 4,
+    "required_signal": 22,
     "species": 2,
-    "task": 5
+    "task": 5,
+    "taxon_group": 4
   }
 }

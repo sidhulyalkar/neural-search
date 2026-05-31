@@ -36,7 +36,7 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
@@ -81,7 +81,7 @@ class EmbeddingRecord(BaseModel):
     text_length: int                     # Character count of input
 
     # Timestamps
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     corpus_snapshot_id: str | None = None
 
     @staticmethod

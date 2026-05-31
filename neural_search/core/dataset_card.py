@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any, Literal
 
@@ -146,7 +146,7 @@ class DatasetCardV1(BaseModel):
     # Timestamps
     source_created_at: str | None = None
     source_updated_at: str | None = None
-    card_created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    card_created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     card_version: str = "v1"
 
     @field_validator("dataset_id", "source", "source_id", "title")
@@ -261,7 +261,7 @@ class CorpusSnapshot(BaseModel):
     """
 
     snapshot_id: str                     # e.g., "corpus_20260527_abc123"
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     # Repository info
     repo_commit: str | None = None       # Git commit if available
@@ -288,9 +288,9 @@ class CorpusSnapshot(BaseModel):
     @staticmethod
     def generate_snapshot_id() -> str:
         """Generate a unique snapshot ID."""
-        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
         random_suffix = hashlib.sha256(
-            datetime.now(UTC).isoformat().encode()
+            datetime.now(timezone.utc).isoformat().encode()
         ).hexdigest()[:8]
         return f"corpus_{timestamp}_{random_suffix}"
 
@@ -324,7 +324,7 @@ class ProvenanceEvidence(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0, default=0.8)
     extractor: str = "unknown"
     extractor_version: str = "v0.0.0"
-    timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 class ProvenanceEdge(BaseModel):
@@ -361,7 +361,7 @@ class ProvenanceEdge(BaseModel):
 
     # Provenance
     corpus_snapshot_id: str | None = None
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str | None = None
 
     @staticmethod
@@ -449,7 +449,7 @@ class AffordanceValidationResult(BaseModel):
     # Validation details
     validation_method: str | None = None
     validation_notes: str | None = None
-    validated_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    validated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
 # Factory functions

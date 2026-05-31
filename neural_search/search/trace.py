@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -65,7 +65,7 @@ def capture_search_trace(
     field_config = (retrieval_config or {}).get("field_embeddings", {})
     return SearchTrace(
         query=response.query,
-        generated_at=datetime.now(UTC).isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
         parsed_query=response.parsed_query or parsed,
         filters=filters or {},
         filtered_constraints=response.parsed_query.get("filtered_negative_constraints", []),

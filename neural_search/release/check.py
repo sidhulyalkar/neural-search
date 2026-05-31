@@ -7,7 +7,7 @@ import hashlib
 import json
 import subprocess
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -293,7 +293,7 @@ def build_release_summary(
     ]
 
     return {
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "commit": _git_commit(),
         "artifact_versions": {
             "demo_corpus": "demo_v05",

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from neural_search.notebooks.templates import available_templates_for_dataset
@@ -394,7 +394,7 @@ def generate_dataset_card_json(
             "linked_paper_count": len(linked_papers or []),
             "claim_policy": "Only deterministic labels with evidence are included.",
         },
-        generated_at=datetime.now(UTC),
+        generated_at=datetime.now(timezone.utc),
     )
     card.card_markdown = generate_dataset_card_markdown(card)
     card.markdown = card.card_markdown

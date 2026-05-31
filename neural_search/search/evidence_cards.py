@@ -31,7 +31,7 @@ Example result card:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
@@ -138,7 +138,7 @@ class EvidenceResultCard(BaseModel):
 
     # Timestamps
     generated_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
 
 

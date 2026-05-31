@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable, Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -46,7 +46,7 @@ class FieldEmbeddingRecord(BaseModel):
     model_name: str
     dimension: int = Field(gt=0)
     normalize: bool
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     @model_validator(mode="after")
     def embedding_matches_dimension(self) -> FieldEmbeddingRecord:
@@ -151,7 +151,7 @@ def build_field_embedding_records(
         return []
 
     vectors = provider.embed_batch(texts)
-    timestamp = created_at or datetime.now(UTC).isoformat()
+    timestamp = created_at or datetime.now(timezone.utc).isoformat()
     return [
         FieldEmbeddingRecord(
             record_id=record_id,

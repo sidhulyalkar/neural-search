@@ -287,7 +287,7 @@ We make the following contributions:
 
     \item \textbf{Cross-disciplinary expansion roadmap} (Section~\ref{sec:expansion}): We outline a strategy for extending Neural Search to bridge neuroscience datasets with computational neuroscience models and artificial neural network research.
 
-    \item \textbf{Empirical validation} (Section~\ref{sec:experiments}): We demonstrate the effectiveness of our approach on an initial expert-curated benchmark, achieving strong performance while maintaining zero hard-negative violations. We present a roadmap for expanded validation.
+    \item \textbf{Empirical validation} (Section~\ref{sec:experiments}): We evaluate our approach on an initial expert-curated benchmark, showing promising performance while maintaining zero hard-negative violations. We present a roadmap for expanded multi-annotator validation.
 \end{enumerate}
 
 \subsection{Claim Status and Evidence}
@@ -1118,12 +1118,12 @@ For corpus $\mathcal{C}$ with sources $\mathcal{S}$:
 \end{align}
 \end{definition}
 
-Current corpus statistics (Phase 1, partial):
+Current corpus statistics (May 2026 snapshot):
 \begin{itemize}
-    \item 150+ normalized dataset records
-    \item 200+ linked publications
-    \item 800+ knowledge graph nodes
-    \item 1,500+ provenance-weighted edges
+    \item 371 normalized dataset records (DANDI: 163, OpenNeuro: 190, Allen: 8, NeMO: 10)
+    \item 50+ linked publications via OpenAlex
+    \item 614 knowledge graph nodes
+    \item 1,697 provenance-weighted edges
     \item Mean field completeness: 0.73
     \item Mean provenance depth: 2.1 sources/dataset
 \end{itemize}
@@ -1278,27 +1278,29 @@ We evaluate Neural Search through a combination of quantitative benchmarks, abla
 
 \subsubsection{Corpus Construction}
 
-The evaluation corpus was constructed through automated ingestion from DANDI Archive and OpenNeuro with manual quality verification:
+The evaluation corpus was constructed through automated ingestion from DANDI Archive, OpenNeuro, Allen Brain Observatory, and NeMO Archive with quality verification:
 
 \begin{table}[t]
 \centering
 \small
-\caption{Corpus statistics for benchmark evaluation.}
+\caption{Corpus statistics for benchmark evaluation (May 2026 snapshot).}
 \label{tab:corpus-stats}
 \begin{tabular}{lr}
 \toprule
 \textbf{Metric} & \textbf{Value} \\
 \midrule
-Total dataset records & 156 \\
-\quad From DANDI & 89 \\
-\quad From OpenNeuro & 67 \\
-Linked publications & 214 \\
+Total dataset records & 371 \\
+\quad From DANDI & 163 \\
+\quad From OpenNeuro & 190 \\
+\quad From Allen Brain & 8 \\
+\quad From NeMO & 10 \\
+Linked publications & 50+ \\
 Unique species & 12 \\
 Unique modalities & 18 \\
 Unique task families & 24 \\
-Knowledge graph nodes & 847 \\
-Knowledge graph edges & 1,523 \\
-Mean edges per dataset & 9.8 \\
+Knowledge graph nodes & 614 \\
+Knowledge graph edges & 1,697 \\
+Mean edges per dataset & 4.6 \\
 Mean provenance sources & 2.1 \\
 \bottomrule
 \end{tabular}
@@ -1504,6 +1506,23 @@ $-$ Hard negative filtering & 0.937* & 0 & Constraint violations \\
 \end{table}
 
 *Removing hard negative filtering maintains ranking metrics but introduces 8 constraint violations across the 5 hard-negative queries.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Hard-negative constraint satisfaction across retrieval configurations. Violations occur when excluded items appear in top-10 results.}
+\label{tab:hard-negative}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Configuration} & \textbf{Violations@10} & \textbf{Notes} \\
+\midrule
+BM25 only & 12/50 & No exclusion handling \\
+Dense only & 9/50 & Semantic false matches \\
+Hybrid (no hard filter) & 8/50 & Soft scoring insufficient \\
+Full system & 0/50 & Pre-retrieval filtering \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Ontology Matching is Critical.} The largest ablation impact ($-$0.116 NDCG) comes from removing ontology matching. This component handles scientific vocabulary normalization that neither BM25 (exact matching) nor dense retrieval (distributional similarity) capture well. Failure cases include:
 \begin{itemize}
@@ -1777,7 +1796,7 @@ This paper presented Neural Search, a novel retrieval system that reconceptualiz
 
 The implications of experiment-aware retrieval extend beyond the specific system described:
 
-\paragraph{Paradigm Shift in Scientific Search.} Traditional information retrieval treats documents as bags of words or continuous semantic representations. Scientific datasets require richer representations that capture experimental design, methodological requirements, and reuse affordances. Neural Search demonstrates that this richer representation is both computationally tractable and empirically beneficial.
+\paragraph{Paradigm Shift in Scientific Search.} Traditional information retrieval treats documents as bags of words or continuous semantic representations. Scientific datasets require richer representations that capture experimental design, methodological requirements, and reuse affordances. Initial results suggest that this richer representation is both computationally tractable and empirically promising.
 
 \paragraph{Enabling Large-Scale Data Reuse.} The neuroscience community has invested billions of dollars in data collection infrastructure, yet data reuse remains limited by discovery challenges. By dramatically improving discoverability, Neural Search could increase the return on this investment by orders of magnitude.
 
@@ -1787,7 +1806,7 @@ The implications of experiment-aware retrieval extend beyond the specific system
 
 \subsection{Looking Forward}
 
-The central thesis of this work is that \textbf{scientific search should retrieve reusable experimental contexts, not just documents}. Neural Search demonstrates this principle is computationally tractable and practically valuable.
+The central thesis of this work is that \textbf{scientific search should retrieve reusable experimental contexts, not just documents}. Our prototype suggests this principle is computationally tractable and practically promising; larger-scale validation remains ongoing.
 
 Several directions merit further investigation:
 \begin{itemize}

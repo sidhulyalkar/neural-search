@@ -35,7 +35,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from pathlib import Path
 from typing import Any, Callable
@@ -73,7 +73,7 @@ class AnnotatorLabel(BaseModel):
     confidence: float = 1.0  # 0-1
     notes: str | None = None
     labeled_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
 
 
@@ -97,7 +97,7 @@ class DatasetPair(BaseModel):
 
     # Metadata
     created_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
 
     def model_post_init(self, __context: Any) -> None:
@@ -144,7 +144,7 @@ class LinkageBenchmark(BaseModel):
 
     # Metadata
     created_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
     annotator_ids: list[str] = Field(default_factory=list)
 

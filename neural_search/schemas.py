@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any, Literal
 from uuid import UUID
 
@@ -116,7 +116,7 @@ class NormalizedDatasetRecord(BaseModel):
     usability_flags: UsabilityFlags = Field(default_factory=UsabilityFlags)
     missing_fields: list[str] = Field(default_factory=list)
     analysis_affordances: list[AnalysisAffordance] = Field(default_factory=list)
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     extractor_version: str = "v0.3.0"
 
     @field_validator("dataset_id", "source", "source_id", "title", "extractor_version")
@@ -145,7 +145,7 @@ class NormalizedPaperRecord(BaseModel):
     linked_datasets: list[str] = Field(default_factory=list)
     extracted_labels: list[EvidenceLabel] = Field(default_factory=list)
     raw_payload_path: str | None = None
-    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     extractor_version: str = "v0.3.0"
 
     @field_validator("paper_id", "source", "source_id", "title", "extractor_version")

@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from pathlib import Path
 from typing import Any, Literal
@@ -180,7 +180,7 @@ class ReusabilityClaim(BaseModel):
 
     # Timestamps
     created_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
     updated_at: str | None = None
 
@@ -218,8 +218,8 @@ class ReusabilityClaim(BaseModel):
             update={
                 "review_status": status,
                 "reviewed_by": reviewer,
-                "reviewed_at": datetime.now(UTC).isoformat(),
-                "updated_at": datetime.now(UTC).isoformat(),
+                "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             }
         )
 

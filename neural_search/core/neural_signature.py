@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any
 
@@ -141,7 +141,7 @@ class NeuralSignatureV1(BaseModel):
     quality: SignatureQuality = SignatureQuality.LOW
     extraction_version: str = "0.1.0"
     extracted_at: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat()
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )
     source_file_hash: str | None = None
     extractor_notes: list[str] = Field(default_factory=list)

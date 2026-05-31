@@ -14,7 +14,7 @@ import argparse
 import json
 from copy import deepcopy
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -343,7 +343,7 @@ def run_ablation(
     summary["failure_analysis"] = failure_analysis
 
     return AblationReport(
-        generated_at=datetime.now(UTC).isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
         suite=suite,
         modes=modes,
         results=results,

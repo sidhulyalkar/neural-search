@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -287,7 +287,7 @@ def run_hard_negative_benchmark(
     }
 
     return HardNegativeReport(
-        generated_at=datetime.now(UTC).isoformat(),
+        generated_at=datetime.now(timezone.utc).isoformat(),
         config_path=str(config),
         total_queries=len(queries),
         queries_with_violations=queries_with_violations,

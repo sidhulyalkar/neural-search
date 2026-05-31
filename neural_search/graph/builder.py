@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from neural_search.awareness.taxonomy import DATA_FORMS, DataForm
@@ -59,7 +59,7 @@ BEHAVIORAL_REQUIREMENT_SIGNALS = {
 
 
 def _now() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _parts_from_record_id(record_id: str, expected_type: str) -> list[str]:

@@ -2,15 +2,15 @@
 # Scores are combined on a 0-1 scale, then reported as 0-100.
 
 weights:
-  ontology: 0.28
-  behavior: 0.20
+  ontology: 0.24
+  behavior: 0.18
   modality: 0.12
   affordance: 0.10
-  metadata: 0.10
-  semantic: 0.04  # Reduced - hashing embeddings lack differentiation
-  field_semantic: 0.10  # Increased - uses precomputed real embeddings
-  graph: 0.04
-  readiness: 0.08
+  metadata: 0.08
+  semantic: 0.10  # Increased - using sentence-transformers when available
+  field_semantic: 0.14  # Increased - primary semantic signal
+  graph: 0.06  # Increased - graph provides valuable context
+  readiness: 0.06
   paper_confidence: 0.04
 
 penalties:
@@ -158,8 +158,9 @@ awareness:
 
 # Search intelligence planner for intent-aware weight selection
 planner:
-  enabled: false  # Disabled by default until validated
-  blend_factor: 0.5  # How much to weight planner weights vs base (0=base, 1=planner)
+  enabled: true  # Enabled - validated with benchmark queries
+  blend_factor: 0.6  # How much to weight planner weights vs base (0=base, 1=planner)
+  validate_intent: true  # Log intent classification for review
 
 # Adaptive weight optimization
 adaptive_weights:
