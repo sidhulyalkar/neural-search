@@ -62,33 +62,33 @@ def extract_dataset_metadata(graph: dict) -> list[dict]:
     dataset_regions = defaultdict(set)
 
     for edge_id, edge in edges.items():
-        source = edge.get("source_id", "")
-        target = edge.get("target_id", "")
+        source = edge.get("source_node_id", "")
+        target = edge.get("target_node_id", "")
         edge_type = edge.get("edge_type", "")
 
         # Find dataset -> task edges
-        if "dataset:" in source and edge_type == "studies_task":
+        if edge_type == "dataset_has_task":
             dataset_tasks[source].add(target)
 
         # Find dataset -> modality edges
-        if "dataset:" in source and edge_type == "uses_modality":
+        if edge_type == "dataset_has_modality":
             dataset_modalities[source].add(target)
 
         # Find dataset -> species edges
-        if "dataset:" in source and edge_type == "uses_species":
+        if edge_type == "dataset_has_species":
             dataset_species[source].add(target)
 
         # Find dataset -> brain_region edges
-        if "dataset:" in source and edge_type == "records_from":
+        if edge_type == "dataset_records_region":
             dataset_regions[source].add(target)
 
-    # Enrich dataset metadata
+    # Enrich dataset metadata (use node_id format to match edges)
     for d in datasets:
-        did = d["dataset_id"]
-        d["tasks"] = list(dataset_tasks.get(did, set()))
-        d["modalities"] = list(dataset_modalities.get(did, set()))
-        d["species"] = list(dataset_species.get(did, set()))
-        d["brain_regions"] = list(dataset_regions.get(did, set()))
+        node_id = d["dataset_id"]  # This is already "node:dataset:..." format
+        d["tasks"] = list(dataset_tasks.get(node_id, set()))
+        d["modalities"] = list(dataset_modalities.get(node_id, set()))
+        d["species"] = list(dataset_species.get(node_id, set()))
+        d["brain_regions"] = list(dataset_regions.get(node_id, set()))
 
     return datasets
 
