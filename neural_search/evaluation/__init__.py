@@ -77,6 +77,19 @@ _LADDER_EXPORTS = {
     "write_ladder_reports",
 }
 
+_LINKAGE_EXPORTS = {
+    "AnnotatorLabel",
+    "DatasetPair",
+    "LinkageBenchmark",
+    "LinkageMetrics",
+    "LinkageType",
+    "RelatednessScore",
+    "create_sample_benchmark",
+    "evaluate_linkage",
+    "load_benchmark",
+    "save_benchmark",
+}
+
 
 def __getattr__(name: str) -> Any:
     if name in _DETAILED_EXPORTS:
@@ -90,6 +103,9 @@ def __getattr__(name: str) -> Any:
         return getattr(module, name)
     if name in _LADDER_EXPORTS:
         module = import_module("neural_search.evaluation.run_baseline_ladder")
+        return getattr(module, name)
+    if name in _LINKAGE_EXPORTS:
+        module = import_module("neural_search.evaluation.dataset_linkage")
         return getattr(module, name)
     raise AttributeError(f"module 'neural_search.evaluation' has no attribute {name!r}")
 
@@ -157,4 +173,15 @@ __all__ = [
     "generate_ladder_markdown",
     "generate_ladder_json",
     "write_ladder_reports",
+    # Dataset Linkage API
+    "AnnotatorLabel",
+    "DatasetPair",
+    "LinkageBenchmark",
+    "LinkageMetrics",
+    "LinkageType",
+    "RelatednessScore",
+    "create_sample_benchmark",
+    "evaluate_linkage",
+    "load_benchmark",
+    "save_benchmark",
 ]

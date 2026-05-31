@@ -69,6 +69,16 @@ from neural_search.core.retrieval import (
     ScoredCandidate,
     ScoreFuser,
 )
+from neural_search.core.neural_signature import (
+    CalciumStats,
+    FiringRateStats,
+    ISIStats,
+    NeuralSignatureV1,
+    RecordingModality,
+    SignatureQuality,
+    TrialStats,
+    extract_signature_from_metadata,
+)
 
 __all__ = [
     # Claims (atomic provenance-backed assertions)
@@ -119,4 +129,13 @@ __all__ = [
     "RetrievalStageResult",
     "ScoredCandidate",
     "ScoreFuser",
+    # Neural Signature
+    "CalciumStats",
+    "FiringRateStats",
+    "ISIStats",
+    "NeuralSignatureV1",
+    "RecordingModality",
+    "SignatureQuality",
+    "TrialStats",
+    "extract_signature_from_metadata",
 ]
