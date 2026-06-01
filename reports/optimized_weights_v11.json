@@ -1,0 +1,86 @@
+{
+  "strict_lookup": {
+    "modality_alignment": 0.1782178217821782,
+    "task_compatibility": 0.1782178217821782,
+    "species_match": 0.1188118811881188,
+    "region_overlap": 0.1188118811881188,
+    "affordance_compatibility": 0.15841584158415842,
+    "graph_proximity": 0.07920792079207921,
+    "provenance_quality": 0.07920792079207921,
+    "statistical_power": 0.04950495049504951,
+    "pipeline_transferability": 0.0297029702970297,
+    "neural_signature_similarity": 0.009900990099009901
+  },
+  "pipeline_reuse": {
+    "modality_alignment": 0.1782178217821782,
+    "affordance_compatibility": 0.2376237623762376,
+    "pipeline_transferability": 0.21782178217821782,
+    "provenance_quality": 0.09900990099009901,
+    "statistical_power": 0.07920792079207921,
+    "graph_proximity": 0.07920792079207921,
+    "task_compatibility": 0.04950495049504951,
+    "species_match": 0.0297029702970297,
+    "region_overlap": 0.019801980198019802,
+    "neural_signature_similarity": 0.009900990099009901
+  },
+  "replication": {
+    "task_compatibility": 0.21782178217821782,
+    "species_match": 0.15841584158415842,
+    "region_overlap": 0.15841584158415842,
+    "modality_alignment": 0.13861386138613863,
+    "affordance_compatibility": 0.1188118811881188,
+    "provenance_quality": 0.07920792079207921,
+    "statistical_power": 0.06930693069306931,
+    "graph_proximity": 0.0297029702970297,
+    "pipeline_transferability": 0.019801980198019802,
+    "neural_signature_similarity": 0.009900990099009901
+  },
+  "meta_analysis": {
+    "task_compatibility": 0.1782178217821782,
+    "provenance_quality": 0.15841584158415842,
+    "statistical_power": 0.15841584158415842,
+    "affordance_compatibility": 0.13861386138613863,
+    "species_match": 0.09900990099009901,
+    "modality_alignment": 0.09900990099009901,
+    "graph_proximity": 0.07920792079207921,
+    "region_overlap": 0.04950495049504951,
+    "pipeline_transferability": 0.0297029702970297,
+    "neural_signature_similarity": 0.009900990099009901
+  },
+  "exploration": {
+    "graph_proximity": 0.19801980198019803,
+    "affordance_compatibility": 0.15841584158415842,
+    "neural_signature_similarity": 0.15841584158415842,
+    "task_compatibility": 0.1188118811881188,
+    "modality_alignment": 0.09900990099009901,
+    "provenance_quality": 0.09900990099009901,
+    "pipeline_transferability": 0.07920792079207921,
+    "species_match": 0.039603960396039604,
+    "region_overlap": 0.039603960396039604,
+    "statistical_power": 0.009900990099009901
+  },
+  "cross_dataset_comparison": {
+    "task_compatibility": 0.19801980198019803,
+    "species_match": 0.1782178217821782,
+    "modality_alignment": 0.1485148514851485,
+    "region_overlap": 0.13861386138613863,
+    "affordance_compatibility": 0.1188118811881188,
+    "statistical_power": 0.07920792079207921,
+    "provenance_quality": 0.06930693069306931,
+    "graph_proximity": 0.039603960396039604,
+    "pipeline_transferability": 0.019801980198019802,
+    "neural_signature_similarity": 0.009900990099009901
+  },
+  "method_transfer": {
+    "affordance_compatibility": 0.2549019607843137,
+    "task_compatibility": 0.19607843137254902,
+    "modality_alignment": 0.1568627450980392,
+    "pipeline_transferability": 0.13725490196078433,
+    "species_match": 0.0784313725490196,
+    "region_overlap": 0.058823529411764705,
+    "provenance_quality": 0.049019607843137254,
+    "statistical_power": 0.049019607843137254,
+    "graph_proximity": 0.00980392156862745,
+    "neural_signature_similarity": 0.00980392156862745
+  }
+}
