@@ -437,11 +437,11 @@ def graph_context_score(
             min(covered_requirement_groups, 4)
             * score_weights.get("analysis_requirement_coverage", 0.0)
         )
-        score += len(matched["tasks"]) * score_weights["task_match"]
-        score += len(matched["modalities"]) * score_weights["modality_match"]
+        score += len(matched.get("tasks", [])) * score_weights["task_match"]
+        score += len(matched.get("modalities", [])) * score_weights["modality_match"]
         score += len(matched.get("species", [])) * score_weights.get("species_match", 0.0)
         score += len(matched.get("taxon_groups", [])) * score_weights.get("taxon_match", 0.0)
-        score += len(matched["brain_regions"]) * score_weights["brain_region_match"]
+        score += len(matched.get("brain_regions", [])) * score_weights["brain_region_match"]
         score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
 
     return round(min(score, 0.25), 4)
