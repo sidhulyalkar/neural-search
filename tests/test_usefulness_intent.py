@@ -61,3 +61,8 @@ class TestClassifyQueryIntent:
     def test_explanation_nonempty(self):
         result = classify_query_intent("replicate this study")
         assert len(result.explanation) > 0
+
+    def test_empty_query_returns_strict_lookup(self):
+        result = classify_query_intent("")
+        assert result.intent == UsefulnessIntent.STRICT_LOOKUP
+        assert result.confidence <= 0.6

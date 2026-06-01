@@ -36,7 +36,6 @@ _PATTERNS: list[tuple[UsefulnessIntent, str, float]] = [
     (UsefulnessIntent.REPLICATION, r"\breplicate\b", 0.90),
     (UsefulnessIntent.REPLICATION, r"\breproduce\b", 0.88),
     (UsefulnessIntent.REPLICATION, r"\bsame experiment as\b", 0.85),
-    (UsefulnessIntent.REPLICATION, r"\breplic", 0.82),
     # PIPELINE_REUSE
     (UsefulnessIntent.PIPELINE_REUSE, r"datasets?\s+like\s+\w", 0.90),
     (UsefulnessIntent.PIPELINE_REUSE, r"similar\s+to\s+dandi", 0.88),
@@ -82,6 +81,13 @@ def classify_query_intent(
     parsed_constraints: "Any | None" = None,
 ) -> IntentClassification:
     """Classify the latent usefulness intent of a query using deterministic rules."""
+    if not query:
+        return IntentClassification(
+            intent=UsefulnessIntent.STRICT_LOOKUP,
+            confidence=0.55,
+            matched_patterns=[],
+            explanation=_EXPLANATIONS[UsefulnessIntent.STRICT_LOOKUP],
+        )
     lower = query.lower()
     hits: list[tuple[UsefulnessIntent, float, str]] = []
 
