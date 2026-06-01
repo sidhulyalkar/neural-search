@@ -113,3 +113,11 @@ class TestAffordanceValidationV2:
         ct = report.confusion_table.get("choice_decoding", {})
         assert ct.get("tp", 0) == 0
         assert ct.get("fp", 0) == 1
+
+    def test_false_negative_counted_correctly(self):
+        cards = [SyntheticCard(dataset_id="d1", predicted_affordances=[])]
+        labels = [GroundTruthLabel(dataset_id="d1", affordance="choice_decoding", supported=True)]
+        report = run_validation(cards, labels)
+        ct = report.confusion_table.get("choice_decoding", {})
+        assert ct.get("fn", 0) == 1
+        assert ct.get("tp", 0) == 0
