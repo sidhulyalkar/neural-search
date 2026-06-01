@@ -29,6 +29,24 @@ from neural_search.retrieval.constraint_parser import (
     apply_negative_filter,
     parse_query,
 )
+from neural_search.retrieval.query_intent import (
+    UsefulnessIntent,
+    IntentClassification,
+    classify_query_intent,
+)
+from neural_search.retrieval.usefulness_scorer import (
+    DatasetContext,
+    UsefulnessScore,
+    INTENT_WEIGHT_PROFILES,
+    score_usefulness,
+)
+from neural_search.retrieval.graph_usefulness import (
+    affordance_overlap,
+    pipeline_overlap,
+    complementarity_score,
+    normalized_metapath_score,
+    graph_usefulness_features,
+)
 
 __all__ = [
     "ConstraintParser",
@@ -39,4 +57,16 @@ __all__ = [
     "ParsedTerm",
     "apply_negative_filter",
     "parse_query",
+    "UsefulnessIntent",
+    "IntentClassification",
+    "classify_query_intent",
+    "DatasetContext",
+    "UsefulnessScore",
+    "INTENT_WEIGHT_PROFILES",
+    "score_usefulness",
+    "affordance_overlap",
+    "pipeline_overlap",
+    "complementarity_score",
+    "normalized_metapath_score",
+    "graph_usefulness_features",
 ]
