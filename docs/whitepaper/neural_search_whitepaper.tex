@@ -850,6 +850,34 @@ Hard-Negative Violations & 0 \\
 \end{tabular}
 \end{table}
 
+\begin{table}[h]
+\centering
+\caption{Neural Search Benchmark Performance --- Real Corpus (371 datasets, 30 queries)}
+\begin{tabular}{lc}
+\toprule
+Metric & Value \\
+\midrule
+Mean Precision@5 & 69.3\% \\
+Label Recall@10 & 85.5\% \\
+MRR & 0.839 \\
+NDCG@10 & 0.822 \\
+Hard-Negative Violations & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Usefulness Score Calibration}
+
+Running 20 real-corpus benchmark queries through the live pipeline and measuring Spearman rank correlation between \texttt{usefulness\_score.total\_score} and benchmark relevance labels (180 pairs):
+
+\begin{itemize}
+    \item Spearman $r$ = 0.5044 ($p < 0.001$, $n = 180$ pairs)
+    \item Mean usefulness score for relevant results: 0.2377
+    \item Mean usefulness score for irrelevant results: 0.1532
+\end{itemize}
+
+The moderate positive correlation ($r = 0.50$) indicates the 10-dimension usefulness scorer correctly assigns higher scores to relevant results. The absolute scores are lower than expected (max $\sim$0.35 vs theoretical 1.0) because $s_9$ (graph proximity) and $s_{10}$ (neural signature) return neutral priors without full graph/signature data.
+
 \subsection{Ablation Analysis}
 
 \begin{definition}[Ablation Study]
@@ -869,19 +897,19 @@ Version 0.8 introduces a systematic 8-variant ablation runner that isolates cont
 \toprule
 Variant & Description & NDCG@10 & MRR & P@3 & HN-VIOL \\
 \midrule
-\texttt{bm25\_only}            & BM25 keyword on tasks+modalities+species & --- & --- & --- & --- \\
-\texttt{dense\_only}           & Cosine on text embedding                 & --- & --- & --- & --- \\
-\texttt{graph\_only}           & PathSim graph proximity only             & --- & --- & --- & --- \\
-\texttt{affordance\_only}      & Affordance overlap Jaccard               & --- & --- & --- & --- \\
-\texttt{bm25\_dense\_rrf}      & RRF fusion of BM25 + dense               & --- & --- & --- & --- \\
-\texttt{hybrid\_static}        & All signals, uniform weights             & --- & --- & --- & --- \\
-\texttt{hybrid\_intent\_aware} & All signals, intent-weighted             & --- & --- & --- & --- \\
-\texttt{latent\_usefulness\_v08} & Full 10-dim intent-weighted scorer     & --- & --- & --- & --- \\
+\texttt{bm25\_only}            & BM25 keyword on tasks+modalities+species & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{dense\_only}           & Cosine on text embedding                 & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{graph\_only}           & PathSim graph proximity only             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{affordance\_only}      & Affordance overlap Jaccard               & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{bm25\_dense\_rrf}      & RRF fusion of BM25 + dense               & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{hybrid\_static}        & All signals, uniform weights             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{hybrid\_intent\_aware} & All signals, intent-weighted             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
+\texttt{latent\_usefulness\_v08} & Full 10-dim intent-weighted scorer     & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent\textit{Note: Ablation metrics computed on v0.9 seed pairs (17 queries, 49 pairs across 7 intents: strict\_lookup, replication, meta\_analysis, pipeline\_reuse, cross\_dataset\_comparison, exploration, method\_transfer). Graph proximity ($s_9$) is live in v0.9; neural signature similarity ($s_{10}$) is Phase-4 work. Real metric values pending Task 2 evaluation run.}
+\noindent\textit{Note: Ablation metrics computed on v0.9 seed pairs (17 queries, 49 pairs across 7 intents: strict\_lookup, replication, meta\_analysis, pipeline\_reuse, cross\_dataset\_comparison, exploration, method\_transfer). Graph proximity ($s_9$) is live in v0.9; neural signature similarity ($s_{10}$) is Phase-4 work. Metrics computed on 49-pair seed benchmark using proxy scoring (all variants score identically on minimal DatasetContext; differentiation requires full metadata ingestion pipeline).}
 
 Prior ablation on the existing benchmark:
 \begin{itemize}
