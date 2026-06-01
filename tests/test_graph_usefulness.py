@@ -105,7 +105,7 @@ class TestNormalizedMetapathScore:
         # ds_0 and ds_1 share BOTH hub and rare; ds_0 and ds_5 share only hub
         score_shared_rare = normalized_metapath_score(graph, "ds_0", "ds_1", "dataset_has_task")
         score_hub_only = normalized_metapath_score(graph, "ds_0", "ds_5", "dataset_has_task")
-        assert score_shared_rare >= score_hub_only
+        assert score_shared_rare > score_hub_only
 
     def test_missing_nodes_returns_zero(self):
         graph = _graph()

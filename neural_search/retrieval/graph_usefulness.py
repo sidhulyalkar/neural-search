@@ -80,9 +80,9 @@ def normalized_metapath_score(
             continue
         src = edge.get("source_node_id", "")
         tgt = edge.get("target_node_id", "")
-        if src:
+        if src and src != tgt:
             neighbors[src].add(tgt)
-        if tgt:
+        if tgt and tgt != src:
             neighbors[tgt].add(src)
 
     n_src = neighbors.get(source_id, set())
@@ -115,7 +115,7 @@ def graph_usefulness_features(
 
     q_id = q.get("dataset_id", "")
     c_id = c.get("dataset_id", "")
-    meta = normalized_metapath_score(graph, q_id, c_id, "dataset_has_task") if graph else 0.0
+    meta = normalized_metapath_score(graph, q_id, c_id, "dataset_has_task")
 
     return {
         "affordance_overlap": aff,
