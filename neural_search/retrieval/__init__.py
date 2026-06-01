@@ -47,6 +47,9 @@ from neural_search.retrieval.graph_usefulness import (
     normalized_metapath_score,
     graph_usefulness_features,
 )
+from neural_search.retrieval.dataset_context_bridge import (
+    dataset_context_from_record,
+)
 
 __all__ = [
     "ConstraintParser",
@@ -69,4 +72,5 @@ __all__ = [
     "complementarity_score",
     "normalized_metapath_score",
     "graph_usefulness_features",
+    "dataset_context_from_record",
 ]
