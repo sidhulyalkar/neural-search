@@ -6,7 +6,8 @@ weighted by the user's UsefulnessIntent.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+import warnings
+from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING
 
 from neural_search.retrieval.query_intent import UsefulnessIntent
@@ -191,10 +192,23 @@ def score_usefulness(
 
     # s9: graph_proximity
     if graph is not None:
-        from neural_search.retrieval.graph_usefulness import graph_usefulness_features
-        from dataclasses import asdict
-        guf = graph_usefulness_features(asdict(query_context), asdict(candidate), graph.model_dump(mode="json"))
-        graph_proximity = float(guf.get("metapath_score", 0.3))
+        from neural_search.retrieval.graph_usefulness import normalized_metapath_score
+        graph_dict = graph.model_dump(mode="json")
+        node_ids = graph_dict.get("nodes", {})
+        q_in_graph = query_context.dataset_id in node_ids
+        c_in_graph = candidate.dataset_id in node_ids
+        if q_in_graph and c_in_graph:
+            graph_proximity = normalized_metapath_score(
+                graph_dict,
+                query_context.dataset_id,
+                candidate.dataset_id,
+                "dataset_has_task",
+            )
+        else:
+            graph_proximity = 0.3
+            warnings.append(
+                "graph_proximity: dataset_id(s) not found in graph nodes; using neutral prior 0.3"
+            )
     else:
         graph_proximity = 0.3
         warnings.append("graph_proximity: using neutral prior 0.3 (graph not available)")

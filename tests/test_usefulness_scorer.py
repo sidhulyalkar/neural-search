@@ -7,6 +7,10 @@ from neural_search.retrieval.usefulness_scorer import (
     INTENT_WEIGHT_PROFILES,
 )
 from neural_search.retrieval.query_intent import UsefulnessIntent
+from neural_search.graph.schema import (
+    KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge,
+    make_node_id, make_edge_id,
+)
 
 
 def _ctx(
@@ -131,12 +135,6 @@ class TestIntentOnRanking:
         assert s_match.total_score > s_diff.total_score
 
 
-from neural_search.graph.schema import (
-    KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge,
-    make_node_id, make_edge_id,
-)
-
-
 def _make_minimal_graph() -> KnowledgeGraph:
     """Two dataset nodes sharing a task neighbor."""
     d1_id = make_node_id("dataset", "ds001")
@@ -163,6 +161,7 @@ def test_score_usefulness_accepts_graph_parameter():
     graph = _make_minimal_graph()
     score = score_usefulness(qctx, cctx, UsefulnessIntent.REPLICATION, graph=graph)
     assert 0.0 <= score.total_score <= 1.0
+    assert score.dimension_scores.get("graph_proximity") == 1.0
 
 
 def test_graph_proximity_no_warning_when_graph_provided():
