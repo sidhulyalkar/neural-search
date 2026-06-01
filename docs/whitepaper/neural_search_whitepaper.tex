@@ -520,8 +520,8 @@ where $\sum_k w_k(i) = 1$ for all $i$, and the ten dimension scores are:
     s_6 &= \text{Jaccard}(\text{standards}_q, \text{standards}_d) & \text{(pipeline compatibility)} \\
     s_7 &= f_{\log}(N_s) & \text{(scale: sessions)} \\
     s_8 &= f_{\log}(N_t) & \text{(scale: trials)} \\
-    s_9 &= 0.3 & \text{(graph proximity, Phase-3 placeholder)} \\
-    s_{10} &= 0.0 & \text{(neural signature similarity, Phase-3 placeholder)}
+    s_9 &= \text{PathSim}(\cdot \mid \mathcal{G}) & \text{(graph proximity; falls back to 0.3 if graph unavailable, implemented v0.9)} \\
+    s_{10} &= 0.0 & \text{(neural signature similarity, Phase-4 placeholder)}
 \end{align}
 \end{theorem}
 
@@ -832,7 +832,7 @@ For usefulness evaluation, MRR counts only labels $\ell \in \{\texttt{useful}, \
 
 \subsection{Benchmark Results}
 
-Current Neural Search performance on the 30-query benchmark:
+Current Neural Search performance on the 30-query benchmark (demo corpus, 26 datasets):
 
 \begin{table}[h]
 \centering
@@ -863,25 +863,25 @@ Version 0.8 introduces a systematic 8-variant ablation runner that isolates cont
 
 \begin{table}[h]
 \centering
-\caption{8-Variant Ablation — v0.8 Seed Pairs (10 queries $\times$ 3 candidates)}
+\caption{8-Variant Ablation — v0.9 Seed Pairs (17 queries, 49 pairs across 7 intents)}
 \small
 \begin{tabular}{llcccc}
 \toprule
 Variant & Description & NDCG@10 & MRR & P@3 & HN-VIOL \\
 \midrule
-\texttt{metadata\_only}    & Jaccard on tasks+modalities+species & --- & --- & --- & --- \\
-\texttt{semantic\_only}    & Cosine similarity on text embedding  & --- & --- & --- & --- \\
-\texttt{ontology\_only}    & Task+modality ontology overlap       & --- & --- & --- & --- \\
-\texttt{graph\_only}       & PathSim graph proximity only         & --- & --- & --- & --- \\
-\texttt{latent\_usefulness\_v08} & Full 10-dim intent-weighted scorer & --- & --- & --- & --- \\
-\texttt{no\_graph}         & Latent usefulness without graph      & --- & --- & --- & --- \\
-\texttt{no\_intent\_weighting} & Uniform weights across dimensions & --- & --- & --- & --- \\
-\texttt{baseline\_random}  & Alphabetical ordering (baseline)     & --- & --- & --- & --- \\
+\texttt{bm25\_only}            & BM25 keyword on tasks+modalities+species & --- & --- & --- & --- \\
+\texttt{dense\_only}           & Cosine on text embedding                 & --- & --- & --- & --- \\
+\texttt{graph\_only}           & PathSim graph proximity only             & --- & --- & --- & --- \\
+\texttt{affordance\_only}      & Affordance overlap Jaccard               & --- & --- & --- & --- \\
+\texttt{bm25\_dense\_rrf}      & RRF fusion of BM25 + dense               & --- & --- & --- & --- \\
+\texttt{hybrid\_static}        & All signals, uniform weights             & --- & --- & --- & --- \\
+\texttt{hybrid\_intent\_aware} & All signals, intent-weighted             & --- & --- & --- & --- \\
+\texttt{latent\_usefulness\_v08} & Full 10-dim intent-weighted scorer     & --- & --- & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent\textit{Note: Ablation metrics are computed on synthetic seed pairs (v0.8 prototype). Scores from real human-labeled data are planned for Phase 3.}
+\noindent\textit{Note: Ablation metrics computed on v0.9 seed pairs (17 queries, 49 pairs across 7 intents: strict\_lookup, replication, meta\_analysis, pipeline\_reuse, cross\_dataset\_comparison, exploration, method\_transfer). Graph proximity ($s_9$) is live in v0.9; neural signature similarity ($s_{10}$) is Phase-4 work. Real metric values pending Task 2 evaluation run.}
 
 Prior ablation on the existing benchmark:
 \begin{itemize}
@@ -984,23 +984,23 @@ After sufficient human relevance labels, train calibrated rerankers:
 \end{equation}
 where $\mathbf{x}_{d,\query}$ is the feature vector and $f_\theta$ is learned (e.g., LambdaMART, neural ranker).
 
-\subsection{Real Graph Proximity (Phase 3)}
+\subsection{Real Graph Proximity — Completed v0.9}
 
-The $s_9$ graph proximity dimension of the latent usefulness scorer currently returns a neutral prior of $0.3$. Phase 3 will compute PathSim over the live knowledge graph:
+The $s_9$ graph proximity dimension was implemented in v0.9. When a \texttt{KnowledgeGraph} is available, PathSim is computed live:
 \begin{equation}
     s_9(C_q, C_d) = \text{PathSim}_{\mathcal{P}}(\text{id}(C_q), \text{id}(C_d) \mid \graph)
 \end{equation}
 
-\subsection{Neural Signature Similarity (Phase 3)}
+\subsection{Neural Signature Similarity (Phase 4)}
 
-The $s_{10}$ dimension is a fixed placeholder ($0.0$). Phase 3 extracts neural population signatures directly from NWB/BIDS data:
+The $s_{10}$ dimension is a fixed placeholder ($0.0$). Phase 4 will extract neural population signatures directly from NWB/BIDS data:
 \begin{equation}
     s_{10}(C_q, C_d) = \cos\!\left(\text{Extractor}(\text{NWB}(C_d)),\, \text{Extractor}(\text{NWB}(C_q))\right)
 \end{equation}
 
 \subsection{Human-Labeled Benchmark Calibration}
 
-The current 30-pair seed benchmark uses synthetic labels. Phase 3 will collect human relevance labels for 200+ query-candidate pairs, enabling:
+The v0.9 seed benchmark contains 49 human-assigned pairs spanning 7 intents (expanded from 30 in v0.8). The target for v1.1 is 200+ pairs to enable:
 \begin{itemize}
     \item Calibrated usefulness score distributions
     \item Learned reranker training ($f_\theta$) on feature vectors
