@@ -37,9 +37,9 @@ def dataset_context_from_record(
         DatasetContext ready for score_usefulness().
     """
     dataset_id = str(
-        record.get("id")
+        record.get("dataset_id")
+        or record.get("id")
         or record.get("source_id")
-        or record.get("dataset_id")
         or ""
     )
 
