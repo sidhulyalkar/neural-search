@@ -29,6 +29,17 @@ DANDI_QUERIES = [
     "working memory",
     "attention",
     "sleep",
+    # v1.1 additions
+    "somatosensory cortex",
+    "basal ganglia",
+    "cerebellum",
+    "olfactory",
+    "primate",
+    "human intracranial",
+    "NWB",
+    "BIDS",
+    "spike sorting",
+    "place cells",
 ]
 
 OUTPUT_PATH = Path("data/corpus/normalized/real_dandi.jsonl")
@@ -51,7 +62,7 @@ def main() -> None:
     for query in DANDI_QUERIES:
         print(f"Fetching: {query}...")
         try:
-            payload = fetch_dandi(query, limit=15)
+            payload = fetch_dandi(query, limit=30)
             results = payload.get("results", [])
             for raw in results:
                 source_id = str(raw.get("identifier", raw.get("id", "")))
