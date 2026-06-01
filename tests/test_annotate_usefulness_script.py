@@ -17,17 +17,16 @@ def test_script_exists_and_is_importable():
 def test_script_dry_run_exits_cleanly(tmp_path):
     """With --dry-run, script should print pairs without writing anything."""
     pairs_file = tmp_path / "pairs.jsonl"
-    pairs_file.write_text(
-        json.dumps({
-            "query_id": "q001",
-            "query": "mouse decision-making",
-            "intent": "replication",
-            "candidate_id": "dandi:000001",
-            "usefulness_label": "useful",
-            "label_type": "seed",
-            "notes": "",
-        }) + "\n"
-    )
+    original_content = json.dumps({
+        "query_id": "q001",
+        "query": "mouse decision-making",
+        "intent": "replication",
+        "candidate_id": "dandi:000001",
+        "usefulness_label": "useful",
+        "label_type": "seed",
+        "notes": "",
+    }) + "\n"
+    pairs_file.write_text(original_content)
     result = subprocess.run(
         [sys.executable, "scripts/annotate_usefulness.py",
          "--file", str(pairs_file), "--dry-run"],
@@ -36,4 +35,4 @@ def test_script_dry_run_exits_cleanly(tmp_path):
     )
     assert result.returncode == 0
     content_after = pairs_file.read_text()
-    assert "q001" in content_after
+    assert content_after == original_content, "dry-run must not modify the file"

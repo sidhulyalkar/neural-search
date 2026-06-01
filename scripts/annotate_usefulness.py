@@ -11,15 +11,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 VALID_LABELS = ["not_useful", "weakly_useful", "useful", "highly_useful"]
 LABEL_SHORTCUTS = {"0": "not_useful", "1": "weakly_useful", "2": "useful", "3": "highly_useful"}
 
 
-def _prompt_label(pair: dict) -> str | None:
-    """Prompt the annotator to assign a label. Returns None to quit."""
+def _prompt_label(pair: dict) -> str | None | bool:
+    """Prompt the annotator to assign a label. Returns str label, None to skip, False to quit."""
     print("\n" + "=" * 60)
     print(f"Query [{pair['query_id']}]: {pair['query']}")
     print(f"Intent: {pair.get('intent', 'unknown')}")
@@ -31,17 +33,18 @@ def _prompt_label(pair: dict) -> str | None:
     try:
         raw = input("> ").strip().lower()
     except (EOFError, KeyboardInterrupt):
-        return None
+        return False
     if raw == "q":
-        return None
+        return False
     if raw == "s":
-        return pair.get("usefulness_label", "not_useful")
+        existing = pair.get("usefulness_label")
+        return existing if existing in VALID_LABELS else None
     if raw in LABEL_SHORTCUTS:
         return LABEL_SHORTCUTS[raw]
     if raw in VALID_LABELS:
         return raw
     print(f"Invalid input '{raw}', skipping.")
-    return pair.get("usefulness_label", "not_useful")
+    return None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -73,16 +76,25 @@ def main(argv: list[str] | None = None) -> int:
         if i < args.start_from:
             continue
         new_label = _prompt_label(pair)
-        if new_label is None:
+        if new_label is False:
             print("Quitting.")
             break
-        if new_label != pair.get("usefulness_label"):
+        if new_label is not None and new_label != pair.get("usefulness_label"):
             pairs[i] = {**pair, "usefulness_label": new_label, "label_type": "human"}
             changed += 1
 
-    with path.open("w", encoding="utf-8") as f:
-        for pair in pairs:
-            f.write(json.dumps(pair) + "\n")
+    # Write back atomically to avoid data loss if interrupted
+    tmp_fd, tmp_path_str = tempfile.mkstemp(
+        dir=path.parent, prefix=path.stem, suffix=".tmp.jsonl"
+    )
+    try:
+        with os.fdopen(tmp_fd, "w", encoding="utf-8") as f:
+            for pair in pairs:
+                f.write(json.dumps(pair) + "\n")
+        Path(tmp_path_str).replace(path)
+    except Exception:
+        os.unlink(tmp_path_str)
+        raise
 
     print(f"\nDone. {changed} label(s) changed. Saved to {path}.")
     return 0
