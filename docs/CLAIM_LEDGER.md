@@ -318,3 +318,59 @@ All claims with `prototype_validated` status should have corresponding CI checks
 - `test_evidence_result_cards.py`: 16 tests
 - `test_reusability_gold_benchmark.py`: 24 tests
 - **Total: 101 new tests**
+
+---
+
+## v0.8 Claims (2026-05-31)
+
+### Latent Usefulness Implementation
+
+| Claim | Status | Evidence Artifact | Risk | Notes |
+|-------|--------|-------------------|------|-------|
+| Intent classification improves precision for pipeline-reuse queries | Preliminary | `reports/usefulness_benchmark_v08.md` | Seed-only benchmark (30 pairs) | Results limited to 6 usefulness categories on DANDI pairs; no corpus generalization |
+| Multi-dimensional usefulness scoring outperforms affordance-only on method-transfer queries | Preliminary | `reports/ablation_v08.md` | Proxy ablation variants (not real BM25/dense) | Scoring proxies demonstrate methodology; real retrieval comparison needed |
+| Hard-negative violation rate reduced by intent-aware scoring vs hybrid_static | Preliminary | `reports/ablation_v08.md` | Synthetic seed data | No real corpus validation |
+| Graph-derived complementarity score enables exploration-intent retrieval | Future Work | Not evaluated in v0.8 | Graph feature pending real integration | Implementation in `graph_usefulness.py` ready for Phase 3 |
+| Neural signature similarity improves cross-dataset discovery | Future Work | Not implemented in v0.8 | Feature unimplemented (returns 0.0 + warning) | 16% weight for EXPLORATION intent; blocks exploration scoring |
+| Usefulness scoring generalizes across neuroscience subdisciplines | Future Work | Labels are seed-only (30 pairs) | No cross-dataset validation | Requires 200+ labeled pairs from expanded corpus |
+| Affordance validation v2 produces per-affordance precision/recall | Preliminary | `reports/affordance_validation_v2.md` (run manually) | Ground truth labels sparse | Run: `python -m neural_search.evaluation.affordance_validation_v2` |
+
+### New Modules (v0.8)
+
+| Module | Path | Status | Purpose |
+|--------|------|--------|---------|
+| UsefulnessIntent classifier | `neural_search/retrieval/query_intent.py` | implemented | Rule-based intent classification (7 intents: EXACT_LOOKUP, TASK_DISCOVERY, MODALITY_SEARCH, REPLICATION, PIPELINE_REUSE, METHOD_TRANSFER, EXPLORATION) |
+| Usefulness scorer | `neural_search/retrieval/usefulness_scorer.py` | implemented | 10-dimension intent-weighted scoring (semantic_match, task_match, modality_match, species_match, brain_region_match, affordance_support, data_standards_match, graph_proximity, neural_signature_similarity, complementarity) |
+| Graph usefulness signals | `neural_search/retrieval/graph_usefulness.py` | implemented | PathSim hub-normalized scoring + complementarity detection |
+| Usefulness benchmark | `neural_search/evaluation/usefulness_benchmark.py` | implemented | Graded NDCG/MRR/P@k/hard-neg violation metrics on seed pairs |
+| Affordance validation v2 | `neural_search/evaluation/affordance_validation_v2.py` | implemented | Per-affordance precision/recall evaluation |
+| Ablation runner | `neural_search/evaluation/ablation_runner.py` | implemented | 8 retrieval variant comparison (bm25_only, dense_only, graph_only, affordance_only, intent_only, intent_aware_weighted, hybrid_static, intent_dynamic) |
+
+### Data and Configuration (v0.8)
+
+| Artifact | Path | Status |
+|----------|------|--------|
+| Usefulness seed pairs | `data/eval/usefulness_seed_pairs.jsonl` | implemented |
+| Evaluation config | `config/eval/usefulness_v08.yaml` | implemented |
+| Baseline benchmark | `reports/usefulness_benchmark_v08.md` | generated |
+| Ablation report | `reports/ablation_v08.md` | generated |
+| Affordance validation report | `reports/affordance_validation_v2.md` | not yet generated |
+
+### Design Notes (v0.8)
+
+1. **UsefulnessIntent vs existing QueryIntent**: Separate enum targeting latent usefulness relationships (replication, pipeline_reuse, etc.) vs existing `neural_search/search/intent.py` QueryIntent for retrieval head weight overrides. Both coexist without conflict.
+
+2. **DatasetContext as neutral carrier**: Scorer accepts plain dataclass instead of requiring DatasetCardV1 schema. Decouples scorer from schema layer.
+
+3. **neural_signature_similarity = 0.0 (placeholder)**: Pending Phase 3 neural signature search. Returns warning. Contributes 0 to all scores. EXPLORATION intent heavily affected (16% weight).
+
+4. **graph_proximity = 0.3 (neutral prior)**: Without live graph, returns 0.3 + warning. Full PathSim in `graph_usefulness_features` ready for integration when graph available.
+
+5. **Ablation uses scoring proxies**: 8 variants are different scoring functions over DatasetContext—no external BM25/dense infrastructure required. Deterministic on seed data.
+
+### Limitations (v0.8)
+
+- **Seed-only benchmark**: Results on 30 synthetic pairs only. No validated real corpus labels.
+- **Proxy ablation variants**: Not actual retrieval systems; proxies for methodology validation.
+- **Missing neural_signature_similarity**: Significant gap for EXPLORATION intent (16% weight).
+- **No generalization claim**: Results should not be claimed across neuroscience without expanded corpus.
