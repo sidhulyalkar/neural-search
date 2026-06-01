@@ -1,0 +1,57 @@
+queries:
+  - id: go_nogo_calcium_mpfc
+    query: Go/NoGo task with calcium imaging in mPFC and lick events
+    expected_task_labels: [go_nogo]
+    expected_modalities: [calcium_imaging]
+    expected_regions: [mpfc]
+    expected_behaviors: [lick, response_inhibition, reward]
+    hard_negative_modalities: [fmri, eeg]
+    minimum_precision_at_5: 0.6
+    minimum_label_recall_at_10: 0.7
+
+  - id: reversal_reward_omission_ephys
+    query: Reversal learning datasets with reward omission and trial outcomes
+    expected_task_labels: [reversal_learning, probabilistic_reversal_learning]
+    expected_modalities: [extracellular_ephys, neuropixels, calcium_imaging]
+    expected_behaviors: [reward_omission, choice, trial_outcome]
+    hard_negative_task_labels: [go_nogo, visual_decision_making]
+    minimum_precision_at_5: 0.6
+    minimum_label_recall_at_10: 0.7
+
+  - id: human_ecog_bci_reaching
+    query: Human ECoG or iEEG reaching data for BCI classification
+    expected_task_labels: [reaching, motor_imagery, bci_control]
+    expected_modalities: [ecog, ieeg]
+    expected_species: [human]
+    expected_behaviors: [reaching, motor_control]
+    hard_negative_modalities: [calcium_imaging, fiber_photometry]
+    hard_negative_species: [mouse, rat]
+    minimum_precision_at_5: 0.5
+    minimum_label_recall_at_10: 0.6
+
+  - id: visual_decision_neuropixels
+    query: Visual decision-making with Neuropixels recordings in mouse visual cortex
+    expected_task_labels: [visual_decision_making]
+    expected_modalities: [neuropixels]
+    expected_regions: [visual_cortex]
+    expected_species: [mouse]
+    hard_negative_modalities: [eeg, fmri]
+    minimum_precision_at_5: 0.6
+    minimum_label_recall_at_10: 0.7
+
+  - id: delay_discounting_photometry
+    query: Delay discounting with fiber photometry and reward choice behavior
+    expected_task_labels: [delay_discounting]
+    expected_modalities: [fiber_photometry]
+    expected_behaviors: [reward_choice, impulsivity, delayed_reward]
+    hard_negative_task_labels: [visual_decision_making]
+    minimum_precision_at_5: 0.5
+    minimum_label_recall_at_10: 0.6
+
+  - id: pose_tracking_behavior_neural
+    query: Datasets with behavior video, pose tracking, and neural activity during decision making
+    expected_modalities: [behavior_video, pose_tracking]
+    expected_behaviors: [decision_making]
+    hard_negative_modalities: [fmri]
+    minimum_precision_at_5: 0.5
+    minimum_label_recall_at_10: 0.6

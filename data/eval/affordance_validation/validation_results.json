@@ -1,0 +1,2788 @@
+{
+  "timestamp": "2026-05-31T20:41:28.449182+00:00",
+  "corpus_size": 371,
+  "datasets_validated": 371,
+  "datasets_by_source": {
+    "allen": 8,
+    "dandi": 163,
+    "nemo": 10,
+    "openneuro": 190
+  },
+  "affordance_support_counts": {
+    "choice_decoding": 5
+  },
+  "affordance_support_rates": {
+    "choice_decoding": 0.013477088948787063
+  },
+  "feature_presence_counts": {
+    "has_spike_times": 74,
+    "has_neural_data": 119,
+    "has_population_recording": 74,
+    "has_trial_structure": 8,
+    "has_choice_labels": 16,
+    "has_reward_signal": 7,
+    "has_continuous_data": 45,
+    "has_multiple_channels": 37
+  },
+  "feature_presence_rates": {
+    "has_spike_times": 0.19946091644204852,
+    "has_neural_data": 0.32075471698113206,
+    "has_population_recording": 0.19946091644204852,
+    "has_trial_structure": 0.0215633423180593,
+    "has_choice_labels": 0.0431266846361186,
+    "has_reward_signal": 0.018867924528301886,
+    "has_continuous_data": 0.12129380053908356,
+    "has_multiple_channels": 0.09973045822102426
+  },
+  "validation_results": [
+    {
+      "dataset_id": "node:dataset:allen:allen_cell_types_ephys",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_human_m1",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_human_mtg",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_merfish",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_mouse_connectivity",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_mouse_vis_ctx",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_mouse_whole_cortex",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:allen:allen_whole_brain_taxonomy",
+      "source": "allen",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000003",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000004",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000005",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000006",
+      "source": "dandi",
+      "affordances_supported": [
+        "choice_decoding"
+      ],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000007",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000008",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000009",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000010",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000011",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000013",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000015",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000016",
+      "source": "dandi",
+      "affordances_supported": [
+        "choice_decoding"
+      ],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000017",
+      "source": "dandi",
+      "affordances_supported": [
+        "choice_decoding"
+      ],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000019",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000020",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000021",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000022",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000025",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000026",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000028",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000029",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000030",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000032",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000034",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000035",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000036",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000037",
+      "source": "dandi",
+      "affordances_supported": [
+        "choice_decoding"
+      ],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000039",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000040",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000041",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000043",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000044",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000045",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000048",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000049",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000050",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000054",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000055",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000056",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000059",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000060",
+      "source": "dandi",
+      "affordances_supported": [
+        "choice_decoding"
+      ],
+      "features_present": [
+        "has_spike_times",
+        "has_trial_structure",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000061",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000065",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000067",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000070",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000114",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000115",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000117",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000129",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000144",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000148",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000149",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000165",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000166",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000167",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000168",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000169",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000172",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000206",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000207",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000208",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000210",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000211",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000212",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000213",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000214",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000215",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000216",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000218",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000219",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000220",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000222",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000223",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000228",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000231",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000232",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000233",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000239",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000245",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000247",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000248",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000249",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000250",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000251",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000253",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000289",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000302",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000336",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000339",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000347",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000351",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000397",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000409",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000447",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000451",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000457",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000458",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000462",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000465",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000469",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000473",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000476",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000554",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000557",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000559",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000563",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000568",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000572",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000574",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000575",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000576",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000577",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000579",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000617",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000620",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000623",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000625",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000629",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000640",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000673",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000678",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000689",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000695",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000710",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000713",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000718",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000785",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000932",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000939",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000941",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000952",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000959",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000971",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000978",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:000987",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001038",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001039",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001051",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001079",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001084",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001169",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001181",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001187",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001193",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001260",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001292",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001347",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001357",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001371",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001429",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001454",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001474",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001514",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001539",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001552",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001563",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001564",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_reward_signal"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001613",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001692",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_choice_labels",
+        "has_reward_signal",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001695",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001700",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001775",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:dandi:001839",
+      "source": "dandi",
+      "affordances_supported": [],
+      "features_present": [
+        "has_choice_labels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_bican_whole_brain",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_biccn_human_cortex",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_biccn_marmoset",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_biccn_mouse_brain",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_brain_aging",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_devhu_brain",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_psych_encode",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_sea_ad",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_snm3seq",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:nemo:nemo_spatial_brain_map",
+      "source": "nemo",
+      "affordances_supported": [],
+      "features_present": [
+        "has_spike_times",
+        "has_neural_data",
+        "has_population_recording"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000001",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000002",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000003",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000005",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000006",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000007",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000008",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000009",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000011",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000017",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000030",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000051",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000052",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000101",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000102",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000105",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000107",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000109",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000110",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000113",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000115",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000117",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000122",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000148",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000201",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000224",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000228",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000246",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000247",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds000248",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001021",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001037",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001105",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001107",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001110",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001131",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001132",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001145",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001168",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001242",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001419",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001420",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001421",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001590",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001705",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001771",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001784",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001785",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001787",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001810",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001849",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001875",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001928",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001942",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds001971",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002001",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002034",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002041",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002094",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002158",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002181",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002218",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002312",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002330",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002336",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002338",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002543",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002550",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002578",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002680",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002691",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002712",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002718",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002720",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002721",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002722",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002723",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002724",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002725",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002761",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002778",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002791",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002799",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002814",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002833",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002885",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002893",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002898",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds002908",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003004",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003029",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003039",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003061",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003078",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003082",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003104",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003374",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003392",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003397",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003483",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003498",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003568",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003633",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003645",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003682",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003688",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003694",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003703",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003708",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003844",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003848",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003876",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds003922",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004012",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004054",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004078",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004080",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004107",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004127",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004194",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004212",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004229",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004230",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004276",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004370",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004401",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004457",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004473",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004513",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004551",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004624",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004642",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004654",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004696",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004703",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004730",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004731",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004733",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004752",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004770",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004774",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004789",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004809",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004819",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004859",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004865",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004868",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004869",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004892",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds004902",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005093",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005107",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005138",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005166",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005413",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005483",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005522",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005530",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005540",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005605",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005613",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005619",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005698",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005857",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005876",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds005895",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006040",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006148",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006159",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006218",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006374",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006394",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006402",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006462",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006468",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006550",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006613",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006691",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006756",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006833",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006848",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006917",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds006947",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data"
+      ]
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007022",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007386",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007387",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007388",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007391",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007456",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": []
+    },
+    {
+      "dataset_id": "node:dataset:openneuro:ds007471",
+      "source": "openneuro",
+      "affordances_supported": [],
+      "features_present": [
+        "has_neural_data",
+        "has_continuous_data",
+        "has_multiple_channels"
+      ]
+    }
+  ]
+}

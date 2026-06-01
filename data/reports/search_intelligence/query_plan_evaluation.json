@@ -1,0 +1,164 @@
+{
+  "corpus": {
+    "label": "data/corpus/normalized/real_v07.datasets.jsonl",
+    "record_count": 3
+  },
+  "grouped_by_intent": {
+    "analysis_affordance": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "dataset_lookup": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "hard_negative": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    }
+  },
+  "mean_delta": {
+    "hard_negative_violations": 0.0,
+    "hit_at_5": 0.0,
+    "mrr": 0.0
+  },
+  "promotion_safe": true,
+  "queries": [
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "hard_negative",
+      "planner_mode": "constraint_filter_first",
+      "promotion_blocked": false,
+      "query": "Find mouse Neuropixels visual decision-making data but not EEG",
+      "query_id": "real_v07_lookup_steinmetz"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "dataset_lookup",
+      "planner_mode": "cross_modal_fit",
+      "promotion_blocked": false,
+      "query": "OpenNeuro human EEG motor imagery BCI without Neuropixels",
+      "query_id": "real_v07_bids_bci"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0,
+        "result_ids": [
+          "dataset:dandi:000026",
+          "dataset:dandi:000020",
+          "dataset:openneuro:ds003505"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_intent": "analysis_affordance",
+      "planner_mode": "cross_modal_fit",
+      "promotion_blocked": false,
+      "query": "Datasets suitable for event aligned analysis with trial events and spikes",
+      "query_id": "real_v07_claim_affordance"
+    }
+  ],
+  "query_count": 3
+}

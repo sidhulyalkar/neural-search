@@ -1,0 +1,4 @@
+name	type	units	low_cutoff	high_cutoff
+C3	EEG	uV	0.5	40
+C4	EEG	uV	0.5	40
+Cz	EEG	uV	0.5	40

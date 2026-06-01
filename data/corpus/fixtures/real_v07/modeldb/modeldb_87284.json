@@ -1,0 +1,11 @@
+{
+  "source": "modeldb",
+  "source_id": "modeldb_87284",
+  "title": "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation",
+  "model_type": "compartmental biophysical model",
+  "species": ["rat"],
+  "brain_regions": ["hippocampus"],
+  "signals": ["parameters", "membrane_voltage", "current_injection", "simulation_outputs"],
+  "file_formats": ["hoc", "mod", "json"],
+  "fixture_note": "Small deterministic fixture used for CI-safe corpus expansion."
+}

@@ -1,0 +1,258 @@
+{
+  "brier_score": 0.5288,
+  "grouped_by_data_form": {
+    "behavior": {
+      "brier_score": 0.4798,
+      "item_count": 3,
+      "mean_negative_score": 0.0088,
+      "mean_positive_score": 0.1553,
+      "negative_count": 1,
+      "pairwise_auc": 1.0,
+      "positive_count": 2,
+      "returned_item_count": 3,
+      "score_gap": 0.1465
+    },
+    "computational_model": {
+      "brier_score": 0.8321,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.0878,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.0878
+    },
+    "connectomics": {
+      "brier_score": 0.4303,
+      "item_count": 2,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.0723,
+      "negative_count": 1,
+      "pairwise_auc": 1.0,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.0723
+    },
+    "eeg_meg": {
+      "brier_score": 0.5871,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.2338,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.2338
+    },
+    "intracellular_ephys": {
+      "brier_score": 0.4509,
+      "item_count": 2,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.0504,
+      "negative_count": 1,
+      "pairwise_auc": 1.0,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.0504
+    },
+    "molecular": {
+      "brier_score": 0.7252,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.1484,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.1484
+    },
+    "mri": {
+      "brier_score": 0.4261,
+      "item_count": 2,
+      "mean_negative_score": 0.0088,
+      "mean_positive_score": 0.0769,
+      "negative_count": 1,
+      "pairwise_auc": 1.0,
+      "positive_count": 1,
+      "returned_item_count": 2,
+      "score_gap": 0.0681
+    }
+  },
+  "grouped_by_intent": {
+    "analysis_affordance": {
+      "brier_score": 0.7252,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.1484,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.1484
+    },
+    "cross_modal": {
+      "brier_score": 0.5871,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.2338,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.2338
+    },
+    "data_form_search": {
+      "brier_score": 0.8321,
+      "item_count": 1,
+      "mean_negative_score": 0.0,
+      "mean_positive_score": 0.0878,
+      "negative_count": 0,
+      "pairwise_auc": null,
+      "positive_count": 1,
+      "returned_item_count": 1,
+      "score_gap": 0.0878
+    },
+    "hard_negative": {
+      "brier_score": 0.4358,
+      "item_count": 6,
+      "mean_negative_score": 0.0029,
+      "mean_positive_score": 0.0665,
+      "negative_count": 3,
+      "pairwise_auc": 1.0,
+      "positive_count": 3,
+      "returned_item_count": 4,
+      "score_gap": 0.0636
+    }
+  },
+  "item_count": 9,
+  "items": [
+    {
+      "dataset_id": "dataset:microns:visual_connectome_v1",
+      "planner_data_forms": [
+        "connectomics"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_connectomics_mapping",
+      "rank": 2,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.0723,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds_fmri_connectivity_v1",
+      "planner_data_forms": [
+        "connectomics"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_connectomics_mapping",
+      "rank": null,
+      "relevance": "hard_negative",
+      "returned": false,
+      "score": 0.0,
+      "target": 0.0
+    },
+    {
+      "dataset_id": "dataset:cellxgene:human_cortex_single_cell_v1",
+      "planner_data_forms": [
+        "molecular"
+      ],
+      "planner_intent": "analysis_affordance",
+      "query_id": "task23_single_cell_mapping",
+      "rank": 1,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.1484,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:dandi:patch_clamp_mouse_cortex_v1",
+      "planner_data_forms": [
+        "intracellular_ephys"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_patch_clamp_excitability",
+      "rank": 2,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.0504,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds_fmri_connectivity_v1",
+      "planner_data_forms": [
+        "intracellular_ephys"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_patch_clamp_excitability",
+      "rank": null,
+      "relevance": "hard_negative",
+      "returned": false,
+      "score": 0.0,
+      "target": 0.0
+    },
+    {
+      "dataset_id": "dataset:modeldb:hippocampal_biophysical_model_v1",
+      "planner_data_forms": [
+        "computational_model"
+      ],
+      "planner_intent": "data_form_search",
+      "query_id": "task23_computational_model",
+      "rank": 1,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.0878,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds_meg_language_v1",
+      "planner_data_forms": [
+        "behavior",
+        "eeg_meg"
+      ],
+      "planner_intent": "cross_modal",
+      "query_id": "task23_meg_time_frequency",
+      "rank": 1,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.2338,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds_fmri_connectivity_v1",
+      "planner_data_forms": [
+        "behavior",
+        "mri"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_fmri_connectivity_no_eeg",
+      "rank": 1,
+      "relevance": "exact",
+      "returned": true,
+      "score": 0.0769,
+      "target": 1.0
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds_meg_language_v1",
+      "planner_data_forms": [
+        "behavior",
+        "mri"
+      ],
+      "planner_intent": "hard_negative",
+      "query_id": "task23_fmri_connectivity_no_eeg",
+      "rank": 4,
+      "relevance": "hard_negative",
+      "returned": true,
+      "score": 0.0088,
+      "target": 0.0
+    }
+  ],
+  "mean_negative_score": 0.0029,
+  "mean_positive_score": 0.1116,
+  "negative_count": 3,
+  "pairwise_auc": 1.0,
+  "positive_count": 6,
+  "returned_item_count": 7,
+  "score_gap": 0.1087
+}

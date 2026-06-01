@@ -1,0 +1,434 @@
+{
+  "corpus": {
+    "label": "data/corpus/normalized/search_intelligence_task23.datasets.jsonl",
+    "record_count": 6
+  },
+  "grouped_by_data_form": {
+    "behavior": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 2
+    },
+    "computational_model": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "connectomics": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "eeg_meg": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "intracellular_ephys": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "molecular": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.6667,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "mri": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    }
+  },
+  "grouped_by_intent": {
+    "analysis_affordance": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.6667,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "cross_modal": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "data_form_search": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 1
+    },
+    "hard_negative": {
+      "hard_negative_violation_delta": 0,
+      "mean_hit_at_5_delta": 0.0,
+      "mean_mrr_delta": 0.0,
+      "promotion_safe": true,
+      "query_count": 3
+    }
+  },
+  "mean_delta": {
+    "hard_negative_violations": 0.0,
+    "hit_at_5": 0.0,
+    "mrr": 0.1111
+  },
+  "promotion_safe": true,
+  "queries": [
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:microns:visual_connectome_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_data_forms": [
+        "connectomics"
+      ],
+      "planner_intent": "hard_negative",
+      "planner_mode": "constraint_filter_first",
+      "promotion_blocked": false,
+      "query": "connectome morphology tracing for circuit mapping without fMRI",
+      "query_id": "task23_connectomics_mapping"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 0.3333,
+        "result_ids": [
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.6667
+      },
+      "planner_data_forms": [
+        "molecular"
+      ],
+      "planner_intent": "analysis_affordance",
+      "planner_mode": "analysis_readiness",
+      "promotion_blocked": false,
+      "query": "single cell transcriptomics cell type mapping human cortex",
+      "query_id": "task23_single_cell_mapping"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5,
+        "result_ids": [
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_data_forms": [
+        "intracellular_ephys"
+      ],
+      "planner_intent": "hard_negative",
+      "planner_mode": "constraint_filter_first",
+      "promotion_blocked": false,
+      "query": "mouse patch clamp membrane voltage excitability without fMRI",
+      "query_id": "task23_patch_clamp_excitability"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_data_forms": [
+        "computational_model"
+      ],
+      "planner_intent": "data_form_search",
+      "planner_mode": "balanced",
+      "promotion_blocked": false,
+      "query": "biophysical simulation model parameter inference hippocampus",
+      "query_id": "task23_computational_model"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_data_forms": [
+        "behavior",
+        "eeg_meg"
+      ],
+      "planner_intent": "cross_modal",
+      "planner_mode": "cross_modal_fit",
+      "promotion_blocked": false,
+      "query": "human MEG language time frequency with events",
+      "query_id": "task23_meg_time_frequency"
+    },
+    {
+      "awareness": {
+        "hard_negative_violations": 1,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "awareness"
+      },
+      "baseline": {
+        "hard_negative_violations": 1,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1",
+          "dataset:openneuro:ds_meg_language_v1"
+        ],
+        "variant": "baseline"
+      },
+      "intelligence": {
+        "hard_negative_violations": 1,
+        "hit_at_5": 1.0,
+        "mrr": 1.0,
+        "result_ids": [
+          "dataset:openneuro:ds_fmri_connectivity_v1",
+          "dataset:microns:visual_connectome_v1",
+          "dataset:cellxgene:human_cortex_single_cell_v1",
+          "dataset:openneuro:ds_meg_language_v1",
+          "dataset:dandi:patch_clamp_mouse_cortex_v1",
+          "dataset:modeldb:hippocampal_biophysical_model_v1"
+        ],
+        "variant": "intelligence"
+      },
+      "intelligence_delta": {
+        "hard_negative_violations": 0.0,
+        "hit_at_5": 0.0,
+        "mrr": 0.0
+      },
+      "planner_data_forms": [
+        "behavior",
+        "mri"
+      ],
+      "planner_intent": "hard_negative",
+      "planner_mode": "constraint_filter_first",
+      "promotion_blocked": false,
+      "query": "human fMRI connectivity behavior without EEG",
+      "query_id": "task23_fmri_connectivity_no_eeg"
+    }
+  ],
+  "query_count": 6
+}

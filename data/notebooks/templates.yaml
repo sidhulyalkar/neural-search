@@ -1,0 +1,137 @@
+templates:
+  - id: generic_nwb_inspection
+    title: Generic NWB inspection
+    description: Broad NWB metadata, subject, acquisition, processing, units, trials, and event inspection.
+    required_features:
+      data_standards_any: [NWB]
+    recipes: []
+    cells:
+      - type: markdown
+        title: Generic inspection focus
+        body: |
+          ## Template Focus: Generic NWB inspection
+
+          Use this notebook to inspect session metadata, acquisition objects, processing modules, units, intervals, and trials before choosing a deeper analysis.
+
+  - id: ephys_trial_alignment
+    title: Ephys trial alignment
+    description: Trial-aligned spike/electrophysiology inspection with event-window TODOs.
+    required_features:
+      modalities_any: [extracellular_ephys, neuropixels]
+      has_trials: true
+    recipes: []
+    cells:
+      - type: markdown
+        title: Ephys alignment focus
+        body: |
+          ## Template Focus: Ephys trial alignment
+
+          Inspect units and trial/event columns, then align spike times or binned firing rates around behavioral events.
+      - type: code
+        title: Ephys alignment scaffold
+        body: |
+          # Template scaffold: choose an event column and align spike times
+          if 'trials_df' in globals():
+              candidate_events = [c for c in trials_df.columns if any(k in c.lower() for k in ['onset', 'cue', 'choice', 'reward', 'movement'])]
+              print('Candidate event columns:', candidate_events)
+          # TODO: choose a unit, choose event_times, and build peri-event rasters/PSTHs.
+
+  - id: calcium_trial_alignment
+    title: Calcium trial alignment
+    description: Trial-aligned calcium/fluorescence inspection with cue/outcome alignment TODOs.
+    required_features:
+      modalities_any: [calcium_imaging, fiber_photometry]
+      has_trials: true
+    recipes: []
+    cells:
+      - type: markdown
+        title: Calcium alignment focus
+        body: |
+          ## Template Focus: Calcium trial alignment
+
+          Inspect fluorescence-like TimeSeries and align traces to trial events, cues, or outcomes.
+      - type: code
+        title: Calcium trace scaffold
+        body: |
+          # Template scaffold: find fluorescence-like timeseries
+          if 'ts_summary' in globals():
+              display(ts_summary[ts_summary.astype(str).apply(lambda row: row.str.contains('fluor|calcium|df/f|photometry', case=False, regex=True).any(), axis=1)])
+          # TODO: extract traces and align windows around cue or reward timestamps.
+
+  - id: behavior_only_bids_inspection
+    title: Behavior-only BIDS inspection
+    description: BIDS behavioral events and trial-table inspection for datasets without neural recordings.
+    required_features:
+      data_standards_any: [BIDS]
+      has_behavior: true
+    recipes: []
+    cells:
+      - type: markdown
+        title: Behavior BIDS focus
+        body: |
+          ## Template Focus: Behavior-only BIDS inspection
+
+          Inspect event files, trial columns, outcomes, and subject/session structure before fitting behavior models.
+      - type: code
+        title: Behavior table scaffold
+        body: |
+          # Template scaffold: summarize behavior columns
+          if 'trials_df' in globals():
+              behavior_cols = [c for c in trials_df.columns if any(k in c.lower() for k in ['choice', 'reward', 'rt', 'reaction', 'outcome', 'response'])]
+              print('Candidate behavior columns:', behavior_cols)
+
+  - id: eeg_bids_inspection
+    title: EEG BIDS inspection
+    description: EEG/BIDS metadata and event inspection scaffold.
+    required_features:
+      modalities_any: [eeg]
+      data_standards_any: [BIDS]
+    recipes: []
+    cells:
+      - type: markdown
+        title: EEG BIDS focus
+        body: |
+          ## Template Focus: EEG BIDS inspection
+
+          Inspect task events, channel metadata, and trial labels before epoching EEG around events.
+      - type: code
+        title: EEG epoching scaffold
+        body: |
+          # Template scaffold: EEG epoching plan
+          print('TODO: load BIDS EEG with MNE-BIDS, inspect channels/events, then epoch around task events.')
+
+  - id: reversal_learning_basic
+    title: Reversal learning notebook
+    description: Reversal learning analysis notebook with reward/omission, reversal, win-stay lose-shift, and Q-learning recipe cells.
+    required_features:
+      tasks_any: [reversal_learning]
+      has_trials: true
+    recipes: [reversal_learning_basic]
+    cells: []
+
+  - id: go_nogo_basic
+    title: Go/NoGo notebook
+    description: Go/NoGo analysis notebook with cue alignment, hit/false-alarm comparison, and inhibition decoding recipe cells.
+    required_features:
+      tasks_any: [go_nogo]
+      has_trials: true
+    recipes: [go_nogo_basic]
+    cells: []
+
+  - id: reaching_basic
+    title: Reaching and BCI notebook
+    description: Movement-onset, reach direction, and velocity/kinematic decoding notebook.
+    required_features:
+      tasks_any: [reaching, center_out_reaching, grasping, joystick_task]
+      has_trials: true
+    recipes: [reaching_basic]
+    cells: []
+
+  - id: visual_decision_basic
+    title: Visual decision-making notebook
+    description: Stimulus alignment, choice decoding, and psychometric curve notebook.
+    required_features:
+      tasks_any: [visual_decision_making, visual_discrimination, two_alternative_forced_choice]
+      has_trials: true
+    recipes: [visual_decision_basic]
+    cells: []

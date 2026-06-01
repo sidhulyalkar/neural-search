@@ -1,0 +1,946 @@
+# Neural Search Modalities Ontology v0.1
+# Purpose: Comprehensive ontology of recording/acquisition modalities for neural datasets.
+# Includes both neurophysiology and neurogenomics modalities.
+
+modalities:
+  # ---------------------------------------------------------------------------
+  # Electrophysiology - Extracellular
+  # ---------------------------------------------------------------------------
+  - id: extracellular_ephys
+    label: Extracellular Electrophysiology
+    category: electrophysiology
+    definition: >
+      Recording of neural activity from outside cells using electrodes,
+      capturing local field potentials and multi-unit/single-unit activity.
+    synonyms:
+      - ephys
+      - electrophysiology
+      - electrode recording
+      - neural recording
+      - extracellular recording
+    data_types:
+      - spike_times
+      - lfp
+      - raw_voltage
+      - waveforms
+    typical_formats:
+      - NWB
+      - nwb2
+      - bin
+      - dat
+    analysis_compatibility:
+      - spike_rate_psth
+      - population_decoding
+      - glm_encoding
+      - spike_field_coupling
+
+  - id: neuropixels
+    label: Neuropixels
+    category: electrophysiology
+    definition: >
+      High-density silicon probes with hundreds of recording sites for
+      large-scale extracellular recordings across multiple brain regions.
+    synonyms:
+      - neuropixel
+      - npx
+      - high-density probe
+      - silicon probe
+    parent: extracellular_ephys
+    data_types:
+      - spike_times
+      - lfp
+      - raw_voltage
+      - probe_geometry
+    typical_formats:
+      - NWB
+      - spikeglx
+      - kilosort
+    analysis_compatibility:
+      - population_decoding
+      - dimensionality_reduction
+      - spike_rate_psth
+
+  - id: tetrode
+    label: Tetrode Recording
+    category: electrophysiology
+    definition: >
+      Extracellular recording using bundles of four twisted wires
+      for improved spike sorting and single-unit isolation.
+    synonyms:
+      - tetrodes
+      - multi-electrode
+      - microwire
+    parent: extracellular_ephys
+    data_types:
+      - spike_times
+      - lfp
+      - waveforms
+    typical_formats:
+      - NWB
+      - neuralynx
+      - spykingcircus
+    analysis_compatibility:
+      - spike_rate_psth
+      - population_decoding
+
+  # ---------------------------------------------------------------------------
+  # Electrophysiology - Intracellular
+  # ---------------------------------------------------------------------------
+  - id: patch_clamp
+    label: Patch Clamp
+    category: electrophysiology
+    definition: >
+      Intracellular recording technique measuring ionic currents or
+      membrane potential with high precision using glass pipettes.
+    synonyms:
+      - whole-cell recording
+      - whole cell
+      - intracellular recording
+      - voltage clamp
+      - current clamp
+    data_types:
+      - membrane_potential
+      - ionic_current
+      - input_resistance
+      - capacitance
+    typical_formats:
+      - NWB
+      - abf
+      - pclamp
+    analysis_compatibility:
+      - input_output_curve
+      - spike_threshold
+      - synaptic_analysis
+
+  # ---------------------------------------------------------------------------
+  # EEG/MEG/ECoG - Surface Electrophysiology
+  # ---------------------------------------------------------------------------
+  - id: eeg
+    label: Electroencephalography
+    category: surface_electrophysiology
+    definition: >
+      Non-invasive recording of brain electrical activity from scalp electrodes,
+      with high temporal resolution but limited spatial resolution.
+    synonyms:
+      - electroencephalogram
+      - scalp eeg
+      - hdEEG
+      - high-density eeg
+    data_types:
+      - voltage_timeseries
+      - scalp_topography
+      - event_markers
+    typical_formats:
+      - BIDS
+      - edf
+      - bdf
+      - set
+      - fif
+    analysis_compatibility:
+      - spectral_analysis
+      - motor_imagery_classification
+      - seizure_detection
+      - erp_analysis
+
+  - id: meg
+    label: Magnetoencephalography
+    category: surface_electrophysiology
+    definition: >
+      Recording of magnetic fields produced by neural activity using
+      SQUID sensors, providing high temporal and spatial resolution.
+    synonyms:
+      - magnetoencephalogram
+    data_types:
+      - magnetic_field
+      - gradiometer
+      - source_localization
+    typical_formats:
+      - BIDS
+      - fif
+      - ctf
+    analysis_compatibility:
+      - spectral_analysis
+      - source_localization
+      - connectivity_analysis
+
+  - id: ecog
+    label: Electrocorticography
+    category: surface_electrophysiology
+    definition: >
+      Invasive recording from electrodes placed on the cortical surface,
+      combining high spatial and temporal resolution for clinical and research.
+    synonyms:
+      - intracranial eeg
+      - ieeg
+      - subdural recording
+      - grid recording
+    data_types:
+      - voltage_timeseries
+      - high_gamma
+      - electrode_positions
+    typical_formats:
+      - NWB
+      - BIDS
+      - edf
+    analysis_compatibility:
+      - spectral_analysis
+      - speech_decoding
+      - seizure_detection
+
+  - id: seeg
+    label: Stereo-EEG
+    category: surface_electrophysiology
+    definition: >
+      Invasive depth electrode recording for epilepsy monitoring,
+      sampling from multiple brain regions along electrode trajectories.
+    synonyms:
+      - stereoelectroencephalography
+      - depth electrodes
+    parent: ecog
+    data_types:
+      - voltage_timeseries
+      - depth_recording
+      - seizure_annotations
+    typical_formats:
+      - NWB
+      - BIDS
+      - edf
+    analysis_compatibility:
+      - seizure_detection
+      - connectivity_analysis
+
+  # ---------------------------------------------------------------------------
+  # Optical Imaging - Calcium/Voltage
+  # ---------------------------------------------------------------------------
+  - id: calcium_imaging
+    label: Calcium Imaging
+    category: optical_imaging
+    definition: >
+      Optical recording of neural activity using calcium-sensitive
+      fluorescent indicators (GCaMP, etc.) as proxy for firing.
+    synonyms:
+      - ca imaging
+      - gcamp
+      - two-photon calcium
+      - calcium indicator
+    data_types:
+      - fluorescence_timeseries
+      - roi_masks
+      - motion_correction
+      - cell_positions
+    typical_formats:
+      - NWB
+      - tiff
+      - suite2p
+      - caiman
+    analysis_compatibility:
+      - spike_rate_psth
+      - population_decoding
+      - dimensionality_reduction
+
+  - id: two_photon
+    label: Two-Photon Microscopy
+    category: optical_imaging
+    definition: >
+      High-resolution imaging using two-photon excitation for
+      deep tissue optical sectioning of neural activity.
+    synonyms:
+      - 2p imaging
+      - two photon
+      - multiphoton
+    parent: calcium_imaging
+    data_types:
+      - fluorescence_timeseries
+      - z_stack
+      - volumetric_imaging
+    typical_formats:
+      - NWB
+      - tiff
+      - scanimage
+    analysis_compatibility:
+      - population_decoding
+      - dimensionality_reduction
+
+  - id: widefield_imaging
+    label: Widefield Calcium Imaging
+    category: optical_imaging
+    definition: >
+      Large field-of-view imaging of cortical activity using
+      one-photon excitation and calcium indicators.
+    synonyms:
+      - widefield calcium
+      - mesoscale imaging
+      - one-photon imaging
+    parent: calcium_imaging
+    data_types:
+      - fluorescence_maps
+      - cortical_parcellation
+    typical_formats:
+      - NWB
+      - tiff
+    analysis_compatibility:
+      - spectral_analysis
+      - connectivity_analysis
+
+  - id: voltage_imaging
+    label: Voltage Imaging
+    category: optical_imaging
+    definition: >
+      Optical recording using voltage-sensitive indicators that directly
+      report membrane potential changes with high temporal resolution.
+    synonyms:
+      - voltage-sensitive dye
+      - vsd imaging
+      - genetically encoded voltage indicator
+      - gevi
+    data_types:
+      - fluorescence_timeseries
+      - membrane_potential_proxy
+    typical_formats:
+      - NWB
+      - tiff
+    analysis_compatibility:
+      - spike_detection
+      - subthreshold_dynamics
+
+  - id: fiber_photometry
+    label: Fiber Photometry
+    category: optical_imaging
+    definition: >
+      Bulk fluorescence recording from genetically-defined populations
+      using implanted optical fibers and calcium/neurotransmitter sensors.
+    synonyms:
+      - photometry
+      - dF/F
+      - gcamp photometry
+      - bulk calcium
+    data_types:
+      - fluorescence_timeseries
+      - zscore_signal
+    typical_formats:
+      - NWB
+      - csv
+      - mat
+    analysis_compatibility:
+      - event_aligned_activity
+      - correlation_analysis
+
+  # ---------------------------------------------------------------------------
+  # MRI-based Neuroimaging
+  # ---------------------------------------------------------------------------
+  - id: fmri
+    label: Functional MRI
+    category: mri
+    definition: >
+      Non-invasive imaging of brain activity via BOLD contrast,
+      measuring blood oxygenation changes as proxy for neural activity.
+    synonyms:
+      - functional mri
+      - bold fmri
+      - task fmri
+      - resting state fmri
+      - rs-fmri
+    data_types:
+      - bold_timeseries
+      - statistical_maps
+      - connectivity_matrix
+    typical_formats:
+      - BIDS
+      - nifti
+      - gifti
+    analysis_compatibility:
+      - glm_encoding
+      - connectivity_analysis
+      - mvpa_decoding
+
+  - id: structural_mri
+    label: Structural MRI
+    category: mri
+    definition: >
+      Anatomical imaging for brain morphometry, parcellation,
+      and registration to standard spaces.
+    synonyms:
+      - t1 weighted
+      - t2 weighted
+      - anatomical mri
+      - mprage
+    data_types:
+      - volume_image
+      - surface_mesh
+      - parcellation
+    typical_formats:
+      - BIDS
+      - nifti
+      - freesurfer
+    analysis_compatibility:
+      - voxel_based_morphometry
+      - cortical_thickness
+
+  - id: diffusion_mri
+    label: Diffusion MRI
+    category: mri
+    definition: >
+      Imaging of white matter microstructure and connectivity
+      via diffusion tensor imaging and tractography.
+    synonyms:
+      - dti
+      - diffusion tensor
+      - dwi
+      - tractography
+      - hardi
+    data_types:
+      - diffusion_weighted_images
+      - tensor_maps
+      - tractograms
+    typical_formats:
+      - BIDS
+      - nifti
+      - trk
+    analysis_compatibility:
+      - tractography
+      - connectivity_analysis
+
+  # ---------------------------------------------------------------------------
+  # Behavioral and Physiological
+  # ---------------------------------------------------------------------------
+  - id: behavior_video
+    label: Behavioral Video
+    category: behavioral
+    definition: >
+      Video recordings of animal behavior for pose estimation,
+      tracking, and behavioral classification.
+    synonyms:
+      - video tracking
+      - pose estimation
+      - deeplabcut
+      - behavioral recording
+    data_types:
+      - video_frames
+      - pose_keypoints
+      - behavioral_annotations
+    typical_formats:
+      - NWB
+      - mp4
+      - avi
+      - h5
+    analysis_compatibility:
+      - behavioral_classification
+      - pose_analysis
+
+  - id: eye_tracking
+    label: Eye Tracking
+    category: behavioral
+    definition: >
+      Recording of eye position and pupil dynamics during
+      behavior, attention, and arousal studies.
+    synonyms:
+      - gaze tracking
+      - pupillometry
+      - saccade recording
+    data_types:
+      - gaze_position
+      - pupil_diameter
+      - saccade_times
+    typical_formats:
+      - NWB
+      - edf
+      - csv
+    analysis_compatibility:
+      - saccade_analysis
+      - pupil_neural_correlation
+
+  - id: running_wheel
+    label: Running/Locomotion
+    category: behavioral
+    definition: >
+      Recording of locomotor behavior including running speed,
+      acceleration, and movement timing.
+    synonyms:
+      - wheel running
+      - treadmill
+      - locomotion
+      - running speed
+    data_types:
+      - velocity_timeseries
+      - distance
+      - movement_onset
+    typical_formats:
+      - NWB
+      - csv
+    analysis_compatibility:
+      - state_dependent_analysis
+      - locomotion_modulation
+
+  # ---------------------------------------------------------------------------
+  # Transcriptomics - Single Cell/Nucleus RNA
+  # ---------------------------------------------------------------------------
+  - id: single_cell_rnaseq
+    label: Single-Cell RNA Sequencing
+    category: transcriptomics
+    definition: >
+      High-throughput sequencing of RNA from individual cells to profile
+      gene expression and identify cell types/states at single-cell resolution.
+    synonyms:
+      - scRNA-seq
+      - single cell RNA
+      - 10x genomics
+      - drop-seq
+      - smart-seq
+      - single cell transcriptomics
+    data_types:
+      - gene_expression_matrix
+      - cell_type_annotations
+      - umap_embedding
+      - cluster_markers
+    typical_formats:
+      - h5ad
+      - loom
+      - 10x_h5
+      - csv
+      - mtx
+    analysis_compatibility:
+      - cell_type_clustering
+      - differential_expression
+      - trajectory_analysis
+      - gene_regulatory_network
+
+  - id: single_nucleus_rnaseq
+    label: Single-Nucleus RNA Sequencing
+    category: transcriptomics
+    definition: >
+      RNA sequencing from isolated nuclei rather than whole cells,
+      enabling profiling of frozen/archived tissue and mature neurons.
+    synonyms:
+      - snRNA-seq
+      - single nucleus RNA
+      - nuclear RNA-seq
+      - single nuclei transcriptomics
+    parent: single_cell_rnaseq
+    data_types:
+      - gene_expression_matrix
+      - nuclear_markers
+      - cell_type_annotations
+    typical_formats:
+      - h5ad
+      - loom
+      - 10x_h5
+    analysis_compatibility:
+      - cell_type_clustering
+      - differential_expression
+      - cross_species_comparison
+
+  - id: bulk_rnaseq
+    label: Bulk RNA Sequencing
+    category: transcriptomics
+    definition: >
+      RNA sequencing of tissue homogenates to measure average gene
+      expression across all cells in a sample.
+    synonyms:
+      - RNA-seq
+      - transcriptome sequencing
+      - bulk transcriptomics
+      - gene expression profiling
+    data_types:
+      - gene_expression_counts
+      - tpm_values
+      - differential_expression
+    typical_formats:
+      - csv
+      - tsv
+      - h5
+    analysis_compatibility:
+      - differential_expression
+      - pathway_analysis
+      - deconvolution
+
+  - id: spatial_transcriptomics
+    label: Spatial Transcriptomics
+    category: transcriptomics
+    definition: >
+      Methods that preserve spatial location while measuring gene expression,
+      including MERFISH, seqFISH, Visium, and Slide-seq.
+    synonyms:
+      - spatial RNA
+      - MERFISH
+      - seqFISH
+      - Visium
+      - slide-seq
+      - spatial gene expression
+      - in situ sequencing
+    data_types:
+      - gene_expression_spatial
+      - spot_coordinates
+      - tissue_image
+      - spatial_clusters
+    typical_formats:
+      - h5ad
+      - zarr
+      - geojson
+      - tiff
+    analysis_compatibility:
+      - spatial_clustering
+      - cell_type_mapping
+      - niche_analysis
+      - gene_colocalization
+
+  # ---------------------------------------------------------------------------
+  # Epigenomics - Chromatin Accessibility and Modifications
+  # ---------------------------------------------------------------------------
+  - id: single_cell_atacseq
+    label: Single-Cell ATAC-seq
+    category: epigenomics
+    definition: >
+      Assay for chromatin accessibility at single-cell resolution,
+      revealing regulatory elements and cell type-specific enhancers.
+    synonyms:
+      - scATAC-seq
+      - single cell ATAC
+      - chromatin accessibility
+      - single cell epigenomics
+    data_types:
+      - peak_matrix
+      - fragment_files
+      - gene_activity_scores
+      - motif_enrichment
+    typical_formats:
+      - h5ad
+      - fragments.tsv.gz
+      - bed
+      - bigwig
+    analysis_compatibility:
+      - peak_calling
+      - motif_analysis
+      - cis_regulatory_analysis
+      - cell_type_clustering
+
+  - id: single_nucleus_atacseq
+    label: Single-Nucleus ATAC-seq
+    category: epigenomics
+    definition: >
+      Chromatin accessibility profiling from isolated nuclei,
+      compatible with frozen tissue and brain samples.
+    synonyms:
+      - snATAC-seq
+      - single nucleus ATAC
+      - nuclear ATAC-seq
+    parent: single_cell_atacseq
+    data_types:
+      - peak_matrix
+      - fragment_files
+      - regulatory_elements
+    typical_formats:
+      - h5ad
+      - fragments.tsv.gz
+      - bed
+    analysis_compatibility:
+      - peak_calling
+      - motif_analysis
+      - cross_modality_integration
+
+  - id: multiome
+    label: Multiome (RNA + ATAC)
+    category: multiomics
+    definition: >
+      Joint profiling of gene expression and chromatin accessibility
+      from the same single cells, linking enhancers to target genes.
+    synonyms:
+      - 10x multiome
+      - joint RNA ATAC
+      - multi-omics
+      - paired transcriptome epigenome
+    data_types:
+      - gene_expression_matrix
+      - peak_matrix
+      - gene_activity_correlation
+      - enhancer_gene_links
+    typical_formats:
+      - h5ad
+      - h5mu
+      - 10x_h5
+    analysis_compatibility:
+      - multi_modal_integration
+      - enhancer_gene_linking
+      - regulatory_network_inference
+
+  - id: chip_seq
+    label: ChIP-seq
+    category: epigenomics
+    definition: >
+      Chromatin immunoprecipitation with sequencing to map protein-DNA
+      interactions including transcription factors and histone modifications.
+    synonyms:
+      - chromatin immunoprecipitation
+      - histone ChIP
+      - TF binding
+      - CUT&RUN
+      - CUT&Tag
+    data_types:
+      - peak_calls
+      - binding_sites
+      - histone_marks
+    typical_formats:
+      - bed
+      - bigwig
+      - narrowPeak
+    analysis_compatibility:
+      - peak_calling
+      - motif_discovery
+      - regulatory_analysis
+
+  - id: methylation
+    label: DNA Methylation
+    category: epigenomics
+    definition: >
+      Profiling of DNA methylation patterns using bisulfite sequencing
+      or methylation arrays to study epigenetic regulation.
+    synonyms:
+      - bisulfite sequencing
+      - WGBS
+      - RRBS
+      - methylation array
+      - 5mC
+      - snmC-seq
+    data_types:
+      - methylation_matrix
+      - dmr_calls
+      - cpg_islands
+    typical_formats:
+      - bed
+      - bigwig
+      - csv
+    analysis_compatibility:
+      - differential_methylation
+      - cell_type_deconvolution
+      - age_prediction
+
+  # ---------------------------------------------------------------------------
+  # Patch-seq and Multi-modal Single Cell
+  # ---------------------------------------------------------------------------
+  - id: patch_seq
+    label: Patch-seq
+    category: multiomics
+    definition: >
+      Combined whole-cell patch clamp recording with single-cell RNA
+      sequencing from the same neuron, linking physiology to transcriptome.
+    synonyms:
+      - patch-seq
+      - electrophysiology transcriptomics
+      - ephys + RNA-seq
+    data_types:
+      - membrane_potential
+      - gene_expression
+      - morphology
+      - cell_type_label
+    typical_formats:
+      - NWB
+      - h5ad
+      - swc
+    analysis_compatibility:
+      - electrophysiology_transcriptome_correlation
+      - cell_type_validation
+      - multimodal_clustering
+
+  # ---------------------------------------------------------------------------
+  # Proteomics and Metabolomics
+  # ---------------------------------------------------------------------------
+  - id: mass_spectrometry_proteomics
+    label: Mass Spectrometry Proteomics
+    category: proteomics
+    definition: >
+      Identification and quantification of proteins in neural tissue
+      using liquid chromatography-mass spectrometry.
+    synonyms:
+      - LC-MS
+      - proteomics
+      - protein mass spec
+      - quantitative proteomics
+    data_types:
+      - protein_abundance
+      - peptide_spectral_matches
+      - protein_groups
+    typical_formats:
+      - mzML
+      - csv
+      - maxquant
+    analysis_compatibility:
+      - differential_protein_expression
+      - pathway_analysis
+      - protein_network_analysis
+
+  # ---------------------------------------------------------------------------
+  # Optogenetics and Manipulation
+  # ---------------------------------------------------------------------------
+  - id: optogenetics
+    label: Optogenetics
+    category: manipulation
+    definition: >
+      Light-based control of genetically-defined neural populations
+      using channelrhodopsins or inhibitory opsins.
+    synonyms:
+      - optogenetic stimulation
+      - channelrhodopsin
+      - ChR2
+      - halorhodopsin
+      - opto stim
+    data_types:
+      - stimulation_times
+      - light_power
+      - opsin_expression
+    typical_formats:
+      - NWB
+      - csv
+    analysis_compatibility:
+      - causal_manipulation
+      - connectivity_mapping
+
+  - id: chemogenetics
+    label: Chemogenetics
+    category: manipulation
+    definition: >
+      Chemical control of neural activity using designer receptors
+      activated by designer drugs (DREADDs).
+    synonyms:
+      - DREADD
+      - designer receptor
+      - CNO
+      - chemogenetic manipulation
+    data_types:
+      - drug_administration
+      - receptor_expression
+      - behavioral_effect
+    typical_formats:
+      - NWB
+      - csv
+    analysis_compatibility:
+      - causal_manipulation
+      - circuit_analysis
+
+# ---------------------------------------------------------------------------
+# Modality categories for filtering and organization
+# ---------------------------------------------------------------------------
+categories:
+  electrophysiology:
+    label: Electrophysiology
+    description: Electrical recording of neural activity
+    includes:
+      - extracellular_ephys
+      - neuropixels
+      - tetrode
+      - patch_clamp
+
+  surface_electrophysiology:
+    label: Surface Electrophysiology
+    description: Non-invasive or minimally invasive surface recordings
+    includes:
+      - eeg
+      - meg
+      - ecog
+      - seeg
+
+  optical_imaging:
+    label: Optical Imaging
+    description: Light-based recording of neural activity
+    includes:
+      - calcium_imaging
+      - two_photon
+      - widefield_imaging
+      - voltage_imaging
+      - fiber_photometry
+
+  mri:
+    label: MRI
+    description: Magnetic resonance imaging modalities
+    includes:
+      - fmri
+      - structural_mri
+      - diffusion_mri
+
+  behavioral:
+    label: Behavioral
+    description: Behavioral and physiological measurements
+    includes:
+      - behavior_video
+      - eye_tracking
+      - running_wheel
+
+  transcriptomics:
+    label: Transcriptomics
+    description: RNA-based gene expression profiling
+    includes:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - bulk_rnaseq
+      - spatial_transcriptomics
+
+  epigenomics:
+    label: Epigenomics
+    description: Chromatin and DNA modification profiling
+    includes:
+      - single_cell_atacseq
+      - single_nucleus_atacseq
+      - chip_seq
+      - methylation
+
+  multiomics:
+    label: Multi-omics
+    description: Combined modalities from same samples
+    includes:
+      - multiome
+      - patch_seq
+
+  proteomics:
+    label: Proteomics
+    description: Protein-level measurements
+    includes:
+      - mass_spectrometry_proteomics
+
+  manipulation:
+    label: Manipulation
+    description: Causal manipulation of neural activity
+    includes:
+      - optogenetics
+      - chemogenetics
+
+# ---------------------------------------------------------------------------
+# Cross-modality relationships for graph building
+# ---------------------------------------------------------------------------
+cross_modality_relationships:
+  - from: neuropixels
+    to: behavior_video
+    relationship: co_recorded
+    weight: 0.9
+
+  - from: calcium_imaging
+    to: behavior_video
+    relationship: co_recorded
+    weight: 0.9
+
+  - from: single_cell_rnaseq
+    to: patch_seq
+    relationship: validation
+    weight: 0.8
+
+  - from: single_cell_atacseq
+    to: single_cell_rnaseq
+    relationship: complementary
+    weight: 0.85
+
+  - from: multiome
+    to: single_cell_rnaseq
+    relationship: superset
+    weight: 0.95
+
+  - from: multiome
+    to: single_cell_atacseq
+    relationship: superset
+    weight: 0.95
+
+  - from: fmri
+    to: eeg
+    relationship: complementary
+    weight: 0.7
+
+  - from: spatial_transcriptomics
+    to: single_cell_rnaseq
+    relationship: complementary
+    weight: 0.85

@@ -1,0 +1,11 @@
+{
+  "source": "cellxgene",
+  "source_id": "allen_mouse_motor_cortex_cells",
+  "title": "cellxgene mouse motor cortex single-cell transcriptomics",
+  "assay": "single-cell RNA sequencing",
+  "species": ["mouse"],
+  "brain_regions": ["motor_cortex"],
+  "signals": ["cells", "genes", "cell_type_annotations", "donor_metadata"],
+  "file_formats": ["h5ad"],
+  "fixture_note": "Small deterministic fixture used for CI-safe corpus expansion."
+}

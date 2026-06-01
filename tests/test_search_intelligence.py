@@ -1,0 +1,818 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import yaml
+
+from neural_search.graph.builder import build_graph_from_records
+from neural_search.graph.schema import write_graph_json
+from neural_search.intelligence import (
+    EvaluationQuery,
+    apply_search_intelligence_config,
+    build_benchmark_query_seeds,
+    build_corpus_knowledge_expansion_plan,
+    build_review_queue,
+    build_search_coverage_plan,
+    calibrate_scores_against_judgments,
+    evaluate_promotion_gates,
+    evaluate_query_plan,
+    load_relevance_judgments,
+    load_search_records_from_normalized,
+    plan_search_intelligence,
+    run_query_plan_evaluation,
+    search_datasets_with_intelligence,
+    summarize_human_labels_by_intent,
+    summarize_relevance_judgments,
+    write_calibration_report,
+    write_corpus_knowledge_expansion_plan,
+    write_promotion_gate_report,
+    write_query_plan_evaluation_report,
+    write_review_queue,
+    write_search_coverage_plan,
+)
+from neural_search.intelligence.calibration import main as calibration_main
+from neural_search.intelligence.evaluation import main as evaluation_main
+from neural_search.intelligence.expansion import main as expansion_main
+from neural_search.intelligence.fixtures import (
+    build_realistic_fixture_benchmark,
+    build_realistic_fixture_judgments,
+    build_realistic_fixture_records,
+    write_realistic_fixture_files,
+)
+from neural_search.intelligence.planner import main as planner_main
+from neural_search.intelligence.promotion import load_source_quality_summary
+from neural_search.intelligence.promotion import main as promotion_main
+from neural_search.intelligence.review import judgment_from_dict
+from neural_search.intelligence.review import main as review_main
+from neural_search.normalized import make_dataset_id, write_jsonl
+from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord
+
+
+def _label(label_type: str, label: str) -> EvidenceLabel:
+    return EvidenceLabel(
+        id=f"label:{label_type}:{label}",
+        label=label,
+        label_type=label_type,
+        confidence=0.95,
+    )
+
+
+def _search_record(
+    source_id: str,
+    title: str,
+    description: str,
+    *,
+    species: list[str],
+    modalities: list[str],
+    behaviors: list[str] | None = None,
+    tasks: list[str] | None = None,
+) -> dict:
+    return {
+        "dataset": {
+            "id": source_id,
+            "source": "fixture",
+            "source_id": source_id,
+            "title": title,
+            "description": description,
+            "species": species,
+            "modalities": modalities,
+            "brain_regions": [],
+            "tasks": tasks or [],
+            "behaviors": behaviors or [],
+            "data_standards": ["BIDS"],
+            "has_behavior": bool(behaviors),
+            "has_trials": True,
+            "license": "CC0",
+            "linked_paper_ids": [],
+            "metadata_json": {},
+        }
+    }
+
+
+def test_search_intelligence_plan_handles_cross_modal_hard_negatives() -> None:
+    plan = plan_search_intelligence(
+        "human EEG BCI decoding with behavior without fMRI",
+        corpus_profile={
+            "data_form_counts": {"eeg_meg": 0, "behavior": 4},
+            "underrepresented_data_forms": ["eeg_meg"],
+        },
+    )
+
+    assert plan.intent == "hard_negative"
+    assert plan.mode == "constraint_filter_first"
+    assert "eeg_meg" in plan.required_data_forms
+    assert "mri" in plan.excluded_data_forms
+    assert "preserve_hard_negative_filtering" in plan.quality_checks
+    assert "awareness" in plan.retrieval_weights
+    assert any("eeg_meg" in warning for warning in plan.warnings)
+
+
+def test_search_intelligence_plan_promotes_cross_modal_fit() -> None:
+    plan = plan_search_intelligence(
+        "mouse Neuropixels and calcium imaging population dynamics"
+    )
+
+    assert plan.intent == "cross_modal"
+    assert plan.mode == "cross_modal_fit"
+    assert "extracellular_ephys" in plan.required_data_forms
+    assert "optical_imaging" in plan.required_data_forms
+    assert "verify_cross_modal_alignment" in plan.quality_checks
+    assert plan.retrieval_weights["awareness"] >= 0.2
+
+
+def test_coverage_plan_prioritizes_missing_data_forms(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    output_dir = tmp_path / "reports"
+    record = NormalizedDatasetRecord(
+        dataset_id=make_dataset_id("fixture", "001"),
+        source="fixture",
+        source_id="001",
+        title="Mouse Neuropixels decision behavior",
+        description="NWB units, spike times, events, and behavior trials.",
+        species=[_label("species", "mouse")],
+        modalities=[_label("modality", "neuropixels")],
+        behavioral_events=[_label("behavior", "choice")],
+        data_standards=[_label("data_standard", "NWB")],
+    )
+    write_jsonl([record], records_path)
+    benchmark_path.write_text(
+        yaml.safe_dump(
+            {
+                "benchmark_queries": [
+                    {
+                        "id": "q1",
+                        "query": "mouse Neuropixels decoding without EEG",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    plan = build_search_coverage_plan(
+        records_path,
+        benchmark_path,
+        target_corpus_count=1,
+        target_benchmark_query_count=1,
+    )
+    paths = write_search_coverage_plan(plan, output_dir)
+
+    gap_ids = {gap.data_form for gap in plan.gaps}
+    assert "mri" in gap_ids
+    assert "molecular" in gap_ids
+    assert "extracellular_ephys" not in gap_ids
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+    assert Path(paths["benchmark_seeds"]).exists()
+
+
+def test_coverage_plan_generates_reviewable_benchmark_seeds(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    write_jsonl([], records_path)
+
+    plan = build_search_coverage_plan(
+        records_path,
+        target_corpus_count=1,
+        target_benchmark_query_count=1,
+    )
+    seeds = build_benchmark_query_seeds(plan, max_gaps=1, queries_per_gap=1)
+
+    assert seeds["metadata"]["review_required"] is True
+    assert seeds["benchmark_queries"][0]["coverage_gap"]
+    assert seeds["benchmark_queries"][0]["minimum_precision_at_5"] == 0.0
+
+
+def test_corpus_knowledge_expansion_plan_adds_source_and_graph_tasks(
+    tmp_path: Path,
+) -> None:
+    records_path = tmp_path / "records.jsonl"
+    graph_path = tmp_path / "graph.json"
+    record = NormalizedDatasetRecord(
+        dataset_id=make_dataset_id("dandi", "001"),
+        source="dandi",
+        source_id="001",
+        title="Mouse Neuropixels decision behavior",
+        description="NWB units, spike times, events, and behavior trials.",
+        species=[_label("species", "mouse")],
+        modalities=[_label("modality", "neuropixels")],
+        behavioral_events=[_label("behavior", "choice")],
+        data_standards=[_label("data_standard", "NWB")],
+    )
+    write_jsonl([record], records_path)
+    write_graph_json(build_graph_from_records([record]), graph_path)
+
+    plan = build_corpus_knowledge_expansion_plan(
+        records_path,
+        graph_path=graph_path,
+        target_corpus_count=1,
+        target_benchmark_query_count=1,
+    )
+    paths = write_corpus_knowledge_expansion_plan(plan, tmp_path / "reports")
+    task_ids = {task.task_id for task in plan.tasks}
+
+    assert "task24_expand_molecular" in task_ids
+    assert "task25_fill_graph_edge_types" in task_ids
+    assert "task26_add_source_families" in task_ids
+    assert plan.graph_node_type_counts["dataset"] == 1
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_corpus_knowledge_expansion_cli_writes_reports(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    out_dir = tmp_path / "reports"
+    write_jsonl([], records_path)
+
+    exit_code = expansion_main(
+        [
+            "--records",
+            str(records_path),
+            "--out",
+            str(out_dir),
+            "--target-corpus-count",
+            "1",
+            "--target-benchmark-query-count",
+            "1",
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "corpus_knowledge_expansion_plan.json").exists()
+    assert (out_dir / "corpus_knowledge_expansion_plan.md").exists()
+
+
+def test_planner_cli_writes_query_plan(tmp_path: Path) -> None:
+    output_path = tmp_path / "plan.json"
+    exit_code = planner_main(
+        [
+            "--query",
+            "connectomics morphology excluding fMRI",
+            "--out",
+            str(output_path),
+        ]
+    )
+
+    assert exit_code == 0
+    payload = output_path.read_text(encoding="utf-8")
+    assert "connectomics" in payload
+    assert "constraint_filter_first" in payload
+
+
+def test_intelligence_config_application_preserves_hard_negative_filters() -> None:
+    application = apply_search_intelligence_config(
+        "human EEG without fMRI",
+        {
+            "weights": {"ontology": 0.2, "semantic": 0.2},
+            "intelligence": {"enabled": True, "weight_blend_strength": 0.5},
+        },
+    )
+
+    assert application.enabled is True
+    assert application.plan.intent == "hard_negative"
+    assert application.retrieval_config["hard_negative_filters"]["enabled"] is True
+    assert application.blended_weights["negative_constraint"] > 0
+
+
+def test_search_with_intelligence_exposes_plan_metadata() -> None:
+    response = search_datasets_with_intelligence(
+        "human EEG BCI decoding with behavior without fMRI",
+        datasets=[
+            _search_record(
+                "GOOD_EEG",
+                "Human EEG BCI motor imagery",
+                "Human EEG channels, events, labels, sampling rate, and behavior trials.",
+                species=["human"],
+                modalities=["eeg"],
+                behaviors=["motor imagery"],
+                tasks=["bci_decoding"],
+            ),
+            _search_record(
+                "BAD_FMRI",
+                "Human fMRI behavior task",
+                "Human BOLD fMRI images and behavior events.",
+                species=["human"],
+                modalities=["fmri"],
+                behaviors=["button press"],
+                tasks=["decision making"],
+            ),
+        ],
+        limit=2,
+        rerank=True,
+    )
+
+    assert response.parsed_query["search_intelligence_enabled"] is True
+    assert response.parsed_query["search_intelligence_plan"]["intent"] == "hard_negative"
+    assert response.results[0].dataset_id == "GOOD_EEG"
+    assert "awareness_score" in response.results[0].score_breakdown
+
+
+def test_relevance_judgments_and_review_queue(tmp_path: Path) -> None:
+    judgments_path = tmp_path / "judgments.jsonl"
+    judgments_path.write_text(
+        "\n".join(
+            [
+                (
+                    '{"query_id":"q1","query_text":"eeg","dataset_id":"GOOD",'
+                    '"relevance":"exact","confidence":0.9}'
+                ),
+                (
+                    '{"query_id":"q1","query_text":"eeg","dataset_id":"BAD",'
+                    '"relevance":"hard_negative","confidence":0.8}'
+                ),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    judgments = load_relevance_judgments(judgments_path)
+    summary = summarize_relevance_judgments(judgments)
+    queue = build_review_queue(
+        {
+            "gaps": [
+                {"data_form": "molecular", "priority": "critical"},
+            ]
+        },
+        {
+            "benchmark_queries": [
+                {
+                    "id": "coverage_molecular_01",
+                    "query": "single cell datasets",
+                    "coverage_gap": "molecular",
+                    "priority": "critical",
+                }
+            ]
+        },
+    )
+    paths = write_review_queue(queue, tmp_path / "review")
+
+    assert summary["judgment_count"] == 2
+    assert summary["positive_count"] == 1
+    assert summary["hard_negative_count"] == 1
+    assert queue[0]["label_status"] == "needs_review"
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_review_queue_cli_writes_reports(tmp_path: Path) -> None:
+    coverage_path = tmp_path / "coverage.json"
+    seeds_path = tmp_path / "seeds.yaml"
+    out_dir = tmp_path / "queue"
+    coverage_path.write_text(
+        '{"gaps":[{"data_form":"connectomics","priority":"critical"}]}',
+        encoding="utf-8",
+    )
+    seeds_path.write_text(
+        yaml.safe_dump(
+            {
+                "benchmark_queries": [
+                    {
+                        "id": "coverage_connectomics_01",
+                        "query": "connectome datasets",
+                        "coverage_gap": "connectomics",
+                        "priority": "critical",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = review_main(
+        [
+            "--coverage",
+            str(coverage_path),
+            "--benchmark-seeds",
+            str(seeds_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "human_review_queue.json").exists()
+
+
+def test_query_plan_evaluation_compares_variants(tmp_path: Path) -> None:
+    datasets = [
+        _search_record(
+            "GOOD_EEG",
+            "Human EEG BCI motor imagery",
+            "Human EEG channels, events, labels, sampling rate, and behavior trials.",
+            species=["human"],
+            modalities=["eeg"],
+            behaviors=["motor imagery"],
+            tasks=["bci_decoding"],
+        ),
+        _search_record(
+            "BAD_FMRI",
+            "Human fMRI behavior task",
+            "Human BOLD fMRI images and behavior events.",
+            species=["human"],
+            modalities=["fmri"],
+            behaviors=["button press"],
+            tasks=["decision making"],
+        ),
+    ]
+    query = EvaluationQuery(
+        id="q_eeg",
+        query="human EEG BCI decoding with behavior without fMRI",
+        expected_dataset_ids=("GOOD_EEG",),
+        hard_negative_dataset_ids=("BAD_FMRI",),
+    )
+
+    evaluation = evaluate_query_plan(query, datasets=datasets, limit=2)
+    report = run_query_plan_evaluation([query], datasets=datasets, limit=2)
+    paths = write_query_plan_evaluation_report(report, tmp_path / "eval")
+
+    assert evaluation.planner_intent == "hard_negative"
+    assert evaluation.intelligence.result_ids[0] == "GOOD_EEG"
+    assert evaluation.intelligence_delta["hard_negative_violations"] == 0.0
+    assert report.promotion_safe is True
+    assert report.grouped_by_intent["hard_negative"]["promotion_safe"] is True
+    assert "eeg_meg" in report.grouped_by_data_form
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_query_plan_evaluation_loads_normalized_records(tmp_path: Path) -> None:
+    records_path = tmp_path / "normalized.jsonl"
+    record = NormalizedDatasetRecord(
+        dataset_id=make_dataset_id("fixture", "eeg001"),
+        source="fixture",
+        source_id="eeg001",
+        title="Human BIDS EEG BCI",
+        description="BIDS EEG channels, events, sampling rate, and behavior labels.",
+        species=[_label("species", "human")],
+        modalities=[_label("modality", "eeg")],
+        tasks=[_label("task", "motor_imagery")],
+        behavioral_events=[_label("behavior", "button_press")],
+        data_standards=[_label("data_standard", "BIDS")],
+    )
+    write_jsonl([record], records_path)
+
+    datasets = load_search_records_from_normalized(records_path)
+    report = run_query_plan_evaluation(
+        [
+            EvaluationQuery(
+                id="q_eeg",
+                query="human EEG motor imagery",
+                expected_dataset_ids=(record.dataset_id,),
+            )
+        ],
+        datasets=datasets,
+        corpus_label=str(records_path),
+        limit=3,
+    )
+
+    assert datasets[0]["dataset"]["id"] == record.dataset_id
+    assert report.corpus["record_count"] == 1
+    assert report.queries[0].intelligence.hit_at_5 == 1.0
+
+
+def test_query_plan_evaluation_cli_writes_reports(tmp_path: Path) -> None:
+    benchmark_path = tmp_path / "benchmark.yaml"
+    out_dir = tmp_path / "report"
+    benchmark_path.write_text(
+        yaml.safe_dump(
+            {
+                "benchmark_queries": [
+                    {
+                        "id": "q1",
+                        "query": "mouse Neuropixels decision making",
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = evaluation_main(
+        [
+            "--benchmark",
+            str(benchmark_path),
+            "--out",
+            str(out_dir),
+            "--limit",
+            "3",
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "query_plan_evaluation.json").exists()
+
+
+def test_promotion_gates_block_until_manifest_and_counts_allow(tmp_path: Path) -> None:
+    evaluation_report = {
+        "query_count": 3,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {
+            "hard_negative": {
+                "query_count": 3,
+                "mean_mrr_delta": 0.1,
+                "hard_negative_violation_delta": 0,
+            }
+        },
+    }
+    manifest = {
+        "default_enabled": False,
+        "global_gates": {
+            "min_total_queries": 5,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "intents": {
+            "hard_negative": {
+                "enabled": False,
+                "min_query_count": 5,
+                "min_mean_mrr_delta": 0.0,
+                "max_hard_negative_violation_delta": 0,
+            }
+        },
+    }
+
+    report = evaluate_promotion_gates(evaluation_report, manifest)
+    paths = write_promotion_gate_report(report, tmp_path / "promotion")
+
+    assert report.promotion_ready is False
+    assert "default promotion disabled in manifest" in report.blockers
+    assert report.intent_decisions[0].ready is False
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_promotion_gates_use_human_label_summary() -> None:
+    evaluation_report = {
+        "query_count": 10,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {},
+    }
+    manifest = {
+        "default_enabled": True,
+        "global_gates": {
+            "min_total_queries": 10,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "human_label_gates": {
+            "min_judgments": 2,
+            "min_hard_negative_judgments": 0,
+        },
+        "intents": {},
+    }
+
+    report = evaluate_promotion_gates(
+        evaluation_report,
+        manifest,
+        human_label_summary={"judgment_count": 1, "hard_negative_count": 0},
+    )
+
+    assert report.promotion_ready is False
+    assert "human judgment_count 1 < required 2" in report.blockers
+
+
+def test_promotion_gates_can_block_on_source_quality_summary() -> None:
+    evaluation_report = {
+        "query_count": 10,
+        "mean_delta": {"hard_negative_violations": 0},
+        "grouped_by_intent": {},
+    }
+    manifest = {
+        "default_enabled": True,
+        "global_gates": {
+            "min_total_queries": 10,
+            "max_hard_negative_violation_delta": 0,
+        },
+        "source_quality_gates": {
+            "enabled": True,
+            "min_mean_quality_score": 0.7,
+            "max_unknown_source_count": 0,
+            "max_low_trust_count": 0,
+            "max_source_warning_count": 0,
+        },
+        "intents": {},
+    }
+
+    report = evaluate_promotion_gates(
+        evaluation_report,
+        manifest,
+        source_quality_summary={
+            "mean_quality_score": 0.62,
+            "trust_level_counts": {"unknown": 1, "low": 1},
+            "warning_count": 2,
+        },
+    )
+
+    assert report.promotion_ready is False
+    assert "mean source quality 0.62 < required 0.7" in report.blockers
+    assert "unknown source count 1 > allowed 0" in report.blockers
+    assert "low-trust source count 1 > allowed 0" in report.blockers
+    assert "source warning count 2 > allowed 0" in report.blockers
+
+
+def test_load_source_quality_summary_accepts_readiness_report(tmp_path: Path) -> None:
+    readiness_path = tmp_path / "readiness.json"
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "report": "scientific_readiness",
+                "source_quality": {
+                    "mean_quality_score": 0.91,
+                    "trust_level_counts": {"high": 3},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = load_source_quality_summary(readiness_path)
+
+    assert summary == {
+        "mean_quality_score": 0.91,
+        "trust_level_counts": {"high": 3},
+    }
+
+
+def test_task23_realistic_fixtures_cover_underrepresented_forms(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+
+    records = build_realistic_fixture_records()
+    benchmark = build_realistic_fixture_benchmark()
+    judgments = build_realistic_fixture_judgments()
+    paths = write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    modalities = {label.label for record in records for label in record.modalities}
+    assert {
+        "electron_microscopy",
+        "single_cell_rna",
+        "patch_clamp",
+        "model_output",
+    } <= modalities
+    assert len(benchmark["benchmark_queries"]) >= 6
+    assert len(judgments) > len(benchmark["benchmark_queries"])
+    assert any(judgment["relevance"] == "hard_negative" for judgment in judgments)
+    assert Path(paths["records"]).exists()
+    assert Path(paths["benchmark"]).exists()
+    assert Path(paths["judgments"]).exists()
+
+
+def test_per_intent_human_label_summary_uses_evaluation_report() -> None:
+    judgments = [
+        judgment_from_dict(
+            {
+                "query_id": "q_hard",
+                "query_text": "without fmri",
+                "dataset_id": "GOOD",
+                "relevance": "exact",
+                "confidence": 0.9,
+            }
+        ),
+        judgment_from_dict(
+            {
+                "query_id": "q_data",
+                "query_text": "single cell",
+                "dataset_id": "CELL",
+                "relevance": "exact",
+                "confidence": 0.9,
+            }
+        ),
+    ]
+    summary = summarize_human_labels_by_intent(
+        judgments,
+        {
+            "queries": [
+                {"query_id": "q_hard", "planner_intent": "hard_negative"},
+                {"query_id": "q_data", "planner_intent": "data_form_search"},
+            ]
+        },
+    )
+
+    assert summary["hard_negative"]["judgment_count"] == 1
+    assert summary["data_form_search"]["positive_count"] == 1
+
+
+def test_score_calibration_separates_positive_and_negative_judgments(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+    write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    queries = [
+        EvaluationQuery(
+            id="task23_connectomics_mapping",
+            query="connectome morphology tracing for circuit mapping without fMRI",
+        )
+    ]
+    judgments = [
+        judgment
+        for judgment in load_relevance_judgments(judgments_path)
+        if judgment.query_id == "task23_connectomics_mapping"
+    ]
+    report = calibrate_scores_against_judgments(
+        queries,
+        judgments,
+        datasets=load_search_records_from_normalized(records_path),
+        limit=6,
+    )
+    paths = write_calibration_report(report, tmp_path / "calibration")
+
+    assert report.positive_count == 1
+    assert report.negative_count == 1
+    assert report.score_gap >= 0
+    assert report.brier_score >= 0
+    assert Path(paths["json"]).exists()
+    assert Path(paths["markdown"]).exists()
+
+
+def test_score_calibration_cli_writes_reports(tmp_path: Path) -> None:
+    records_path = tmp_path / "records.jsonl"
+    benchmark_path = tmp_path / "benchmark.yaml"
+    judgments_path = tmp_path / "judgments.jsonl"
+    out_dir = tmp_path / "calibration"
+    write_realistic_fixture_files(
+        records_path=records_path,
+        benchmark_path=benchmark_path,
+        judgments_path=judgments_path,
+    )
+
+    exit_code = calibration_main(
+        [
+            "--benchmark",
+            str(benchmark_path),
+            "--records",
+            str(records_path),
+            "--judgments",
+            str(judgments_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "score_calibration_report.json").exists()
+
+
+def test_promotion_cli_writes_gate_report(tmp_path: Path) -> None:
+    evaluation_path = tmp_path / "evaluation.json"
+    manifest_path = tmp_path / "manifest.yaml"
+    readiness_path = tmp_path / "readiness.json"
+    out_dir = tmp_path / "promotion"
+    evaluation_path.write_text(
+        '{"query_count":1,"mean_delta":{"hard_negative_violations":0},'
+        '"grouped_by_intent":{}}',
+        encoding="utf-8",
+    )
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "default_enabled": False,
+                "global_gates": {"min_total_queries": 1},
+                "source_quality_gates": {
+                    "enabled": True,
+                    "min_mean_quality_score": 0.7,
+                    "max_unknown_source_count": 0,
+                    "max_low_trust_count": 0,
+                    "max_source_warning_count": 0,
+                },
+                "intents": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    readiness_path.write_text(
+        json.dumps(
+            {
+                "source_quality": {
+                    "mean_quality_score": 0.95,
+                    "trust_level_counts": {"high": 2},
+                    "warning_count": 0,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = promotion_main(
+        [
+            "--manifest",
+            str(manifest_path),
+            "--evaluation",
+            str(evaluation_path),
+            "--readiness-report",
+            str(readiness_path),
+            "--out",
+            str(out_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    assert (out_dir / "promotion_gate_report.json").exists()

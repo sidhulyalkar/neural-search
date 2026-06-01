@@ -1,0 +1,67 @@
+{
+  "dataset_id": "dataset:dandi:000026",
+  "source": "dandi",
+  "source_id": "000026",
+  "title": "Mouse Neuropixels decision task",
+  "description": null,
+  "url": "https://dandiarchive.org/dandiset/000026",
+  "raw_payload_path": "data/raw/dandi/000026.json",
+  "species": [
+    {
+      "id": "label:species:mouse",
+      "label": "mouse",
+      "label_type": "species",
+      "confidence": 0.95,
+      "evidence_text": "mouse",
+      "source_field": "metadata.species",
+      "source_value": "Mus musculus",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "modalities": [
+    {
+      "id": "label:modality:neuropixels",
+      "label": "Neuropixels",
+      "label_type": "modality",
+      "confidence": 0.92,
+      "evidence_text": "Neuropixels",
+      "source_field": "metadata.measurementTechnique",
+      "source_value": "Neuropixels extracellular electrophysiology",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "brain_regions": [],
+  "tasks": [],
+  "behavioral_events": [],
+  "analysis_goals": [],
+  "data_standards": [
+    {
+      "id": "label:data_standard:nwb",
+      "label": "NWB",
+      "label_type": "data_standard",
+      "confidence": 0.98,
+      "evidence_text": "NWB",
+      "source_field": "source",
+      "source_value": "DANDI",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "file_formats": [],
+  "linked_papers": [],
+  "usability_flags": {
+    "has_trials": null,
+    "has_behavior": null,
+    "has_neural_data": true,
+    "has_continuous_behavior": null,
+    "has_event_timestamps": null,
+    "has_raw_data": true,
+    "has_processed_data": null,
+    "has_standard_format": true
+  },
+  "missing_fields": ["description"],
+  "created_at": "2026-05-23T00:00:00+00:00",
+  "extractor_version": "v0.3.0"
+}

@@ -1,0 +1,485 @@
+# Benchmark Queries v0.1 - Corpus Expansion Sprint
+# 50 queries covering decision-making, motor control, visual decision-making, BCI, and clinical neurophysiology
+
+# =============================================================================
+# DECISION-MAKING DOMAIN (15 queries)
+# =============================================================================
+
+decision_making:
+  # Go/No-Go Task (3 queries)
+  - id: "dm_gonogo_001"
+    query: "go nogo task with neural recordings"
+    natural_language: "Find datasets with go/no-go paradigm and neural data"
+    expected_tasks: ["go_nogo", "response_inhibition"]
+    expected_modalities: ["electrophysiology", "calcium_imaging"]
+    expected_behaviors: ["licking", "lever_press", "button_press"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "dm_gonogo_002"
+    query: "prefrontal cortex go nogo inhibition"
+    natural_language: "Go/no-go with prefrontal cortex recordings"
+    expected_tasks: ["go_nogo"]
+    expected_brain_regions: ["mPFC", "PFC", "prefrontal"]
+    expected_behaviors: ["response_inhibition"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "dm_gonogo_003"
+    query: "mouse go nogo calcium imaging"
+    natural_language: "Mouse calcium imaging during go/no-go"
+    expected_tasks: ["go_nogo"]
+    expected_species: ["mouse", "Mus musculus"]
+    expected_modalities: ["calcium_imaging", "two_photon"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  # Reversal Learning (4 queries)
+  - id: "dm_reversal_001"
+    query: "reversal learning electrophysiology"
+    natural_language: "Find reversal learning datasets with electrophysiology"
+    expected_tasks: ["reversal_learning", "probabilistic_reversal"]
+    expected_modalities: ["electrophysiology", "ephys"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "dm_reversal_002"
+    query: "orbitofrontal cortex reward reversal"
+    natural_language: "OFC recordings during reward reversal"
+    expected_tasks: ["reversal_learning"]
+    expected_brain_regions: ["OFC", "orbitofrontal"]
+    expected_behaviors: ["choice", "reward_consumption"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "dm_reversal_003"
+    query: "probabilistic reversal learning striatum"
+    natural_language: "Probabilistic reversal with striatal recordings"
+    expected_tasks: ["probabilistic_reversal"]
+    expected_brain_regions: ["striatum", "NAc", "dorsal_striatum"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "dm_reversal_004"
+    query: "rodent flexible behavior rule switching"
+    natural_language: "Rodent cognitive flexibility and rule switching data"
+    expected_tasks: ["reversal_learning", "set_shifting", "rule_switching"]
+    expected_species: ["mouse", "rat"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  # Delay Discounting / Intertemporal Choice (3 queries)
+  - id: "dm_delay_001"
+    query: "delay discounting neural"
+    natural_language: "Delay discounting task with neural recordings"
+    expected_tasks: ["delay_discounting", "intertemporal_choice"]
+    expected_behaviors: ["choice", "waiting"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "dm_delay_002"
+    query: "intertemporal choice prefrontal cortex"
+    natural_language: "PFC recordings during intertemporal choice"
+    expected_tasks: ["intertemporal_choice", "delay_discounting"]
+    expected_brain_regions: ["mPFC", "OFC", "ACC"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "dm_delay_003"
+    query: "impulsivity waiting fiber photometry"
+    natural_language: "Fiber photometry during impulsivity/waiting tasks"
+    expected_tasks: ["delay_discounting", "waiting_task"]
+    expected_modalities: ["fiber_photometry"]
+    expected_behaviors: ["waiting", "impulsive_choice"]
+    difficulty: "hard"
+    priority: "LOW"
+
+  # Two-Alternative Forced Choice (3 queries)
+  - id: "dm_2afc_001"
+    query: "two alternative forced choice neural"
+    natural_language: "2AFC task with neural recordings"
+    expected_tasks: ["two_alternative_forced_choice", "2AFC"]
+    expected_behaviors: ["choice", "decision"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "dm_2afc_002"
+    query: "evidence accumulation decision making"
+    natural_language: "Evidence accumulation during decision making"
+    expected_tasks: ["evidence_accumulation", "2AFC"]
+    expected_behaviors: ["perceptual_decision"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "dm_2afc_003"
+    query: "reaction time confidence neural"
+    natural_language: "Reaction time and confidence with neural data"
+    expected_tasks: ["2AFC", "confidence_judgment"]
+    expected_behaviors: ["reaction_time", "confidence_report"]
+    difficulty: "hard"
+    priority: "LOW"
+
+  # Probabilistic Learning (2 queries)
+  - id: "dm_prob_001"
+    query: "probabilistic reward learning"
+    natural_language: "Probabilistic reward learning with neural data"
+    expected_tasks: ["probabilistic_learning", "reward_learning"]
+    expected_behaviors: ["choice", "reward_prediction"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "dm_prob_002"
+    query: "reinforcement learning dopamine"
+    natural_language: "RL tasks with dopamine recordings"
+    expected_tasks: ["reinforcement_learning"]
+    expected_brain_regions: ["VTA", "SNc", "NAc"]
+    expected_modalities: ["fiber_photometry", "electrophysiology"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+# =============================================================================
+# VISUAL DECISION-MAKING DOMAIN (10 queries)
+# =============================================================================
+
+visual_decision:
+  # Visual Discrimination (4 queries)
+  - id: "vis_disc_001"
+    query: "visual discrimination task neural"
+    natural_language: "Visual discrimination with neural recordings"
+    expected_tasks: ["visual_discrimination"]
+    expected_modalities: ["electrophysiology", "calcium_imaging"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "vis_disc_002"
+    query: "orientation discrimination visual cortex"
+    natural_language: "Orientation discrimination in visual cortex"
+    expected_tasks: ["orientation_discrimination"]
+    expected_brain_regions: ["V1", "visual_cortex"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "vis_disc_003"
+    query: "motion direction discrimination MT"
+    natural_language: "Motion discrimination with MT/MST recordings"
+    expected_tasks: ["motion_discrimination"]
+    expected_brain_regions: ["MT", "MST", "V5"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "vis_disc_004"
+    query: "contrast detection mouse visual"
+    natural_language: "Contrast detection in mouse visual system"
+    expected_tasks: ["contrast_detection", "visual_discrimination"]
+    expected_species: ["mouse"]
+    expected_brain_regions: ["V1", "visual_cortex"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  # Perceptual Decision-Making (3 queries)
+  - id: "vis_perc_001"
+    query: "perceptual decision making parietal"
+    natural_language: "Perceptual decisions with parietal recordings"
+    expected_tasks: ["perceptual_decision"]
+    expected_brain_regions: ["PPC", "LIP", "parietal"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "vis_perc_002"
+    query: "sensory evidence accumulation Neuropixels"
+    natural_language: "Sensory evidence accumulation with Neuropixels"
+    expected_tasks: ["evidence_accumulation", "perceptual_decision"]
+    expected_modalities: ["neuropixels", "electrophysiology"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "vis_perc_003"
+    query: "threshold detection psychophysics neural"
+    natural_language: "Detection threshold with psychophysics and neural data"
+    expected_tasks: ["detection_task", "threshold_detection"]
+    expected_behaviors: ["psychophysics", "detection"]
+    difficulty: "hard"
+    priority: "LOW"
+
+  # Visual Attention (3 queries)
+  - id: "vis_att_001"
+    query: "visual attention neural recording"
+    natural_language: "Visual attention with neural recordings"
+    expected_tasks: ["visual_attention", "attention_task"]
+    expected_behaviors: ["attention", "saccade"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "vis_att_002"
+    query: "selective attention frontal eye field"
+    natural_language: "Selective attention with FEF recordings"
+    expected_tasks: ["selective_attention"]
+    expected_brain_regions: ["FEF", "frontal_eye_field"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "vis_att_003"
+    query: "covert attention V4 extrastriate"
+    natural_language: "Covert attention in extrastriate visual areas"
+    expected_tasks: ["covert_attention"]
+    expected_brain_regions: ["V4", "extrastriate"]
+    difficulty: "hard"
+    priority: "LOW"
+
+# =============================================================================
+# MOTOR CONTROL DOMAIN (10 queries)
+# =============================================================================
+
+motor_control:
+  # Reaching and Grasping (4 queries)
+  - id: "mot_reach_001"
+    query: "reaching grasping motor cortex"
+    natural_language: "Reaching/grasping with motor cortex recordings"
+    expected_tasks: ["reaching", "grasping"]
+    expected_brain_regions: ["M1", "motor_cortex", "PMd"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "mot_reach_002"
+    query: "arm movement primate electrophysiology"
+    natural_language: "Primate arm movement electrophysiology"
+    expected_tasks: ["reaching", "arm_movement"]
+    expected_species: ["macaque", "monkey", "primate"]
+    expected_modalities: ["electrophysiology"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "mot_reach_003"
+    query: "hand kinematics neural decoding"
+    natural_language: "Hand kinematics with neural decoding data"
+    expected_tasks: ["grasping", "hand_movement"]
+    expected_behaviors: ["kinematics", "grip"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "mot_reach_004"
+    query: "center out reaching task array"
+    natural_language: "Center-out reaching with multi-electrode array"
+    expected_tasks: ["center_out", "reaching"]
+    expected_modalities: ["utah_array", "electrophysiology"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  # Motor Planning (3 queries)
+  - id: "mot_plan_001"
+    query: "motor planning delay period"
+    natural_language: "Motor planning during delay period"
+    expected_tasks: ["delayed_reach", "motor_planning"]
+    expected_behaviors: ["preparation", "planning"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "mot_plan_002"
+    query: "preparatory activity premotor cortex"
+    natural_language: "Preparatory activity in premotor areas"
+    expected_tasks: ["motor_preparation"]
+    expected_brain_regions: ["PMd", "PMv", "premotor"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "mot_plan_003"
+    query: "movement initiation basal ganglia"
+    natural_language: "Movement initiation with basal ganglia recordings"
+    expected_tasks: ["movement_initiation"]
+    expected_brain_regions: ["striatum", "GPi", "STN", "basal_ganglia"]
+    difficulty: "hard"
+    priority: "LOW"
+
+  # Motor Learning (3 queries)
+  - id: "mot_learn_001"
+    query: "motor learning adaptation neural"
+    natural_language: "Motor learning/adaptation with neural data"
+    expected_tasks: ["motor_learning", "adaptation"]
+    expected_behaviors: ["adaptation", "skill_learning"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "mot_learn_002"
+    query: "visuomotor adaptation cerebellum"
+    natural_language: "Visuomotor adaptation with cerebellar recordings"
+    expected_tasks: ["visuomotor_adaptation"]
+    expected_brain_regions: ["cerebellum"]
+    difficulty: "hard"
+    priority: "LOW"
+
+  - id: "mot_learn_003"
+    query: "skill acquisition longitudinal neural"
+    natural_language: "Skill acquisition over multiple sessions"
+    expected_tasks: ["skill_learning"]
+    expected_behaviors: ["learning_curve", "performance_improvement"]
+    difficulty: "hard"
+    priority: "LOW"
+
+# =============================================================================
+# BCI DOMAIN (8 queries)
+# =============================================================================
+
+bci:
+  # Motor Imagery (3 queries)
+  - id: "bci_mi_001"
+    query: "motor imagery EEG classification"
+    natural_language: "Motor imagery EEG for BCI classification"
+    expected_tasks: ["motor_imagery"]
+    expected_modalities: ["EEG"]
+    expected_behaviors: ["imagined_movement"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "bci_mi_002"
+    query: "motor imagery left right hand"
+    natural_language: "Left/right hand motor imagery"
+    expected_tasks: ["motor_imagery"]
+    expected_behaviors: ["left_hand_imagery", "right_hand_imagery"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "bci_mi_003"
+    query: "imagined movement sensorimotor rhythm"
+    natural_language: "Imagined movement with sensorimotor rhythms"
+    expected_tasks: ["motor_imagery"]
+    expected_modalities: ["EEG"]
+    expected_behaviors: ["mu_rhythm", "beta_rhythm"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  # Neural Prosthetics (3 queries)
+  - id: "bci_pros_001"
+    query: "brain computer interface cursor control"
+    natural_language: "BCI cursor control experiments"
+    expected_tasks: ["cursor_control", "BCI"]
+    expected_behaviors: ["cursor_movement", "target_acquisition"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "bci_pros_002"
+    query: "neural prosthesis intracortical"
+    natural_language: "Intracortical neural prosthesis data"
+    expected_tasks: ["neural_prosthesis"]
+    expected_modalities: ["utah_array", "intracortical"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  - id: "bci_pros_003"
+    query: "closed loop BCI decoder"
+    natural_language: "Closed-loop BCI with decoder"
+    expected_tasks: ["closed_loop_BCI"]
+    expected_behaviors: ["online_control", "feedback"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  # Assistive BCI (2 queries)
+  - id: "bci_assist_001"
+    query: "P300 speller BCI"
+    natural_language: "P300 speller BCI system data"
+    expected_tasks: ["P300_speller", "oddball"]
+    expected_modalities: ["EEG"]
+    expected_behaviors: ["spelling", "character_selection"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "bci_assist_002"
+    query: "SSVEP BCI frequency tagging"
+    natural_language: "SSVEP-based BCI with frequency tagging"
+    expected_tasks: ["SSVEP_BCI"]
+    expected_modalities: ["EEG"]
+    expected_behaviors: ["frequency_selection"]
+    difficulty: "medium"
+    priority: "LOW"
+
+# =============================================================================
+# CLINICAL NEUROPHYSIOLOGY DOMAIN (7 queries)
+# =============================================================================
+
+clinical:
+  # Epilepsy/Seizure (3 queries)
+  - id: "clin_epi_001"
+    query: "epilepsy intracranial EEG"
+    natural_language: "Epilepsy iEEG recordings"
+    expected_tasks: ["seizure_monitoring", "clinical_monitoring"]
+    expected_modalities: ["iEEG", "intracranial_EEG"]
+    expected_conditions: ["epilepsy"]
+    difficulty: "easy"
+    priority: "HIGH"
+
+  - id: "clin_epi_002"
+    query: "seizure detection ECoG"
+    natural_language: "Seizure detection with ECoG"
+    expected_tasks: ["seizure_detection"]
+    expected_modalities: ["ECoG"]
+    expected_behaviors: ["seizure_onset", "ictal_activity"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "clin_epi_003"
+    query: "stereo EEG cognitive task"
+    natural_language: "sEEG during cognitive task"
+    expected_tasks: ["cognitive_task"]
+    expected_modalities: ["sEEG", "stereo_EEG"]
+    expected_conditions: ["epilepsy"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  # Human Single-Unit (2 queries)
+  - id: "clin_unit_001"
+    query: "human single neuron recording"
+    natural_language: "Human single-unit recordings"
+    expected_species: ["human", "Homo sapiens"]
+    expected_modalities: ["single_unit", "microelectrode"]
+    difficulty: "medium"
+    priority: "HIGH"
+
+  - id: "clin_unit_002"
+    query: "human medial temporal lobe memory"
+    natural_language: "Human MTL recordings during memory task"
+    expected_brain_regions: ["MTL", "hippocampus", "entorhinal"]
+    expected_tasks: ["memory_task", "recognition"]
+    expected_species: ["human"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+  # Clinical Cognitive (2 queries)
+  - id: "clin_cog_001"
+    query: "human intracranial language"
+    natural_language: "Human iEEG during language tasks"
+    expected_tasks: ["language_task", "speech"]
+    expected_modalities: ["iEEG", "ECoG"]
+    expected_species: ["human"]
+    difficulty: "medium"
+    priority: "MEDIUM"
+
+  - id: "clin_cog_002"
+    query: "human frontal lobe working memory iEEG"
+    natural_language: "Human frontal iEEG during working memory"
+    expected_tasks: ["working_memory"]
+    expected_brain_regions: ["PFC", "DLPFC", "frontal"]
+    expected_modalities: ["iEEG"]
+    expected_species: ["human"]
+    difficulty: "hard"
+    priority: "MEDIUM"
+
+# =============================================================================
+# METADATA
+# =============================================================================
+
+metadata:
+  version: "0.1"
+  total_queries: 50
+  domains:
+    decision_making: 15
+    visual_decision: 10
+    motor_control: 10
+    bci: 8
+    clinical: 7
+  difficulty_distribution:
+    easy: 8
+    medium: 26
+    hard: 16
+  priority_distribution:
+    HIGH: 20
+    MEDIUM: 22
+    LOW: 8

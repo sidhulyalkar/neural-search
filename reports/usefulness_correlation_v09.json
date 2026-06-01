@@ -1,0 +1,150 @@
+{
+  "n_queries_run": 20,
+  "n_pairs": 180,
+  "spearman_r": 0.5044,
+  "spearman_p": 0.0,
+  "mean_score_relevant": 0.2377,
+  "mean_score_irrelevant": 0.1532,
+  "query_breakdown": [
+    {
+      "query_id": "rc_lookup_001",
+      "mean_relevant": 0.1736,
+      "mean_irrelevant": null,
+      "n_relevant": 10,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_lookup_002",
+      "mean_relevant": null,
+      "mean_irrelevant": null,
+      "n_relevant": 0,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_lookup_003",
+      "mean_relevant": 0.215,
+      "mean_irrelevant": null,
+      "n_relevant": 10,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_lookup_004",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.158,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_lookup_005",
+      "mean_relevant": 0.1906,
+      "mean_irrelevant": 0.134,
+      "n_relevant": 7,
+      "n_irrelevant": 3
+    },
+    {
+      "query_id": "rc_modality_001",
+      "mean_relevant": 0.3324,
+      "mean_irrelevant": null,
+      "n_relevant": 10,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_modality_002",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.3151,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_modality_003",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.1979,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_modality_004",
+      "mean_relevant": 0.3557,
+      "mean_irrelevant": 0.309,
+      "n_relevant": 7,
+      "n_irrelevant": 3
+    },
+    {
+      "query_id": "rc_modality_005",
+      "mean_relevant": 0.2694,
+      "mean_irrelevant": null,
+      "n_relevant": 10,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_task_001",
+      "mean_relevant": 0.209,
+      "mean_irrelevant": 0.2152,
+      "n_relevant": 3,
+      "n_irrelevant": 7
+    },
+    {
+      "query_id": "rc_task_002",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.1385,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_task_003",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.1456,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_task_004",
+      "mean_relevant": 0.1305,
+      "mean_irrelevant": 0.054,
+      "n_relevant": 2,
+      "n_irrelevant": 8
+    },
+    {
+      "query_id": "rc_task_005",
+      "mean_relevant": 0.2154,
+      "mean_irrelevant": 0.164,
+      "n_relevant": 8,
+      "n_irrelevant": 2
+    },
+    {
+      "query_id": "rc_affordance_001",
+      "mean_relevant": 0.114,
+      "mean_irrelevant": 0.0857,
+      "n_relevant": 1,
+      "n_irrelevant": 9
+    },
+    {
+      "query_id": "rc_affordance_002",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.088,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    },
+    {
+      "query_id": "rc_affordance_003",
+      "mean_relevant": 0.094,
+      "mean_irrelevant": 0.0889,
+      "n_relevant": 2,
+      "n_irrelevant": 8
+    },
+    {
+      "query_id": "rc_affordance_004",
+      "mean_relevant": null,
+      "mean_irrelevant": null,
+      "n_relevant": 0,
+      "n_irrelevant": 0
+    },
+    {
+      "query_id": "rc_affordance_005",
+      "mean_relevant": null,
+      "mean_irrelevant": 0.134,
+      "n_relevant": 0,
+      "n_irrelevant": 10
+    }
+  ]
+}

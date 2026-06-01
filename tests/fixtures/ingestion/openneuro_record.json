@@ -1,0 +1,13 @@
+{
+  "id": "ds000001",
+  "name": "Motor imagery EEG",
+  "description": "BCI motor imagery task with EEG events.tsv trial timing",
+  "latestSnapshot": {
+    "tag": "1.0.0",
+    "summary": {
+      "subjects": 2,
+      "tasks": ["motor_imagery"],
+      "modalities": ["EEG"]
+    }
+  }
+}

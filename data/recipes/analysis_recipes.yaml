@@ -1,0 +1,186 @@
+recipes:
+  - id: go_nogo_basic
+    task_ids: [go_nogo]
+    title: Go/NoGo starter analyses
+    summary: Event-aligned and outcome-comparison analyses for response inhibition tasks.
+    level: starter
+    analyses:
+      - event_aligned_activity
+      - hit_false_alarm_comparison
+      - response_inhibition_decoding
+    required_fields: [trials, go_cue, nogo_cue, response, lick]
+    cells:
+      - type: markdown
+        title: Go/NoGo recipe
+        body: |
+          ## Recipe: Go/NoGo starter analyses
+
+          Start by aligning neural activity to Go and NoGo cues, then compare hit and false-alarm trials.
+      - type: code
+        title: Event-aligned Go/NoGo activity
+        body: |
+          # Recipe: align activity to Go and NoGo cues
+          if 'trials_df' in globals():
+              cue_columns = [c for c in trials_df.columns if 'cue' in c.lower() or 'go' in c.lower()]
+              print('Candidate cue columns:', cue_columns)
+              # TODO: choose go/nogo event columns and align units or fluorescence traces around each cue.
+          else:
+              print('Run the Trials Table cells first.')
+      - type: code
+        title: Hit vs false alarm comparison
+        body: |
+          # Recipe: compare hit and false-alarm trials
+          if 'trials_df' in globals():
+              outcome_columns = [c for c in trials_df.columns if c.lower() in {'hit', 'false_alarm', 'correct', 'error', 'outcome'}]
+              print('Candidate outcome columns:', outcome_columns)
+              # TODO: group aligned responses by hit/false alarm and plot mean +/- SEM.
+
+  - id: reversal_learning_basic
+    task_ids: [reversal_learning]
+    title: Reversal learning starter analyses
+    summary: Reward/omission alignment, pre/post reversal analysis, win-stay lose-shift behavior, and Q-learning scaffolding.
+    level: starter
+    analyses:
+      - reward_omission_aligned_activity
+      - pre_post_reversal_analysis
+      - win_stay_lose_shift
+      - q_learning_modeling
+    required_fields: [trials, choice, reward, omission, reversal_point]
+    cells:
+      - type: markdown
+        title: Reversal learning recipe
+        body: |
+          ## Recipe: Reversal learning starter analyses
+
+          Use reward/omission events and reversal points to inspect flexible updating before fitting a simple value model.
+      - type: code
+        title: Reward and omission aligned activity
+        body: |
+          # Recipe: reward/omission aligned activity
+          if 'trials_df' in globals():
+              event_cols = [c for c in trials_df.columns if any(k in c.lower() for k in ['reward', 'omission', 'feedback'])]
+              print('Candidate reward/omission columns:', event_cols)
+              # TODO: align neural features to reward and omission events.
+      - type: code
+        title: Pre/post reversal behavior
+        body: |
+          # Recipe: pre/post reversal analysis
+          if 'trials_df' in globals():
+              reversal_cols = [c for c in trials_df.columns if 'reversal' in c.lower() or 'block' in c.lower()]
+              print('Candidate reversal/block columns:', reversal_cols)
+              # TODO: compare choice accuracy and neural activity before vs after reversal points.
+      - type: code
+        title: Win-stay lose-shift scaffold
+        body: |
+          # Recipe: win-stay lose-shift behavior
+          if 'trials_df' in globals():
+              choice_cols = [c for c in trials_df.columns if 'choice' in c.lower()]
+              reward_cols = [c for c in trials_df.columns if 'reward' in c.lower() or 'outcome' in c.lower()]
+              print('Candidate choice columns:', choice_cols)
+              print('Candidate reward/outcome columns:', reward_cols)
+              # TODO: compute P(stay | previous rewarded) and P(shift | previous omission).
+      - type: code
+        title: Q-learning scaffold
+        body: |
+          # Recipe: simple Q-learning scaffold
+          import numpy as np
+
+          def q_learning_update(q_values, choice, reward, alpha=0.2):
+              prediction_error = reward - q_values[choice]
+              q_values[choice] += alpha * prediction_error
+              return q_values, prediction_error
+
+          print('Q-learning update helper ready. Map trial choices/rewards to integer arrays before fitting.')
+
+  - id: delay_discounting_basic
+    task_ids: [delay_discounting]
+    title: Delay discounting starter analyses
+    summary: Choice/value modeling, delay-period activity, and immediate vs delayed reward decoding.
+    level: starter
+    analyses: [choice_value_modeling, delay_period_activity, reward_type_decoding]
+    required_fields: [trials, choice, delay_period, immediate_reward, delayed_reward]
+    cells:
+      - type: markdown
+        title: Delay discounting recipe
+        body: |
+          ## Recipe: Delay discounting starter analyses
+
+          Estimate value sensitivity, inspect delay-period activity, and separate immediate from delayed reward trials.
+      - type: code
+        title: Choice and value modeling
+        body: |
+          # Recipe: choice/value modeling
+          if 'trials_df' in globals():
+              value_cols = [c for c in trials_df.columns if any(k in c.lower() for k in ['value', 'delay', 'reward', 'choice'])]
+              print('Candidate value/choice columns:', value_cols)
+              # TODO: fit a logistic choice model from delay and reward-size covariates.
+      - type: code
+        title: Delay-period activity
+        body: |
+          # Recipe: delay-period activity
+          if 'trials_df' in globals():
+              delay_cols = [c for c in trials_df.columns if 'delay' in c.lower()]
+              print('Candidate delay columns:', delay_cols)
+              # TODO: average neural activity during delay windows by chosen option.
+
+  - id: reaching_basic
+    task_ids: [reaching, center_out_reaching, grasping, joystick_task]
+    title: Reaching and BCI starter analyses
+    summary: Movement-onset alignment plus reach direction and kinematic decoding scaffolds.
+    level: starter
+    analyses: [movement_onset_alignment, reach_direction_decoding, velocity_decoding]
+    required_fields: [trials, movement_onset, target_onset, reach_direction, kinematics]
+    cells:
+      - type: markdown
+        title: Reaching recipe
+        body: |
+          ## Recipe: Reaching and BCI starter analyses
+
+          Align activity to movement onset before decoding reach direction or cursor velocity.
+      - type: code
+        title: Movement-onset alignment
+        body: |
+          # Recipe: movement onset alignment
+          if 'trials_df' in globals():
+              movement_cols = [c for c in trials_df.columns if 'movement' in c.lower() or 'onset' in c.lower()]
+              print('Candidate movement onset columns:', movement_cols)
+      - type: code
+        title: Direction and velocity decoding
+        body: |
+          # Recipe: reach direction / velocity decoding
+          if 'trials_df' in globals():
+              kinematic_cols = [c for c in trials_df.columns if any(k in c.lower() for k in ['direction', 'velocity', 'cursor', 'kinematic'])]
+              print('Candidate kinematic columns:', kinematic_cols)
+              # TODO: build neural feature windows and decode direction or velocity with cross-validation.
+
+  - id: visual_decision_basic
+    task_ids: [visual_decision_making, visual_discrimination, two_alternative_forced_choice]
+    title: Visual decision-making starter analyses
+    summary: Stimulus-aligned activity, choice decoding, and psychometric curve scaffolding.
+    level: starter
+    analyses: [stimulus_aligned_activity, choice_decoding, psychometric_curve]
+    required_fields: [trials, stimulus_onset, choice, feedback, reward]
+    cells:
+      - type: markdown
+        title: Visual decision recipe
+        body: |
+          ## Recipe: Visual decision-making starter analyses
+
+          Align neural activity to stimulus onset, decode choice, and build a psychometric curve from trial metadata.
+      - type: code
+        title: Stimulus-aligned activity
+        body: |
+          # Recipe: stimulus-aligned activity
+          if 'trials_df' in globals():
+              stimulus_cols = [c for c in trials_df.columns if 'stimulus' in c.lower() or 'stim' in c.lower()]
+              print('Candidate stimulus columns:', stimulus_cols)
+      - type: code
+        title: Choice decoding and psychometric scaffold
+        body: |
+          # Recipe: choice decoding / psychometric curve scaffold
+          if 'trials_df' in globals():
+              choice_cols = [c for c in trials_df.columns if 'choice' in c.lower()]
+              stimulus_cols = [c for c in trials_df.columns if 'stim' in c.lower() or 'contrast' in c.lower()]
+              print('Candidate choice columns:', choice_cols)
+              print('Candidate stimulus columns:', stimulus_cols)
+              # TODO: group choices by stimulus level and fit a psychometric curve.

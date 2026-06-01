@@ -1,0 +1,24 @@
+{
+  "nwb": {
+    "trials": {
+      "count": 96,
+      "columns": ["start_time", "stop_time", "position", "movement_onset"]
+    },
+    "units": {
+      "count": 128,
+      "columns": ["spike_times", "electrodes"]
+    },
+    "electrodes": {
+      "count": 64
+    },
+    "devices": ["silicon probe"],
+    "processing_modules": ["behavior"],
+    "intervals": ["running_epochs"],
+    "subject": {
+      "subject_id": "mouse_hippocampus_fixture",
+      "species": "mouse"
+    },
+    "sessions": ["fixture-session-001"],
+    "acquisition": ["ElectricalSeries"]
+  }
+}

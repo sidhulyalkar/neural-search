@@ -1,0 +1,332 @@
+{
+  "000055": [
+    {
+      "asset_id": "ccdc3ae1-e98d-4a17-93d8-5b7386689fe0",
+      "dandiset_id": "000055",
+      "path": "sub-01/sub-01_ses-7_behavior+ecephys.nwb",
+      "size_bytes": 10273614013,
+      "has_units": false,
+      "has_trials": false,
+      "has_electrodes": true,
+      "n_electrodes": 94,
+      "session_description": "no description"
+    },
+    {
+      "asset_id": "5122cc42-981c-4fa3-92f4-5f9ccfb8c092",
+      "dandiset_id": "000055",
+      "path": "sub-03/sub-03_ses-3_behavior+ecephys.nwb",
+      "size_bytes": 12993721651,
+      "has_units": false,
+      "has_trials": false,
+      "has_electrodes": true,
+      "n_electrodes": 96,
+      "session_description": "no description"
+    },
+    {
+      "asset_id": "367a151f-020f-4498-b144-d721872cad61",
+      "dandiset_id": "000055",
+      "path": "sub-02/sub-02_ses-6_behavior+ecephys.nwb",
+      "size_bytes": 13938729701,
+      "has_units": false,
+      "has_trials": false,
+      "has_electrodes": true,
+      "n_electrodes": 86,
+      "session_description": "no description"
+    }
+  ],
+  "000059": [
+    {
+      "asset_id": "cb30bd19-f8e8-40f8-aaab-21d45ba76c63",
+      "dandiset_id": "000059",
+      "path": "sub-MS10/sub-MS10_ses-Peter-MS10-170311-180956-concat_desc-processed_behavior+ecephys.nwb",
+      "size_bytes": 3518783,
+      "has_units": false,
+      "has_trials": true,
+      "n_trials": 130,
+      "trial_columns": [
+        "condition",
+        "cooling state",
+        "error",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 64,
+      "session_description": "Petersen et al. demonstrate that cooling of the medial septum slows theta oscillation and increases choice errors without affecting spatial features of pyramidal neurons. Cooling affects distance-time, but not distance-theta phase, compression. The findings reveal that cell assemblies are organized by theta phase and not by external (clock) time."
+    },
+    {
+      "asset_id": "95374623-86e3-46e5-9dbe-ccbd42b91d2b",
+      "dandiset_id": "000059",
+      "path": "sub-MS10/sub-MS10_ses-Peter-MS10-170313-122631-concat_desc-processed_behavior+ecephys.nwb",
+      "size_bytes": 5011281,
+      "has_units": false,
+      "has_trials": true,
+      "n_trials": 143,
+      "trial_columns": [
+        "condition",
+        "cooling state",
+        "error",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 64,
+      "session_description": "Petersen et al. demonstrate that cooling of the medial septum slows theta oscillation and increases choice errors without affecting spatial features of pyramidal neurons. Cooling affects distance-time, but not distance-theta phase, compression. The findings reveal that cell assemblies are organized by theta phase and not by external (clock) time."
+    },
+    {
+      "asset_id": "32958079-6679-42c1-aa81-4652e03b3296",
+      "dandiset_id": "000059",
+      "path": "sub-MS10/sub-MS10_ses-Peter-MS10-170314-163038_desc-processed_behavior+ecephys.nwb",
+      "size_bytes": 3022055,
+      "has_units": false,
+      "has_trials": true,
+      "n_trials": 142,
+      "trial_columns": [
+        "condition",
+        "cooling state",
+        "error",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 47,
+      "session_description": "Petersen et al. demonstrate that cooling of the medial septum slows theta oscillation and increases choice errors without affecting spatial features of pyramidal neurons. Cooling affects distance-time, but not distance-theta phase, compression. The findings reveal that cell assemblies are organized by theta phase and not by external (clock) time."
+    }
+  ],
+  "000147": [
+    {
+      "asset_id": "d4c985da-5c04-4c39-874b-0c6e22598716",
+      "dandiset_id": "000147",
+      "path": "sub-P1/sub-P1_ses-2018-09-17a_ecephys.nwb",
+      "size_bytes": 5679008,
+      "has_units": true,
+      "n_units": 93,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 384,
+      "trial_columns": [
+        "Run",
+        "TrialNumber",
+        "cue_location",
+        "finger",
+        "finger_pred",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 96,
+      "session_description": "individual-finger press, main task"
+    },
+    {
+      "asset_id": "31508bce-9743-4e33-b07b-e8f488c262cf",
+      "dandiset_id": "000147",
+      "path": "sub-P1/sub-P1_ses-2018-09-17b_ecephys.nwb",
+      "size_bytes": 4903432,
+      "has_units": true,
+      "n_units": 88,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 336,
+      "trial_columns": [
+        "Run",
+        "TrialNumber",
+        "cue_location",
+        "finger",
+        "finger_pred",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 96,
+      "session_description": "individual-finger press, main task"
+    },
+    {
+      "asset_id": "675e49ed-04f2-4281-a4cb-5a1d3363e773",
+      "dandiset_id": "000147",
+      "path": "sub-P1/sub-P1_ses-2018-10-15_ecephys.nwb",
+      "size_bytes": 6101800,
+      "has_units": true,
+      "n_units": 89,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 432,
+      "trial_columns": [
+        "Run",
+        "TrialNumber",
+        "cue_location",
+        "finger",
+        "finger_pred",
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 96,
+      "session_description": "individual-finger press, main task"
+    }
+  ],
+  "000469": [
+    {
+      "asset_id": "a01931f3-1845-4d91-9697-7153c99dea9e",
+      "dandiset_id": "000469",
+      "path": "sub-10/sub-10_ses-2_ecephys+image.nwb",
+      "size_bytes": 264088224,
+      "has_units": true,
+      "n_units": 28,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 135,
+      "trial_columns": [
+        "id",
+        "loads",
+        "loadsEnc1_PicIDs",
+        "loadsEnc2_PicIDs",
+        "loadsEnc3_PicIDs",
+        "loadsProbe_PicIDs",
+        "probe_in_out",
+        "response_accuracy",
+        "start_time",
+        "stop_time",
+        "timestamps_Encoding1",
+        "timestamps_Encoding1_end",
+        "timestamps_Encoding2",
+        "timestamps_Encoding2_end",
+        "timestamps_Encoding3",
+        "timestamps_Encoding3_end",
+        "timestamps_FixationCross",
+        "timestamps_Maintenance",
+        "timestamps_Probe",
+        "timestamps_Response"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 15,
+      "session_description": "SBID: 10"
+    },
+    {
+      "asset_id": "ecfb1b42-96c4-4552-aeee-0f12c6da06d2",
+      "dandiset_id": "000469",
+      "path": "sub-1/sub-1_ses-2_ecephys+image.nwb",
+      "size_bytes": 221906568,
+      "has_units": true,
+      "n_units": 40,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 135,
+      "trial_columns": [
+        "id",
+        "loads",
+        "loadsEnc1_PicIDs",
+        "loadsEnc2_PicIDs",
+        "loadsEnc3_PicIDs",
+        "loadsProbe_PicIDs",
+        "probe_in_out",
+        "response_accuracy",
+        "start_time",
+        "stop_time",
+        "timestamps_Encoding1",
+        "timestamps_Encoding1_end",
+        "timestamps_Encoding2",
+        "timestamps_Encoding2_end",
+        "timestamps_Encoding3",
+        "timestamps_Encoding3_end",
+        "timestamps_FixationCross",
+        "timestamps_Maintenance",
+        "timestamps_Probe",
+        "timestamps_Response"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 22,
+      "session_description": "SBID: 1"
+    },
+    {
+      "asset_id": "b3cd4cca-58ad-4c9f-8247-401fa99c68e8",
+      "dandiset_id": "000469",
+      "path": "sub-1/sub-1_ses-1_ecephys+image.nwb",
+      "size_bytes": 201240176,
+      "has_units": true,
+      "n_units": 40,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 378,
+      "trial_columns": [
+        "id",
+        "start_time",
+        "stop_time"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 18,
+      "session_description": "SCID: 1"
+    }
+  ],
+  "000576": [
+    {
+      "asset_id": "20257c14-af6a-4f3a-86c4-0b9bfc120714",
+      "dandiset_id": "000576",
+      "path": "sub-03/sub-03_ses-20150304T164400_ecephys.nwb",
+      "size_bytes": 14105034,
+      "has_units": true,
+      "n_units": 3,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 17,
+      "trial_columns": [
+        "condition",
+        "id",
+        "start_time",
+        "stop_time",
+        "timeseries",
+        "timeseries_index"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 1,
+      "session_description": "Running experiment as described in the the experiment description"
+    },
+    {
+      "asset_id": "20f45cda-1732-4692-a18f-51f3ea3e1d1e",
+      "dandiset_id": "000576",
+      "path": "sub-05/sub-05_ses-20121207T173500_ecephys.nwb",
+      "size_bytes": 14062778,
+      "has_units": false,
+      "has_trials": true,
+      "n_trials": 17,
+      "trial_columns": [
+        "condition",
+        "id",
+        "start_time",
+        "stop_time",
+        "timeseries",
+        "timeseries_index"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 1,
+      "session_description": "Running experiment as described in the the experiment description"
+    },
+    {
+      "asset_id": "0a326e91-9f9a-47ee-a2c1-7d6d0e6f42fa",
+      "dandiset_id": "000576",
+      "path": "sub-02/sub-02_ses-20160302T164800_ecephys.nwb",
+      "size_bytes": 21113775,
+      "has_units": true,
+      "n_units": 12,
+      "has_spike_times": true,
+      "has_trials": true,
+      "n_trials": 17,
+      "trial_columns": [
+        "condition",
+        "id",
+        "start_time",
+        "stop_time",
+        "timeseries",
+        "timeseries_index"
+      ],
+      "has_electrodes": true,
+      "n_electrodes": 2,
+      "session_description": "Running experiment as described in the the experiment description"
+    }
+  ]
+}

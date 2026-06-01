@@ -1,0 +1,194 @@
+# Hard-Negative Adversarial Benchmark Queries
+# These queries test constraint satisfaction for explicit exclusions
+
+hard_negative_queries:
+  # Species Exclusions
+  - id: hn_species_001
+    query: "Mouse decision-making datasets excluding human subjects"
+    exclusions:
+      - field: species
+        values: [human, homo_sapiens]
+    expected_species: [mouse, mus_musculus]
+    expected_tasks: [decision_making, go_nogo, reversal_learning]
+
+  - id: hn_species_002
+    query: "Rodent electrophysiology NOT primate"
+    exclusions:
+      - field: species
+        values: [macaque, primate, rhesus, non_human_primate]
+    expected_species: [mouse, rat, rodent]
+    expected_modalities: [electrophysiology, neuropixels]
+
+  - id: hn_species_003
+    query: "Non-human primate motor cortex recordings excluding mouse"
+    exclusions:
+      - field: species
+        values: [mouse, mus_musculus, rat]
+    expected_species: [macaque, rhesus, non_human_primate]
+    expected_regions: [motor_cortex, m1]
+
+  # Modality Exclusions
+  - id: hn_modality_001
+    query: "Neural recordings NOT fMRI NOT EEG"
+    exclusions:
+      - field: modality
+        values: [fmri, functional_mri, eeg, electroencephalography]
+    expected_modalities: [electrophysiology, neuropixels, calcium_imaging]
+
+  - id: hn_modality_002
+    query: "Invasive neural recordings excluding non-invasive imaging"
+    exclusions:
+      - field: modality
+        values: [fmri, meg, eeg, fnirs]
+    expected_modalities: [electrophysiology, neuropixels, ecog, ieeg]
+
+  - id: hn_modality_003
+    query: "Calcium imaging datasets NOT electrophysiology"
+    exclusions:
+      - field: modality
+        values: [electrophysiology, neuropixels, ecog, ieeg, lfp]
+    expected_modalities: [calcium_imaging, two_photon, miniscope]
+
+  - id: hn_modality_004
+    query: "Behavioral datasets with video NOT neural recordings"
+    exclusions:
+      - field: modality
+        values: [electrophysiology, calcium_imaging, fmri, eeg]
+    expected_modalities: [behavior_video, pose_tracking]
+
+  # Brain Region Exclusions
+  - id: hn_region_001
+    query: "Motor cortex recordings NOT visual cortex"
+    exclusions:
+      - field: brain_region
+        values: [visual_cortex, v1, v2, primary_visual_cortex]
+    expected_regions: [motor_cortex, m1, primary_motor_cortex]
+
+  - id: hn_region_002
+    query: "Prefrontal cortex datasets excluding hippocampus"
+    exclusions:
+      - field: brain_region
+        values: [hippocampus, ca1, ca3, dentate_gyrus]
+    expected_regions: [prefrontal_cortex, pfc, mpfc, dlpfc, ofc]
+
+  - id: hn_region_003
+    query: "Subcortical recordings NOT cortex"
+    exclusions:
+      - field: brain_region
+        values: [cortex, visual_cortex, motor_cortex, prefrontal_cortex]
+    expected_regions: [striatum, thalamus, amygdala, basal_ganglia]
+
+  # Task Family Exclusions
+  - id: hn_task_001
+    query: "Reward learning datasets NOT Pavlovian conditioning"
+    exclusions:
+      - field: task
+        values: [pavlovian, classical_conditioning, fear_conditioning]
+    expected_tasks: [reward_learning, reversal_learning, probabilistic_learning]
+
+  - id: hn_task_002
+    query: "Decision-making excluding passive viewing"
+    exclusions:
+      - field: task
+        values: [passive_viewing, naturalistic_vision, resting_state]
+    expected_tasks: [decision_making, go_nogo, 2afc, visual_decision_making]
+
+  - id: hn_task_003
+    query: "Motor tasks NOT sensory stimulation"
+    exclusions:
+      - field: task
+        values: [visual_stimulation, auditory_stimulation, sensory_processing]
+    expected_tasks: [reaching, grasping, motor_control, locomotion]
+
+  # Data Format Exclusions
+  - id: hn_format_001
+    query: "NWB datasets NOT BIDS"
+    exclusions:
+      - field: data_standard
+        values: [bids]
+    expected_standards: [nwb]
+
+  - id: hn_format_002
+    query: "BIDS datasets excluding NWB"
+    exclusions:
+      - field: data_standard
+        values: [nwb, nwb_2, nwb_1]
+    expected_standards: [bids]
+
+  # Analysis Affordance Exclusions
+  - id: hn_affordance_001
+    query: "Datasets for choice decoding NOT spontaneous activity"
+    exclusions:
+      - field: task
+        values: [spontaneous, resting_state, anesthesia]
+      - field: affordance
+        values: [spontaneous_activity_analysis]
+    expected_affordances: [choice_decoding]
+    expected_behaviors: [choice, response]
+
+  - id: hn_affordance_002
+    query: "Trial-based datasets excluding continuous recordings"
+    exclusions:
+      - field: task
+        values: [continuous_monitoring, free_behavior]
+    expected_affordances: [trial_averaged_response, choice_decoding]
+
+  # Combined Exclusions
+  - id: hn_combined_001
+    query: "Mouse Neuropixels decision-making NOT visual cortex"
+    exclusions:
+      - field: brain_region
+        values: [visual_cortex, v1, v2]
+    expected_species: [mouse]
+    expected_modalities: [neuropixels]
+    expected_tasks: [decision_making]
+    expected_regions: [prefrontal_cortex, striatum, motor_cortex]
+
+  - id: hn_combined_002
+    query: "Human iEEG speech data NOT motor imagery"
+    exclusions:
+      - field: task
+        values: [motor_imagery, bci_control]
+    expected_species: [human]
+    expected_modalities: [ieeg, ecog]
+    expected_tasks: [speech, speech_production, language]
+
+  - id: hn_combined_003
+    query: "Primate reaching data with kinematics NOT monkey C"
+    exclusions:
+      - field: subject
+        values: [monkey_c, subject_c]
+    expected_species: [macaque, non_human_primate]
+    expected_tasks: [reaching, center_out_reaching]
+    expected_behaviors: [kinematics, trajectory]
+
+  # Edge Cases
+  - id: hn_edge_001
+    query: "Visual cortex recordings using electrophysiology NOT calcium imaging"
+    exclusions:
+      - field: modality
+        values: [calcium_imaging, two_photon, miniscope]
+    expected_regions: [visual_cortex, v1]
+    expected_modalities: [electrophysiology, neuropixels]
+
+  - id: hn_edge_002
+    query: "Sleep data NOT anesthesia NOT spontaneous awake"
+    exclusions:
+      - field: subject_state
+        values: [anesthesia, anesthetized, spontaneous_awake]
+    expected_subject_states: [sleep, sleeping, nrem, rem]
+
+# Violation severity levels
+violation_severity:
+  species: critical
+  modality: critical
+  brain_region: major
+  task: major
+  data_standard: minor
+  affordance: major
+  subject: minor
+  subject_state: minor
+
+# Expected behavior
+expected_violations: 0
+violation_tolerance: 0

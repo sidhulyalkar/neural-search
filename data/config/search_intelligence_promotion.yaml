@@ -1,0 +1,67 @@
+version: v0.7
+default_enabled: false
+description: >
+  Promotion gates for moving search intelligence from wrapper-only usage into
+  default retrieval behavior. Keep disabled until enough evaluated and
+  human-reviewed queries exist for each intent.
+global_gates:
+  min_total_queries: 10
+  max_hard_negative_violation_delta: 0
+human_label_gates:
+  min_judgments: 0
+  min_hard_negative_judgments: 0
+source_quality_gates:
+  enabled: false
+  min_mean_quality_score: 0.70
+  max_unknown_source_count: 0
+  max_low_trust_count: 0
+  max_source_warning_count: 0
+intents:
+  hard_negative:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0
+  analysis_affordance:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0
+  cross_modal:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0
+  data_form_search:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0
+  dataset_lookup:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0
+  graph_similarity:
+    enabled: false
+    min_query_count: 5
+    min_mean_mrr_delta: 0.0
+    max_hard_negative_violation_delta: 0
+    human_label_gates:
+      min_judgments: 1
+      min_hard_negative_judgments: 0

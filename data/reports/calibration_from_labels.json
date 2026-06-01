@@ -1,0 +1,348 @@
+{
+  "suite": "from_labels",
+  "summary": {
+    "total_samples": 30,
+    "positive_samples": 11,
+    "negative_samples": 19,
+    "ece": 0.1791,
+    "mce": 0.4962,
+    "brier_score": 0.1641,
+    "mean_confidence": 0.3094,
+    "mean_accuracy": 0.3667,
+    "calibration_slope": 1.4047,
+    "calibration_intercept": -0.068
+  },
+  "over_under_confidence": {
+    "overconfidence_rate": 0.6,
+    "underconfidence_rate": 0.3333
+  },
+  "reliability_diagram": [
+    {
+      "bin_range": "[0.0, 0.1)",
+      "count": 4,
+      "mean_confidence": 0.0354,
+      "mean_accuracy": 0.0,
+      "calibration_error": 0.0354,
+      "positive_count": 0,
+      "negative_count": 4
+    },
+    {
+      "bin_range": "[0.1, 0.2)",
+      "count": 3,
+      "mean_confidence": 0.1405,
+      "mean_accuracy": 0.3333,
+      "calibration_error": 0.1928,
+      "positive_count": 1,
+      "negative_count": 2
+    },
+    {
+      "bin_range": "[0.2, 0.3)",
+      "count": 7,
+      "mean_confidence": 0.2408,
+      "mean_accuracy": 0.0,
+      "calibration_error": 0.2408,
+      "positive_count": 0,
+      "negative_count": 7
+    },
+    {
+      "bin_range": "[0.3, 0.4)",
+      "count": 9,
+      "mean_confidence": 0.3453,
+      "mean_accuracy": 0.4444,
+      "calibration_error": 0.0991,
+      "positive_count": 4,
+      "negative_count": 5
+    },
+    {
+      "bin_range": "[0.4, 0.5)",
+      "count": 4,
+      "mean_confidence": 0.4259,
+      "mean_accuracy": 0.75,
+      "calibration_error": 0.3241,
+      "positive_count": 3,
+      "negative_count": 1
+    },
+    {
+      "bin_range": "[0.5, 0.6)",
+      "count": 1,
+      "mean_confidence": 0.5038,
+      "mean_accuracy": 1.0,
+      "calibration_error": 0.4962,
+      "positive_count": 1,
+      "negative_count": 0
+    },
+    {
+      "bin_range": "[0.7, 0.8)",
+      "count": 1,
+      "mean_confidence": 0.7188,
+      "mean_accuracy": 1.0,
+      "calibration_error": 0.2812,
+      "positive_count": 1,
+      "negative_count": 0
+    },
+    {
+      "bin_range": "[0.9, 1.0)",
+      "count": 1,
+      "mean_confidence": 1.0,
+      "mean_accuracy": 1.0,
+      "calibration_error": 0.0,
+      "positive_count": 1,
+      "negative_count": 0
+    }
+  ],
+  "interpretation": [
+    "Moderate calibration (ECE < 0.20)",
+    "System is underconfident (slope > 1.1)"
+  ],
+  "recommendations": [
+    "Consider temperature scaling to reduce overconfidence",
+    "Focus calibration efforts on confidence ranges: [0.5, 0.6), [0.4, 0.5)"
+  ],
+  "per_query_details": [
+    {
+      "query_id": "reversal_learning_01",
+      "query_text": "reversal learning ephys",
+      "num_labeled_results": 9,
+      "matches": [
+        {
+          "dataset_id": "DEMO_REVERSAL_EPHYS",
+          "score": 63.79,
+          "relevance_score": 3,
+          "binary_label": 1,
+          "normalized_score": 0.7188
+        },
+        {
+          "dataset_id": "DEMO_OPERANT_CONDITIONING",
+          "score": 48.54,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.5038
+        },
+        {
+          "dataset_id": "DEMO_DOPAMINE_PHOTOMETRY",
+          "score": 36.22,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.3301
+        },
+        {
+          "dataset_id": "DEMO_DANDI_NWB_EPHYS",
+          "score": 30.05,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2431
+        },
+        {
+          "dataset_id": "DEMO_AUDITORY_PROCESSING",
+          "score": 29.44,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2345
+        },
+        {
+          "dataset_id": "DEMO_NHP_REACHING_UTAH",
+          "score": 29.33,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2329
+        },
+        {
+          "dataset_id": "DEMO_SLEEP_EPHYS",
+          "score": 29.3,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2325
+        },
+        {
+          "dataset_id": "DEMO_TRIAL_ALIGNED_EPHYS",
+          "score": 29.3,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2325
+        },
+        {
+          "dataset_id": "DEMO_HIPPOCAMPUS_NAVIGATION",
+          "score": 29.13,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2301
+        }
+      ]
+    },
+    {
+      "query_id": "motor_imagery_01",
+      "query_text": "motor imagery BCI EEG",
+      "num_labeled_results": 7,
+      "matches": [
+        {
+          "dataset_id": "DEMO_MOTOR_IMAGERY_EEG",
+          "score": 45.08,
+          "relevance_score": 3,
+          "binary_label": 1,
+          "normalized_score": 0.455
+        },
+        {
+          "dataset_id": "dataset:openneuro:ds003505",
+          "score": 43.36,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.4308
+        },
+        {
+          "dataset_id": "DEMO_SEIZURE_IEEG",
+          "score": 22.81,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.141
+        },
+        {
+          "dataset_id": "DEMO_REACHING_ECOG_IEEG",
+          "score": 22.79,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.1407
+        },
+        {
+          "dataset_id": "DEMO_OPENNEURO_BIDS_IEEG",
+          "score": 22.72,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.1397
+        },
+        {
+          "dataset_id": "DEMO_SPEECH_ECOG",
+          "score": 19.18,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.0898
+        },
+        {
+          "dataset_id": "dataset:openneuro:ds000117",
+          "score": 12.81,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.0
+        }
+      ]
+    },
+    {
+      "query_id": "visual_neuropixels_01",
+      "query_text": "visual cortex neuropixels mouse",
+      "num_labeled_results": 9,
+      "matches": [
+        {
+          "dataset_id": "DEMO_VISUAL_DECISION_NEUROPIXELS",
+          "score": 39.98,
+          "relevance_score": 3,
+          "binary_label": 1,
+          "normalized_score": 0.3831
+        },
+        {
+          "dataset_id": "DEMO_DANDI_NWB_EPHYS",
+          "score": 39.11,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.3708
+        },
+        {
+          "dataset_id": "DEMO_TRIAL_ALIGNED_EPHYS",
+          "score": 38.47,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.3618
+        },
+        {
+          "dataset_id": "DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+          "score": 35.56,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.3208
+        },
+        {
+          "dataset_id": "DEMO_WORKING_MEMORY_EPHYS",
+          "score": 35.28,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.3168
+        },
+        {
+          "dataset_id": "DEMO_AUDITORY_PROCESSING",
+          "score": 35.27,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.3167
+        },
+        {
+          "dataset_id": "DEMO_FORAGING_EPHYS",
+          "score": 34.92,
+          "relevance_score": 0,
+          "binary_label": 0,
+          "normalized_score": 0.3118
+        },
+        {
+          "dataset_id": "DEMO_SLEEP_EPHYS",
+          "score": 14.88,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.0292
+        },
+        {
+          "dataset_id": "DEMO_FACEMAP_PUPIL",
+          "score": 14.42,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.0227
+        }
+      ]
+    },
+    {
+      "query_id": "seizure_detection_01",
+      "query_text": "seizure detection iEEG human",
+      "num_labeled_results": 1,
+      "matches": [
+        {
+          "dataset_id": "DEMO_SEIZURE_IEEG",
+          "score": 83.73,
+          "relevance_score": 3,
+          "binary_label": 1,
+          "normalized_score": 1.0
+        }
+      ]
+    },
+    {
+      "query_id": "calcium_behavior_01",
+      "query_text": "calcium imaging behavioral task",
+      "num_labeled_results": 4,
+      "matches": [
+        {
+          "dataset_id": "DEMO_GONOGO_CALCIUM",
+          "score": 42.32,
+          "relevance_score": 3,
+          "binary_label": 1,
+          "normalized_score": 0.4161
+        },
+        {
+          "dataset_id": "DEMO_NATURALISTIC_VISION",
+          "score": 41.31,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.4019
+        },
+        {
+          "dataset_id": "DEMO_FACEMAP_PUPIL",
+          "score": 40.89,
+          "relevance_score": 2,
+          "binary_label": 1,
+          "normalized_score": 0.3959
+        },
+        {
+          "dataset_id": "dataset:dandi:000001:fixture",
+          "score": 32.68,
+          "relevance_score": -1,
+          "binary_label": 0,
+          "normalized_score": 0.2802
+        }
+      ]
+    }
+  ]
+}

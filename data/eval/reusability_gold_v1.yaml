@@ -1,0 +1,589 @@
+# Reusability Gold v1 Benchmark
+# ==============================
+#
+# A benchmark that tests scientific dataset reusability, not just label overlap.
+# Each query evaluates whether a dataset can support a specific analysis.
+#
+# Categories:
+# - ambiguity: Queries with overloaded terms requiring sense disambiguation
+# - affordance: Queries targeting specific analysis capabilities
+# - cross_modal: Queries spanning modalities or species
+# - natural_language: Realistic messy user queries
+# - exact_lookup: Precise dataset or paper lookups
+#
+# Graded relevance:
+# - 3: Perfect match - dataset fully supports the analysis
+# - 2: Good match - dataset mostly supports the analysis
+# - 1: Partial match - some support, missing key elements
+# - 0: Not relevant - wrong sense, missing requirements, or hard negative
+
+version: "1.0"
+name: "Reusability Gold v1"
+description: "Benchmark for experimental reusability, not just topical similarity"
+created: "2026-05-27"
+
+queries:
+  # =============================================================================
+  # Ambiguity Category: Overloaded terms requiring disambiguation
+  # =============================================================================
+
+  - id: rg_v1_001
+    query: "Find datasets suitable for fitting delay discounting models from trial-level behavior"
+    category: ambiguity
+    intent: analysis_reusability
+    constructs:
+      - delay_discounting
+      - intertemporal_choice
+    must_have:
+      - trial_id
+      - choice
+      - reward_magnitude
+      - delay_duration
+      - outcome
+    should_have:
+      - reaction_time
+      - subject_id
+      - session_id
+    hard_negative_senses:
+      - motor_delay
+      - signal_propagation_delay
+      - working_memory_delay
+    notes: "True delay discounting requires reward-delay tradeoff variables, not generic delay."
+
+  - id: rg_v1_002
+    query: "Delay datasets with neural recordings"
+    category: ambiguity
+    intent: exploratory
+    constructs:
+      - delay
+    must_have:
+      - neural_data
+    should_have:
+      - trial_structure
+    hard_negative_senses: []
+    notes: "Ambiguous 'delay' - could be any sense. Should return diverse results or ask for clarification."
+
+  - id: rg_v1_003
+    query: "Working memory delay period neural activity in prefrontal cortex"
+    category: ambiguity
+    intent: analysis_reusability
+    constructs:
+      - working_memory
+      - delay_period
+    must_have:
+      - neural_data
+      - trial_structure
+      - delay_period
+    should_have:
+      - prefrontal_cortex
+      - stimulus_onset
+      - memory_load
+    hard_negative_senses:
+      - delay_discounting
+      - motor_delay
+    notes: "Working memory delay is distinct from delay discounting."
+
+  - id: rg_v1_004
+    query: "Reward value representations in decision making"
+    category: ambiguity
+    intent: analysis_reusability
+    constructs:
+      - reward_value
+      - decision_making
+    must_have:
+      - neural_data
+      - choice
+      - reward
+    should_have:
+      - value_signal
+      - expected_value
+    hard_negative_senses:
+      - reward_delivery
+    notes: "Reward value (subjective) vs reward delivery (physical) are different."
+
+  - id: rg_v1_005
+    query: "Signal propagation delay between cortical areas"
+    category: ambiguity
+    intent: analysis_reusability
+    constructs:
+      - signal_delay
+      - cross_area
+    must_have:
+      - neural_data
+      - multiple_brain_regions
+      - simultaneous_recording
+    should_have:
+      - latency_data
+      - lfp
+    hard_negative_senses:
+      - delay_discounting
+      - motor_delay
+    notes: "Signal delay requires multi-region simultaneous recording for latency analysis."
+
+  # =============================================================================
+  # Affordance Category: Queries targeting specific analysis capabilities
+  # =============================================================================
+
+  - id: rg_v1_006
+    query: "Datasets ready for choice decoding from neural population activity"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - choice_decoding
+    affordance_required: choice_decoding
+    must_have:
+      - neural_data
+      - choice_labels
+      - trial_structure
+    should_have:
+      - multiple_units
+      - response_time
+    hard_negative_senses: []
+    notes: "Choice decoding requires neural data aligned to choice labels."
+
+  - id: rg_v1_007
+    query: "Can I fit Q-learning models to this behavioral data?"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - q_learning
+      - reinforcement_learning
+    affordance_required: q_learning
+    must_have:
+      - trial_structure
+      - choice_sequence
+      - reward_signal
+      - outcome_labels
+    should_have:
+      - reaction_time
+      - session_id
+    hard_negative_senses: []
+    notes: "Q-learning requires ordered trial-level choice and reward data."
+
+  - id: rg_v1_008
+    query: "Datasets supporting motor decoding from neural recordings"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - motor_decoding
+    affordance_required: motor_decoding
+    must_have:
+      - neural_data
+      - motor_action_labels
+      - temporal_alignment
+    should_have:
+      - movement_kinematics
+      - motor_cortex
+    hard_negative_senses: []
+    notes: "Motor decoding requires movement-aligned neural data."
+
+  - id: rg_v1_009
+    query: "Trial-aligned neural analysis ready datasets"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - trial_aligned
+    affordance_required: trial_aligned_neural_analysis
+    must_have:
+      - neural_data
+      - trial_structure
+      - event_timestamps
+    should_have:
+      - multiple_conditions
+      - baseline_period
+    hard_negative_senses: []
+    notes: "Trial-aligned analysis requires epochable neural data."
+
+  - id: rg_v1_010
+    query: "Datasets for cross-session decoder generalization"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - cross_session
+      - generalization
+    affordance_required: cross_session_generalization
+    must_have:
+      - neural_data
+      - multiple_sessions
+      - session_id
+      - consistent_task
+    should_have:
+      - unit_matching
+      - chronic_recording
+    hard_negative_senses: []
+    notes: "Cross-session analysis requires multi-session data with consistent task."
+
+  - id: rg_v1_011
+    query: "Datasets for building encoding models of visual cortex"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - encoding_model
+      - visual_cortex
+    affordance_required: stimulus_response_modeling
+    must_have:
+      - neural_data
+      - stimulus_presentation
+      - stimulus_timing
+    should_have:
+      - visual_cortex
+      - stimulus_parameters
+    hard_negative_senses: []
+    notes: "Encoding models require stimulus-aligned neural responses."
+
+  - id: rg_v1_012
+    query: "Calcium imaging data suitable for decoding behavioral states"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - calcium_imaging
+      - state_decoding
+    affordance_required: behavioral_state_decoding
+    must_have:
+      - calcium_imaging_data
+      - behavioral_state_labels
+      - temporal_alignment
+    should_have:
+      - continuous_behavior
+      - video_data
+    hard_negative_senses: []
+    notes: "Behavioral state decoding from calcium imaging."
+
+  # =============================================================================
+  # Cross-modal/Cross-species Category
+  # =============================================================================
+
+  - id: rg_v1_013
+    query: "Mouse hippocampal recordings during spatial navigation"
+    category: cross_modal
+    intent: species_region
+    constructs:
+      - spatial_navigation
+      - hippocampus
+    must_have:
+      - neural_data
+      - mouse
+      - hippocampus
+      - spatial_task
+    should_have:
+      - position_tracking
+      - place_cells
+    hard_negative_senses: []
+    notes: "Species and region specific spatial navigation data."
+
+  - id: rg_v1_014
+    query: "Primate decision making with Neuropixels recordings"
+    category: cross_modal
+    intent: modality_search
+    constructs:
+      - decision_making
+      - neuropixels
+    must_have:
+      - neural_data
+      - primate
+      - neuropixels
+      - choice
+    should_have:
+      - prefrontal_cortex
+      - value_coding
+    hard_negative_senses: []
+    notes: "Primate decision making with specific recording technology."
+
+  - id: rg_v1_015
+    query: "Fiber photometry datasets with reward learning"
+    category: cross_modal
+    intent: modality_search
+    constructs:
+      - fiber_photometry
+      - reward_learning
+    must_have:
+      - fiber_photometry
+      - reward
+      - learning_task
+    should_have:
+      - dopamine
+      - trial_structure
+    hard_negative_senses: []
+    notes: "Fiber photometry combined with reward learning behavior."
+
+  - id: rg_v1_016
+    query: "Human fMRI studies of working memory"
+    category: cross_modal
+    intent: species_region
+    constructs:
+      - fmri
+      - working_memory
+    must_have:
+      - fmri
+      - human
+      - working_memory_task
+    should_have:
+      - prefrontal_cortex
+      - memory_load
+    hard_negative_senses: []
+    notes: "Human imaging with working memory task."
+
+  - id: rg_v1_017
+    query: "Mouse visual cortex two-photon imaging"
+    category: cross_modal
+    intent: modality_search
+    constructs:
+      - two_photon
+      - visual_cortex
+    must_have:
+      - calcium_imaging
+      - mouse
+      - visual_cortex
+    should_have:
+      - visual_stimuli
+      - orientation_tuning
+    hard_negative_senses: []
+    notes: "Two-photon calcium imaging in mouse visual cortex."
+
+  # =============================================================================
+  # Natural Language Category: Realistic messy queries
+  # =============================================================================
+
+  - id: rg_v1_018
+    query: "what datasets can i use to study impulsivity in rodents"
+    category: natural_language
+    intent: exploratory
+    constructs:
+      - impulsivity
+      - rodent
+    must_have:
+      - rodent
+      - impulsivity_task
+    should_have:
+      - delay_discounting
+      - go_nogo
+    hard_negative_senses: []
+    notes: "Natural language query about impulsivity."
+
+  - id: rg_v1_019
+    query: "ephys data with choices and rewards"
+    category: natural_language
+    intent: analysis_reusability
+    constructs:
+      - electrophysiology
+      - choice
+      - reward
+    must_have:
+      - electrophysiology
+      - choice
+      - reward
+    should_have:
+      - trial_structure
+    hard_negative_senses: []
+    notes: "Abbreviated natural language query."
+
+  - id: rg_v1_020
+    query: "I need data to train a decoder to predict what the mouse chose"
+    category: natural_language
+    intent: analysis_reusability
+    constructs:
+      - decoding
+      - choice
+      - mouse
+    affordance_required: choice_decoding
+    must_have:
+      - neural_data
+      - choice_labels
+      - mouse
+    should_have:
+      - trial_structure
+      - multiple_units
+    hard_negative_senses: []
+    notes: "First-person natural language query about decoder training."
+
+  - id: rg_v1_021
+    query: "something with running speed and neural activity"
+    category: natural_language
+    intent: exploratory
+    constructs:
+      - locomotion
+      - neural_correlation
+    must_have:
+      - neural_data
+      - running_speed
+    should_have:
+      - continuous_behavior
+    hard_negative_senses: []
+    notes: "Vague natural language query."
+
+  - id: rg_v1_022
+    query: "allen institute visual coding datasets"
+    category: natural_language
+    intent: dataset_lookup
+    constructs:
+      - allen_institute
+      - visual_coding
+    must_have:
+      - allen_source
+      - visual_data
+    should_have:
+      - neural_data
+      - stimuli
+    hard_negative_senses: []
+    notes: "Source-specific lookup query."
+
+  # =============================================================================
+  # Exact Lookup Category
+  # =============================================================================
+
+  - id: rg_v1_023
+    query: "DANDI 000026"
+    category: exact_lookup
+    intent: dataset_lookup
+    constructs: []
+    must_have:
+      - dandi_000026
+    should_have: []
+    hard_negative_senses: []
+    notes: "Direct dataset ID lookup."
+
+  - id: rg_v1_024
+    query: "Steinmetz et al 2019 associated datasets"
+    category: exact_lookup
+    intent: paper_to_dataset
+    constructs:
+      - steinmetz_2019
+    must_have:
+      - steinmetz_paper
+    should_have:
+      - neuropixels
+      - visual_decision
+    hard_negative_senses: []
+    notes: "Paper-to-dataset linkage query."
+
+  - id: rg_v1_025
+    query: "OpenNeuro ds000117"
+    category: exact_lookup
+    intent: dataset_lookup
+    constructs: []
+    must_have:
+      - openneuro_ds000117
+    should_have: []
+    hard_negative_senses: []
+    notes: "Direct dataset ID lookup."
+
+  # =============================================================================
+  # Additional Complex Queries
+  # =============================================================================
+
+  - id: rg_v1_026
+    query: "Datasets suitable for fitting drift-diffusion models with neural correlates"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - drift_diffusion
+      - decision_making
+    must_have:
+      - neural_data
+      - choice
+      - reaction_time
+      - trial_structure
+    should_have:
+      - stimulus_difficulty
+      - confidence_rating
+    hard_negative_senses: []
+    notes: "DDM fitting requires RT, choice, and ideally neural data."
+
+  - id: rg_v1_027
+    query: "Multimodal datasets with both ephys and calcium imaging"
+    category: cross_modal
+    intent: modality_search
+    constructs:
+      - multimodal
+      - electrophysiology
+      - calcium_imaging
+    must_have:
+      - electrophysiology
+      - calcium_imaging
+      - simultaneous_recording
+    should_have:
+      - same_region
+      - ground_truth
+    hard_negative_senses: []
+    notes: "Rare multimodal recordings combining modalities."
+
+  - id: rg_v1_028
+    query: "Reversal learning datasets with neural recordings"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - reversal_learning
+      - neural_data
+    must_have:
+      - neural_data
+      - reversal_task
+      - trial_structure
+    should_have:
+      - rule_switch
+      - learning_curve
+    hard_negative_senses: []
+    notes: "Reversal learning requires rule-switch structure."
+
+  - id: rg_v1_029
+    query: "Datasets with trial-by-trial reaction times and neural activity"
+    category: affordance
+    intent: analysis_reusability
+    constructs:
+      - reaction_time
+      - neural_correlation
+    must_have:
+      - neural_data
+      - reaction_time
+      - trial_structure
+    should_have:
+      - motor_cortex
+      - choice
+    hard_negative_senses: []
+    notes: "RT analysis requires trial-level timing data."
+
+  - id: rg_v1_030
+    query: "Fear conditioning datasets with amygdala recordings"
+    category: cross_modal
+    intent: analysis_reusability
+    constructs:
+      - fear_conditioning
+      - amygdala
+    must_have:
+      - neural_data
+      - amygdala
+      - fear_conditioning_task
+    should_have:
+      - cs_us_pairing
+      - freezing_behavior
+    hard_negative_senses: []
+    notes: "Fear conditioning requires specific task structure and amygdala data."
+
+# =============================================================================
+# Metrics Configuration
+# =============================================================================
+
+metrics:
+  primary:
+    - precision_at_5
+    - ndcg_at_10
+    - mrr
+  secondary:
+    - hard_negative_violation_rate
+    - claim_support_rate
+    - missing_requirement_rate
+    - affordance_accuracy
+
+evaluation_notes: |
+  This benchmark evaluates experimental reusability, not just topical similarity.
+
+  Key evaluation principles:
+  1. A result is relevant only if it can actually support the target analysis
+  2. Hard negatives (wrong sense of overloaded terms) should be penalized
+  3. Missing required variables reduce relevance score
+  4. Affordance support should be validated, not assumed from description
+
+  Graded relevance interpretation:
+  - 3: Dataset has all must-have variables and supports the analysis
+  - 2: Dataset has most must-have variables, minor gaps
+  - 1: Dataset partially supports analysis, key elements missing
+  - 0: Not relevant - wrong sense, missing critical requirements

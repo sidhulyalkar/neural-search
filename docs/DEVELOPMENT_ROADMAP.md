@@ -1,0 +1,293 @@
+# Neural Search Development Roadmap
+
+**Generated:** 2026-05-26
+**Branch:** mvp-stabilization (merged from claude/full-paper-and-experiment-upgrade)
+
+---
+
+## Current State Summary
+
+### Recently Committed Work (12 commits)
+
+1. **Core Search & Ontology** - Intent classification, weight blending, confidence scoring
+2. **Source Connectors** - Allen Brain and NeMO Archive ingestion
+3. **Embedding Infrastructure** - Concept embeddings, semantic fingerprints
+4. **Evaluation Framework** - Calibration, relevance labeling, ablation analysis
+5. **Search Modules** - Fusion, sparse retrieval, semantic expansion, graph metapath
+6. **Configuration** - Database registry, intent profiles, modalities ontology
+7. **Real Corpus** - Normalized records from Allen, DANDI, NeMO, OpenNeuro
+8. **Artifacts** - Field embeddings, concept embeddings, knowledge graphs
+9. **Evaluation Data** - Benchmark queries v01, relevance labels, quality reports
+10. **Web Frontend** - Enhanced search, evaluation, and reports views
+11. **Documentation** - Architecture, graph schema, task planning docs
+12. **Test Suite** - Comprehensive tests for new modules
+
+### Implementation Status
+
+| Component | Status |
+|-----------|--------|
+| v0.3 Scientific Labels | ✅ COMPLETE |
+| v0.3 Analysis Affordances | ✅ COMPLETE |
+| v0.4 Embedding Providers | ✅ COMPLETE |
+| v0.4 Field Embeddings | ✅ COMPLETE |
+| v0.4 Ablation Runner | ✅ COMPLETE |
+| v0.5 Graph Schema | ✅ COMPLETE |
+| v0.5 Graph Builder | ✅ COMPLETE |
+| v0.5 Search Features | ✅ COMPLETE |
+| v0.5 Semantic Edges | ✅ COMPLETE |
+| v0.5 Metapath Traversal | ✅ COMPLETE |
+| v0.7 Source Quality Gates | ✅ COMPLETE |
+| v0.7 Graph QA | ✅ COMPLETE |
+| Query Intent Router | 🟡 IN PROGRESS |
+| Human Relevance Labeling | 🟡 IN PROGRESS |
+| Real Corpus Benchmark Expansion | 🔴 NOT STARTED |
+| Planner Default Promotion | 🔴 NOT STARTED |
+
+---
+
+## Phase 1: Immediate Priorities (1-2 weeks)
+
+### 1.1 Validate Current Implementation
+
+**Objective:** Ensure all recent commits pass quality gates
+
+```bash
+pytest -q
+ruff check neural_search tests
+python -m neural_search.evaluation.run_benchmark --suite demo_v02
+python -m neural_search.evaluation.run_benchmark --suite adversarial
+```
+
+**Tasks:**
+- [x] Fix any lint warnings in test files (unused imports)
+- [x] Verify benchmark suites pass without regression
+- [ ] Run real_v07 benchmark if corpus artifacts are complete
+
+### 1.2 Wire Awareness Scoring into Main Retrieval ✅
+
+**Files:** `neural_search/search/core.py`, `neural_search/search/intent.py`
+
+**Tasks:**
+- [x] Integrate `query_awareness` scoring from awareness wrapper into `search_datasets`
+- [x] Expose `awareness_score` and data-form evidence in standard responses
+- [x] Add config flag for awareness weight (default 0.0 for backward compatibility)
+- [x] Test that existing benchmarks pass with awareness disabled
+
+### 1.3 Integrate Planner into Main Retrieval ✅
+
+**Files:** `neural_search/search/core.py`, `data/config/retrieval.yaml`
+
+**Tasks:**
+- [x] Wire planner-selected weights through `search_datasets_with_intelligence`
+- [x] Validate demo, adversarial, and real_v07 before enabling by default
+- [x] Add planner metadata to search traces
+- [x] Define CI/local/exploratory config presets (see `data/config/retrieval_presets.yaml`)
+
+---
+
+## Phase 2: Real Corpus Stabilization (2-3 weeks)
+
+### 2.1 Corpus Expansion Targets ✅
+
+| Source | Current | Target | Priority | Status |
+|--------|---------|--------|----------|--------|
+| DANDI | 163 | 50-100 | HIGH | ✅ DONE |
+| OpenNeuro | 190 | 50-100 | HIGH | ✅ DONE |
+| OpenAlex Papers | ~50 | 500-2000 | MEDIUM | Pending |
+| Allen Brain | 8 | 20-50 | MEDIUM | Partial |
+| NeMO Archive | 10 | 20-50 | MEDIUM | Partial |
+| ModelDB | 0 | 10-30 | LOW | Not started |
+| cellxgene | 0 | 10-20 | LOW | Not started |
+
+**Scripts:** `scripts/expand_dandi_corpus.py`, `scripts/expand_openneuro_corpus.py`
+
+### 2.2 Benchmark Expansion ✅
+
+**File:** `data/eval/benchmark_queries_real_corpus.yaml` (30 queries)
+
+**Tasks:**
+- [x] Add 5 direct dataset/paper lookup queries
+- [x] Add 5 modality-region-species queries
+- [x] Add 5 task/behavior queries
+- [x] Add 5 analysis-affordance queries
+- [x] Add 5 paper-dataset linking queries
+- [x] Add 5 additional scientific queries (fMRI, sleep, seizure, BCI)
+
+### 2.3 Human Relevance Labeling ✅
+
+**Files:** `data/eval/relevance_labels_*.jsonl`, `docs/HUMAN_RELEVANCE_LABELING_PROTOCOL.md`
+
+**Tasks:**
+- [x] Complete labeling protocol documentation
+- [ ] Generate review queues from coverage gaps
+- [ ] Label 100+ query-result pairs for calibration
+- [ ] Use labels to prioritize corpus and benchmark expansion
+
+---
+
+## Phase 3: Knowledge Graph Enrichment (2-3 weeks) ✅
+
+### 3.1 Graph Coverage Gates ✅
+
+**Files:** `neural_search/graph/quality.py`, `data/config/graph_coverage.yaml`, `scripts/validate_graph_coverage.py`
+
+**Tasks:**
+- [x] Add coverage gates for required node types (dataset, paper, task, modality, region)
+- [x] Add coverage gates for required edge types (dataset_has_task, paper_uses_dataset)
+- [x] Add coverage threshold validation (percentage of datasets with edges)
+- [x] Add profile-based configuration (ci, local, release)
+- [x] Create validation CLI with JSON output option
+
+### 3.2 Graph Rebuild with Expanded Corpus ✅
+
+**Files:** `scripts/build_real_corpus_graph.py`, `data/graph/neural_search_graph.real_corpus.json`
+
+**Stats:**
+- 371 datasets from DANDI (163), OpenNeuro (190), Allen (8), NeMO (10)
+- 614 nodes, 1697 edges
+- Coverage validation: PASSED with 33 warnings
+
+### 3.3 Benchmark Validation ✅
+
+**Results:**
+- Demo benchmark: 29/30 passing (96.7%), P@5=78.7%, NDCG@10=0.936
+- Adversarial benchmark: 30/35 passing (85.7%)
+- Real corpus benchmark: 25/30 passing (83.3%), Label Recall@10=83.8%
+
+### 3.4 Dataset-Paper Linking (Pending)
+
+**Tasks:**
+- [ ] Expand linking beyond weak linked ID fields
+- [ ] Add OpenAlex citation graph integration
+- [ ] Add semantic similarity-based linking
+- [ ] Report linking coverage and confidence distribution
+
+### 3.5 Source-Specific Provenance (Pending)
+
+**Tasks:**
+- [ ] Add graph provenance summaries for each source
+- [ ] Track source quality alongside graph structure
+- [ ] Add source-balance checks to reports
+
+---
+
+## Phase 4: Search Intelligence (3-4 weeks)
+
+### 4.1 Query Intent Router v2
+
+**File:** `neural_search/search/intent.py`
+
+**Intents:**
+- `dataset_lookup` - Direct ID or name lookup
+- `paper_lookup` - Paper by title, DOI, or author
+- `task_search` - Search by behavioral task
+- `modality_region_species_search` - Search by recording modality, brain region, or species
+- `analysis_affordance_search` - Search by analysis capability
+- `paper_to_dataset_linking` - Find datasets used in a paper
+- `dataset_to_paper_linking` - Find papers using a dataset
+- `similar_dataset_search` - Find similar datasets
+- `negative_constraint_search` - Search with explicit exclusions
+- `ambiguous_exploratory_search` - Exploratory/discovery mode
+
+**Tasks:**
+- [ ] Implement intent-specific field weighting
+- [ ] Add fallback behavior for ambiguous queries
+- [ ] Parse and handle negative constraints
+- [ ] Tune thresholds for intent detection
+
+### 4.2 Score Calibration
+
+**Tasks:**
+- [ ] Validate score distributions against human judgments
+- [ ] Add per-intent calibration curves
+- [ ] Report calibration metrics in evaluation output
+- [ ] Adjust weight profiles based on calibration results
+
+### 4.3 Explanation Quality
+
+**Tasks:**
+- [ ] Make graph reranking explanations more explicit
+- [ ] Add requirement-aware explanations
+- [ ] Improve missing metadata warnings
+- [ ] Add confidence indicators for each score component
+
+---
+
+## Phase 5: Release Readiness (1-2 weeks)
+
+### 5.1 Quality Gates
+
+```bash
+# All implementations must pass
+pytest -q
+ruff check neural_search tests
+make artifacts-build
+python -m neural_search.evaluation.run_benchmark --suite demo_v02
+python -m neural_search.evaluation.run_benchmark --suite adversarial
+
+# Real corpus work
+make real-artifacts-build
+python -m neural_search.evaluation.run_benchmark --suite real_v07
+make release-check
+make awareness-report
+```
+
+### 5.2 Release Checks
+
+**Tasks:**
+- [ ] Combine graph QA, source quality, calibration, and benchmark deltas
+- [ ] Create promotion-readiness dashboard
+- [ ] Define blocking vs. warning thresholds
+- [ ] Add per-query benchmark failure handling
+
+### 5.3 Documentation
+
+**Tasks:**
+- [ ] Update README with new capabilities
+- [ ] Add query examples for all intent types
+- [ ] Document embedding model strategy
+- [ ] Create release notes template
+
+---
+
+## Open Engineering Decisions
+
+1. **Corpus Artifacts** - Whether real corpus raw payloads should be committed, sampled, or generated only locally
+2. **File Inspection Claims** - Inside normalized records or as linked sidecar artifacts
+3. **Graph Reports** - Whether to summarize by corpus tag and timestamp
+4. **Benchmark Labeling** - How much should be automated vs. manually reviewed
+5. **Search Improvement Timing** - Before, during, or after real-corpus ingestion
+6. **Artifact Commit Policy** - Which real-corpus artifacts are small and stable enough to commit
+7. **Release Blocking** - Per-query benchmark failures or only aggregate thresholds
+
+---
+
+## Critical Constraints
+
+1. Do NOT build frontend features beyond existing scope
+2. Do NOT tune only the demo benchmark
+3. Do NOT remove provenance/evidence requirements
+4. Do NOT make graph score dominate retrieval
+5. Do NOT require external graph database
+6. Existing benchmark suites must continue to pass
+7. No conflict with existing embedding work
+
+---
+
+## Recommended Next Actions
+
+### This Week
+1. Run quality gates and fix any issues
+2. Complete awareness scoring integration
+3. Begin human relevance labeling protocol
+
+### Next Week
+1. Expand DANDI and OpenNeuro normalized records
+2. Add 10+ new benchmark queries
+3. Wire planner into retrieval core
+
+### This Month
+1. Complete corpus expansion to target levels
+2. Label 100+ query-result pairs
+3. Add graph coverage gates
+4. Validate and promote planner defaults

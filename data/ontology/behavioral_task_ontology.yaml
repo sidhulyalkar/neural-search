@@ -1657,6 +1657,1230 @@ tasks:
       - withdrawal_latency
       - nociceptive_decoding
 
+  - id: value_based_decision_making
+    label: Value-Based Decision Making
+    category: decision_making
+    definition: >
+      A task where subjects make choices based on subjective values, rewards, or utilities.
+    synonyms:
+      - value-based decision
+      - value based choice
+      - economic choice
+      - reward-based decision
+      - value decision making
+      - utility maximization
+      - reward choice
+    common_events:
+      - offer_onset
+      - choice
+      - reward
+      - value_estimate
+      - feedback
+      - outcome
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - fmri
+      - calcium_imaging
+      - fiber_photometry
+    relevant_regions:
+      - OFC
+      - vmPFC
+      - ACC
+      - striatum
+      - amygdala
+      - VTA
+    suggested_analyses:
+      - value_encoding
+      - choice_decoding
+      - utility_modeling
+      - reward_prediction_error
+
+  - id: closed_loop_control
+    label: Closed-Loop Control
+    category: bci
+    definition: >
+      A task with real-time neural feedback or brain-machine interface control.
+    synonyms:
+      - closed loop
+      - real-time control
+      - brain-machine interface
+      - brain computer interface control
+      - neural feedback
+      - BMI
+      - closed loop BCI
+    common_events:
+      - cursor_movement
+      - target_onset
+      - feedback
+      - decoder_output
+      - reward
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - utah_array
+      - eeg
+      - neuropixels
+    relevant_regions:
+      - motor_cortex
+      - premotor_cortex
+      - parietal_cortex
+      - somatosensory_cortex
+    suggested_analyses:
+      - decoder_performance
+      - cursor_velocity_decoding
+      - closed_loop_adaptation
+      - neural_control_analysis
+
+  - id: auditory_processing
+    label: Auditory Processing
+    category: perception
+    definition: >
+      A task or passive listening condition involving auditory stimuli, sound processing, or tonotopy.
+    synonyms:
+      - auditory
+      - auditory task
+      - sound processing
+      - passive listening
+      - tone processing
+      - auditory perception
+      - hearing
+      - sound discrimination
+    common_events:
+      - sound_onset
+      - tone_onset
+      - stimulus_onset
+      - sound_offset
+      - frequency
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - eeg
+      - ecog
+    relevant_regions:
+      - auditory_cortex
+      - A1
+      - inferior_colliculus
+      - thalamus
+      - prefrontal_cortex
+    suggested_analyses:
+      - frequency_tuning
+      - tonotopic_mapping
+      - sensory_encoding
+      - spectrotemporal_receptive_field
+
+# ---------------------------------------------------------------------------
+  # Reinforcement Learning (expanded)
+  # ---------------------------------------------------------------------------
+  - id: temporal_difference_learning
+    label: Temporal Difference Learning
+    category: reinforcement_learning
+    definition: >
+      A task designed to study temporal difference prediction errors, value updating,
+      and model-free reinforcement learning mechanisms.
+    synonyms:
+      - TD learning
+      - temporal difference
+      - prediction error task
+      - RPE task
+      - model-free learning
+    common_events:
+      - cue_onset
+      - choice
+      - reward
+      - omission
+      - prediction_error
+      - value_update
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - fiber_photometry
+      - calcium_imaging
+    relevant_regions:
+      - striatum
+      - VTA
+      - SNc
+      - OFC
+      - ACC
+      - dopamine_midbrain
+    suggested_analyses:
+      - temporal_difference_modeling
+      - reward_prediction_error
+      - value_encoding
+      - q_learning_model_fitting
+
+  - id: actor_critic_task
+    label: Actor-Critic Task
+    category: reinforcement_learning
+    definition: >
+      A task structure supporting actor-critic decomposition where separate systems
+      compute value and policy.
+    synonyms:
+      - actor critic
+      - policy learning
+      - action value learning
+      - advantage learning
+    common_events:
+      - state_onset
+      - action
+      - reward
+      - value_signal
+      - policy_update
+    relevant_regions:
+      - striatum
+      - mPFC
+      - ACC
+      - VTA
+      - motor_cortex
+    suggested_analyses:
+      - actor_critic_modeling
+      - policy_gradient_analysis
+      - value_function_estimation
+      - action_selection_decoding
+
+  - id: model_based_planning
+    label: Model-Based Planning
+    category: reinforcement_learning
+    definition: >
+      A task requiring internal model construction and prospective evaluation
+      of action sequences.
+    synonyms:
+      - planning task
+      - model-based reinforcement learning
+      - successor representation
+      - tree search
+      - prospective coding
+    common_events:
+      - planning_onset
+      - choice
+      - outcome
+      - state_transition
+      - goal_state
+    relevant_regions:
+      - hippocampus
+      - OFC
+      - mPFC
+      - striatum
+      - parietal_cortex
+    suggested_analyses:
+      - model_based_modeling
+      - replay_detection
+      - prospective_coding_analysis
+      - state_transition_decoding
+
+  - id: foraging
+    label: Foraging Task
+    category: reinforcement_learning
+    definition: >
+      A task involving sequential patch exploitation and exploration decisions,
+      often with depleting resources or travel costs.
+    synonyms:
+      - patch foraging
+      - patch leaving
+      - optimal foraging
+      - explore exploit foraging
+      - resource harvesting
+    common_events:
+      - patch_entry
+      - harvest
+      - patch_leave
+      - travel
+      - resource_depletion
+      - reward
+    relevant_regions:
+      - ACC
+      - OFC
+      - mPFC
+      - striatum
+      - hippocampus
+    suggested_analyses:
+      - marginal_value_theorem
+      - patch_leaving_decision
+      - foraging_efficiency
+      - opportunity_cost_modeling
+
+  - id: effort_based_decision
+    label: Effort-Based Decision Making
+    category: reinforcement_learning
+    definition: >
+      A task where subjects choose between options differing in required effort
+      and reward magnitude.
+    synonyms:
+      - effort discounting
+      - cost benefit decision
+      - physical effort task
+      - cognitive effort task
+      - effort choice
+    common_events:
+      - offer_onset
+      - effort_cue
+      - reward_cue
+      - choice
+      - effort_exertion
+      - reward
+    relevant_regions:
+      - ACC
+      - mPFC
+      - striatum
+      - motor_cortex
+      - insula
+    suggested_analyses:
+      - effort_discounting_modeling
+      - cost_benefit_analysis
+      - subjective_value_computation
+      - effort_encoding
+
+  # ---------------------------------------------------------------------------
+  # Sensory Decision-Making (expanded)
+  # ---------------------------------------------------------------------------
+  - id: random_dot_motion
+    label: Random Dot Motion
+    category: sensory_decision_making
+    definition: >
+      A motion discrimination task using random dot kinematograms to study
+      evidence accumulation and perceptual decision-making.
+    synonyms:
+      - RDM
+      - random dots
+      - motion coherence
+      - dot motion discrimination
+      - RDK
+    common_events:
+      - dots_onset
+      - motion_onset
+      - choice
+      - saccade
+      - feedback
+      - coherence_level
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - eeg
+      - fmri
+    relevant_regions:
+      - MT
+      - MST
+      - LIP
+      - FEF
+      - SC
+      - visual_cortex
+    suggested_analyses:
+      - evidence_accumulation_modeling
+      - drift_diffusion_model
+      - psychometric_curve
+      - choice_probability
+      - motion_energy_analysis
+
+  - id: detection_threshold
+    label: Detection Task
+    category: sensory_decision_making
+    definition: >
+      A task requiring detection of weak or near-threshold sensory stimuli,
+      often used to study signal detection and perceptual sensitivity.
+    synonyms:
+      - detection task
+      - threshold detection
+      - signal detection
+      - near-threshold perception
+      - perceptual detection
+    common_events:
+      - stimulus_onset
+      - stimulus_offset
+      - response
+      - hit
+      - miss
+      - false_alarm
+      - correct_rejection
+    relevant_regions:
+      - sensory_cortex
+      - prefrontal_cortex
+      - parietal_cortex
+      - thalamus
+    suggested_analyses:
+      - signal_detection_theory
+      - d_prime_analysis
+      - criterion_analysis
+      - psychometric_curve
+
+  - id: categorization
+    label: Categorization
+    category: sensory_decision_making
+    definition: >
+      A task requiring classification of stimuli into learned categories
+      based on perceptual or abstract features.
+    synonyms:
+      - category learning
+      - perceptual categorization
+      - stimulus categorization
+      - category boundary
+      - classification task
+    common_events:
+      - stimulus_onset
+      - category_response
+      - feedback
+      - category_boundary
+      - exemplar
+    relevant_regions:
+      - IT
+      - PFC
+      - parietal_cortex
+      - striatum
+    suggested_analyses:
+      - category_boundary_decoding
+      - prototype_analysis
+      - category_selectivity
+      - representational_similarity
+
+  # ---------------------------------------------------------------------------
+  # Motor Control (expanded)
+  # ---------------------------------------------------------------------------
+  - id: sequence_learning
+    label: Motor Sequence Learning
+    category: motor_control
+    definition: >
+      A task involving learning and execution of sequential motor actions,
+      often used to study procedural memory and skill acquisition.
+    synonyms:
+      - motor sequence
+      - sequential reaching
+      - serial reaction time
+      - SRT task
+      - sequence task
+    common_events:
+      - sequence_start
+      - element_onset
+      - movement
+      - sequence_completion
+      - error
+      - learning_block
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - eeg
+      - fmri
+      - emg
+    relevant_regions:
+      - M1
+      - SMA
+      - preSMA
+      - striatum
+      - cerebellum
+    suggested_analyses:
+      - sequence_decoding
+      - chunking_analysis
+      - learning_curve
+      - transition_probability
+
+  - id: force_tracking
+    label: Force Tracking
+    category: motor_control
+    definition: >
+      A task requiring precise control and modulation of force output,
+      often isometric, to study motor control and feedback.
+    synonyms:
+      - isometric force
+      - grip force tracking
+      - force control
+      - force modulation
+      - precision grip
+    common_events:
+      - target_onset
+      - force_onset
+      - force_hold
+      - force_release
+      - error_feedback
+    relevant_modalities:
+      - extracellular_ephys
+      - emg
+      - force_sensor
+      - utah_array
+      - ecog
+    relevant_regions:
+      - M1
+      - S1
+      - cerebellum
+      - premotor
+      - parietal_cortex
+    suggested_analyses:
+      - force_decoding
+      - motor_unit_analysis
+      - error_correction_dynamics
+      - grip_force_modulation
+
+  - id: bimanual_coordination
+    label: Bimanual Coordination
+    category: motor_control
+    definition: >
+      A task requiring coordinated movements of both hands or limbs,
+      often to study interhemispheric coordination.
+    synonyms:
+      - bimanual
+      - two-hand coordination
+      - bilateral movement
+      - interlimb coordination
+      - bimanual task
+    common_events:
+      - bilateral_movement
+      - left_hand
+      - right_hand
+      - coordination_phase
+      - synchronization
+    relevant_regions:
+      - M1
+      - SMA
+      - preSMA
+      - corpus_callosum
+      - cerebellum
+    suggested_analyses:
+      - interlimb_coordination
+      - phase_coupling
+      - bilateral_decoding
+      - interhemispheric_transfer
+
+  - id: oculomotor_task
+    label: Oculomotor Task
+    category: motor_control
+    definition: >
+      A task involving saccades, smooth pursuit, fixation, or other eye movements
+      to study oculomotor control and visual attention.
+    synonyms:
+      - saccade task
+      - smooth pursuit
+      - eye movement task
+      - antisaccade
+      - prosaccade
+      - memory-guided saccade
+    common_events:
+      - fixation_onset
+      - target_onset
+      - saccade_onset
+      - saccade_offset
+      - pursuit_onset
+      - fixation_break
+    relevant_modalities:
+      - extracellular_ephys
+      - eye_tracking
+      - eeg
+      - meg
+      - fmri
+    relevant_regions:
+      - FEF
+      - SC
+      - LIP
+      - SEF
+      - cerebellum
+      - brainstem
+    suggested_analyses:
+      - saccade_latency
+      - saccade_amplitude_decoding
+      - pursuit_gain
+      - oculomotor_preparation
+
+  # ---------------------------------------------------------------------------
+  # BCI and Neural Prosthetics (expanded)
+  # ---------------------------------------------------------------------------
+  - id: p300_bci
+    label: P300 BCI
+    category: bci
+    definition: >
+      A brain-computer interface paradigm using the P300 event-related potential
+      for communication or control.
+    synonyms:
+      - P300 speller
+      - P300 brain computer interface
+      - oddball BCI
+      - ERP BCI
+    common_events:
+      - flash_onset
+      - target_flash
+      - non_target_flash
+      - P300_response
+      - character_selection
+    relevant_modalities:
+      - eeg
+      - ieeg
+    relevant_regions:
+      - parietal_cortex
+      - temporal_cortex
+      - frontal_cortex
+    suggested_analyses:
+      - p300_detection
+      - bci_accuracy
+      - erp_classification
+      - information_transfer_rate
+
+  - id: ssvep_bci
+    label: SSVEP BCI
+    category: bci
+    definition: >
+      A brain-computer interface using steady-state visual evoked potentials
+      for frequency-tagged visual selection.
+    synonyms:
+      - steady state visual evoked potential
+      - SSVEP
+      - frequency tagging BCI
+      - visual BCI
+    common_events:
+      - flicker_onset
+      - frequency_tag
+      - target_selection
+      - control_signal
+    relevant_modalities:
+      - eeg
+      - ecog
+    relevant_regions:
+      - visual_cortex
+      - occipital_cortex
+    suggested_analyses:
+      - ssvep_detection
+      - frequency_decoding
+      - canonical_correlation_analysis
+      - bci_performance
+
+  - id: speech_bci
+    label: Speech BCI
+    category: bci
+    definition: >
+      A brain-computer interface for decoding speech, attempted speech,
+      or speech imagery for communication.
+    synonyms:
+      - speech neuroprosthesis
+      - speech decoding BCI
+      - communication BCI
+      - imagined speech BCI
+      - speech synthesis BCI
+    common_events:
+      - speech_cue
+      - attempted_speech
+      - phoneme_onset
+      - word_onset
+      - decoded_output
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - utah_array
+      - neuropixels
+    relevant_regions:
+      - speech_motor_cortex
+      - Broca_area
+      - ventral_sensorimotor
+      - STG
+      - IFG
+    suggested_analyses:
+      - phoneme_decoding
+      - word_decoding
+      - speech_synthesis
+      - attempted_speech_classification
+
+  - id: handwriting_bci
+    label: Handwriting BCI
+    category: bci
+    definition: >
+      A brain-computer interface decoding imagined or attempted handwriting
+      movements for text generation.
+    synonyms:
+      - handwriting neuroprosthesis
+      - imagined handwriting
+      - writing BCI
+      - text BCI
+    common_events:
+      - character_cue
+      - writing_attempt
+      - stroke_onset
+      - character_decoded
+    relevant_modalities:
+      - utah_array
+      - ecog
+      - neuropixels
+    relevant_regions:
+      - motor_cortex
+      - premotor_cortex
+      - parietal_cortex
+    suggested_analyses:
+      - character_decoding
+      - trajectory_decoding
+      - writing_style_analysis
+      - bci_throughput
+
+  # ---------------------------------------------------------------------------
+  # Speech and Language (expanded)
+  # ---------------------------------------------------------------------------
+  - id: speech_perception
+    label: Speech Perception
+    category: speech_language
+    definition: >
+      A task involving listening to and processing speech sounds,
+      words, or sentences.
+    synonyms:
+      - speech listening
+      - auditory speech
+      - phoneme perception
+      - speech comprehension
+      - passive speech
+    common_events:
+      - speech_onset
+      - phoneme
+      - syllable
+      - word_boundary
+      - sentence_onset
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - meg
+      - fmri
+      - audio
+    relevant_regions:
+      - STG
+      - auditory_cortex
+      - Wernicke_area
+      - temporal_cortex
+      - IFG
+    suggested_analyses:
+      - phoneme_encoding
+      - speech_envelope_tracking
+      - temporal_receptive_field
+      - speech_decoding
+
+  - id: picture_naming
+    label: Picture Naming
+    category: speech_language
+    definition: >
+      A task where subjects name visually presented objects or pictures,
+      used to study word production and lexical access.
+    synonyms:
+      - naming task
+      - object naming
+      - confrontation naming
+      - lexical retrieval
+      - word production
+    common_events:
+      - picture_onset
+      - speech_onset
+      - word_production
+      - naming_latency
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - meg
+      - fmri
+      - audio
+    relevant_regions:
+      - Broca_area
+      - motor_cortex
+      - temporal_cortex
+      - fusiform_gyrus
+      - IFG
+    suggested_analyses:
+      - naming_latency_analysis
+      - lexical_access_decoding
+      - semantic_category_effects
+      - phonological_encoding
+
+  - id: reading
+    label: Reading
+    category: speech_language
+    definition: >
+      A task involving reading text, words, or sentences either silently
+      or aloud to study language processing.
+    synonyms:
+      - reading task
+      - word reading
+      - sentence reading
+      - text comprehension
+      - reading aloud
+    common_events:
+      - word_onset
+      - fixation
+      - saccade
+      - sentence_onset
+      - comprehension_question
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - meg
+      - fmri
+      - eye_tracking
+    relevant_regions:
+      - visual_word_form_area
+      - temporal_cortex
+      - frontal_cortex
+      - angular_gyrus
+    suggested_analyses:
+      - reading_time_analysis
+      - word_frequency_effects
+      - semantic_prediction
+      - eye_movement_analysis
+
+  # ---------------------------------------------------------------------------
+  # Sleep and Clinical Neurophysiology (expanded)
+  # ---------------------------------------------------------------------------
+  - id: sleep_staging
+    label: Sleep Staging
+    category: clinical_neurophysiology
+    definition: >
+      A recording paradigm for classifying sleep stages including
+      wake, N1, N2, N3 (NREM), and REM sleep.
+    synonyms:
+      - polysomnography
+      - sleep study
+      - sleep architecture
+      - sleep state classification
+      - PSG
+    common_events:
+      - sleep_onset
+      - stage_transition
+      - N1
+      - N2
+      - N3
+      - REM
+      - awakening
+      - arousal
+    relevant_modalities:
+      - eeg
+      - eog
+      - emg
+      - polysomnography
+    relevant_regions:
+      - cortex
+      - thalamus
+      - hippocampus
+      - brainstem
+    suggested_analyses:
+      - sleep_stage_classification
+      - spindle_detection
+      - k_complex_detection
+      - slow_wave_analysis
+      - sleep_architecture_metrics
+
+  - id: interictal_monitoring
+    label: Interictal Monitoring
+    category: clinical_neurophysiology
+    definition: >
+      Clinical monitoring of epilepsy patients during seizure-free periods
+      to identify interictal epileptiform discharges and seizure onset zones.
+    synonyms:
+      - interictal recording
+      - epilepsy monitoring
+      - IED detection
+      - interictal spike
+      - seizure-free monitoring
+    common_events:
+      - interictal_spike
+      - sharp_wave
+      - HFO
+      - subclinical_seizure
+      - medication_timing
+    relevant_modalities:
+      - ieeg
+      - eeg
+      - ecog
+      - seeg
+    relevant_regions:
+      - temporal_lobe
+      - hippocampus
+      - cortex
+      - seizure_focus
+    suggested_analyses:
+      - interictal_spike_detection
+      - hfo_detection
+      - connectivity_analysis
+      - source_localization
+      - seizure_onset_zone
+
+  - id: intraoperative_mapping
+    label: Intraoperative Mapping
+    category: clinical_neurophysiology
+    definition: >
+      Neurophysiological recording during surgery for functional mapping
+      of motor, sensory, or language areas.
+    synonyms:
+      - cortical stimulation mapping
+      - awake craniotomy
+      - intraoperative monitoring
+      - functional mapping
+      - IOCM
+    common_events:
+      - stimulation_onset
+      - motor_response
+      - speech_arrest
+      - sensory_response
+      - mapping_site
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - emg
+      - direct_stimulation
+    relevant_regions:
+      - motor_cortex
+      - sensory_cortex
+      - language_cortex
+      - tumor_margin
+    suggested_analyses:
+      - functional_localization
+      - evoked_response
+      - stimulation_mapping
+      - safety_margin_analysis
+
+  # ---------------------------------------------------------------------------
+  # Social Behavior (expanded)
+  # ---------------------------------------------------------------------------
+  - id: social_reward
+    label: Social Reward
+    category: social_behavior
+    definition: >
+      A task involving social rewards such as social approval, cooperation,
+      or social feedback.
+    synonyms:
+      - social feedback
+      - social approval
+      - social reinforcement
+      - cooperative reward
+      - social outcome
+    common_events:
+      - social_cue
+      - social_reward
+      - rejection
+      - cooperation
+      - feedback
+    relevant_modalities:
+      - fmri
+      - eeg
+      - calcium_imaging
+      - fiber_photometry
+    relevant_regions:
+      - mPFC
+      - striatum
+      - amygdala
+      - TPJ
+      - ACC
+    suggested_analyses:
+      - social_value_encoding
+      - cooperation_decoding
+      - social_feedback_response
+
+  - id: face_processing
+    label: Face Processing
+    category: social_behavior
+    definition: >
+      A task involving perception, recognition, or emotional processing
+      of faces.
+    synonyms:
+      - face perception
+      - face recognition
+      - facial expression
+      - face task
+      - emotional faces
+    common_events:
+      - face_onset
+      - emotion
+      - identity
+      - gaze_direction
+      - response
+    relevant_modalities:
+      - fmri
+      - eeg
+      - meg
+      - ieeg
+      - extracellular_ephys
+    relevant_regions:
+      - fusiform_face_area
+      - STS
+      - amygdala
+      - OFC
+      - IT
+    suggested_analyses:
+      - face_selectivity
+      - emotion_decoding
+      - identity_decoding
+      - face_response_latency
+
+  - id: theory_of_mind
+    label: Theory of Mind
+    category: social_behavior
+    definition: >
+      A task requiring inference about others' mental states, beliefs,
+      intentions, or knowledge.
+    synonyms:
+      - mentalizing
+      - ToM task
+      - belief inference
+      - social inference
+      - perspective taking
+    common_events:
+      - story_onset
+      - belief_question
+      - inference
+      - response
+      - feedback
+    relevant_modalities:
+      - fmri
+      - eeg
+      - ieeg
+    relevant_regions:
+      - TPJ
+      - mPFC
+      - STS
+      - precuneus
+    suggested_analyses:
+      - belief_state_decoding
+      - mentalizing_activation
+      - perspective_taking_analysis
+
+  # ---------------------------------------------------------------------------
+  # Naturalistic Behavior (expanded)
+  # ---------------------------------------------------------------------------
+  - id: free_behavior
+    label: Free Behavior
+    category: naturalistic_behavior
+    definition: >
+      Recording during unconstrained, self-paced naturalistic behavior
+      without explicit task structure.
+    synonyms:
+      - naturalistic behavior
+      - freely behaving
+      - unconstrained behavior
+      - spontaneous behavior
+      - home cage
+    common_events:
+      - locomotion
+      - exploration
+      - grooming
+      - rearing
+      - resting
+      - social_contact
+    relevant_modalities:
+      - calcium_imaging
+      - neuropixels
+      - miniscope
+      - behavior_video
+      - pose_tracking
+      - fiber_photometry
+    relevant_regions:
+      - hippocampus
+      - cortex
+      - striatum
+      - hypothalamus
+    suggested_analyses:
+      - pose_estimation
+      - behavior_segmentation
+      - neural_behavior_correlation
+      - state_space_embedding
+      - ethogram_analysis
+
+  - id: prey_capture
+    label: Prey Capture
+    category: naturalistic_behavior
+    definition: >
+      A naturalistic hunting task where animals capture live or virtual prey,
+      used to study appetitive behavior and visuomotor coordination.
+    synonyms:
+      - hunting
+      - cricket chase
+      - prey tracking
+      - predatory behavior
+      - capture behavior
+    common_events:
+      - prey_onset
+      - pursuit
+      - approach
+      - capture
+      - consumption
+    relevant_modalities:
+      - calcium_imaging
+      - extracellular_ephys
+      - behavior_video
+      - pose_tracking
+    relevant_regions:
+      - superior_colliculus
+      - visual_cortex
+      - hypothalamus
+      - PAG
+      - striatum
+    suggested_analyses:
+      - pursuit_trajectory
+      - capture_success_rate
+      - prey_tracking_decoding
+      - appetitive_state_analysis
+
+  - id: maternal_behavior
+    label: Maternal Behavior
+    category: naturalistic_behavior
+    definition: >
+      Recording during maternal care behaviors such as pup retrieval,
+      nursing, or nest building.
+    synonyms:
+      - parental behavior
+      - pup retrieval
+      - nursing
+      - nest building
+      - caregiving
+    common_events:
+      - pup_detection
+      - retrieval
+      - nursing
+      - nest_entry
+      - grooming_pup
+    relevant_modalities:
+      - calcium_imaging
+      - fiber_photometry
+      - behavior_video
+      - pose_tracking
+    relevant_regions:
+      - mPOA
+      - mPFC
+      - amygdala
+      - hypothalamus
+      - auditory_cortex
+    suggested_analyses:
+      - retrieval_latency
+      - maternal_state_decoding
+      - pup_call_response
+      - caregiving_bout_analysis
+
+  # ---------------------------------------------------------------------------
+  # Visual and Auditory Processing (expanded)
+  # ---------------------------------------------------------------------------
+  - id: receptive_field_mapping
+    label: Receptive Field Mapping
+    category: sensory_processing
+    definition: >
+      Systematic presentation of visual or auditory stimuli to characterize
+      neuronal receptive field properties.
+    synonyms:
+      - RF mapping
+      - spatial receptive field
+      - temporal receptive field
+      - tuning curve
+      - feature selectivity
+    common_events:
+      - stimulus_onset
+      - stimulus_offset
+      - sparse_noise
+      - grating
+      - bar
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - neuropixels
+    relevant_regions:
+      - V1
+      - visual_cortex
+      - auditory_cortex
+      - LGN
+      - thalamus
+    suggested_analyses:
+      - receptive_field_estimation
+      - orientation_tuning
+      - spatial_frequency_tuning
+      - direction_selectivity
+
+  - id: natural_movie_viewing
+    label: Natural Movie Viewing
+    category: sensory_processing
+    definition: >
+      Passive viewing of naturalistic movies or video clips to study
+      visual processing under natural conditions.
+    synonyms:
+      - movie watching
+      - naturalistic video
+      - film viewing
+      - passive movie
+      - natural scene statistics
+    common_events:
+      - movie_onset
+      - scene_cut
+      - motion_energy
+      - semantic_event
+      - fixation
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - fmri
+      - eeg
+      - eye_tracking
+    relevant_regions:
+      - visual_cortex
+      - V1
+      - V4
+      - IT
+      - STS
+    suggested_analyses:
+      - encoding_model
+      - neural_prediction
+      - representational_similarity
+      - natural_movie_encoding
+
+  - id: tonotopic_mapping
+    label: Tonotopic Mapping
+    category: sensory_processing
+    definition: >
+      Systematic presentation of tones or sounds to characterize
+      frequency tuning and tonotopic organization.
+    synonyms:
+      - frequency mapping
+      - tone response
+      - auditory tuning
+      - pure tone mapping
+      - tonotopy
+    common_events:
+      - tone_onset
+      - tone_offset
+      - frequency
+      - amplitude
+      - bandwidth
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - neuropixels
+    relevant_regions:
+      - A1
+      - auditory_cortex
+      - MGB
+      - IC
+      - auditory_thalamus
+    suggested_analyses:
+      - frequency_tuning_curve
+      - tonotopic_gradient
+      - bandwidth_analysis
+      - spectrotemporal_receptive_field
+
+  - id: mismatch_negativity
+    label: Mismatch Negativity
+    category: sensory_processing
+    definition: >
+      An auditory paradigm where rare deviant stimuli violate established
+      patterns, generating prediction error responses.
+    synonyms:
+      - MMN
+      - deviant detection
+      - auditory prediction error
+      - oddball MMN
+      - predictive coding
+    common_events:
+      - standard_tone
+      - deviant_tone
+      - MMN_response
+      - prediction_error
+    relevant_modalities:
+      - eeg
+      - meg
+      - ieeg
+      - extracellular_ephys
+    relevant_regions:
+      - auditory_cortex
+      - STG
+      - frontal_cortex
+    suggested_analyses:
+      - mmn_analysis
+      - prediction_error_response
+      - deviant_minus_standard
+      - adaptation_analysis
+
 # Cross-cutting behavior labels. These are not tasks, but should be searchable.
 behavior_labels:
   - id: choice
@@ -1704,3 +2928,429 @@ behavior_labels:
   - id: running_speed
     label: Running Speed
     synonyms: [running, running speed, wheel speed, locomotion speed]
+  - id: reward_prediction
+    label: Reward Prediction
+    synonyms: [reward prediction, reward anticipation, expected reward, reward expectation]
+  - id: reward_prediction_error
+    label: Reward Prediction Error
+    synonyms: [reward prediction error, RPE, prediction error, dopamine prediction error, TD error]
+  - id: dopamine
+    label: Dopamine
+    synonyms: [dopamine, DA, dopaminergic, dopamine signal, dopamine release]
+  - id: value
+    label: Value
+    synonyms: [value, subjective value, reward value, expected value, utility]
+  - id: value_estimate
+    label: Value Estimate
+    synonyms: [value estimate, value signal, value encoding, value representation]
+  - id: arousal
+    label: Arousal
+    synonyms: [arousal, arousal state, arousal level, vigilance, alertness]
+  - id: whisking
+    label: Whisking
+    synonyms: [whisking, whisker movement, whisker retraction, whisker protraction]
+  - id: grooming
+    label: Grooming
+    synonyms: [grooming, self-grooming, grooming bout]
+  - id: exploration
+    label: Exploration
+    synonyms: [exploration, exploratory behavior, investigate, rearing]
+  - id: trial_outcome
+    label: Trial Outcome
+    synonyms: [trial outcome, trial result, outcome, success, failure]
+  - id: conflict
+    label: Conflict
+    synonyms: [conflict, response conflict, conflict trial, interference]
+  - id: attention
+    label: Attention
+    synonyms: [attention, attentional state, attended, unattended, spatial attention]
+  - id: memory
+    label: Memory
+    synonyms: [memory, encoding, retrieval, recognition, recall]
+  - id: learning
+    label: Learning
+    synonyms: [learning, acquisition, training, adaptation, plasticity]
+  - id: kinematics
+    label: Kinematics
+    synonyms: [kinematics, velocity, acceleration, position, trajectory, movement trajectory, hand position, joint angle]
+  - id: sleep_stage
+    label: Sleep Stage
+    synonyms: [sleep stage, N1, N2, N3, REM, NREM, slow wave, spindle, sleep state, sleep architecture]
+  - id: seizure_onset
+    label: Seizure Onset
+    synonyms: [seizure onset, ictal onset, seizure start, seizure beginning, electrographic seizure onset]
+  - id: phoneme
+    label: Phoneme
+    synonyms: [phoneme, speech sound, consonant, vowel, articulation, phonetic, phone]
+  - id: left_right_hand_imagery
+    label: Left/Right Hand Imagery
+    synonyms: [left hand imagery, right hand imagery, motor imagery left, motor imagery right, hand imagery, limb imagery]
+  - id: grip_force
+    label: Grip Force
+    synonyms: [grip force, grasp force, pinch force, force output, isometric force]
+  - id: saccade
+    label: Saccade
+    synonyms: [saccade, eye movement, saccadic, prosaccade, antisaccade]
+  - id: fixation
+    label: Fixation
+    synonyms: [fixation, gaze, eye position, fixation point]
+  - id: pursuit
+    label: Smooth Pursuit
+    synonyms: [smooth pursuit, pursuit, tracking eye movement]
+  - id: spindle
+    label: Sleep Spindle
+    synonyms: [sleep spindle, spindle, sigma activity, thalamocortical spindle]
+  - id: sharp_wave_ripple
+    label: Sharp-Wave Ripple
+    synonyms: [sharp-wave ripple, SWR, ripple, hippocampal ripple, memory replay]
+  - id: high_frequency_oscillation
+    label: High-Frequency Oscillation
+    synonyms: [high frequency oscillation, HFO, fast ripple, pathological HFO, ripple band]
+  - id: speech_onset
+    label: Speech Onset
+    synonyms: [speech onset, vocalization onset, voice onset, utterance start]
+  - id: word_boundary
+    label: Word Boundary
+    synonyms: [word boundary, word onset, word offset, word segmentation]
+  - id: sentence_onset
+    label: Sentence Onset
+    synonyms: [sentence onset, sentence start, utterance onset]
+
+# Analysis affordances - capabilities supported by normalized datasets
+analysis_affordances:
+  - id: q_learning_model_fitting
+    label: Q-Learning Model Fitting
+    definition: >
+      Fitting reinforcement learning models with action values, learning rates,
+      and temporal difference updates to behavioral choice data.
+    required_signals:
+      - choice_data
+      - reward_outcome
+      - trial_structure
+    helpful_signals:
+      - reaction_time
+      - confidence_rating
+      - block_structure
+    typical_outputs:
+      - learning_rate
+      - inverse_temperature
+      - q_values
+      - model_comparison
+    relevant_tasks:
+      - bandit_task
+      - reversal_learning
+      - two_alternative_forced_choice
+      - delay_discounting
+
+  - id: temporal_difference_modeling
+    label: Temporal Difference Modeling
+    definition: >
+      Computing reward prediction errors by comparing predicted and actual
+      outcomes at each time step, modeling value updating dynamics.
+    required_signals:
+      - reward_timing
+      - trial_events
+      - neural_activity
+    helpful_signals:
+      - cue_timing
+      - value_cues
+    typical_outputs:
+      - prediction_error_timecourse
+      - value_signals
+      - td_error
+    relevant_tasks:
+      - classical_conditioning
+      - temporal_difference_learning
+      - reversal_learning
+      - bandit_task
+
+  - id: choice_decoding
+    label: Choice Decoding
+    definition: >
+      Decoding trial-by-trial choices or decisions from neural population
+      activity using classification or regression approaches.
+    required_signals:
+      - neural_data
+      - choice_labels
+      - trial_alignment
+    helpful_signals:
+      - reaction_time
+      - confidence
+      - stimulus_features
+    typical_outputs:
+      - decoding_accuracy
+      - choice_probability
+      - decision_variable
+    relevant_tasks:
+      - two_alternative_forced_choice
+      - reversal_learning
+      - visual_decision_making
+      - bandit_task
+
+  - id: motor_decoding
+    label: Motor Decoding
+    definition: >
+      Decoding movement parameters such as direction, velocity, position,
+      or force from neural activity.
+    required_signals:
+      - neural_data
+      - kinematics
+      - movement_timing
+    helpful_signals:
+      - emg
+      - force_data
+      - joint_angles
+    typical_outputs:
+      - decoded_trajectory
+      - velocity_estimate
+      - direction_tuning
+      - decoding_r2
+    relevant_tasks:
+      - reaching
+      - center_out_reaching
+      - grasping
+      - joystick_task
+      - closed_loop_control
+
+  - id: speech_decoding
+    label: Speech Decoding
+    definition: >
+      Decoding speech content, phonemes, words, or articulatory features
+      from neural activity during speech production or perception.
+    required_signals:
+      - neural_data_speech_areas
+      - speech_labels
+      - timing_alignment
+    helpful_signals:
+      - audio_recording
+      - phoneme_boundaries
+      - articulatory_features
+    typical_outputs:
+      - phoneme_accuracy
+      - word_error_rate
+      - articulatory_decoding
+    relevant_tasks:
+      - speech_production
+      - speech_perception
+      - speech_bci
+      - picture_naming
+
+  - id: seizure_detection
+    label: Seizure Detection
+    definition: >
+      Automated detection of seizure events, seizure onset, and seizure
+      propagation patterns from neural recordings.
+    required_signals:
+      - neural_data
+      - seizure_annotations
+    helpful_signals:
+      - clinical_events
+      - medication_timing
+      - behavioral_markers
+    typical_outputs:
+      - seizure_onset_time
+      - seizure_duration
+      - onset_zone
+      - sensitivity_specificity
+    relevant_tasks:
+      - seizure_monitoring
+      - interictal_monitoring
+
+  - id: sleep_stage_classification
+    label: Sleep Stage Classification
+    definition: >
+      Classification of sleep stages (wake, N1, N2, N3, REM) from
+      polysomnographic or neural signals.
+    required_signals:
+      - eeg_data
+      - sleep_annotations
+    helpful_signals:
+      - eog_data
+      - emg_data
+      - ecg_data
+    typical_outputs:
+      - hypnogram
+      - stage_probabilities
+      - transition_matrix
+      - sleep_metrics
+    relevant_tasks:
+      - sleep_wake
+      - sleep_staging
+
+  - id: event_aligned_activity
+    label: Event-Aligned Activity
+    definition: >
+      Aligning neural activity to behavioral or stimulus events to compute
+      peri-event time histograms, event-related potentials, or trial averages.
+    required_signals:
+      - neural_data
+      - event_timestamps
+    helpful_signals:
+      - trial_labels
+      - event_types
+      - continuous_behavior
+    typical_outputs:
+      - psth
+      - erp
+      - event_triggered_average
+      - latency_analysis
+    relevant_tasks:
+      - go_nogo
+      - classical_conditioning
+      - visual_decision_making
+      - oddball
+
+  - id: population_dynamics
+    label: Population Dynamics
+    definition: >
+      Analyzing collective neural activity patterns using dimensionality
+      reduction, state-space models, or neural trajectory analysis.
+    required_signals:
+      - multi_unit_data
+      - trial_structure
+    helpful_signals:
+      - behavior_labels
+      - continuous_kinematics
+      - task_conditions
+    typical_outputs:
+      - neural_trajectories
+      - latent_dimensions
+      - state_space_model
+      - dynamical_system_fit
+    relevant_tasks:
+      - reaching
+      - motor_sequence
+      - decision_making
+      - working_memory
+
+  - id: functional_connectivity
+    label: Functional Connectivity
+    definition: >
+      Computing statistical dependencies between neural signals across
+      brain regions or electrode sites.
+    required_signals:
+      - multi_region_data
+      - region_labels
+    helpful_signals:
+      - anatomical_locations
+      - task_epochs
+      - frequency_bands
+    typical_outputs:
+      - connectivity_matrix
+      - coherence
+      - granger_causality
+      - network_metrics
+    relevant_tasks:
+      - resting_state
+      - sleep_wake
+      - seizure_monitoring
+      - language_comprehension
+
+  - id: pose_estimation
+    label: Pose Estimation
+    definition: >
+      Extracting body part positions, skeletal pose, or movement trajectories
+      from video data using deep learning or marker tracking.
+    required_signals:
+      - behavior_video
+    helpful_signals:
+      - multiple_camera_views
+      - marker_data
+      - depth_data
+    typical_outputs:
+      - keypoint_coordinates
+      - pose_skeleton
+      - movement_trajectories
+      - behavioral_syllables
+    relevant_tasks:
+      - open_field
+      - social_interaction
+      - free_behavior
+      - locomotion
+
+  - id: neural_behavior_correlation
+    label: Neural-Behavior Correlation
+    definition: >
+      Computing correlations or predictive relationships between neural
+      activity and continuous behavioral variables.
+    required_signals:
+      - neural_data
+      - behavioral_timeseries
+      - temporal_alignment
+    helpful_signals:
+      - multiple_behaviors
+      - neural_region_labels
+      - task_epochs
+    typical_outputs:
+      - correlation_coefficients
+      - encoding_model
+      - variance_explained
+      - tuning_curves
+    relevant_tasks:
+      - locomotion
+      - free_behavior
+      - spatial_navigation
+      - pupil_arousal
+
+  - id: spike_sorting
+    label: Spike Sorting
+    definition: >
+      Separating action potentials from different neurons in extracellular
+      recordings based on waveform features.
+    required_signals:
+      - raw_extracellular_data
+    helpful_signals:
+      - probe_geometry
+      - spike_times_initial
+    typical_outputs:
+      - spike_times
+      - unit_ids
+      - waveforms
+      - cluster_quality_metrics
+    relevant_tasks:
+      - any_ephys_task
+
+  - id: lfp_spectral_analysis
+    label: LFP Spectral Analysis
+    definition: >
+      Computing power spectra, spectrograms, and frequency-band activity
+      from local field potentials.
+    required_signals:
+      - lfp_data
+    helpful_signals:
+      - event_timestamps
+      - behavioral_epochs
+      - region_labels
+    typical_outputs:
+      - power_spectrum
+      - spectrogram
+      - band_power_timeseries
+      - phase_amplitude_coupling
+    relevant_tasks:
+      - sleep_wake
+      - resting_state
+      - locomotion
+      - seizure_monitoring
+
+  - id: trial_outcome_prediction
+    label: Trial Outcome Prediction
+    definition: >
+      Predicting trial success, error, or specific outcomes from pre-trial
+      or early-trial neural activity.
+    required_signals:
+      - neural_data
+      - trial_outcomes
+      - trial_timing
+    helpful_signals:
+      - behavioral_state
+      - arousal_measures
+      - history_effects
+    typical_outputs:
+      - prediction_accuracy
+      - outcome_probability
+      - neural_predictors
+    relevant_tasks:
+      - go_nogo
+      - two_alternative_forced_choice
+      - reaching
+      - working_memory

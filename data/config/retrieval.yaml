@@ -1,0 +1,179 @@
+# Transparent retrieval weights and parser aliases.
+# Scores are combined on a 0-1 scale, then reported as 0-100.
+
+weights:
+  ontology: 0.24
+  behavior: 0.18
+  modality: 0.12
+  affordance: 0.10
+  metadata: 0.08
+  semantic: 0.10  # Increased - using sentence-transformers when available
+  field_semantic: 0.14  # Increased - primary semantic signal
+  graph: 0.06  # Increased - graph provides valuable context
+  readiness: 0.06
+  paper_confidence: 0.04
+
+penalties:
+  modality_mismatch: 0.12  # Reduced from 0.18 - less aggressive modality filtering
+  missing_required_field: 0.04
+  max_missing_required_fields: 5
+  exclusion_violation: 0.35  # Reduced from 0.50 - less aggressive exclusion
+
+thresholds:
+  high_analysis_readiness: 0.80
+
+required_metadata_fields:
+  - species
+  - modalities
+  - brain_regions
+  - tasks
+  - behaviors
+  - data_standards
+  - license
+
+analysis_required_fields:
+  choice_decoding:
+    - has_trials
+    - has_behavior
+    - behaviors
+    - modalities
+  event_aligned_activity:
+    - has_trials
+    - data_standards
+    - modalities
+  latent_state_modeling:
+    - has_trials
+    - behaviors
+    - tasks
+  motor_imagery_classification:
+    - has_trials
+    - modalities
+    - species
+  seizure_detection:
+    - has_trials
+    - modalities
+    - behaviors
+
+species_aliases:
+  mouse: [mouse, mice, mus musculus]
+  rat: [rat, rats, rattus]
+  human: [human, humans, participant, participants, patient, patients]
+  macaque: [macaque, monkey, nonhuman primate, non-human primate, rhesus]
+  drosophila: [drosophila, fruit fly, fly]
+  zebrafish: [zebrafish, danio rerio]
+
+analysis_intents:
+  choice_decoding:
+    - decode choice
+    - choice decoding
+    - predict choice
+    - classify choice
+    - decision decoding
+  event_aligned_activity:
+    - event alignment
+    - event aligned
+    - align to events
+    - peri event
+    - peri-event
+    - event triggered
+    - event-aligned activity
+  latent_state_modeling:
+    - latent state modeling
+    - latent state model
+    - hidden state
+    - state space model
+    - hmm
+  stimulus_choice_separation:
+    - stimulus choice separation
+    - separate stimulus and choice
+    - disentangle stimulus choice
+  motor_imagery_classification:
+    - motor imagery classification
+    - bci classification
+    - classify motor imagery
+  seizure_detection:
+    - seizure detection
+    - seizure onset detection
+    - detect seizure
+  pupil_neural_correlation:
+    - pupil neural correlation
+    - arousal coupling
+    - pupil arousal
+  reward_prediction:
+    - reward prediction
+    - predict reward
+    - reward prediction model
+    - reward expectation
+  value_estimation:
+    - value estimation
+    - value encoding
+    - value computation
+    - subjective value
+  temporal_difference:
+    - temporal difference
+    - td learning
+    - td error
+    - prediction error
+  trial_outcome_prediction:
+    - trial outcome prediction
+    - predict trial outcome
+    - outcome classification
+
+graph:
+  enabled: true
+  path: data/graph/neural_search_graph.real_corpus.json
+  weights:
+    linked_paper: 0.04
+    analysis_affordance: 0.03
+    task_match: 0.03
+    modality_match: 0.02
+    brain_region_match: 0.02
+    degree: 0.01
+  use_edge_confidence: true
+  max_transitive_hops: 2
+
+field_embeddings:
+  enabled: true
+  path: data/embeddings/v07_genomics.field_embeddings.jsonl
+  # Field-specific weights for semantic matching
+  field_weights:
+    title: 0.20
+    description: 0.18
+    combined_scientific_summary: 0.22
+    tasks: 0.15
+    modalities: 0.10
+    brain_regions: 0.08
+    behavioral_events: 0.12
+    analysis_goals: 0.10
+    data_standards: 0.05
+
+hard_negative_filters:
+  enabled: true
+
+# Awareness scoring for broad neuroscience data-form matching
+awareness:
+  enabled: true   # Promoted to primary retrieval
+  weight: 0.06    # Moderate weight contribution to final score
+  rerank: false   # Whether to rerank results by awareness score
+
+# Search intelligence planner for intent-aware weight selection
+planner:
+  enabled: true  # Enabled - validated with benchmark queries
+  blend_factor: 0.6  # How much to weight planner weights vs base (0=base, 1=planner)
+  validate_intent: true  # Log intent classification for review
+
+# Adaptive weight optimization
+adaptive_weights:
+  enabled: true
+  # Blend factor: 0 = use base weights, 1 = use profile weights
+  blend_factor: 0.6
+  # Boost factor for constraint-based boosting
+  constraint_boost: 0.3
+
+# Dataset fingerprints for similarity search
+fingerprints:
+  enabled: true
+  path: data/embeddings/v07_genomics.fingerprints.jsonl
+  similarity_weight: 0.05
+  min_similarity: 0.3
+  top_k: 5
