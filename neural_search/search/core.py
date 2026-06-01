@@ -58,6 +58,9 @@ from neural_search.species import (
     species_query_matches,
     species_terms_for_values,
 )
+from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
+from neural_search.retrieval.query_intent import classify_query_intent as classify_usefulness_intent
+from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 
 
 # Lazy import for awareness to avoid circular imports
@@ -1018,6 +1021,25 @@ def _augment_result_with_optional_scores(
         result.score_breakdown["final_score"] = round(final_score, 3)
         result.score = round(final_score * 100, 2)
 
+    # Usefulness scoring — attach to result.usefulness_score
+    try:
+        query_ctx = parsed_query.get("_query_usefulness_ctx")
+        usefulness_intent = parsed_query.get("_usefulness_intent")
+        if query_ctx is not None:
+            raw_record = result.dataset_card_preview if result.dataset_card_preview else {}
+            cand_ctx = dataset_context_from_record(raw_record)
+            if not cand_ctx.dataset_id:
+                cand_ctx = DatasetContext(dataset_id=str(result.dataset_id))
+            u_score = score_usefulness(query_ctx, cand_ctx, usefulness_intent, graph=graph)
+            result.usefulness_score = {
+                "total_score": round(u_score.total_score, 4),
+                "intent": u_score.intent.value,
+                "dimension_scores": {k: round(v, 4) for k, v in u_score.dimension_scores.items()},
+                "warnings": u_score.warnings,
+            }
+    except Exception:
+        pass  # Usefulness scoring is always optional — never fail search
+
 
 def _generate_rich_explanation(
     result: SearchResult,
@@ -1139,6 +1161,19 @@ def search_datasets(
         "confidence": round(intent.confidence, 3),
         "secondary": [i.value for i in intent.secondary_intents],
     }
+
+    # Build query DatasetContext for usefulness scoring (once per search call)
+    _query_usefulness_ctx = DatasetContext(
+        dataset_id="__query__",
+        modalities=list(parsed.get("modalities", [])),
+        tasks=list(parsed.get("tasks", [])),
+        species=list(parsed.get("species", [])),
+        brain_regions=list(parsed.get("brain_regions", [])),
+        affordances=list(parsed.get("affordances", [])),
+    )
+    _usefulness_intent_cls = classify_usefulness_intent(combined_query)
+    parsed["_query_usefulness_ctx"] = _query_usefulness_ctx
+    parsed["_usefulness_intent"] = _usefulness_intent_cls.intent
 
     # Search intelligence planner integration
     planner_config = (
