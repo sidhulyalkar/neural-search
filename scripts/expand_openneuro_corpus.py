@@ -18,6 +18,10 @@ OPENNEURO_MODALITIES = [
     "dwi",      # diffusion weighted imaging
     "pet",      # PET
     "beh",      # behavioral
+    "fmap",     # field maps
+    "perf",     # perfusion
+    "micr",     # microscopy
+    "nirs",     # near-infrared spectroscopy
     None,       # all public datasets (no filter)
 ]
 
@@ -42,7 +46,7 @@ def main() -> None:
         label = modality if modality else "all"
         print(f"Fetching modality: {label}...")
         try:
-            payload = fetch_openneuro(modality, limit=30)
+            payload = fetch_openneuro(modality, limit=100)
             edges = payload.get("data", {}).get("datasets", {}).get("edges", [])
             for edge in edges:
                 node = edge.get("node", {})
