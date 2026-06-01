@@ -60,7 +60,8 @@ class TestVariantNames:
             "bm25_only", "dense_only", "graph_only", "affordance_only",
             "bm25_dense_rrf", "hybrid_static", "hybrid_intent_aware", "latent_usefulness_v08",
         }
-        assert expected.issubset(set(VARIANT_NAMES))
+        assert set(VARIANT_NAMES) == expected
+        assert len(VARIANT_NAMES) == 8
 
 
 class TestRunAblation:

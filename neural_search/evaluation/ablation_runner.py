@@ -170,7 +170,6 @@ def run_ablation(config: AblationConfig) -> AblationReport:
         run: dict[str, list[str]] = {}
 
         for q in config.queries:
-            qctx = _build_query_context(q, config.pool)
             intent = classify_query_intent(q.query).intent
 
             if variant == "bm25_only":
@@ -189,6 +188,7 @@ def run_ablation(config: AblationConfig) -> AblationReport:
                 fn: ScoringFn = lambda qc, c, i=intent: _score_hybrid_intent_aware(qc, c, i)
                 ranked = _rank_candidates(q, config.pool, fn)
             elif variant == "latent_usefulness_v08":
+                qctx = _build_query_context(q, config.pool)
                 scored = [
                     (cid, score_usefulness(qctx, config.pool.candidates[cid], intent).total_score)
                     for cid in q.candidate_ids
