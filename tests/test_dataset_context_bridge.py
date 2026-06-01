@@ -76,3 +76,30 @@ def test_quality_score_from_card():
     card = {"quality_score": 0.87}
     ctx = dataset_context_from_record(record, card)
     assert abs(ctx.quality_score - 0.87) < 1e-6
+
+
+def test_card_n_sessions_key_used():
+    """DatasetCardV1 uses n_sessions, not session_count."""
+    record = _make_record("ds_n")
+    card = {"n_sessions": 10, "n_trials": 200, "n_subjects": 5}
+    ctx = dataset_context_from_record(record, card)
+    assert ctx.session_count == 10
+    assert ctx.trial_count == 200
+    assert ctx.subject_count == 5
+
+
+def test_quality_score_from_dict_card():
+    """DatasetCardV1 quality_score serializes as a dict with overall_score."""
+    record = _make_record("ds_qs")
+    card = {"quality_score": {"overall_score": 0.85, "completeness": 0.9}}
+    ctx = dataset_context_from_record(record, card)
+    assert abs(ctx.quality_score - 0.85) < 1e-6
+
+
+def test_data_standards_no_empty_strings():
+    """Dict-format data_standards with missing name/id must not produce empty strings."""
+    record = _make_record("ds_std2")
+    card = {"data_standards": [{"foo": "bar"}, "NWB"]}
+    ctx = dataset_context_from_record(record, card)
+    assert "" not in ctx.data_standards
+    assert "NWB" in ctx.data_standards

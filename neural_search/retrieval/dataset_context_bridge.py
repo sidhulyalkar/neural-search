@@ -72,15 +72,20 @@ def dataset_context_from_record(
             if isinstance(s, str):
                 data_standards.append(s)
             elif isinstance(s, Mapping):
-                data_standards.append(str(s.get("name") or s.get("id") or ""))
+                std_str = str(s.get("name") or s.get("id") or "")
+                if std_str:
+                    data_standards.append(std_str)
 
-        quality_score = float(card.get("quality_score") or 0.0)
+        raw_qs = card.get("quality_score") or 0.0
+        if isinstance(raw_qs, Mapping):
+            raw_qs = raw_qs.get("overall_score", 0.0) or 0.0
+        quality_score = max(0.0, min(1.0, float(raw_qs)))
         if session_count is None:
-            session_count = card.get("session_count")
+            session_count = card.get("session_count") or card.get("n_sessions")
         if trial_count is None:
-            trial_count = card.get("trial_count")
+            trial_count = card.get("trial_count") or card.get("n_trials")
         if subject_count is None:
-            subject_count = card.get("subject_count")
+            subject_count = card.get("subject_count") or card.get("n_subjects")
 
     return DatasetContext(
         dataset_id=dataset_id,
