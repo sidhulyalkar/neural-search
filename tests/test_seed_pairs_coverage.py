@@ -32,4 +32,4 @@ def test_all_intents_covered():
 
 def test_minimum_30_pairs():
     pairs = [l for l in SEED_FILE.read_text().splitlines() if l.strip()]
-    assert len(pairs) >= 30
+    assert len(pairs) >= 99
