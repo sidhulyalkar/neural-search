@@ -7,8 +7,12 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from neural_search.retrieval.query_intent import UsefulnessIntent
+
+if TYPE_CHECKING:
+    from neural_search.graph.schema import KnowledgeGraph
 
 
 @dataclass
@@ -147,6 +151,7 @@ def score_usefulness(
     query_context: DatasetContext,
     candidate: DatasetContext,
     intent: UsefulnessIntent | None = None,
+    graph: "KnowledgeGraph | None" = None,
 ) -> UsefulnessScore:
     """Score a candidate dataset against a query context for latent usefulness."""
     if intent is None:
@@ -184,9 +189,16 @@ def score_usefulness(
         shared = {a.lower() for a in query_context.affordances} & {a.lower() for a in candidate.affordances}
         evidence.append(f"Shared affordances: {sorted(shared) or 'none'}")
 
-    # graph_proximity — requires external graph; return neutral with warning
-    dims["graph_proximity"] = 0.3
-    warnings.append("graph_proximity: no graph provided; using neutral prior 0.3")
+    # s9: graph_proximity
+    if graph is not None:
+        from neural_search.retrieval.graph_usefulness import graph_usefulness_features
+        from dataclasses import asdict
+        guf = graph_usefulness_features(asdict(query_context), asdict(candidate), graph.model_dump(mode="json"))
+        graph_proximity = float(guf.get("metapath_score", 0.3))
+    else:
+        graph_proximity = 0.3
+        warnings.append("graph_proximity: using neutral prior 0.3 (graph not available)")
+    dims["graph_proximity"] = graph_proximity
 
     # provenance_quality — quality_score is 0-1 float
     dims["provenance_quality"] = min(1.0, max(0.0, candidate.quality_score))

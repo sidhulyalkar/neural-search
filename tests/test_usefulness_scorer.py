@@ -129,3 +129,55 @@ class TestIntentOnRanking:
         s_match = score_usefulness(q, c_match, UsefulnessIntent.REPLICATION)
         s_diff = score_usefulness(q, c_diff, UsefulnessIntent.REPLICATION)
         assert s_match.total_score > s_diff.total_score
+
+
+from neural_search.graph.schema import (
+    KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge,
+    make_node_id, make_edge_id,
+)
+
+
+def _make_minimal_graph() -> KnowledgeGraph:
+    """Two dataset nodes sharing a task neighbor."""
+    d1_id = make_node_id("dataset", "ds001")
+    d2_id = make_node_id("dataset", "ds002")
+    t1_id = make_node_id("task", "decision_making")
+    nodes = {
+        d1_id: KnowledgeGraphNode(node_id=d1_id, node_type="dataset", label="DS001"),
+        d2_id: KnowledgeGraphNode(node_id=d2_id, node_type="dataset", label="DS002"),
+        t1_id: KnowledgeGraphNode(node_id=t1_id, node_type="task", label="Decision Making"),
+    }
+    e1_id = make_edge_id(d1_id, "dataset_has_task", t1_id)
+    e2_id = make_edge_id(d2_id, "dataset_has_task", t1_id)
+    edges = {
+        e1_id: KnowledgeGraphEdge(edge_id=e1_id, source_node_id=d1_id, target_node_id=t1_id, edge_type="dataset_has_task"),
+        e2_id: KnowledgeGraphEdge(edge_id=e2_id, source_node_id=d2_id, target_node_id=t1_id, edge_type="dataset_has_task"),
+    }
+    return KnowledgeGraph(nodes=nodes, edges=edges)
+
+
+def test_score_usefulness_accepts_graph_parameter():
+    """score_usefulness must accept a 'graph' keyword argument."""
+    qctx = DatasetContext(dataset_id="node:dataset:ds001", tasks=["decision-making"])
+    cctx = DatasetContext(dataset_id="node:dataset:ds002", tasks=["decision-making"])
+    graph = _make_minimal_graph()
+    score = score_usefulness(qctx, cctx, UsefulnessIntent.REPLICATION, graph=graph)
+    assert 0.0 <= score.total_score <= 1.0
+
+
+def test_graph_proximity_no_warning_when_graph_provided():
+    """When a graph is provided and nodes exist, no graph_proximity warning."""
+    qctx = DatasetContext(dataset_id="node:dataset:ds001", tasks=["decision-making"])
+    cctx = DatasetContext(dataset_id="node:dataset:ds002", tasks=["decision-making"])
+    graph = _make_minimal_graph()
+    score = score_usefulness(qctx, cctx, UsefulnessIntent.REPLICATION, graph=graph)
+    graph_warnings = [w for w in score.warnings if "graph_proximity" in w.lower()]
+    assert graph_warnings == [], f"unexpected graph warning: {graph_warnings}"
+
+
+def test_graph_proximity_still_warns_without_graph():
+    """Without a graph, the 0.3 prior warning must still appear."""
+    qctx = DatasetContext(dataset_id="q", tasks=["decision-making"])
+    cctx = DatasetContext(dataset_id="c", tasks=["decision-making"])
+    score = score_usefulness(qctx, cctx, UsefulnessIntent.REPLICATION, graph=None)
+    assert any("graph_proximity" in w.lower() for w in score.warnings)
