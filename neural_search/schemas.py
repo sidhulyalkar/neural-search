@@ -354,6 +354,7 @@ class SearchResult(BaseModel):
     dataset_card_preview: dict[str, Any] = Field(default_factory=dict)
     score_breakdown: dict[str, float] = Field(default_factory=dict)
     graph_context: dict[str, Any] | None = None
+    usefulness_score: dict[str, Any] | None = None
     linked_papers: list[dict[str, Any]] = Field(default_factory=list)
     filtered_constraints: list[dict[str, Any]] = Field(default_factory=list)
     missing_metadata: list[str] = Field(default_factory=list)
