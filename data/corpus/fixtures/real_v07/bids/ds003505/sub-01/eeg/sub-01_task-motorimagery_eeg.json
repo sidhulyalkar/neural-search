@@ -1,0 +1,6 @@
+{
+  "TaskName": "motor_imagery",
+  "EEGReference": "Cz",
+  "SamplingFrequency": 250,
+  "PowerLineFrequency": 60
+}

@@ -1,0 +1,11 @@
+{
+  "source": "microns",
+  "source_id": "minnie65_public",
+  "title": "MICrONS visual cortex connectomics and morphology",
+  "assay": "electron microscopy reconstruction",
+  "species": ["mouse"],
+  "brain_regions": ["visual_cortex"],
+  "signals": ["cells", "synapses", "edges", "morphology", "meshes"],
+  "file_formats": ["zarr", "mesh", "swc"],
+  "fixture_note": "Small deterministic fixture used for CI-safe corpus expansion."
+}

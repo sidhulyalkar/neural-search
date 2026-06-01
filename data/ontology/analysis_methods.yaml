@@ -1,0 +1,653 @@
+# Neural Search Analysis Methods Ontology v0.1
+# Purpose: Define analysis methods that can be applied to neural datasets.
+# Each method specifies required signals and typical outputs.
+
+analysis_methods:
+  # ---------------------------------------------------------------------------
+  # Spike-based analyses
+  # ---------------------------------------------------------------------------
+  - id: spike_rate_psth
+    label: Peri-Stimulus Time Histogram
+    category: spike_analysis
+    definition: >
+      Compute firing rates aligned to behavioral events or stimuli,
+      revealing temporal dynamics of neural responses.
+    aliases:
+      - PSTH
+      - peri-stimulus histogram
+      - event-aligned firing rate
+      - spike rate analysis
+      - firing rate analysis
+    required_signals:
+      - spikes
+      - trial_events
+    helpful_signals:
+      - trial_structure
+      - behavioral_labels
+    typical_outputs:
+      - firing_rate_timecourse
+      - response_latency
+      - peak_firing_rate
+    applicable_tasks:
+      - all
+
+  - id: population_decoding
+    label: Population Decoding
+    category: decoding
+    definition: >
+      Use machine learning classifiers (SVM, logistic regression, neural networks)
+      to decode behavioral variables from population neural activity.
+    aliases:
+      - neural decoding
+      - SVM decoding
+      - classification
+      - linear decoding
+      - choice decoding
+      - stimulus decoding
+    required_signals:
+      - spikes
+      - behavioral_labels
+    helpful_signals:
+      - trial_structure
+      - choice
+      - stimulus_identity
+    typical_outputs:
+      - decoding_accuracy
+      - confusion_matrix
+      - decoder_weights
+      - cross_validation_score
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - reversal_learning
+      - go_nogo
+
+  - id: dimensionality_reduction
+    label: Dimensionality Reduction
+    category: population_analysis
+    definition: >
+      Project high-dimensional neural activity into lower-dimensional spaces
+      (PCA, GPFA, LFADS) to reveal population dynamics and latent variables.
+    aliases:
+      - PCA
+      - principal component analysis
+      - GPFA
+      - gaussian process factor analysis
+      - LFADS
+      - latent factor analysis
+      - neural manifold
+    required_signals:
+      - spikes
+    helpful_signals:
+      - trial_structure
+      - behavioral_labels
+    typical_outputs:
+      - principal_components
+      - explained_variance
+      - latent_trajectories
+      - neural_manifold
+    applicable_tasks:
+      - all
+
+  - id: glm_encoding
+    label: Generalized Linear Model
+    category: encoding
+    definition: >
+      Model neural firing as a function of task variables, stimuli, and history
+      using generalized linear models with Poisson or negative binomial likelihoods.
+    aliases:
+      - GLM
+      - encoding model
+      - poisson regression
+      - spike GLM
+      - tuning curve
+    required_signals:
+      - spikes
+      - task_variables
+    helpful_signals:
+      - stimulus_features
+      - behavioral_covariates
+      - spike_history
+    typical_outputs:
+      - model_coefficients
+      - tuning_curves
+      - deviance_explained
+      - response_selectivity
+    applicable_tasks:
+      - all
+
+  # ---------------------------------------------------------------------------
+  # LFP and field potential analyses
+  # ---------------------------------------------------------------------------
+  - id: spectral_analysis
+    label: Spectral Analysis
+    category: lfp_analysis
+    definition: >
+      Compute power spectra, coherence, and phase relationships in local field
+      potentials or EEG/ECoG signals across frequency bands.
+    aliases:
+      - power spectrum
+      - coherence analysis
+      - phase analysis
+      - oscillation analysis
+      - band power
+    required_signals:
+      - lfp
+    helpful_signals:
+      - trial_events
+      - behavioral_state
+    typical_outputs:
+      - power_spectrum
+      - band_power
+      - coherence_matrix
+      - phase_locking_value
+    applicable_tasks:
+      - all
+
+  - id: spike_field_coupling
+    label: Spike-Field Coupling
+    category: lfp_analysis
+    definition: >
+      Analyze relationships between spike timing and LFP phase/amplitude,
+      including spike-field coherence and phase-locking statistics.
+    aliases:
+      - spike-LFP coherence
+      - phase locking
+      - spike-phase coupling
+      - pairwise phase consistency
+    required_signals:
+      - spikes
+      - lfp
+    helpful_signals:
+      - trial_events
+    typical_outputs:
+      - spike_field_coherence
+      - phase_locking_value
+      - preferred_phase
+      - modulation_index
+    applicable_tasks:
+      - all
+
+  # ---------------------------------------------------------------------------
+  # Behavioral analyses
+  # ---------------------------------------------------------------------------
+  - id: reinforcement_learning_model
+    label: Reinforcement Learning Model
+    category: computational_modeling
+    definition: >
+      Fit RL models (Q-learning, actor-critic) to behavioral choice data
+      to estimate learning rates, value estimates, and prediction errors.
+    aliases:
+      - Q-learning
+      - actor-critic
+      - value learning
+      - reward learning
+      - TD learning
+    required_signals:
+      - choice
+      - reward
+      - trial_structure
+    helpful_signals:
+      - reaction_time
+      - stimulus_features
+    typical_outputs:
+      - learning_rate
+      - value_estimates
+      - prediction_error
+      - model_comparison
+    applicable_tasks:
+      - reversal_learning
+      - probabilistic_learning
+      - bandit_task
+
+  - id: psychometric_analysis
+    label: Psychometric Analysis
+    category: behavioral_analysis
+    definition: >
+      Fit psychometric curves to choice behavior as a function of stimulus
+      strength or evidence to estimate perceptual sensitivity and bias.
+    aliases:
+      - psychometric curve
+      - psychometric function
+      - sensitivity analysis
+      - threshold estimation
+    required_signals:
+      - choice
+      - stimulus_strength
+    helpful_signals:
+      - reaction_time
+      - confidence
+    typical_outputs:
+      - psychometric_curve
+      - threshold
+      - slope
+      - bias
+      - lapse_rate
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - perceptual_decision_making
+      - visual_discrimination
+
+  - id: drift_diffusion_model
+    label: Drift-Diffusion Model
+    category: computational_modeling
+    definition: >
+      Fit evidence accumulation models to choice and reaction time data
+      to estimate drift rate, boundary separation, and non-decision time.
+    aliases:
+      - DDM
+      - evidence accumulation
+      - sequential sampling
+      - HDDM
+    required_signals:
+      - choice
+      - reaction_time
+    helpful_signals:
+      - stimulus_strength
+      - confidence
+    typical_outputs:
+      - drift_rate
+      - boundary_separation
+      - non_decision_time
+      - starting_point_bias
+    applicable_tasks:
+      - two_alternative_forced_choice
+      - perceptual_decision_making
+
+  # ---------------------------------------------------------------------------
+  # Clinical analyses
+  # ---------------------------------------------------------------------------
+  - id: seizure_detection
+    label: Seizure Detection
+    category: clinical_analysis
+    definition: >
+      Detect epileptic seizures or interictal discharges from continuous
+      EEG/ECoG/SEEG recordings using spectral or machine learning methods.
+    aliases:
+      - seizure onset detection
+      - epileptic event detection
+      - ictal detection
+      - interictal spike detection
+    required_signals:
+      - eeg
+    helpful_signals:
+      - clinical_annotations
+      - seizure_labels
+    typical_outputs:
+      - seizure_onset_times
+      - seizure_duration
+      - detection_accuracy
+      - false_alarm_rate
+    applicable_tasks:
+      - seizure_monitoring
+      - epilepsy_study
+
+  - id: speech_decoding
+    label: Speech Decoding
+    category: bci_analysis
+    definition: >
+      Decode speech-related signals (phonemes, words, sentences) from
+      neural activity recorded during speech production or perception.
+    aliases:
+      - phoneme decoding
+      - word decoding
+      - speech BCI
+      - neural speech recognition
+    required_signals:
+      - neural_recordings
+      - speech_labels
+    helpful_signals:
+      - audio
+      - articulatory_features
+    typical_outputs:
+      - word_error_rate
+      - phoneme_accuracy
+      - decoded_transcript
+    applicable_tasks:
+      - speech_production
+      - speech_perception
+      - bci_communication
+
+  - id: motor_imagery_classification
+    label: Motor Imagery Classification
+    category: bci_analysis
+    definition: >
+      Classify imagined movements from EEG/ECoG signals for brain-computer
+      interface applications, using CSP, LDA, or deep learning methods.
+    aliases:
+      - BCI classification
+      - imagined movement decoding
+      - motor intention decoding
+      - CSP classification
+    required_signals:
+      - eeg
+      - movement_labels
+    helpful_signals:
+      - emg
+      - kinematic_data
+    typical_outputs:
+      - classification_accuracy
+      - information_transfer_rate
+      - confusion_matrix
+    applicable_tasks:
+      - motor_imagery
+      - bci_control
+
+  # ---------------------------------------------------------------------------
+  # Transcriptomics analyses
+  # ---------------------------------------------------------------------------
+  - id: cell_type_clustering
+    label: Cell Type Clustering
+    category: transcriptomics_analysis
+    definition: >
+      Unsupervised clustering of single cells based on gene expression
+      profiles to identify cell types and states in neural tissue.
+    aliases:
+      - scRNA-seq clustering
+      - cell type identification
+      - Leiden clustering
+      - Louvain clustering
+      - cell atlas
+    required_signals:
+      - gene_expression_matrix
+    helpful_signals:
+      - marker_genes
+      - reference_atlas
+    typical_outputs:
+      - cell_type_labels
+      - cluster_markers
+      - umap_embedding
+      - dendrogram
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - spatial_transcriptomics
+
+  - id: differential_expression
+    label: Differential Gene Expression
+    category: transcriptomics_analysis
+    definition: >
+      Statistical comparison of gene expression between conditions, cell types,
+      or brain regions to identify differentially expressed genes.
+    aliases:
+      - DEG analysis
+      - differential expression
+      - DE analysis
+      - gene expression comparison
+    required_signals:
+      - gene_expression_matrix
+      - condition_labels
+    helpful_signals:
+      - cell_type_annotations
+      - batch_labels
+    typical_outputs:
+      - deg_list
+      - volcano_plot
+      - fold_change
+      - adjusted_pvalue
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - bulk_rnaseq
+
+  - id: trajectory_analysis
+    label: Trajectory/Pseudotime Analysis
+    category: transcriptomics_analysis
+    definition: >
+      Order cells along developmental or state trajectories using pseudotime
+      algorithms to study differentiation and state transitions.
+    aliases:
+      - pseudotime
+      - RNA velocity
+      - trajectory inference
+      - lineage tracing
+      - developmental trajectory
+    required_signals:
+      - gene_expression_matrix
+    helpful_signals:
+      - spliced_unspliced_counts
+      - timepoint_labels
+    typical_outputs:
+      - pseudotime_ordering
+      - trajectory_graph
+      - branch_points
+      - velocity_embedding
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+
+  - id: gene_regulatory_network
+    label: Gene Regulatory Network Inference
+    category: transcriptomics_analysis
+    definition: >
+      Infer transcription factor regulatory networks from gene expression
+      data using correlation, mutual information, or SCENIC methods.
+    aliases:
+      - GRN inference
+      - SCENIC
+      - regulon analysis
+      - TF network
+      - gene network
+    required_signals:
+      - gene_expression_matrix
+    helpful_signals:
+      - tf_motif_database
+      - chromatin_accessibility
+    typical_outputs:
+      - regulon_list
+      - tf_target_network
+      - regulon_activity
+      - network_graph
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - multiome
+
+  - id: spatial_cell_mapping
+    label: Spatial Cell Type Mapping
+    category: spatial_analysis
+    definition: >
+      Map cell types identified from single-cell data to spatial locations
+      in tissue sections using spatial transcriptomics or imaging.
+    aliases:
+      - spatial mapping
+      - cell2location
+      - spatial deconvolution
+      - cell niche analysis
+    required_signals:
+      - spatial_gene_expression
+      - reference_scrnaseq
+    helpful_signals:
+      - tissue_image
+      - anatomical_annotations
+    typical_outputs:
+      - cell_type_spatial_map
+      - niche_composition
+      - spatial_domains
+    applicable_modalities:
+      - spatial_transcriptomics
+      - MERFISH
+      - Visium
+
+  # ---------------------------------------------------------------------------
+  # Epigenomics analyses
+  # ---------------------------------------------------------------------------
+  - id: peak_calling
+    label: Peak Calling
+    category: epigenomics_analysis
+    definition: >
+      Identify regions of open chromatin or protein binding from ATAC-seq
+      or ChIP-seq data by detecting significant signal enrichment.
+    aliases:
+      - ATAC peak calling
+      - accessible regions
+      - MACS2
+      - chromatin peaks
+    required_signals:
+      - fragment_files
+    helpful_signals:
+      - input_control
+      - blacklist_regions
+    typical_outputs:
+      - peak_bed
+      - peak_matrix
+      - qc_metrics
+    applicable_modalities:
+      - single_cell_atacseq
+      - single_nucleus_atacseq
+      - chip_seq
+
+  - id: motif_analysis
+    label: Transcription Factor Motif Analysis
+    category: epigenomics_analysis
+    definition: >
+      Identify enriched transcription factor binding motifs in accessible
+      chromatin regions to infer regulatory mechanisms.
+    aliases:
+      - motif enrichment
+      - chromVAR
+      - HOMER
+      - TF footprinting
+    required_signals:
+      - peak_matrix
+      - motif_database
+    helpful_signals:
+      - gene_expression
+    typical_outputs:
+      - motif_enrichment
+      - tf_activity_scores
+      - footprint_plots
+    applicable_modalities:
+      - single_cell_atacseq
+      - single_nucleus_atacseq
+      - chip_seq
+
+  - id: enhancer_gene_linking
+    label: Enhancer-Gene Linking
+    category: multiomics_analysis
+    definition: >
+      Link distal enhancers to target genes using chromatin accessibility
+      and gene expression co-variation in multiome data.
+    aliases:
+      - peak-gene links
+      - cis-regulatory analysis
+      - enhancer target prediction
+      - ABC model
+    required_signals:
+      - peak_matrix
+      - gene_expression_matrix
+    helpful_signals:
+      - hi_c_contacts
+      - gene_tss
+    typical_outputs:
+      - enhancer_gene_links
+      - correlation_scores
+      - regulatory_network
+    applicable_modalities:
+      - multiome
+      - paired_atac_rna
+
+  # ---------------------------------------------------------------------------
+  # Cross-modal integration
+  # ---------------------------------------------------------------------------
+  - id: multimodal_integration
+    label: Multi-Modal Data Integration
+    category: integration_analysis
+    definition: >
+      Integrate data from multiple modalities (e.g., RNA + ATAC, ephys + transcriptomics)
+      to create unified cell representations and cross-modal predictions.
+    aliases:
+      - data integration
+      - multi-omic integration
+      - Seurat integration
+      - MOFA
+      - totalVI
+    required_signals:
+      - multiple_modality_matrices
+    helpful_signals:
+      - shared_cell_barcodes
+      - batch_labels
+    typical_outputs:
+      - integrated_embedding
+      - cross_modal_predictions
+      - modality_weights
+    applicable_modalities:
+      - multiome
+      - patch_seq
+
+  - id: electrophys_transcriptome_correlation
+    label: Electrophysiology-Transcriptome Correlation
+    category: integration_analysis
+    definition: >
+      Correlate electrophysiological features with gene expression to
+      identify molecular signatures of physiological cell types.
+    aliases:
+      - patch-seq analysis
+      - ephys RNA correlation
+      - T-type correlation
+    required_signals:
+      - membrane_potential
+      - gene_expression
+    helpful_signals:
+      - cell_morphology
+      - cell_type_label
+    typical_outputs:
+      - feature_gene_correlations
+      - predictive_genes
+      - cell_type_validation
+    applicable_modalities:
+      - patch_seq
+
+  # ---------------------------------------------------------------------------
+  # Cell atlas and reference building
+  # ---------------------------------------------------------------------------
+  - id: brain_cell_atlas
+    label: Brain Cell Atlas Construction
+    category: atlas_analysis
+    definition: >
+      Build comprehensive cell type taxonomies across brain regions,
+      ages, and species using large-scale single-cell profiling.
+    aliases:
+      - cell census
+      - brain atlas
+      - cell taxonomy
+      - reference atlas
+      - Allen Brain Atlas
+    required_signals:
+      - gene_expression_matrix
+      - anatomical_annotations
+    helpful_signals:
+      - species_labels
+      - developmental_stage
+    typical_outputs:
+      - cell_type_taxonomy
+      - marker_gene_panels
+      - reference_dataset
+      - interactive_viewer
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq
+      - spatial_transcriptomics
+
+  - id: cross_species_comparison
+    label: Cross-Species Transcriptomic Comparison
+    category: comparative_analysis
+    definition: >
+      Compare cell types across species to identify conserved and
+      divergent molecular signatures and evolutionary relationships.
+    aliases:
+      - evolutionary comparison
+      - homologous cell types
+      - species comparison
+    required_signals:
+      - gene_expression_matrix
+      - ortholog_mapping
+    helpful_signals:
+      - cell_type_annotations
+      - anatomical_regions
+    typical_outputs:
+      - conserved_markers
+      - species_specific_genes
+      - evolutionary_tree
+    applicable_modalities:
+      - single_cell_rnaseq
+      - single_nucleus_rnaseq

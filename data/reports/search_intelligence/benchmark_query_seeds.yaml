@@ -1,0 +1,296 @@
+benchmark_queries:
+- id: coverage_intracellular_ephys_01
+  query: patch clamp datasets for cellular physiology
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from high coverage gap for Intracellular electrophysiology; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: intracellular_ephys
+  priority: high
+  expected_modalities_any:
+  - patch_clamp
+  - intracellular_ephys
+  expected_analysis_any:
+  - cellular_physiology
+  - excitability_analysis
+  expected_data_standards:
+  - nwb
+- id: coverage_intracellular_ephys_02
+  query: Intracellular electrophysiology with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from high coverage gap for Intracellular electrophysiology; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: intracellular_ephys
+  priority: high
+  expected_modalities_any:
+  - patch_clamp
+  - intracellular_ephys
+  expected_analysis_any:
+  - cellular_physiology
+  - excitability_analysis
+  expected_data_standards:
+  - nwb
+- id: coverage_computational_model_01
+  query: simulation datasets for model comparison
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Computational model or simulation; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: computational_model
+  priority: medium
+  expected_modalities_any:
+  - model_output
+  - simulation
+  expected_analysis_any:
+  - model_comparison
+  - parameter_inference
+  - mechanistic_modeling
+  expected_data_standards:
+  - json
+  - hdf5
+- id: coverage_computational_model_02
+  query: Computational model or simulation with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Computational model or simulation; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: computational_model
+  priority: medium
+  expected_modalities_any:
+  - model_output
+  - simulation
+  expected_analysis_any:
+  - model_comparison
+  - parameter_inference
+  - mechanistic_modeling
+  expected_data_standards:
+  - json
+  - hdf5
+- id: coverage_connectomics_01
+  query: connectome datasets for circuit mapping
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Connectomics and morphology; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: connectomics
+  priority: medium
+  expected_modalities_any:
+  - electron_microscopy
+  - morphology
+  - tracing
+  expected_analysis_any:
+  - circuit_mapping
+  - connectivity
+  - morphology_analysis
+  expected_data_standards:
+  - swc
+  - zarr
+- id: coverage_connectomics_02
+  query: Connectomics and morphology with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Connectomics and morphology; expected
+    labels should be reviewed after adding representative records.
+  coverage_gap: connectomics
+  priority: medium
+  expected_modalities_any:
+  - electron_microscopy
+  - morphology
+  - tracing
+  expected_analysis_any:
+  - circuit_mapping
+  - connectivity
+  - morphology_analysis
+  expected_data_standards:
+  - swc
+  - zarr
+- id: coverage_fiber_photometry_01
+  query: photometry datasets for event aligned analysis
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Fiber photometry; expected labels should
+    be reviewed after adding representative records.
+  coverage_gap: fiber_photometry
+  priority: medium
+  expected_modalities_any:
+  - fiber_photometry
+  expected_analysis_any:
+  - event_aligned_analysis
+  - neuromodulator_analysis
+  expected_data_standards:
+  - nwb
+  - dandi
+- id: coverage_fiber_photometry_02
+  query: Fiber photometry with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Fiber photometry; expected labels should
+    be reviewed after adding representative records.
+  coverage_gap: fiber_photometry
+  priority: medium
+  expected_modalities_any:
+  - fiber_photometry
+  expected_analysis_any:
+  - event_aligned_analysis
+  - neuromodulator_analysis
+  expected_data_standards:
+  - nwb
+  - dandi
+- id: coverage_molecular_01
+  query: single cell datasets for cell type mapping
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Molecular and single-cell neuroscience;
+    expected labels should be reviewed after adding representative records.
+  coverage_gap: molecular
+  priority: medium
+  expected_modalities_any:
+  - single_cell_rna
+  - transcriptomics
+  - proteomics
+  expected_analysis_any:
+  - cell_type_mapping
+  - differential_expression
+  - spatial_mapping
+  expected_data_standards:
+  - h5ad
+  - zarr
+- id: coverage_molecular_02
+  query: Molecular and single-cell neuroscience with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Molecular and single-cell neuroscience;
+    expected labels should be reviewed after adding representative records.
+  coverage_gap: molecular
+  priority: medium
+  expected_modalities_any:
+  - single_cell_rna
+  - transcriptomics
+  - proteomics
+  expected_analysis_any:
+  - cell_type_mapping
+  - differential_expression
+  - spatial_mapping
+  expected_data_standards:
+  - h5ad
+  - zarr
+- id: coverage_intracranial_human_ephys_01
+  query: ecog datasets for speech decoding
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Human intracranial electrophysiology;
+    expected labels should be reviewed after adding representative records.
+  coverage_gap: intracranial_human_ephys
+  priority: medium
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  - seeg
+  expected_analysis_any:
+  - speech_decoding
+  - memory_analysis
+  - clinical_prediction
+  expected_data_standards:
+  - bids
+  - nwb
+- id: coverage_intracranial_human_ephys_02
+  query: Human intracranial electrophysiology with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Human intracranial electrophysiology;
+    expected labels should be reviewed after adding representative records.
+  coverage_gap: intracranial_human_ephys
+  priority: medium
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  - seeg
+  expected_analysis_any:
+  - speech_decoding
+  - memory_analysis
+  - clinical_prediction
+  expected_data_standards:
+  - bids
+  - nwb
+- id: coverage_optical_imaging_01
+  query: calcium imaging datasets for event aligned analysis
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Optical neural imaging; expected labels
+    should be reviewed after adding representative records.
+  coverage_gap: optical_imaging
+  priority: medium
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  - widefield_imaging
+  expected_analysis_any:
+  - event_aligned_analysis
+  - population_dynamics
+  - decoding
+  expected_data_standards:
+  - nwb
+  - dandi
+- id: coverage_optical_imaging_02
+  query: Optical neural imaging with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for Optical neural imaging; expected labels
+    should be reviewed after adding representative records.
+  coverage_gap: optical_imaging
+  priority: medium
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  - widefield_imaging
+  expected_analysis_any:
+  - event_aligned_analysis
+  - population_dynamics
+  - decoding
+  expected_data_standards:
+  - nwb
+  - dandi
+- id: coverage_eeg_meg_01
+  query: eeg datasets for time frequency
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for EEG and MEG; expected labels should be
+    reviewed after adding representative records.
+  coverage_gap: eeg_meg
+  priority: medium
+  expected_modalities_any:
+  - eeg
+  - meg
+  - polysomnography
+  expected_analysis_any:
+  - time_frequency
+  - connectivity
+  - clinical_prediction
+  expected_data_standards:
+  - bids
+  - openneuro
+- id: coverage_eeg_meg_02
+  query: EEG and MEG with behavior and reusable metadata
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+  notes: Seeded from medium coverage gap for EEG and MEG; expected labels should be
+    reviewed after adding representative records.
+  coverage_gap: eeg_meg
+  priority: medium
+  expected_modalities_any:
+  - eeg
+  - meg
+  - polysomnography
+  expected_analysis_any:
+  - time_frequency
+  - connectivity
+  - clinical_prediction
+  expected_data_standards:
+  - bids
+  - openneuro
+metadata:
+  source: neural_search.intelligence.coverage
+  review_required: true
+  note: These are gap-driven seed queries. Add expected dataset IDs after representative
+    corpus records are ingested.

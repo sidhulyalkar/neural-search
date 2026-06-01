@@ -1,0 +1,204 @@
+# Graph Coverage Configuration
+# Defines minimum requirements for graph quality gates
+
+# Version for tracking config changes
+version: "1.0.0"
+
+# Required node types with minimum count thresholds
+# A coverage gate FAILS if any required node type has fewer than min_count instances
+required_node_types:
+  # Core content nodes (hard blockers)
+  dataset:
+    min_count: 50
+    severity: error
+    description: "Primary neuroscience dataset records"
+
+  # Concept nodes (relaxed thresholds for richer coverage)
+  task:
+    min_count: 5
+    severity: error
+    description: "Experimental tasks (e.g., go_nogo, reversal_learning)"
+
+  modality:
+    min_count: 3
+    severity: error
+    description: "Recording modalities (e.g., neuropixels, calcium_imaging)"
+
+  brain_region:
+    min_count: 5
+    severity: error
+    description: "Brain regions (e.g., hippocampus, visual_cortex)"
+
+  species:
+    min_count: 2
+    severity: error
+    description: "Species labels (e.g., mouse, human)"
+
+  behavioral_event:
+    min_count: 3
+    severity: error
+    description: "Behavioral events (e.g., choice, reward)"
+
+  analysis_affordance:
+    min_count: 3
+    severity: warning
+    description: "Analysis affordances (e.g., choice_decoding)"
+
+  # Optional but beneficial nodes (warnings only)
+  paper:
+    min_count: 0
+    severity: warning
+    description: "Linked research papers"
+
+  data_standard:
+    min_count: 1
+    severity: warning
+    description: "Data standards (e.g., NWB, BIDS)"
+
+  # Scientific enrichment nodes
+  experimental_method:
+    min_count: 3
+    severity: warning
+    description: "Experimental methods (e.g., optogenetics, pharmacology)"
+
+  cell_type:
+    min_count: 2
+    severity: warning
+    description: "Cell types (e.g., pyramidal, interneuron)"
+
+  cognitive_domain:
+    min_count: 3
+    severity: warning
+    description: "Cognitive domains (e.g., learning, attention, memory)"
+
+  author:
+    min_count: 0
+    severity: warning
+    description: "Research authors for provenance tracking"
+
+# Required edge types with minimum count thresholds
+required_edge_types:
+  # Dataset-to-concept edges (core connectivity)
+  dataset_has_task:
+    min_count: 20
+    severity: error
+    description: "Links datasets to experimental tasks"
+
+  dataset_has_modality:
+    min_count: 30
+    severity: error
+    description: "Links datasets to recording modalities"
+
+  dataset_records_region:
+    min_count: 15
+    severity: warning
+    description: "Links datasets to brain regions"
+
+  dataset_has_species:
+    min_count: 30
+    severity: error
+    description: "Links datasets to species"
+
+  dataset_has_behavioral_event:
+    min_count: 10
+    severity: warning
+    description: "Links datasets to behavioral events"
+
+  dataset_supports_analysis:
+    min_count: 5
+    severity: warning
+    description: "Links datasets to supported analysis types"
+
+  # Paper-dataset linking (optional but desired)
+  paper_mentions_dataset:
+    min_count: 0
+    severity: warning
+    description: "Links papers to datasets they mention"
+
+  # Taxonomy edges (analysis requirements)
+  analysis_requires_modality:
+    min_count: 3
+    severity: warning
+    description: "Links analysis types to required modalities"
+
+  # Scientific enrichment edges
+  dataset_uses_method:
+    min_count: 0
+    severity: warning
+    description: "Links datasets to experimental methods used"
+
+  dataset_studies_celltype:
+    min_count: 0
+    severity: warning
+    description: "Links datasets to cell types studied"
+
+  dataset_investigates_domain:
+    min_count: 5
+    severity: warning
+    description: "Links datasets to cognitive domains investigated"
+
+  paper_authored_by:
+    min_count: 0
+    severity: warning
+    description: "Links papers to authors for provenance"
+
+  paper_cites_paper:
+    min_count: 0
+    severity: warning
+    description: "Citation relationships between papers"
+
+  task_belongs_to_domain:
+    min_count: 3
+    severity: warning
+    description: "Links tasks to cognitive domains"
+
+# Coverage thresholds
+coverage_thresholds:
+  # Minimum percentage of datasets that must have edges to concept types
+  dataset_task_coverage: 0.3      # 30% of datasets should have task edges
+  dataset_modality_coverage: 0.5  # 50% of datasets should have modality edges
+  dataset_species_coverage: 0.6   # 60% of datasets should have species edges
+  dataset_region_coverage: 0.2    # 20% of datasets should have region edges
+
+# Quality gate settings
+quality_gates:
+  # Hard blockers - fail the build if violated
+  hard_blockers:
+    - dangling_edge_reference    # Edge points to non-existent node
+    - invalid_node_confidence    # Node confidence out of [0, 1] range
+    - invalid_edge_confidence    # Edge confidence out of [0, 1] range
+    - missing_required_node_type # Required node type has zero instances
+    - missing_required_edge_type # Required edge type has zero instances
+
+  # Soft warnings - report but don't fail
+  soft_warnings:
+    - weak_edge                  # Edge confidence below threshold
+    - orphan_node               # Node has no incident edges
+    - unresolved_placeholder    # Placeholder node not resolved
+    - below_coverage_threshold  # Coverage percentage below threshold
+
+# Weak confidence threshold for edges
+weak_confidence_threshold: 0.5
+
+# Profiles for different environments
+profiles:
+  # CI profile - strict validation
+  ci:
+    weak_confidence_threshold: 0.5
+    enable_hard_blockers: true
+    enable_coverage_thresholds: true
+    fail_on_warnings: false
+
+  # Local development - relaxed
+  local:
+    weak_confidence_threshold: 0.3
+    enable_hard_blockers: true
+    enable_coverage_thresholds: false
+    fail_on_warnings: false
+
+  # Production release - strictest
+  release:
+    weak_confidence_threshold: 0.6
+    enable_hard_blockers: true
+    enable_coverage_thresholds: true
+    fail_on_warnings: true

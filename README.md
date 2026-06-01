@@ -1,176 +1,173 @@
 # Neural Search
 
-Experiment-aware neural data discovery system. Describe the experiment you want - Neural Search finds reusable datasets, papers, and starter analyses.
+Experiment-aware search for reusable neural and behavioral datasets.
 
-## Overview
+Neural Search is a technical demo of scientific discovery that understands experiments, not just documents. It combines a behavioral task ontology, structured metadata, embedding-style semantic matching, and provenance-aware dataset cards so researchers can ask for the data they need in experimental terms.
 
-Neural Search is a semantic search engine for neuroscience datasets. It indexes data from DANDI, OpenNeuro, and OpenAlex, extracts scientific labels using a behavioral task ontology, and provides intelligent search with experiment-aware matching.
+This is not generic RAG. The system does not retrieve chunks and synthesize an answer as the primary artifact. It retrieves datasets, explains why they match, exposes missing metadata, links literature evidence, and generates dataset cards plus starter notebooks for concrete reuse.
 
-### Key Features
+![Search UI placeholder](docs/demo_media/search_ui_placeholder.svg)
 
-- **Ontology-driven search**: Match queries against a curated taxonomy of behavioral tasks, modalities, and brain regions
-- **Dataset cards**: Auto-generated summaries with analysis readiness scores
-- **Starter notebooks**: Generate Jupyter notebooks for NWB/BIDS datasets
-- **Hybrid search**: Combines keyword, ontology, and vector search
-- **Multi-source**: Integrates DANDI, OpenNeuro, and OpenAlex
+## Demo Narrative
 
-## Architecture
+Use Neural Search to show five capabilities:
 
-```
+1. **Experiment-aware search**: Query by task, behavior, modality, species, brain region, data standard, and intended analysis.
+2. **Ontology plus embeddings**: Normalize synonyms such as "go/no-go", "response inhibition", "Neuropixels", and "choice decoding" into searchable scientific labels.
+3. **Metadata plus provenance**: Keep source archive IDs, linked papers, extraction evidence, QA status, and missing metadata visible.
+4. **Dataset cards and notebooks**: Generate reuse cards and starter notebooks instead of only returning links.
+5. **Evaluation surface**: Show benchmark queries, expected labels, top results, warnings, and recommendations.
+
+The future direction is **latent neural-state search**: searching across learned representations of neural population state, task structure, and behavior, while preserving the current ontology and provenance layer as the interpretability scaffold.
+
+## What Is In This Repo
+
+```text
 neural-search/
 ├── apps/
-│   ├── api/         # FastAPI backend
-│   └── web/         # React frontend
-├── packages/
-│   ├── ontology/    # Behavioral task taxonomy
-│   ├── ingestion/   # Data source connectors
-│   ├── extraction/  # Label extraction
-│   ├── indexing/    # Search engine
-│   ├── cards/       # Dataset card generation
-│   ├── notebooks/   # Notebook generation
-│   └── evaluation/  # Benchmark evaluation
+│   ├── api/                 FastAPI demo backend
+│   └── web/                 React + Vite frontend
+├── neural_search/
+│   ├── ingestion/           Demo fixtures and source connectors
+│   ├── ontology/            Behavioral task ontology loader/matcher
+│   ├── search/              Hybrid retrieval and query parsing
+│   ├── cards/               Dataset-card generation
+│   ├── notebooks/           Starter notebook generation
+│   ├── evaluation/          Benchmark runner and reports
+│   └── reports/             Dataset compilation reports
 ├── data/
-│   ├── ontology/    # YAML ontology files
-│   ├── seed/        # Sample data
-│   └── eval/        # Benchmark queries
-└── infra/           # Docker configs
+│   ├── ontology/            Task, behavior, modality, and region vocabulary
+│   ├── seed/                Demo datasets and papers
+│   ├── eval/                Benchmark queries
+│   ├── notebooks/           Generated notebook examples
+│   └── reports/             Generated corpus reports
+└── docs/                    Demo, architecture, evaluation, and limitations
 ```
 
 ## Quick Start
 
-### Prerequisites
+Prerequisites:
 
 - Python 3.11+
-- Node.js 20+
-- Docker & Docker Compose (optional, for full stack)
+- Node.js 20+ recommended
+- Docker is optional. The public demo path runs from in-memory/demo seed data.
 
-### Local Development
+Install dependencies:
 
-1. **Install dependencies**:
-   ```bash
-   pip install -e ".[dev]"
-   cd apps/web && npm install
-   ```
+```bash
+python -m pip install -e ".[all]"
+cd apps/web
+npm install
+cd ../..
+```
 
-2. **Start services** (using Docker):
-   ```bash
-   docker-compose up -d postgres redis
-   ```
+The base install uses deterministic local hashing embeddings and can build v0.4
+field-specific caches without model downloads. To use sentence-transformers instead,
+install the optional extra:
 
-3. **Run database migrations**:
-   ```bash
-   make db-migrate
-   ```
+```bash
+python -m pip install -e ".[embeddings]"
+python -m neural_search.embeddings.build_index --input data/corpus/normalized --out data/indexes/embeddings --provider hashing
+python -m neural_search.embeddings.build_index --input data/corpus/normalized --out data/indexes/embeddings --provider sentence-transformer --model sentence-transformers/all-MiniLM-L6-v2
+```
 
-4. **Start the API**:
-   ```bash
-   make api
-   ```
-
-5. **Start the frontend** (in another terminal):
-   ```bash
-   make web
-   ```
-
-6. Open http://localhost:3000
-
-### Demo
-
-Run the demo script to load sample data and test the system:
+Run the one-command demo:
 
 ```bash
 make demo
 ```
 
-This will:
-1. Load the behavioral task ontology
-2. Ingest sample dataset records
-3. Generate dataset cards
-4. Index embeddings
-5. Run example queries
-6. Generate a starter notebook
+Start the local app:
 
-## API Endpoints
+```bash
+# Terminal 1
+make api
+
+# Terminal 2
+make web
+```
+
+Open http://localhost:5173.
+
+If the frontend cannot reach the API, confirm the API is on http://localhost:8000 and restart `make web`. The Vite dev server proxies `/api` and `/healthz` to the backend.
+
+## Demo Queries
+
+These are tuned to communicate experiment-aware retrieval:
+
+- `Find reversal learning datasets with reward omission and trial outcomes`
+- `Go/NoGo task with calcium imaging in mPFC and lick events`
+- `Visual decision-making with Neuropixels recordings`
+- `Find datasets where I can decode choice from neural activity`
+- `Human ECoG or iEEG reaching data for BCI classification`
+- `Delay discounting with fiber photometry and reward choice`
+
+Structured search fields in the UI let you combine free text with explicit task, behavior, modality, brain region, source archive, data standard, and readiness filters.
+
+## Core Commands
+
+| Command | Purpose |
+| --- | --- |
+| `make demo` | Run ontology load, demo seed, cards, benchmark, report, notebook, and sample search |
+| `make api` | Start the FastAPI backend on port 8000 |
+| `make web` | Start the Vite frontend on port 5173 |
+| `make demo-search QUERY="..."` | Run a single CLI search |
+| `make benchmark` | Run benchmark queries and write reports |
+| `make reports` | Generate dataset compilation report |
+| `make notebook-generate DATASET_ID=DEMO_GONOGO_CALCIUM` | Generate a starter notebook |
+| `make test-backend` | Run the quick backend test suite |
+| `make build` | Type-check and build the frontend |
+
+## Quality Gate
+
+Before opening or merging a PR, run:
+
+```bash
+bash scripts/quality_gate.sh
+```
+
+The gate runs backend tests, Ruff, the frontend TypeScript/Vite build, the retrieval benchmark, and
+the dataset compilation report. The same checks are wired into GitHub Actions across backend,
+frontend, and demo-artifact jobs.
+
+Common failures:
+
+- Missing `ruff`: run `python -m pip install -e ".[dev]"`.
+- Frontend dependency mismatch: run `cd apps/web && npm ci`.
+- Benchmark failures on specific queries: check `data/eval/results/latest_eval_report.md` for
+  `why_failed`, missed labels, and hard-negative violations.
+
+## API Highlights
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/healthz` | GET | Health check |
-| `/api/search` | POST | Search datasets |
-| `/api/datasets` | GET | List datasets |
-| `/api/datasets/{id}` | GET | Get dataset details |
-| `/api/datasets/{id}/card` | GET | Get dataset card |
-| `/api/datasets/{id}/notebook` | POST | Generate starter notebook |
-| `/api/ontology/tasks` | GET | List ontology tasks |
-| `/api/ingest/dandi` | POST | Ingest from DANDI |
-| `/api/ingest/openneuro` | POST | Ingest from OpenNeuro |
-| `/api/ingest/openalex` | POST | Link papers from OpenAlex |
+| --- | --- | --- |
+| `/healthz` | GET | Backend health check |
+| `/api/search` | POST | Experiment-aware dataset search |
+| `/api/datasets` | GET | List indexed demo datasets |
+| `/api/datasets/{id}/card` | GET | Dataset card with readiness, provenance, and QA |
+| `/api/datasets/{id}/notebook` | POST | Generate a starter notebook |
+| `/api/datasets/{id}/card/export/markdown` | GET | Export reuse card as Markdown |
+| `/api/ontology/tasks` | GET | Ontology terms for the UI |
+| `/api/evaluation/report` | GET | Latest in-process benchmark report |
 | `/api/evaluation/run` | POST | Run benchmark evaluation |
+| `/api/reports/compilation` | GET | Dataset compilation and QA report |
 
-## Ontology
+## Documentation
 
-The behavioral task ontology (`data/ontology/behavioral_task_ontology.yaml`) defines:
+- [Demo walkthrough](docs/demo_walkthrough.md)
+- [Project vision](docs/project_vision.md)
+- [Technical architecture](docs/technical_architecture.md)
+- [Evaluation](docs/evaluation.md)
+- [Ingestion](docs/ingestion.md)
+- [Example queries](docs/example_queries.md)
+- [Known limitations](docs/known_limitations.md)
+- [Retrieval notes](docs/retrieval.md)
+- [Dataset-card review checklist](docs/dataset_card_review_checklist.md)
 
-- **Tasks**: Go/NoGo, 2AFC, reversal learning, spatial navigation, etc.
-- **Categories**: decision_making, cognitive_control, memory, sensory, motor
-- **Synonyms**: Alternative names for tasks (e.g., "2AFC" → "two-alternative forced choice")
-- **Events**: Common trial events (cue_onset, response, reward, etc.)
-- **Modalities**: Relevant recording types (neuropixels, calcium_imaging, etc.)
-- **Brain regions**: Typical regions studied (mPFC, hippocampus, etc.)
-- **Analyses**: Suggested analysis approaches
+## Current Scope
 
-## Development
-
-### Testing
-
-```bash
-make test          # Run all tests
-make test-unit     # Unit tests only
-make lint          # Run linters
-make format        # Auto-format code
-```
-
-### Adding a New Task
-
-1. Edit `data/ontology/behavioral_task_ontology.yaml`
-2. Add the task with all required fields
-3. Reload the ontology: restart the API or call reload endpoint
-
-### Adding a New Data Source
-
-1. Create a connector in `packages/ingestion/`
-2. Implement the `DataSourceConnector` interface
-3. Add an ingestion endpoint in `apps/api/`
-4. Register the source in the ingestion service
-
-## Configuration
-
-Environment variables:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_URL` | `postgresql://...` | PostgreSQL connection URL |
-| `REDIS_URL` | `redis://localhost:6379` | Redis connection URL |
-| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence transformer model |
-| `LOG_LEVEL` | `INFO` | Logging level |
-
-## Evaluation
-
-Run benchmark queries to evaluate search quality:
-
-```bash
-make eval
-```
-
-Benchmarks are defined in `data/eval/benchmark_queries.yaml` and measure precision@k for predefined queries with known relevant datasets.
+The repository is demo-first. It uses curated demo records and local generated artifacts to make the full product loop inspectable: search, match explanation, dataset card, notebook, benchmark, and report. Production ingestion, durable indexing, authenticated QA workflows, and large-scale embedding infrastructure are intentionally future work.
 
 ## License
 
 MIT
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request

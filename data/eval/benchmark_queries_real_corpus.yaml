@@ -1,0 +1,311 @@
+# Real Corpus Benchmark Queries v0.4
+#
+# This benchmark tests retrieval on real external datasets from DANDI, OpenNeuro, and OpenAlex.
+# Unlike demo_v02, these queries target actual public neuroscience data repositories.
+#
+# Query Mix:
+# - 5 direct dataset/paper lookup queries
+# - 5 modality-region-species queries
+# - 5 task/behavior queries
+# - 5 analysis-affordance queries
+# - 5 paper-dataset linking or exploratory queries
+# - 5 additional scientific queries
+
+benchmark_queries:
+  # ============================================================
+  # DIRECT DATASET/PAPER LOOKUP QUERIES (5)
+  # ============================================================
+
+  - id: rc_lookup_001
+    query: "Find the Steinmetz 2019 Neuropixels visual coding dataset"
+    expected_dataset_ids: ["dataset:dandi:000026"]
+    expected_sources: [dandi]
+    expected_modalities_any: [neuropixels, extracellular_ephys]
+    expected_species: [mouse]
+    expected_regions_any: [visual_cortex]
+    minimum_precision_at_5: 0.6
+    minimum_label_recall_at_10: 0.5
+    notes: "Landmark Neuropixels dataset, should be highly retrievable"
+
+  - id: rc_lookup_002
+    query: "DANDI dataset 000020 mouse hippocampus"
+    expected_dataset_ids: ["dataset:dandi:000020"]
+    expected_sources: [dandi]
+    expected_regions_any: [hippocampus]
+    expected_species: [mouse]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Direct DANDI ID lookup with region constraint"
+
+  - id: rc_lookup_003
+    query: "OpenNeuro motor imagery EEG BCI dataset ds003505"
+    expected_dataset_ids: ["dataset:openneuro:ds003505"]
+    expected_sources: [openneuro]
+    expected_modalities_any: [eeg]
+    expected_tasks: [motor_imagery]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "OpenNeuro ID lookup with task"
+
+  - id: rc_lookup_004
+    query: "International Brain Laboratory brain-wide map datasets"
+    expected_sources: [dandi]
+    expected_modalities_any: [neuropixels, extracellular_ephys]
+    expected_species: [mouse]
+    expected_tasks: [visual_decision_making]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.4
+    notes: "IBL datasets, major collaborative project"
+
+  - id: rc_lookup_005
+    query: "Allen Institute visual coding Neuropixels NWB"
+    expected_sources: [dandi]
+    expected_data_standards: [NWB]
+    expected_modalities_any: [neuropixels]
+    expected_regions_any: [visual_cortex]
+    expected_species: [mouse]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.4
+    notes: "Allen Institute datasets"
+
+  # ============================================================
+  # MODALITY-REGION-SPECIES QUERIES (5)
+  # ============================================================
+
+  - id: rc_modality_001
+    query: "Human ECoG recordings in motor cortex"
+    expected_modalities_any: [ecog, ieeg]
+    expected_regions_any: [motor_cortex]
+    expected_species: [human]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Human ECoG motor cortex datasets"
+
+  - id: rc_modality_002
+    query: "Mouse calcium imaging prefrontal cortex two-photon"
+    expected_modalities_any: [calcium_imaging]
+    expected_regions_any: [prefrontal_cortex]
+    expected_species: [mouse]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Mouse calcium imaging PFC"
+
+  - id: rc_modality_003
+    query: "Macaque electrophysiology V1 visual cortex"
+    expected_modalities_any: [extracellular_ephys]
+    expected_regions_any: [visual_cortex]
+    expected_species: [nonhuman_primate]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Macaque visual cortex recordings"
+
+  - id: rc_modality_004
+    query: "Human intracranial EEG hippocampus memory"
+    expected_modalities_any: [ieeg, ecog]
+    expected_regions_any: [hippocampus]
+    expected_species: [human]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Human iEEG hippocampus"
+
+  - id: rc_modality_005
+    query: "Mouse fiber photometry striatum reward"
+    expected_modalities_any: [fiber_photometry]
+    expected_regions_any: [striatum]
+    expected_species: [mouse]
+    expected_behaviors: [reward]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Fiber photometry dopamine/reward"
+
+  # ============================================================
+  # TASK/BEHAVIOR QUERIES (5)
+  # ============================================================
+
+  - id: rc_task_001
+    query: "Go/no-go task with licking behavior and neural recordings"
+    expected_tasks: [go_nogo]
+    expected_behaviors: [lick, response]
+    expected_modalities_any: [extracellular_ephys, calcium_imaging, neuropixels]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Go/no-go paradigm common in systems neuroscience"
+
+  - id: rc_task_002
+    query: "Reversal learning task with choice and reward behavioral events"
+    expected_tasks: [reversal_learning, reward_learning]
+    expected_behaviors: [choice, reward, trial_outcome]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Reversal learning for decision-making research"
+
+  - id: rc_task_003
+    query: "Visual decision-making orientation discrimination"
+    expected_tasks: [visual_decision_making]
+    expected_behaviors: [choice, stimulus_onset]
+    expected_regions_any: [visual_cortex]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.4
+    notes: "Visual discrimination tasks"
+
+  - id: rc_task_004
+    query: "Reaching and grasping motor task with kinematics"
+    expected_tasks: [reaching]
+    expected_behaviors: [movement_onset, reach_onset]
+    expected_modalities_any: [behavior_tracking]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Motor reaching with kinematics"
+
+  - id: rc_task_005
+    query: "Speech production task with ECoG and phoneme events"
+    expected_tasks: [speech_production]
+    expected_behaviors: [speech_onset]
+    expected_modalities_any: [ecog, ieeg]
+    expected_species: [human]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Speech ECoG datasets"
+
+  # ============================================================
+  # ANALYSIS AFFORDANCE QUERIES (5)
+  # ============================================================
+
+  - id: rc_affordance_001
+    query: "Datasets suitable for choice decoding analysis"
+    expected_analysis_any: [decoding, choice_decoding]
+    expected_behaviors: [choice, response]
+    expected_modalities_any: [extracellular_ephys, calcium_imaging, neuropixels, ecog]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Choice decoding affordance"
+
+  - id: rc_affordance_002
+    query: "Data for Q-learning reinforcement learning modeling with trial outcomes"
+    expected_analysis_any: [q_learning_modeling]
+    expected_behaviors: [choice, reward, trial_outcome]
+    expected_tasks: [reversal_learning, reward_learning]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Q-learning modeling requires choices + rewards + outcomes"
+
+  - id: rc_affordance_003
+    query: "Datasets for event-aligned neural activity PSTH analysis"
+    expected_analysis_any: [event_aligned_analysis]
+    expected_behaviors: [stimulus_onset, reward, response]
+    expected_modalities_any: [extracellular_ephys, calcium_imaging, neuropixels]
+    minimum_precision_at_5: 0.4
+    minimum_label_recall_at_10: 0.5
+    notes: "Event-aligned analysis affordance"
+
+  - id: rc_affordance_004
+    query: "Data suitable for encoding model analysis with visual stimuli"
+    expected_analysis_any: [encoding_modeling]
+    expected_stimulus_types: [visual_stimulus]
+    expected_regions_any: [visual_cortex]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Encoding models with stimulus covariates"
+
+  - id: rc_affordance_005
+    query: "Datasets for state-space latent dynamics modeling"
+    expected_analysis_any: [state_space_modeling, latent_dynamics_modeling]
+    expected_modalities_any: [extracellular_ephys, calcium_imaging, neuropixels]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "State-space / latent dynamics affordance"
+
+  # ============================================================
+  # PAPER-DATASET LINKING / EXPLORATORY QUERIES (5)
+  # ============================================================
+
+  - id: rc_linking_001
+    query: "What datasets are linked to papers about Neuropixels visual cortex?"
+    expected_modalities_any: [neuropixels]
+    expected_regions_any: [visual_cortex]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.3
+    notes: "Paper-to-dataset linking query"
+
+  - id: rc_linking_002
+    query: "Find papers that used DANDI datasets for decision-making research"
+    expected_sources: [dandi]
+    expected_tasks: [visual_decision_making, reversal_learning]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.3
+    notes: "Dataset-to-paper linking"
+
+  - id: rc_linking_003
+    query: "Datasets similar to IBL brain-wide map with multi-region recordings"
+    expected_modalities_any: [neuropixels, extracellular_ephys]
+    expected_species: [mouse]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.3
+    notes: "Similar dataset search"
+
+  - id: rc_linking_004
+    query: "Published reanalysis-friendly NWB datasets with high-quality metadata"
+    expected_data_standards: [NWB]
+    expected_sources: [dandi]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.3
+    notes: "High-quality reusable datasets"
+
+  - id: rc_linking_005
+    query: "OpenAlex papers about calcium imaging and behavior tracking integration"
+    expected_modalities_any: [calcium_imaging, behavior_tracking]
+    minimum_precision_at_5: 0.2
+    minimum_label_recall_at_10: 0.3
+    notes: "Cross-modal analysis papers"
+
+  # ============================================================
+  # ADDITIONAL SCIENTIFIC QUERIES (5)
+  # ============================================================
+
+  - id: rc_scientific_001
+    query: "Seizure detection datasets with EEG or iEEG and epilepsy labels"
+    expected_tasks: [seizure_monitoring]
+    expected_modalities_any: [eeg, ieeg, ecog]
+    expected_clinical: [epilepsy]
+    expected_analysis_any: [seizure_detection]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Epilepsy/seizure detection"
+
+  - id: rc_scientific_002
+    query: "Sleep staging datasets with EEG and polysomnography"
+    expected_tasks: [sleep_staging]
+    expected_modalities_any: [eeg]
+    expected_subject_states: [sleep]
+    expected_analysis_any: [sleep_stage_classification]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "Sleep staging analysis"
+
+  - id: rc_scientific_003
+    query: "Functional connectivity fMRI resting state datasets"
+    expected_modalities_any: [fmri]
+    expected_subject_states: [resting_state]
+    expected_analysis_any: [functional_connectivity]
+    hard_negative_tasks: [sleep_staging]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "fMRI connectivity - should NOT include sleep staging"
+
+  - id: rc_scientific_004
+    query: "BCI motor decoding datasets with reaching kinematics NOT EEG"
+    expected_tasks: [reaching, motor_imagery]
+    expected_analysis_any: [motor_decoding, bci_decoding]
+    expected_behaviors: [movement_onset, reach_onset]
+    hard_negative_modalities: [eeg]
+    minimum_precision_at_5: 0.3
+    minimum_label_recall_at_10: 0.4
+    notes: "BCI decoding excluding EEG-only"
+
+  - id: rc_scientific_005
+    query: "Optogenetic stimulation datasets with neural recordings"
+    expected_modalities_any: [extracellular_ephys, calcium_imaging]
+    expected_stimulus_types: [stimulation]
+    minimum_precision_at_5: 0.2
+    minimum_label_recall_at_10: 0.3
+    notes: "Optogenetics with neural recordings"

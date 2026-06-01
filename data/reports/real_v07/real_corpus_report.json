@@ -1,0 +1,105 @@
+{
+  "claim_count": 40,
+  "claim_field_counts": {
+    "acquisition_groups": 3,
+    "analysis_affordances": 5,
+    "behavioral_events": 3,
+    "data_standards": 3,
+    "dataset_type": 3,
+    "has_event_timestamps": 1,
+    "has_trials": 2,
+    "intervals": 2,
+    "modalities": 5,
+    "participants": 1,
+    "processing_modules": 3,
+    "recording_devices": 2,
+    "sessions": 2,
+    "species": 3,
+    "units": 2
+  },
+  "claim_type_counts": {
+    "analysis_affordance": 5,
+    "label": 14,
+    "metadata_presence": 18,
+    "usability": 3
+  },
+  "corpus_tag": "real_v07",
+  "dataset_label_counts": {
+    "analysis_affordances": 101,
+    "behavioral_events": 11,
+    "brain_regions": 7,
+    "data_standards": 13,
+    "modalities": 15,
+    "species": 13,
+    "tasks": 7
+  },
+  "datasets": [
+    {
+      "claim_count": 15,
+      "dataset_id": "dataset:dandi:000026",
+      "missing_fields": [],
+      "source": "dandi",
+      "title": "Steinmetz 2019 mouse Neuropixels visual decision-making"
+    },
+    {
+      "claim_count": 12,
+      "dataset_id": "dataset:dandi:000020",
+      "missing_fields": [],
+      "source": "dandi",
+      "title": "Mouse hippocampus extracellular electrophysiology"
+    },
+    {
+      "claim_count": 13,
+      "dataset_id": "dataset:openneuro:ds003505",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "openneuro",
+      "title": "OpenNeuro ds003505 motor imagery EEG BCI"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:modeldb:modeldb_87284",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "modeldb",
+      "title": "ModelDB hippocampal CA1 pyramidal neuron biophysical simulation"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:cellxgene:allen_mouse_motor_cortex_cells",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "cellxgene",
+      "title": "cellxgene mouse motor cortex single-cell transcriptomics"
+    },
+    {
+      "claim_count": 0,
+      "dataset_id": "dataset:microns:minnie65_public",
+      "missing_fields": [
+        "trials"
+      ],
+      "source": "microns",
+      "title": "MICrONS visual cortex connectomics and morphology"
+    }
+  ],
+  "manifest_entries": 7,
+  "missing_metadata": {
+    "trials": 4
+  },
+  "normalized_dataset_count": 6,
+  "record_type_counts": {
+    "dataset": 6,
+    "paper": 1
+  },
+  "source_counts": {
+    "cellxgene": 1,
+    "dandi": 2,
+    "microns": 1,
+    "modeldb": 1,
+    "openalex": 1,
+    "openneuro": 1
+  }
+}

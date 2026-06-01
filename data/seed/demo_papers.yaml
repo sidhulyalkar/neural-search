@@ -1,0 +1,433 @@
+papers:
+- id: PAPER_GONOGO_CALCIUM
+  openalex_id: W-GONOGO_CALCIUM
+  doi: 10.0000/demo.gonogo_calcium
+  title: 'Demo paper: Demo Go/NoGo calcium imaging dataset'
+  abstract: A demo paper describing mouse mpfc calcium imaging during a go/nogo response inhibition task with lick, hit, false
+    alarm, cue onset, reward, and omission events. Supports analyses including event_aligned_activity, trial_outcome_decoding,
+    response_inhibition_decoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/gonogo_calcium
+  concepts:
+  - go_nogo
+  - response_inhibition
+  - calcium_imaging
+  - two_photon
+  - cognitive_control
+- id: PAPER_REVERSAL_EPHYS
+  openalex_id: W-REVERSAL_EPHYS
+  doi: 10.0000/demo.reversal_ephys
+  title: 'Demo paper: Demo reversal learning electrophysiology dataset'
+  abstract: A demo paper describing mouse ofc and striatum extracellular electrophysiology during probabilistic reversal learning
+    with choice, reward omission, reversal points, and trial outcomes. Supports analyses including reward_prediction_error,
+    value_estimation, latent_state_modeling.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/reversal_ephys
+  concepts:
+  - reversal_learning
+  - probabilistic_reversal_learning
+  - extracellular_ephys
+  - spikes
+  - reward_learning
+- id: PAPER_DELAY_DISCOUNTING
+  openalex_id: W-DELAY_DISCOUNTING
+  doi: 10.0000/demo.delay_discounting
+  title: 'Demo paper: Demo delay discounting behavior and neural dataset'
+  abstract: A demo paper describing rat mpfc and nucleus accumbens fiber photometry during delay discounting with intertemporal
+    choice, offer onset, delay period, immediate reward, delayed reward, and reaction time. Supports analyses including subjective_value_modeling,
+    impulsivity_index, temporal_discounting.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/delay_discounting
+  concepts:
+  - delay_discounting
+  - intertemporal_choice
+  - fiber_photometry
+  - behavior_video
+  - impulsivity
+- id: PAPER_REACHING_ECOG_IEEG
+  openalex_id: W-REACHING_ECOG_IEEG
+  doi: 10.0000/demo.reaching_ecog_ieeg
+  title: 'Demo paper: Demo reaching ECoG and iEEG dataset'
+  abstract: A demo paper describing human ecog and ieeg recordings during center-out reaching and grasping with target onset,
+    movement onset, reach direction, bci cursor control, and kinematic tracking. Supports analyses including motor_decoding,
+    trajectory_prediction, closed_loop_control.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/reaching_ecog_ieeg
+  concepts:
+  - reaching
+  - center_out_reaching
+  - ecog
+  - ieeg
+  - brain-computer_interface
+- id: PAPER_VISUAL_DECISION_NEUROPIXELS
+  openalex_id: W-VISUAL_DECISION_NEUR
+  doi: 10.0000/demo.visual_decision_neuropixels
+  title: 'Demo paper: Demo visual decision-making Neuropixels dataset'
+  abstract: A demo paper describing mouse visual cortex and ppc neuropixels recordings during visual decision-making and visual
+    discrimination with stimulus onset, choice, reward, feedback, and reaction time. Supports analyses including choice_decoding,
+    sensory_encoding, decision_confidence.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/visual_decision_neuropixels
+  concepts:
+  - visual_decision_making
+  - visual_discrimination
+  - neuropixels
+  - extracellular_ephys
+  - visual_perception
+- id: PAPER_MOTOR_IMAGERY_EEG
+  openalex_id: W-MOTOR_IMAGERY_EEG
+  doi: 10.0000/demo.motor_imagery_eeg
+  title: 'Demo paper: Demo motor imagery EEG dataset for BCI'
+  abstract: A demo paper describing human scalp eeg recordings during motor imagery bci task with left/right hand imagination,
+    cursor control feedback, and real-time classification. Supports analyses including bci_classification, real_time_decoding,
+    motor_intention_decoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/motor_imagery_eeg
+  concepts:
+  - motor_imagery
+  - bci_control
+  - eeg
+  - scalp_eeg
+  - brain-computer_interface
+- id: PAPER_NHP_REACHING_UTAH
+  openalex_id: W-NHP_REACHING_UTAH
+  doi: 10.0000/demo.nhp_reaching_utah
+  title: 'Demo paper: Demo non-human primate reaching with Utah array'
+  abstract: A demo paper describing macaque motor cortex and premotor cortex utah array recordings during center-out reaching
+    with hand position tracking, muscle emg, and cursor control. Supports analyses including motor_decoding, trajectory_prediction,
+    population_dynamics.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/nhp_reaching_utah
+  concepts:
+  - reaching
+  - center_out_reaching
+  - utah_array
+  - extracellular_ephys
+  - monkey
+- id: PAPER_HIPPOCAMPUS_NAVIGATION
+  openalex_id: W-HIPPOCAMPUS_NAVIGATI
+  doi: 10.0000/demo.hippocampus_navigation
+  title: 'Demo paper: Demo hippocampus spatial navigation dataset'
+  abstract: A demo paper describing mouse ca1 and ca3 tetrode recordings during spatial navigation in a linear track and t-maze
+    with place cell firing, theta oscillations, and spatial position tracking. Supports analyses including place_cell_decoding,
+    spatial_encoding, theta_phase_coding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/hippocampus_navigation
+  concepts:
+  - spatial_navigation
+  - place_cell_recording
+  - tetrode
+  - extracellular_ephys
+  - place_cells
+- id: PAPER_VIRTUAL_NAVIGATION_NEUROPIXELS
+  openalex_id: W-VIRTUAL_NAVIGATION_N
+  doi: 10.0000/demo.virtual_navigation_neuropixels
+  title: 'Demo paper: Demo virtual reality navigation Neuropixels'
+  abstract: A demo paper describing mouse hippocampus and entorhinal cortex neuropixels during virtual reality navigation
+    with visual landmarks, reward locations, and running behavior. Supports analyses including place_cell_decoding, grid_cell_analysis,
+    path_integration.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/virtual_navigation_neuropixels
+  concepts:
+  - spatial_navigation
+  - virtual_reality
+  - neuropixels
+  - extracellular_ephys
+  - virtual_reality
+- id: PAPER_WORKING_MEMORY_EPHYS
+  openalex_id: W-WORKING_MEMORY_EPHYS
+  doi: 10.0000/demo.working_memory_ephys
+  title: 'Demo paper: Demo working memory prefrontal electrophysiology'
+  abstract: A demo paper describing mouse medial prefrontal cortex neuropixels during delayed match-to-sample working memory
+    task with sample, delay period, choice, and reward. Supports analyses including persistent_activity, delay_period_coding,
+    memory_decoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/working_memory_ephys
+  concepts:
+  - working_memory
+  - delayed_match_to_sample
+  - neuropixels
+  - extracellular_ephys
+  - short-term_memory
+- id: PAPER_COGNITIVE_CONTROL_FMRI
+  openalex_id: W-COGNITIVE_CONTROL_FM
+  doi: 10.0000/demo.cognitive_control_fmri
+  title: 'Demo paper: Demo cognitive control fMRI dataset'
+  abstract: A demo paper describing human whole-brain fmri during stroop and go/nogo tasks with conflict trials, error trials,
+    and reaction time measurements. Supports analyses including error_related_activity, conflict_detection, response_inhibition_analysis.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/cognitive_control_fmri
+  concepts:
+  - cognitive_control
+  - stroop
+  - fmri
+  - functional_mri
+  - executive_function
+- id: PAPER_SPEECH_ECOG
+  openalex_id: W-SPEECH_ECOG
+  doi: 10.0000/demo.speech_ecog
+  title: 'Demo paper: Demo speech production ECoG dataset'
+  abstract: A demo paper describing human sensorimotor cortex ecog during speech production and perception with phoneme articulation,
+    word reading, and auditory feedback. Supports analyses including speech_decoding, phoneme_classification, articulatory_encoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/speech_ecog
+  concepts:
+  - speech
+  - speech_production
+  - ecog
+  - ieeg
+  - speech
+- id: PAPER_AUDITORY_PROCESSING
+  openalex_id: W-AUDITORY_PROCESSING
+  doi: 10.0000/demo.auditory_processing
+  title: 'Demo paper: Demo auditory processing electrophysiology'
+  abstract: A demo paper describing mouse auditory cortex neuropixels during passive listening and auditory discrimination
+    with tone pips, frequency sweeps, and natural sounds. Supports analyses including sensory_encoding, frequency_tuning,
+    spectrotemporal_receptive_field.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/auditory_processing
+  concepts:
+  - auditory_processing
+  - auditory_discrimination
+  - neuropixels
+  - extracellular_ephys
+  - hearing
+- id: PAPER_SEIZURE_IEEG
+  openalex_id: W-SEIZURE_IEEG
+  doi: 10.0000/demo.seizure_ieeg
+  title: 'Demo paper: Demo seizure monitoring iEEG dataset'
+  abstract: A demo paper describing human temporal and frontal lobe ieeg during epilepsy monitoring with seizure onset zones,
+    interictal spikes, and annotated seizure events. Supports analyses including seizure_detection, seizure_prediction, epileptogenic_zone_localization.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/seizure_ieeg
+  concepts:
+  - seizure_monitoring
+  - epilepsy_monitoring
+  - ieeg
+  - seeg
+  - epilepsy
+- id: PAPER_NATURALISTIC_VISION
+  openalex_id: W-NATURALISTIC_VISION
+  doi: 10.0000/demo.naturalistic_vision
+  title: 'Demo paper: Demo naturalistic vision with pupil tracking'
+  abstract: A demo paper describing mouse visual cortex two-photon calcium imaging during naturalistic movie viewing with
+    pupil dilation, running, and arousal state tracking. Supports analyses including sensory_encoding, arousal_modulation,
+    state_dependent_coding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/naturalistic_vision
+  concepts:
+  - naturalistic_vision
+  - passive_viewing
+  - calcium_imaging
+  - two_photon
+  - natural_scenes
+- id: PAPER_SLEEP_EPHYS
+  openalex_id: W-SLEEP_EPHYS
+  doi: 10.0000/demo.sleep_ephys
+  title: 'Demo paper: Demo sleep state electrophysiology'
+  abstract: A demo paper describing mouse hippocampus and cortex recordings during sleep with rem, nrem, sws stages, sleep
+    spindles, sharp-wave ripples, and replay events. Supports analyses including sleep_staging, replay_detection, memory_consolidation.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/sleep_ephys
+  concepts:
+  - sleep
+  - resting_state
+  - extracellular_ephys
+  - spikes
+  - sleep
+- id: PAPER_POSE_TRACKING_BEHAVIOR
+  openalex_id: W-POSE_TRACKING_BEHAVI
+  doi: 10.0000/demo.pose_tracking_behavior
+  title: 'Demo paper: Demo pose tracking social behavior dataset'
+  abstract: A demo paper describing mouse behavior video with deeplabcut and sleap pose tracking during social interaction,
+    including approach, investigation, and aggression behaviors. Supports analyses including behavior_classification, pose_estimation,
+    social_behavior_analysis.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/pose_tracking_behavior
+  concepts:
+  - social_interaction
+  - free_behavior
+  - behavior_video
+  - pose_tracking
+  - pose_estimation
+- id: PAPER_FACEMAP_PUPIL
+  openalex_id: W-FACEMAP_PUPIL
+  doi: 10.0000/demo.facemap_pupil
+  title: 'Demo paper: Demo facemap and pupil arousal dataset'
+  abstract: A demo paper describing mouse face video with facemap analysis, pupil tracking, and whisker movements during passive
+    viewing and spontaneous behavior. Supports analyses including arousal_state_decoding, behavioral_state_classification.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/facemap_pupil
+  concepts:
+  - passive_viewing
+  - arousal_modulation
+  - behavior_video
+  - facemap
+  - face_tracking
+- id: PAPER_DANDI_NWB_EPHYS
+  openalex_id: W-DANDI_NWB_EPHYS
+  doi: 10.0000/demo.dandi_nwb_ephys
+  title: 'Demo paper: Demo DANDI-style NWB electrophysiology'
+  abstract: A demo paper describing mouse cortex and hippocampus neuropixels dataset formatted according to dandi archive
+    standards with full nwb metadata and provenance. Supports analyses including population_dynamics, dimensionality_reduction.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/dandi_nwb_ephys
+  concepts:
+  - visual_decision_making
+  - passive_viewing
+  - neuropixels
+  - extracellular_ephys
+  - dandi
+- id: PAPER_OPENNEURO_BIDS_FMRI
+  openalex_id: W-OPENNEURO_BIDS_FMRI
+  doi: 10.0000/demo.openneuro_bids_fmri
+  title: 'Demo paper: Demo OpenNeuro BIDS fMRI dataset'
+  abstract: A demo paper describing human whole-brain fmri during cognitive task formatted according to bids standards with
+    full metadata and derivatives. Supports analyses including activation_mapping, connectivity_analysis, task_decoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/openneuro_bids_fmri
+  concepts:
+  - working_memory
+  - cognitive_control
+  - fmri
+  - functional_mri
+  - openneuro
+- id: PAPER_OPENNEURO_BIDS_IEEG
+  openalex_id: W-OPENNEURO_BIDS_IEEG
+  doi: 10.0000/demo.openneuro_bids_ieeg
+  title: 'Demo paper: Demo OpenNeuro BIDS iEEG dataset'
+  abstract: A demo paper describing human temporal lobe ieeg during memory task formatted according to bids-ieeg standards
+    with electrode coordinates and events. Supports analyses including memory_encoding_analysis, subsequent_memory_effect.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/openneuro_bids_ieeg
+  concepts:
+  - memory_encoding
+  - memory_retrieval
+  - ieeg
+  - seeg
+  - openneuro
+- id: PAPER_DOPAMINE_PHOTOMETRY
+  openalex_id: W-DOPAMINE_PHOTOMETRY
+  doi: 10.0000/demo.dopamine_photometry
+  title: 'Demo paper: Demo dopamine fiber photometry reward dataset'
+  abstract: A demo paper describing mouse vta and nucleus accumbens fiber photometry during pavlovian conditioning with cue-reward
+    associations, reward prediction error, and omission trials. Supports analyses including reward_prediction_error, temporal_difference,
+    dopamine_dynamics.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/dopamine_photometry
+  concepts:
+  - pavlovian_conditioning
+  - classical_conditioning
+  - fiber_photometry
+  - behavior_video
+  - dopamine
+- id: PAPER_FORAGING_EPHYS
+  openalex_id: W-FORAGING_EPHYS
+  doi: 10.0000/demo.foraging_ephys
+  title: 'Demo paper: Demo foraging electrophysiology dataset'
+  abstract: A demo paper describing mouse ofc and acc neuropixels during dynamic foraging task with patch leaving, reward
+    rate estimation, and exploration-exploitation tradeoffs. Supports analyses including value_estimation, optimal_foraging,
+    exploration_exploitation.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/foraging_ephys
+  concepts:
+  - foraging
+  - patch_foraging
+  - neuropixels
+  - extracellular_ephys
+  - foraging
+- id: PAPER_OPERANT_CONDITIONING
+  openalex_id: W-OPERANT_CONDITIONING
+  doi: 10.0000/demo.operant_conditioning
+  title: 'Demo paper: Demo operant conditioning dataset'
+  abstract: A demo paper describing rat basal ganglia electrophysiology during operant lever press task with fixed ratio,
+    variable ratio schedules, and extinction learning. Supports analyses including action_value_encoding, habit_formation,
+    extinction_learning.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/operant_conditioning
+  concepts:
+  - operant_conditioning
+  - instrumental_conditioning
+  - extracellular_ephys
+  - spikes
+  - operant
+- id: PAPER_TRIAL_ALIGNED_EPHYS
+  openalex_id: W-TRIAL_ALIGNED_EPHYS
+  doi: 10.0000/demo.trial_aligned_ephys
+  title: 'Demo paper: Demo trial-aligned neural activity dataset'
+  abstract: A demo paper describing mouse cortex and striatum neuropixels during sensorimotor task with precise trial alignment,
+    psth computation, and event-locked analysis. Supports analyses including event_alignment, trial_averaging, psth.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/trial_aligned_ephys
+  concepts:
+  - sensorimotor_task
+  - go_nogo
+  - neuropixels
+  - extracellular_ephys
+  - trial_structure
+- id: PAPER_TRIAL_OUTCOME_PREDICTION
+  openalex_id: W-TRIAL_OUTCOME_PREDIC
+  doi: 10.0000/demo.trial_outcome_prediction
+  title: 'Demo paper: Demo trial outcome prediction dataset'
+  abstract: A demo paper describing mouse prefrontal and striatal recordings during decision task optimized for trial outcome
+    prediction with pre-response neural activity. Supports analyses including trial_outcome_prediction, choice_decoding, pre_response_decoding.
+  publication_year: 2024
+  authors_json:
+  - name: Demo Author
+  url: https://example.org/papers/trial_outcome_prediction
+  concepts:
+  - decision_making
+  - two_alternative_forced_choice
+  - extracellular_ephys
+  - spikes
+  - prediction

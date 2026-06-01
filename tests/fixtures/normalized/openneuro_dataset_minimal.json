@@ -1,0 +1,91 @@
+{
+  "dataset_id": "dataset:openneuro:ds004148",
+  "source": "openneuro",
+  "source_id": "ds004148",
+  "title": "Motor imagery EEG",
+  "description": "BIDS EEG motor imagery task with events.tsv trial timing.",
+  "url": "https://openneuro.org/datasets/ds004148",
+  "raw_payload_path": "data/raw/openneuro/ds004148.json",
+  "species": [
+    {
+      "id": "label:species:human",
+      "label": "human",
+      "label_type": "species",
+      "confidence": 0.7,
+      "evidence_text": "participants",
+      "source_field": "BIDS participants",
+      "source_value": "participants.tsv",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "modalities": [
+    {
+      "id": "label:modality:eeg",
+      "label": "EEG",
+      "label_type": "modality",
+      "confidence": 0.98,
+      "evidence_text": "EEG",
+      "source_field": "summary.modalities",
+      "source_value": "EEG",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "brain_regions": [],
+  "tasks": [
+    {
+      "id": "label:task:motor_imagery",
+      "label": "motor imagery",
+      "label_type": "task",
+      "confidence": 0.9,
+      "evidence_text": "motor imagery",
+      "source_field": "summary.tasks",
+      "source_value": "motor imagery",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "behavioral_events": [],
+  "analysis_goals": [],
+  "data_standards": [
+    {
+      "id": "label:data_standard:bids",
+      "label": "BIDS",
+      "label_type": "data_standard",
+      "confidence": 0.98,
+      "evidence_text": "BIDS",
+      "source_field": "source",
+      "source_value": "OpenNeuro",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "file_formats": [
+    {
+      "id": "label:file_format:events_tsv",
+      "label": "events.tsv",
+      "label_type": "file_format",
+      "confidence": 0.85,
+      "evidence_text": "events.tsv",
+      "source_field": "description",
+      "source_value": "BIDS EEG motor imagery task with events.tsv trial timing.",
+      "extractor_name": "fixture",
+      "extractor_version": "v0.3.0"
+    }
+  ],
+  "linked_papers": [],
+  "usability_flags": {
+    "has_trials": true,
+    "has_behavior": true,
+    "has_neural_data": true,
+    "has_continuous_behavior": null,
+    "has_event_timestamps": true,
+    "has_raw_data": true,
+    "has_processed_data": null,
+    "has_standard_format": true
+  },
+  "missing_fields": [],
+  "created_at": "2026-05-23T00:00:00+00:00",
+  "extractor_version": "v0.3.0"
+}

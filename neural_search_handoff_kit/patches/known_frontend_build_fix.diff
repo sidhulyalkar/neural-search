@@ -1,0 +1,12 @@
+diff --git a/apps/web/src/components/ComparisonDrawer.tsx b/apps/web/src/components/ComparisonDrawer.tsx
+--- a/apps/web/src/components/ComparisonDrawer.tsx
++++ b/apps/web/src/components/ComparisonDrawer.tsx
+@@ -159,7 +159,7 @@ export function ComparisonDrawer({ selectedIds, onRemove, onClear }: ComparisonD
+ }
+
+ function SummaryView({ comparison }: { comparison: ComparisonResult }) {
+-  const { summary, datasets } = comparison
++  const { summary } = comparison
+
+   return (
+     <div className="space-y-6">

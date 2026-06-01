@@ -1,0 +1,22 @@
+experimental_designs:
+  - id: fixture_q_learning_design
+    name: Fixture Q-learning design
+    description: Small fixture design for graph matching tests.
+    requires:
+      behavioral_events:
+        - choice
+        - reward
+        - trial_outcome
+      analysis_affordances:
+        - q_learning_modeling
+    helpful:
+      tasks:
+        - reversal_learning
+      modalities:
+        - neuropixels
+    caveats:
+      - reward alone is insufficient
+    minimum_requirements:
+      - has_trials: true
+      - has_behavior: true
+      - has_neural_data: true

@@ -1,0 +1,1706 @@
+# Neural Search Behavioral Task Ontology v0.1
+# Purpose: Broad but practical ontology for experiment-aware neural dataset search.
+# Each task should support extraction, filtering, retrieval explanation, dataset-card generation, and notebook suggestions.
+
+tasks:
+  # ---------------------------------------------------------------------------
+  # Decision making and cognitive control
+  # ---------------------------------------------------------------------------
+  - id: go_nogo
+    label: Go/NoGo
+    category: cognitive_control
+    definition: >
+      A task in which subjects respond to Go cues and withhold responses to NoGo cues,
+      commonly used to study response inhibition, action selection, and impulsivity.
+    synonyms:
+      - go/no-go
+      - go nogo
+      - go no-go
+      - response inhibition
+      - action withholding
+      - inhibitory control
+      - nogo task
+    common_events:
+      - cue_onset
+      - go_cue
+      - nogo_cue
+      - response
+      - lick
+      - lever_press
+      - nose_poke
+      - reward
+      - omission
+      - false_alarm
+      - hit
+      - miss
+      - correct_rejection
+    relevant_modalities:
+      - calcium_imaging
+      - extracellular_ephys
+      - neuropixels
+      - eeg
+      - ecog
+      - behavior_video
+      - fiber_photometry
+    relevant_regions:
+      - mPFC
+      - ACC
+      - OFC
+      - striatum
+      - motor_cortex
+      - basal_ganglia
+    suggested_analyses:
+      - event_aligned_activity
+      - response_inhibition_decoding
+      - hit_false_alarm_comparison
+      - reaction_time_analysis
+      - trial_outcome_decoding
+
+  - id: two_alternative_forced_choice
+    label: Two-Alternative Forced Choice
+    category: decision_making
+    definition: >
+      A task in which subjects choose between two alternatives based on sensory evidence,
+      value, memory, or task rules.
+    synonyms:
+      - 2AFC
+      - two alternative forced choice
+      - two-choice task
+      - binary choice task
+      - left right choice
+      - forced choice
+    common_events:
+      - stimulus_onset
+      - choice
+      - left_choice
+      - right_choice
+      - feedback
+      - reward
+      - error
+      - reaction_time
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - eeg
+      - behavior_video
+    relevant_regions:
+      - PPC
+      - ACC
+      - mPFC
+      - striatum
+      - visual_cortex
+      - motor_cortex
+    suggested_analyses:
+      - choice_decoding
+      - psychometric_curve
+      - reaction_time_analysis
+      - evidence_accumulation_modeling
+      - stimulus_choice_separation
+
+  - id: reversal_learning
+    label: Reversal Learning
+    category: reinforcement_learning
+    definition: >
+      A task where reward contingencies change and subjects must update learned associations.
+    synonyms:
+      - probabilistic reversal learning
+      - PRL
+      - contingency reversal
+      - flexible decision-making
+      - value updating
+      - reversal task
+      - rule reversal
+    common_events:
+      - choice
+      - reward
+      - omission
+      - reversal_point
+      - error
+      - correct_trial
+      - perseverative_error
+      - feedback
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - fiber_photometry
+      - behavior_video
+    relevant_regions:
+      - OFC
+      - ACC
+      - mPFC
+      - striatum
+      - amygdala
+      - hippocampus
+    suggested_analyses:
+      - reward_prediction_error
+      - post_reversal_adaptation
+      - win_stay_lose_shift
+      - q_learning_modeling
+      - latent_state_modeling
+      - perseveration_analysis
+
+  - id: delay_discounting
+    label: Delay Discounting
+    category: value_based_decision_making
+    definition: >
+      A task measuring preference between smaller immediate rewards and larger delayed rewards.
+    synonyms:
+      - intertemporal choice
+      - delayed reward choice
+      - impulsive choice
+      - temporal discounting
+      - delay choice
+    common_events:
+      - offer_onset
+      - choice
+      - delay_period
+      - immediate_reward
+      - delayed_reward
+      - reward
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - fiber_photometry
+      - behavior_video
+      - eeg
+    relevant_regions:
+      - OFC
+      - mPFC
+      - ACC
+      - striatum
+      - nucleus_accumbens
+      - hippocampus
+    suggested_analyses:
+      - subjective_value_modeling
+      - delay_period_activity
+      - choice_decoding
+      - impulsivity_index
+      - q_learning_modeling
+
+  - id: probability_discounting
+    label: Probability Discounting
+    category: value_based_decision_making
+    definition: >
+      A task measuring choices between certain rewards and larger uncertain rewards.
+    synonyms:
+      - probabilistic choice
+      - risky choice
+      - risk discounting
+      - uncertainty-based choice
+    common_events:
+      - offer_onset
+      - probability_cue
+      - choice
+      - reward
+      - omission
+      - feedback
+    relevant_regions:
+      - OFC
+      - ACC
+      - striatum
+      - amygdala
+      - insula
+    suggested_analyses:
+      - risk_preference_modeling
+      - expected_value_modeling
+      - uncertainty_encoding
+      - reward_prediction_error
+
+  - id: bandit_task
+    label: Multi-Armed Bandit
+    category: reinforcement_learning
+    definition: >
+      A task where subjects choose among options with uncertain reward distributions,
+      often used to study exploration, exploitation, and value learning.
+    synonyms:
+      - multi-armed bandit
+      - bandit task
+      - explore exploit task
+      - exploration exploitation
+      - probabilistic choice task
+    common_events:
+      - option_onset
+      - choice
+      - reward
+      - omission
+      - feedback
+      - block_change
+    relevant_regions:
+      - OFC
+      - ACC
+      - mPFC
+      - striatum
+      - dopamine_midbrain
+    suggested_analyses:
+      - exploration_exploitation_modeling
+      - q_learning_modeling
+      - uncertainty_estimation
+      - choice_history_analysis
+
+  - id: set_shifting
+    label: Set Shifting
+    category: cognitive_flexibility
+    definition: >
+      A task where subjects switch between rules, stimulus dimensions, or response mappings.
+    synonyms:
+      - attentional set shifting
+      - rule switching
+      - task switching
+      - extradimensional shift
+      - intradimensional shift
+      - cognitive flexibility
+    common_events:
+      - rule_cue
+      - stimulus_onset
+      - choice
+      - feedback
+      - rule_switch
+      - error
+      - reward
+    relevant_regions:
+      - mPFC
+      - ACC
+      - OFC
+      - striatum
+      - parietal_cortex
+    suggested_analyses:
+      - rule_decoding
+      - switch_cost_analysis
+      - error_related_activity
+      - cognitive_flexibility_index
+
+  - id: stop_signal_task
+    label: Stop-Signal Task
+    category: cognitive_control
+    definition: >
+      A task that measures the ability to cancel an initiated action after a stop cue.
+    synonyms:
+      - stop signal
+      - stop-signal reaction time
+      - SSRT
+      - action cancellation
+      - response cancellation
+    common_events:
+      - go_signal
+      - stop_signal
+      - movement_onset
+      - cancelled_response
+      - failed_stop
+      - reward
+    relevant_regions:
+      - right_inferior_frontal_cortex
+      - preSMA
+      - basal_ganglia
+      - STN
+      - motor_cortex
+    suggested_analyses:
+      - stop_signal_reaction_time
+      - action_cancellation_decoding
+      - failed_stop_comparison
+      - event_aligned_activity
+
+  - id: stroop_task
+    label: Stroop Task
+    category: cognitive_control
+    definition: >
+      A conflict task where subjects respond to one stimulus dimension while suppressing an interfering dimension.
+    synonyms:
+      - stroop
+      - color word stroop
+      - conflict task
+      - interference task
+    common_events:
+      - stimulus_onset
+      - congruent_trial
+      - incongruent_trial
+      - response
+      - error
+      - reaction_time
+    relevant_regions:
+      - ACC
+      - dlPFC
+      - parietal_cortex
+    suggested_analyses:
+      - conflict_effect
+      - error_related_activity
+      - reaction_time_analysis
+      - congruent_incongruent_decoding
+
+  - id: flanker_task
+    label: Flanker Task
+    category: cognitive_control
+    definition: >
+      A conflict task where a central target is surrounded by congruent or incongruent flankers.
+    synonyms:
+      - eriksen flanker
+      - flanker
+      - congruency task
+    common_events:
+      - stimulus_onset
+      - congruent_trial
+      - incongruent_trial
+      - response
+      - error
+      - reaction_time
+    relevant_regions:
+      - ACC
+      - dlPFC
+      - parietal_cortex
+      - motor_cortex
+    suggested_analyses:
+      - conflict_effect
+      - response_conflict_decoding
+      - reaction_time_analysis
+
+  # ---------------------------------------------------------------------------
+  # Learning and memory
+  # ---------------------------------------------------------------------------
+  - id: classical_conditioning
+    label: Classical Conditioning
+    category: associative_learning
+    definition: >
+      A task where a conditioned stimulus predicts an unconditioned stimulus, reward, aversive event, or neutral outcome.
+    synonyms:
+      - pavlovian conditioning
+      - cue conditioning
+      - cue reward learning
+      - CS US learning
+      - conditioned response
+    common_events:
+      - conditioned_stimulus
+      - unconditioned_stimulus
+      - reward
+      - shock
+      - airpuff
+      - conditioned_response
+      - omission
+    relevant_regions:
+      - amygdala
+      - cerebellum
+      - striatum
+      - OFC
+      - hippocampus
+      - dopamine_midbrain
+    suggested_analyses:
+      - cue_response_alignment
+      - prediction_error_analysis
+      - acquisition_curve
+      - extinction_analysis
+
+  - id: operant_conditioning
+    label: Operant Conditioning
+    category: associative_learning
+    definition: >
+      A task where subjects learn actions based on consequences such as rewards or punishments.
+    synonyms:
+      - instrumental conditioning
+      - lever press task
+      - nose poke task
+      - action outcome learning
+      - operant task
+    common_events:
+      - cue_onset
+      - action
+      - lever_press
+      - nose_poke
+      - reward
+      - punishment
+      - omission
+    relevant_regions:
+      - striatum
+      - mPFC
+      - OFC
+      - motor_cortex
+      - dopamine_midbrain
+    suggested_analyses:
+      - action_outcome_encoding
+      - reinforcement_learning_modeling
+      - response_rate_analysis
+      - event_aligned_activity
+
+  - id: fear_conditioning
+    label: Fear Conditioning
+    category: aversive_learning
+    definition: >
+      A task where a neutral cue or context is associated with an aversive stimulus.
+    synonyms:
+      - auditory fear conditioning
+      - contextual fear conditioning
+      - cued fear conditioning
+      - threat conditioning
+    common_events:
+      - conditioned_stimulus
+      - shock
+      - freezing
+      - tone
+      - context_exposure
+      - extinction_trial
+    relevant_regions:
+      - amygdala
+      - hippocampus
+      - mPFC
+      - PAG
+      - auditory_cortex
+    suggested_analyses:
+      - freezing_quantification
+      - cue_aligned_activity
+      - extinction_learning
+      - threat_response_decoding
+
+  - id: extinction_learning
+    label: Extinction Learning
+    category: associative_learning
+    definition: >
+      A task where a previously learned cue-outcome association is weakened when the outcome is omitted.
+    synonyms:
+      - extinction
+      - fear extinction
+      - reward extinction
+      - cue extinction
+    common_events:
+      - conditioned_stimulus
+      - omitted_outcome
+      - extinction_trial
+      - freezing
+      - reward_omission
+    relevant_regions:
+      - mPFC
+      - amygdala
+      - hippocampus
+      - OFC
+      - striatum
+    suggested_analyses:
+      - extinction_curve
+      - omission_response
+      - memory_update_analysis
+      - cue_response_decay
+
+  - id: spatial_navigation
+    label: Spatial Navigation
+    category: spatial_memory
+    definition: >
+      A task involving movement through physical or virtual space to study spatial maps, memory, and navigation strategies.
+    synonyms:
+      - navigation
+      - spatial memory
+      - virtual navigation
+      - maze navigation
+      - path integration
+    common_events:
+      - trial_start
+      - position
+      - velocity
+      - reward_zone_entry
+      - goal_reached
+      - landmark_onset
+    relevant_regions:
+      - hippocampus
+      - entorhinal_cortex
+      - retrosplenial_cortex
+      - parietal_cortex
+      - prefrontal_cortex
+    suggested_analyses:
+      - place_cell_analysis
+      - grid_cell_analysis
+      - trajectory_decoding
+      - position_decoding
+      - theta_phase_analysis
+
+  - id: morris_water_maze
+    label: Morris Water Maze
+    category: spatial_memory
+    definition: >
+      A spatial learning task where rodents locate a hidden platform in a water maze.
+    synonyms:
+      - water maze
+      - morris maze
+      - hidden platform task
+    common_events:
+      - trial_start
+      - swim_path
+      - platform_entry
+      - escape_latency
+      - probe_trial
+    relevant_regions:
+      - hippocampus
+      - entorhinal_cortex
+      - retrosplenial_cortex
+    suggested_analyses:
+      - escape_latency_analysis
+      - path_efficiency
+      - quadrant_preference
+      - spatial_learning_curve
+
+  - id: radial_arm_maze
+    label: Radial Arm Maze
+    category: spatial_memory
+    definition: >
+      A maze task testing spatial working memory and reference memory using multiple arms.
+    synonyms:
+      - radial maze
+      - eight arm maze
+      - spatial working memory maze
+    common_events:
+      - arm_entry
+      - reward
+      - revisiting_error
+      - trial_start
+      - choice
+    relevant_regions:
+      - hippocampus
+      - prefrontal_cortex
+      - entorhinal_cortex
+    suggested_analyses:
+      - working_memory_errors
+      - arm_choice_sequence
+      - spatial_strategy_analysis
+
+  - id: t_maze
+    label: T-Maze
+    category: spatial_decision_making
+    definition: >
+      A maze task where subjects choose between left and right arms, often testing memory, value, or alternation.
+    synonyms:
+      - T maze
+      - alternation task
+      - delayed alternation
+      - left right maze
+    common_events:
+      - stem_entry
+      - choice_point
+      - left_choice
+      - right_choice
+      - reward
+      - delay_period
+    relevant_regions:
+      - hippocampus
+      - mPFC
+      - striatum
+      - parietal_cortex
+    suggested_analyses:
+      - choice_point_decoding
+      - alternation_accuracy
+      - delay_period_activity
+      - trajectory_analysis
+
+  - id: y_maze
+    label: Y-Maze
+    category: spatial_memory
+    definition: >
+      A three-arm maze task often used to assess spontaneous alternation and spatial memory.
+    synonyms:
+      - Y maze
+      - spontaneous alternation
+      - three arm maze
+    common_events:
+      - arm_entry
+      - alternation
+      - revisiting_error
+      - trial_start
+    relevant_regions:
+      - hippocampus
+      - prefrontal_cortex
+    suggested_analyses:
+      - spontaneous_alternation_rate
+      - arm_transition_matrix
+      - spatial_memory_index
+
+  - id: object_recognition
+    label: Object Recognition
+    category: recognition_memory
+    definition: >
+      A task measuring recognition memory through exploration of familiar and novel objects.
+    synonyms:
+      - novel object recognition
+      - NOR
+      - object memory
+      - familiar novel object
+    common_events:
+      - object_exposure
+      - novel_object_exploration
+      - familiar_object_exploration
+      - exploration_start
+      - exploration_duration
+    relevant_regions:
+      - perirhinal_cortex
+      - hippocampus
+      - entorhinal_cortex
+      - prefrontal_cortex
+    suggested_analyses:
+      - discrimination_index
+      - exploration_time_analysis
+      - object_selectivity
+
+  - id: delayed_match_to_sample
+    label: Delayed Match-to-Sample
+    category: working_memory
+    definition: >
+      A task where subjects remember a sample stimulus across a delay and select the matching stimulus.
+    synonyms:
+      - DMS
+      - delayed matching
+      - match to sample
+      - delayed match-to-sample
+    common_events:
+      - sample_onset
+      - delay_period
+      - test_onset
+      - choice
+      - reward
+      - error
+    relevant_regions:
+      - prefrontal_cortex
+      - hippocampus
+      - parietal_cortex
+      - temporal_cortex
+    suggested_analyses:
+      - delay_period_decoding
+      - sample_identity_decoding
+      - working_memory_activity
+      - choice_accuracy_analysis
+
+  - id: delayed_nonmatch_to_sample
+    label: Delayed Nonmatch-to-Sample
+    category: working_memory
+    definition: >
+      A task where subjects remember a sample stimulus and later choose the nonmatching stimulus.
+    synonyms:
+      - DNMS
+      - delayed nonmatching
+      - nonmatch to sample
+      - delayed nonmatch-to-sample
+    common_events:
+      - sample_onset
+      - delay_period
+      - test_onset
+      - nonmatch_choice
+      - reward
+      - error
+    relevant_regions:
+      - prefrontal_cortex
+      - hippocampus
+      - perirhinal_cortex
+      - temporal_cortex
+    suggested_analyses:
+      - memory_trace_decoding
+      - delay_activity
+      - choice_rule_decoding
+
+  - id: n_back
+    label: N-Back
+    category: working_memory
+    definition: >
+      A working memory task where subjects detect whether the current stimulus matches one presented n trials earlier.
+    synonyms:
+      - nback
+      - n-back
+      - working memory load task
+    common_events:
+      - stimulus_onset
+      - target
+      - non_target
+      - response
+      - correct
+      - error
+      - reaction_time
+    relevant_modalities:
+      - eeg
+      - fmri
+      - meg
+      - ieeg
+    relevant_regions:
+      - dlPFC
+      - parietal_cortex
+      - ACC
+    suggested_analyses:
+      - working_memory_load_effect
+      - target_decoding
+      - reaction_time_analysis
+      - error_related_potential
+
+  # ---------------------------------------------------------------------------
+  # Motor control and movement
+  # ---------------------------------------------------------------------------
+  - id: reaching
+    label: Reaching
+    category: motor_control
+    definition: >
+      A task involving limb movement toward a target, often used to study motor planning and execution.
+    synonyms:
+      - arm reaching
+      - reach-to-grasp
+      - motor reaching
+      - movement task
+      - center out reaching
+      - reaching movement
+    common_events:
+      - target_onset
+      - movement_onset
+      - reach
+      - grasp
+      - movement_offset
+      - reward
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - ecog
+      - ieeg
+      - emg
+      - behavior_video
+      - pose_tracking
+    relevant_regions:
+      - M1
+      - PMd
+      - PMv
+      - somatosensory_cortex
+      - parietal_cortex
+      - cerebellum
+    suggested_analyses:
+      - movement_onset_alignment
+      - kinematic_decoding
+      - neural_trajectory_analysis
+      - reach_direction_decoding
+      - velocity_decoding
+
+  - id: center_out_reaching
+    label: Center-Out Reaching
+    category: motor_control
+    definition: >
+      A reaching task where movements originate from a central position and extend to one of several targets.
+    synonyms:
+      - center out
+      - center-out task
+      - radial reaching
+      - eight target reaching
+    common_events:
+      - center_hold
+      - target_onset
+      - go_cue
+      - movement_onset
+      - target_acquired
+      - reward
+    relevant_regions:
+      - M1
+      - PMd
+      - PPC
+      - cerebellum
+    suggested_analyses:
+      - reach_direction_tuning
+      - velocity_decoding
+      - neural_population_trajectory
+      - preparatory_activity
+
+  - id: grasping
+    label: Grasping
+    category: motor_control
+    definition: >
+      A task involving hand shaping, object interaction, grip force, or reach-to-grasp movements.
+    synonyms:
+      - reach to grasp
+      - grasp task
+      - grip task
+      - object grasping
+      - grip force
+    common_events:
+      - object_presented
+      - reach_onset
+      - grasp_onset
+      - contact
+      - lift
+      - release
+    relevant_regions:
+      - M1
+      - PMv
+      - AIP
+      - somatosensory_cortex
+      - cerebellum
+    suggested_analyses:
+      - grip_force_decoding
+      - grasp_type_decoding
+      - hand_kinematic_analysis
+      - contact_aligned_activity
+
+  - id: locomotion
+    label: Locomotion
+    category: motor_control
+    definition: >
+      A task or behavioral condition involving walking, running, treadmill movement, or free movement.
+    synonyms:
+      - running
+      - walking
+      - treadmill
+      - wheel running
+      - open field locomotion
+      - freely moving
+    common_events:
+      - movement_onset
+      - speed
+      - acceleration
+      - stop
+      - turn
+      - position
+    relevant_modalities:
+      - behavior_video
+      - pose_tracking
+      - calcium_imaging
+      - extracellular_ephys
+      - lfp
+    relevant_regions:
+      - motor_cortex
+      - striatum
+      - cerebellum
+      - spinal_cord
+      - hippocampus
+    suggested_analyses:
+      - speed_modulation
+      - movement_state_decoding
+      - locomotion_aligned_activity
+      - pose_neural_correlation
+
+  - id: skilled_reaching
+    label: Skilled Reaching
+    category: motor_learning
+    definition: >
+      A task where animals learn and perform precise reaching movements, often for food pellets.
+    synonyms:
+      - pellet reaching
+      - single pellet reaching
+      - skilled reach
+      - forelimb reaching
+    common_events:
+      - reach_start
+      - grasp
+      - pellet_contact
+      - success
+      - failure
+      - retrieval
+    relevant_regions:
+      - motor_cortex
+      - somatosensory_cortex
+      - striatum
+      - cerebellum
+    suggested_analyses:
+      - success_failure_comparison
+      - reach_kinematics
+      - motor_learning_curve
+      - movement_phase_decoding
+
+  - id: joystick_task
+    label: Joystick Task
+    category: motor_control
+    definition: >
+      A task where subjects control a joystick to move a cursor or perform directional motor actions.
+    synonyms:
+      - joystick movement
+      - cursor control
+      - manual control task
+      - brain computer interface cursor
+    common_events:
+      - target_onset
+      - joystick_movement
+      - cursor_movement
+      - target_acquired
+      - reward
+    relevant_regions:
+      - M1
+      - PMd
+      - PPC
+      - somatosensory_cortex
+    suggested_analyses:
+      - cursor_velocity_decoding
+      - endpoint_error_analysis
+      - movement_direction_decoding
+      - closed_loop_performance
+
+  - id: speech_production
+    label: Speech Production
+    category: motor_control
+    definition: >
+      A task involving overt speech, attempted speech, phoneme production, syllable production, or speech motor planning.
+    synonyms:
+      - speaking task
+      - speech task
+      - attempted speech
+      - phoneme production
+      - syllable production
+      - articulation
+    common_events:
+      - cue_onset
+      - speech_onset
+      - phoneme
+      - syllable
+      - word
+      - sentence
+      - response
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - emg
+      - audio
+    relevant_regions:
+      - speech_motor_cortex
+      - Broca_area
+      - STG
+      - ventral_sensorimotor_cortex
+    suggested_analyses:
+      - speech_onset_decoding
+      - phoneme_decoding
+      - articulatory_feature_decoding
+      - attempted_speech_classification
+
+  # ---------------------------------------------------------------------------
+  # Sensory and perceptual tasks
+  # ---------------------------------------------------------------------------
+  - id: visual_decision_making
+    label: Visual Decision-Making
+    category: perception_decision
+    definition: >
+      A task where subjects make choices based on visual stimuli.
+    synonyms:
+      - visual discrimination
+      - visual choice
+      - perceptual decision-making
+      - visual detection
+      - visual categorization
+    common_events:
+      - stimulus_onset
+      - choice
+      - feedback
+      - reward
+      - reaction_time
+    relevant_modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - eeg
+      - meg
+      - fmri
+      - behavior_video
+    relevant_regions:
+      - V1
+      - visual_cortex
+      - PPC
+      - ACC
+      - IT
+      - LGN
+    suggested_analyses:
+      - stimulus_decoding
+      - choice_selectivity
+      - reaction_time_modeling
+      - psychometric_curve
+      - sensory_choice_separation
+
+  - id: visual_discrimination
+    label: Visual Discrimination
+    category: perception
+    definition: >
+      A task requiring discrimination between visual features such as orientation, contrast, motion, shape, or category.
+    synonyms:
+      - orientation discrimination
+      - contrast discrimination
+      - motion discrimination
+      - visual categorization
+      - image discrimination
+    common_events:
+      - stimulus_onset
+      - stimulus_offset
+      - response
+      - correct
+      - error
+      - reward
+    relevant_regions:
+      - V1
+      - V2
+      - V4
+      - MT
+      - IT
+      - PPC
+    suggested_analyses:
+      - tuning_curve_analysis
+      - stimulus_decoding
+      - psychometric_curve
+      - category_selectivity
+
+  - id: naturalistic_vision
+    label: Naturalistic Vision
+    category: perception
+    definition: >
+      A task or passive-viewing condition using natural scenes, images, or videos.
+    synonyms:
+      - natural images
+      - natural scenes
+      - movie viewing
+      - naturalistic video
+      - natural vision
+      - video stimulus
+    common_events:
+      - image_onset
+      - movie_start
+      - movie_frame
+      - scene_cut
+      - fixation
+      - saccade
+    relevant_regions:
+      - V1
+      - V2
+      - V4
+      - IT
+      - visual_cortex
+      - LGN
+    suggested_analyses:
+      - stimulus_feature_encoding
+      - receptive_field_modeling
+      - encoding_model
+      - representational_similarity_analysis
+      - foundation_model_alignment
+
+  - id: auditory_discrimination
+    label: Auditory Discrimination
+    category: perception
+    definition: >
+      A task requiring discrimination of tones, sounds, phonemes, amplitude, frequency, or auditory categories.
+    synonyms:
+      - tone discrimination
+      - auditory detection
+      - frequency discrimination
+      - sound categorization
+      - auditory choice
+    common_events:
+      - sound_onset
+      - sound_offset
+      - response
+      - reward
+      - error
+    relevant_regions:
+      - auditory_cortex
+      - A1
+      - thalamus
+      - prefrontal_cortex
+      - striatum
+    suggested_analyses:
+      - frequency_tuning
+      - auditory_decoding
+      - stimulus_response_alignment
+      - psychometric_curve
+
+  - id: somatosensory_detection
+    label: Somatosensory Detection
+    category: perception
+    definition: >
+      A task involving detection or discrimination of tactile, whisker, vibration, or touch stimuli.
+    synonyms:
+      - tactile detection
+      - whisker detection
+      - vibration detection
+      - touch discrimination
+      - somatosensory task
+    common_events:
+      - stimulus_onset
+      - whisker_stimulus
+      - touch
+      - response
+      - reward
+      - error
+    relevant_regions:
+      - S1
+      - barrel_cortex
+      - thalamus
+      - motor_cortex
+      - PPC
+    suggested_analyses:
+      - sensory_evoked_response
+      - detection_decoding
+      - stimulus_intensity_encoding
+      - hit_miss_comparison
+
+  - id: olfactory_discrimination
+    label: Olfactory Discrimination
+    category: perception
+    definition: >
+      A task requiring discrimination, detection, or categorization of odors.
+    synonyms:
+      - odor discrimination
+      - odor task
+      - olfactory choice
+      - odor categorization
+    common_events:
+      - odor_onset
+      - odor_offset
+      - sniff
+      - choice
+      - reward
+      - error
+    relevant_regions:
+      - olfactory_bulb
+      - piriform_cortex
+      - OFC
+      - amygdala
+      - hippocampus
+    suggested_analyses:
+      - odor_decoding
+      - sniff_aligned_activity
+      - odor_choice_decoding
+      - category_selectivity
+
+  - id: multisensory_integration
+    label: Multisensory Integration
+    category: perception
+    definition: >
+      A task involving integration or comparison of stimuli across sensory modalities.
+    synonyms:
+      - audiovisual integration
+      - multisensory task
+      - crossmodal integration
+      - audio visual task
+    common_events:
+      - visual_stimulus
+      - auditory_stimulus
+      - tactile_stimulus
+      - response
+      - conflict
+      - reward
+    relevant_regions:
+      - superior_colliculus
+      - PPC
+      - temporal_cortex
+      - prefrontal_cortex
+    suggested_analyses:
+      - multisensory_enhancement
+      - crossmodal_decoding
+      - conflict_response
+      - modality_interaction_analysis
+
+  # ---------------------------------------------------------------------------
+  # Social, affective, and natural behavior
+  # ---------------------------------------------------------------------------
+  - id: social_interaction
+    label: Social Interaction
+    category: social_behavior
+    definition: >
+      A task or naturalistic condition involving interaction between animals or humans.
+    synonyms:
+      - social behavior
+      - social interaction
+      - social preference
+      - conspecific interaction
+      - dyadic interaction
+    common_events:
+      - approach
+      - investigation
+      - contact
+      - avoidance
+      - aggression
+      - grooming
+      - vocalization
+    relevant_modalities:
+      - behavior_video
+      - pose_tracking
+      - calcium_imaging
+      - extracellular_ephys
+      - fiber_photometry
+    relevant_regions:
+      - mPFC
+      - amygdala
+      - hypothalamus
+      - nucleus_accumbens
+      - hippocampus
+    suggested_analyses:
+      - social_approach_index
+      - interaction_bout_detection
+      - pose_dynamics
+      - social_state_decoding
+
+  - id: social_preference
+    label: Social Preference
+    category: social_behavior
+    definition: >
+      A task measuring preference for social versus nonsocial stimuli or familiar versus novel conspecifics.
+    synonyms:
+      - three chamber social test
+      - social novelty
+      - social preference test
+      - sociability assay
+    common_events:
+      - chamber_entry
+      - social_zone_entry
+      - object_zone_entry
+      - investigation
+      - contact
+    relevant_regions:
+      - mPFC
+      - amygdala
+      - nucleus_accumbens
+      - hippocampus
+    suggested_analyses:
+      - social_preference_index
+      - zone_time_analysis
+      - investigation_bout_detection
+
+  - id: open_field
+    label: Open Field
+    category: natural_behavior
+    definition: >
+      A freely moving exploration assay often used to measure locomotion, anxiety-like behavior, and exploratory patterns.
+    synonyms:
+      - open field test
+      - open arena
+      - free exploration
+      - locomotor assay
+    common_events:
+      - position
+      - center_entry
+      - edge_entry
+      - movement_onset
+      - freezing
+      - rearing
+    relevant_regions:
+      - hippocampus
+      - amygdala
+      - striatum
+      - motor_cortex
+      - mPFC
+    suggested_analyses:
+      - center_time_analysis
+      - locomotion_state_decoding
+      - speed_modulation
+      - anxiety_like_behavior_index
+
+  - id: elevated_plus_maze
+    label: Elevated Plus Maze
+    category: affective_behavior
+    definition: >
+      A maze assay with open and closed arms used to measure anxiety-like behavior.
+    synonyms:
+      - EPM
+      - elevated plus maze
+      - anxiety maze
+    common_events:
+      - open_arm_entry
+      - closed_arm_entry
+      - center_entry
+      - freezing
+      - exploration
+    relevant_regions:
+      - amygdala
+      - hippocampus
+      - mPFC
+      - BNST
+    suggested_analyses:
+      - open_arm_time
+      - anxiety_like_behavior_index
+      - transition_analysis
+      - freezing_analysis
+
+  - id: forced_swim
+    label: Forced Swim
+    category: affective_behavior
+    definition: >
+      A behavioral assay measuring swimming, climbing, and immobility in water.
+    synonyms:
+      - forced swim test
+      - FST
+      - behavioral despair
+      - immobility test
+    common_events:
+      - swim
+      - climb
+      - immobility
+      - movement_onset
+      - session_start
+    relevant_regions:
+      - prefrontal_cortex
+      - hippocampus
+      - amygdala
+      - dorsal_raphe
+    suggested_analyses:
+      - immobility_duration
+      - behavioral_state_segmentation
+      - treatment_effect_analysis
+
+  - id: sucrose_preference
+    label: Sucrose Preference
+    category: reward_affect
+    definition: >
+      A task measuring preference for sucrose solution over water, often used as an anhedonia-related assay.
+    synonyms:
+      - sucrose preference test
+      - anhedonia assay
+      - sweet preference
+    common_events:
+      - bottle_contact
+      - lick
+      - sucrose_consumption
+      - water_consumption
+      - session_start
+    relevant_regions:
+      - nucleus_accumbens
+      - OFC
+      - hypothalamus
+      - dopamine_midbrain
+    suggested_analyses:
+      - sucrose_preference_index
+      - licking_microstructure
+      - consumption_rate_analysis
+
+  # ---------------------------------------------------------------------------
+  # Sleep, arousal, and state
+  # ---------------------------------------------------------------------------
+  - id: sleep_wake
+    label: Sleep/Wake State
+    category: brain_state
+    definition: >
+      A recording condition or task involving sleep, wakefulness, REM, NREM, or arousal transitions.
+    synonyms:
+      - sleep
+      - wake
+      - sleep wake
+      - REM
+      - NREM
+      - arousal state
+      - vigilance state
+    common_events:
+      - wake
+      - NREM
+      - REM
+      - arousal
+      - sleep_onset
+      - awakening
+    relevant_modalities:
+      - eeg
+      - lfp
+      - emg
+      - extracellular_ephys
+      - calcium_imaging
+    relevant_regions:
+      - cortex
+      - thalamus
+      - hippocampus
+      - hypothalamus
+      - brainstem
+    suggested_analyses:
+      - sleep_stage_classification
+      - spectral_power_analysis
+      - arousal_transition_analysis
+      - spindle_detection
+      - ripple_detection
+
+  - id: pupil_arousal
+    label: Pupil/Arousal Tracking
+    category: brain_state
+    definition: >
+      A task or condition where pupil size, running, whisking, or other arousal indicators are measured.
+    synonyms:
+      - pupil tracking
+      - pupil-linked arousal
+      - arousal
+      - vigilance
+      - running arousal
+      - whisking
+    common_events:
+      - pupil_diameter
+      - running_speed
+      - whisking
+      - arousal_transition
+      - stimulus_onset
+    relevant_regions:
+      - visual_cortex
+      - LC
+      - cortex
+      - thalamus
+      - basal_forebrain
+    suggested_analyses:
+      - pupil_neural_correlation
+      - arousal_state_decoding
+      - state_dependent_gain
+      - running_modulation
+
+  # ---------------------------------------------------------------------------
+  # Human cognitive / clinical paradigms
+  # ---------------------------------------------------------------------------
+  - id: resting_state
+    label: Resting State
+    category: spontaneous_activity
+    definition: >
+      A condition where subjects are recorded without an explicit task, often used to study intrinsic dynamics and functional connectivity.
+    synonyms:
+      - rest
+      - resting-state
+      - eyes open rest
+      - eyes closed rest
+      - spontaneous activity
+    common_events:
+      - rest_start
+      - rest_end
+      - eyes_open
+      - eyes_closed
+    relevant_modalities:
+      - eeg
+      - meg
+      - fmri
+      - ieeg
+      - ecog
+      - lfp
+    relevant_regions:
+      - cortex
+      - default_mode_network
+      - hippocampus
+      - thalamus
+    suggested_analyses:
+      - functional_connectivity
+      - spectral_power_analysis
+      - network_state_analysis
+      - independent_component_analysis
+
+  - id: oddball
+    label: Oddball
+    category: attention
+    definition: >
+      A task where rare target or deviant stimuli are embedded among frequent standard stimuli.
+    synonyms:
+      - auditory oddball
+      - visual oddball
+      - novelty oddball
+      - P300 task
+      - deviant detection
+    common_events:
+      - standard_stimulus
+      - deviant_stimulus
+      - target
+      - response
+      - P300
+    relevant_modalities:
+      - eeg
+      - meg
+      - ieeg
+      - fmri
+    relevant_regions:
+      - auditory_cortex
+      - prefrontal_cortex
+      - parietal_cortex
+      - ACC
+    suggested_analyses:
+      - event_related_potential
+      - p300_detection
+      - target_standard_decoding
+      - novelty_response_analysis
+
+  - id: motor_imagery
+    label: Motor Imagery
+    category: bci
+    definition: >
+      A task where subjects imagine movements without overt execution, commonly used in BCI.
+    synonyms:
+      - imagined movement
+      - motor imagery BCI
+      - left hand right hand imagery
+      - imagined hand movement
+      - MI task
+    common_events:
+      - cue_onset
+      - imagery_start
+      - imagery_end
+      - left_hand
+      - right_hand
+      - feet
+      - tongue
+    relevant_modalities:
+      - eeg
+      - meg
+      - ecog
+      - ieeg
+    relevant_regions:
+      - motor_cortex
+      - sensorimotor_cortex
+      - SMA
+      - parietal_cortex
+    suggested_analyses:
+      - mu_beta_desynchronization
+      - motor_imagery_classification
+      - common_spatial_patterns
+      - bci_decoder_training
+
+  - id: seizure_monitoring
+    label: Seizure Monitoring
+    category: clinical_neurophysiology
+    definition: >
+      A clinical recording condition involving seizure events, interictal activity, or epilepsy monitoring.
+    synonyms:
+      - seizure
+      - epilepsy
+      - ictal
+      - interictal
+      - seizure onset
+      - epilepsy monitoring
+    common_events:
+      - seizure_onset
+      - seizure_offset
+      - interictal_spike
+      - clinical_event
+      - annotation
+    relevant_modalities:
+      - eeg
+      - ieeg
+      - ecog
+      - lfp
+    relevant_regions:
+      - temporal_lobe
+      - hippocampus
+      - cortex
+      - seizure_focus
+    suggested_analyses:
+      - seizure_detection
+      - interictal_spike_detection
+      - onset_zone_localization
+      - spectral_event_analysis
+
+  - id: language_comprehension
+    label: Language Comprehension
+    category: cognition
+    definition: >
+      A task involving listening to, reading, or understanding words, sentences, stories, or natural speech.
+    synonyms:
+      - language task
+      - speech comprehension
+      - story listening
+      - reading task
+      - sentence comprehension
+      - natural language
+    common_events:
+      - word_onset
+      - sentence_onset
+      - phoneme
+      - audio_onset
+      - response
+      - comprehension_question
+    relevant_modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - meg
+      - fmri
+      - audio
+    relevant_regions:
+      - STG
+      - temporal_cortex
+      - Broca_area
+      - Wernicke_area
+      - frontal_cortex
+    suggested_analyses:
+      - word_onset_encoding
+      - speech_envelope_tracking
+      - semantic_decoding
+      - language_model_alignment
+
+  - id: emotion_recognition
+    label: Emotion Recognition
+    category: affective_cognition
+    definition: >
+      A task where subjects identify, rate, or respond to emotional stimuli.
+    synonyms:
+      - affective task
+      - emotional faces
+      - emotion classification
+      - emotional image task
+    common_events:
+      - stimulus_onset
+      - emotional_face
+      - emotional_image
+      - rating
+      - response
+    relevant_regions:
+      - amygdala
+      - OFC
+      - insula
+      - ACC
+      - temporal_cortex
+    suggested_analyses:
+      - emotion_decoding
+      - valence_arousal_modeling
+      - stimulus_response_analysis
+
+  - id: pain_task
+    label: Pain Task
+    category: sensory_affective
+    definition: >
+      A task involving painful, thermal, mechanical, or nociceptive stimulation.
+    synonyms:
+      - pain
+      - nociception
+      - thermal pain
+      - mechanical pain
+      - heat pain
+      - cold pain
+    common_events:
+      - stimulus_onset
+      - pain_rating
+      - withdrawal
+      - response
+      - stimulus_offset
+    relevant_modalities:
+      - eeg
+      - fmri
+      - calcium_imaging
+      - extracellular_ephys
+      - behavior_video
+    relevant_regions:
+      - insula
+      - ACC
+      - somatosensory_cortex
+      - thalamus
+      - PAG
+    suggested_analyses:
+      - pain_evoked_response
+      - rating_encoding
+      - withdrawal_latency
+      - nociceptive_decoding
+
+# Cross-cutting behavior labels. These are not tasks, but should be searchable.
+behavior_labels:
+  - id: choice
+    label: Choice
+    synonyms: [choice, decision, selected option, response option]
+  - id: reaction_time
+    label: Reaction Time
+    synonyms: [reaction time, response latency, RT, latency]
+  - id: reward
+    label: Reward
+    synonyms: [reward, reinforcement, juice, pellet, sucrose, water reward]
+  - id: omission
+    label: Omission
+    synonyms: [omission, reward omission, no reward, unrewarded]
+  - id: error
+    label: Error
+    synonyms: [error, incorrect, failed trial, mistake]
+  - id: correct
+    label: Correct
+    synonyms: [correct, hit, success, rewarded correct]
+  - id: lick
+    label: Lick
+    synonyms: [lick, licking, lick bout, lickometer]
+  - id: lever_press
+    label: Lever Press
+    synonyms: [lever press, bar press, press]
+  - id: nose_poke
+    label: Nose Poke
+    synonyms: [nose poke, port entry, poking]
+  - id: movement_onset
+    label: Movement Onset
+    synonyms: [movement onset, move onset, reach start, motion onset]
+  - id: freezing
+    label: Freezing
+    synonyms: [freezing, immobility, freeze]
+  - id: hesitation
+    label: Hesitation
+    synonyms: [hesitation, pause, deliberation, vicarious trial and error]
+  - id: post_error_slowing
+    label: Post-Error Slowing
+    synonyms: [post-error slowing, slowing after error, post error latency]
+  - id: pupil
+    label: Pupil
+    synonyms: [pupil, pupil diameter, pupil size, pupillometry]
+  - id: running_speed
+    label: Running Speed
+    synonyms: [running, running speed, wheel speed, locomotion speed]

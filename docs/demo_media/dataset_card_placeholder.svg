@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Dataset card placeholder</title>
+  <desc id="desc">Placeholder image for the public demo dataset card screen.</desc>
+  <rect width="1200" height="675" fill="#0a1929"/>
+  <rect x="72" y="52" width="1056" height="571" rx="18" fill="#102a43" stroke="#334e68"/>
+  <text x="104" y="104" fill="#10b981" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">DATASET CARD</text>
+  <text x="104" y="152" fill="#d9e2ec" font-family="Inter, Arial, sans-serif" font-size="38" font-weight="700">Reusable scientific handoff artifact</text>
+  <text x="104" y="190" fill="#9fb3c8" font-family="Inter, Arial, sans-serif" font-size="20">Replace with a screenshot showing readiness, provenance, linked papers, and notebook generation.</text>
+  <rect x="104" y="238" width="640" height="300" rx="12" fill="#0a1929" stroke="#334e68"/>
+  <text x="132" y="284" fill="#d9e2ec" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Experimental structure</text>
+  <text x="132" y="326" fill="#22d3ee" font-family="Inter, Arial, sans-serif" font-size="18">task: go_nogo</text>
+  <text x="132" y="360" fill="#10b981" font-family="Inter, Arial, sans-serif" font-size="18">behavior: lick, reward, choice</text>
+  <text x="132" y="394" fill="#8b5cf6" font-family="Inter, Arial, sans-serif" font-size="18">modality: calcium imaging</text>
+  <text x="132" y="428" fill="#f59e0b" font-family="Inter, Arial, sans-serif" font-size="18">provenance: source archive + linked paper</text>
+  <text x="132" y="478" fill="#bcccdc" font-family="Inter, Arial, sans-serif" font-size="18">Notebook template available</text>
+  <rect x="792" y="238" width="280" height="300" rx="12" fill="#0a1929" stroke="#334e68"/>
+  <text x="832" y="302" fill="#22d3ee" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="700">85</text>
+  <text x="832" y="336" fill="#9fb3c8" font-family="Inter, Arial, sans-serif" font-size="18">analysis readiness</text>
+  <line x1="832" y1="376" x2="1032" y2="376" stroke="#334e68"/>
+  <text x="832" y="420" fill="#10b981" font-family="Inter, Arial, sans-serif" font-size="18">strengths</text>
+  <text x="832" y="456" fill="#f59e0b" font-family="Inter, Arial, sans-serif" font-size="18">limitations</text>
+  <text x="832" y="492" fill="#9fb3c8" font-family="Inter, Arial, sans-serif" font-size="18">missing metadata</text>
+</svg>

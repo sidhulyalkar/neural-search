@@ -49,3 +49,120 @@ benchmark_queries:
     query: "Find social interaction datasets with behavior video and neural recordings."
     expected_tasks: [social_interaction]
     expected_modalities_any: [behavior_video, pose_tracking, calcium_imaging, extracellular_ephys]
+
+  # Brain region-specific queries
+  - id: q011
+    query: "Find OFC recordings during value-based decision making."
+    expected_tasks: [value_based_decision, reversal_learning, delay_discounting]
+    expected_regions_any: [ofc, orbitofrontal_cortex]
+    expected_behaviors: [choice, reward, value]
+
+  - id: q012
+    query: "Find mPFC neural activity during working memory tasks."
+    expected_tasks: [working_memory, delayed_match_to_sample]
+    expected_regions_any: [mpfc, medial_prefrontal_cortex, prefrontal_cortex]
+
+  - id: q013
+    query: "Find striatum recordings during reward learning with dopamine signals."
+    expected_regions_any: [striatum, dorsal_striatum, ventral_striatum, nucleus_accumbens]
+    expected_behaviors: [reward, reward_prediction, dopamine]
+
+  - id: q014
+    query: "Find hippocampus spatial navigation recordings with place cells."
+    expected_tasks: [spatial_navigation, place_cell_recording]
+    expected_regions_any: [hippocampus, ca1, ca3, dentate_gyrus]
+    expected_behaviors: [spatial_position, navigation]
+
+  - id: q015
+    query: "Find M1 motor cortex recordings during reaching or grasping."
+    expected_tasks: [reaching, center_out_reaching, grasping]
+    expected_regions_any: [m1, motor_cortex, primary_motor_cortex]
+
+  # Modality-specific queries
+  - id: q016
+    query: "Find fiber photometry datasets with reward-related signals."
+    expected_modalities_any: [fiber_photometry]
+    expected_behaviors: [reward, reward_prediction, dopamine]
+
+  - id: q017
+    query: "Find two-photon calcium imaging datasets in visual cortex."
+    expected_modalities_any: [calcium_imaging, two_photon]
+    expected_regions_any: [visual_cortex, v1, primary_visual_cortex]
+
+  - id: q018
+    query: "Find fMRI datasets during cognitive control tasks."
+    expected_modalities_any: [fmri, functional_mri]
+    expected_tasks: [cognitive_control, stroop, flanker, go_nogo]
+
+  - id: q019
+    query: "Find pose tracking datasets for automated behavior analysis."
+    expected_modalities_any: [pose_tracking, behavior_video, deeplabcut, sleap]
+    expected_analysis_any: [behavior_classification, pose_estimation]
+
+  # Data standard-specific queries
+  - id: q020
+    query: "Find NWB-formatted electrophysiology datasets from DANDI."
+    expected_data_standards: [nwb]
+    expected_sources: [dandi]
+    expected_modalities_any: [extracellular_ephys, neuropixels, ecog, ieeg]
+
+  - id: q021
+    query: "Find BIDS-formatted neuroimaging datasets from OpenNeuro."
+    expected_data_standards: [bids]
+    expected_sources: [openneuro]
+    expected_modalities_any: [fmri, eeg, ieeg]
+
+  # Analysis goal-specific queries
+  - id: q022
+    query: "Find datasets suitable for training reward prediction models."
+    expected_behaviors: [reward, reward_prediction, reward_omission]
+    expected_analysis_any: [reward_prediction, value_estimation, temporal_difference]
+
+  - id: q023
+    query: "Find datasets with trial-aligned neural activity for event analysis."
+    expected_behaviors: [trial_start, stimulus_onset, response, outcome]
+    expected_analysis_any: [event_alignment, trial_averaging, psth]
+
+  - id: q024
+    query: "Find closed-loop BCI datasets with real-time neural feedback."
+    expected_tasks: [bci_control, motor_imagery, closed_loop_control]
+    expected_modalities_any: [ecog, ieeg, eeg, extracellular_ephys]
+    expected_analysis_any: [real_time_decoding, bci_classification]
+
+  - id: q025
+    query: "Find datasets ready for trial outcome prediction analysis."
+    expected_behaviors: [trial_outcome, correct, error, choice]
+    expected_analysis_any: [trial_outcome_prediction, choice_decoding]
+
+  # Species-specific queries
+  - id: q026
+    query: "Find mouse Neuropixels datasets during decision-making."
+    expected_species: [mouse]
+    expected_modalities_any: [neuropixels]
+    expected_tasks: [decision_making, visual_decision_making, go_nogo]
+
+  - id: q027
+    query: "Find non-human primate reaching datasets for motor decoding."
+    expected_species: [macaque, rhesus, non_human_primate]
+    expected_tasks: [reaching, center_out_reaching, grasping]
+    expected_analysis_any: [motor_decoding, trajectory_prediction]
+
+  - id: q028
+    query: "Find human iEEG datasets with speech or language tasks."
+    expected_species: [human]
+    expected_modalities_any: [ieeg, ecog]
+    expected_tasks: [speech, language, auditory_processing]
+
+  # Hard negative test queries
+  - id: q029
+    query: "Find probabilistic reversal learning datasets NOT using fMRI."
+    expected_tasks: [probabilistic_reversal_learning, reversal_learning]
+    hard_negative_modalities: [fmri]
+    expected_modalities_any: [calcium_imaging, extracellular_ephys, fiber_photometry]
+
+  - id: q030
+    query: "Find visual cortex recordings from mouse NOT using EEG."
+    expected_species: [mouse]
+    expected_regions_any: [visual_cortex, v1]
+    hard_negative_modalities: [eeg, fmri]
+    expected_modalities_any: [calcium_imaging, neuropixels, extracellular_ephys]

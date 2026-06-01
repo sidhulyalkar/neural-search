@@ -1,0 +1,498 @@
+# Neural Search Demo Corpus
+# These are scientifically plausible demo datasets for search testing.
+# source_type: curated_demo = plausible structure, synthetic metadata
+# Real public datasets should use source_type: real_public
+
+datasets:
+  # ============================================================================
+  # EXISTING DEMO DATASETS (migrated from seed)
+  # ============================================================================
+
+  - dataset_id: DEMO_GONOGO_CALCIUM
+    title: Demo Go/NoGo calcium imaging dataset
+    description: Mouse mPFC calcium imaging during a Go/NoGo response inhibition task with lick, hit, false alarm, cue onset, reward, and omission events.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [medial_prefrontal_cortex, mPFC, prelimbic_cortex]
+    modalities: [calcium_imaging, two_photon, behavior_video]
+    tasks: [go_nogo, response_inhibition]
+    behavioral_events: [lick, reward, omission, correct, false_alarm, hit, miss, cue_onset]
+    analysis_goals: [event_aligned_activity, trial_outcome_decoding, response_inhibition_decoding]
+    data_standards: [NWB]
+    file_formats: [nwb, h5]
+    keywords: [cognitive control, inhibitory control, action withholding, licking behavior]
+    scientific_relevance: Response inhibition paradigm with clear trial structure and neural correlates
+    expected_queries: [go nogo, response inhibition, lick behavior, mPFC calcium]
+
+  - dataset_id: DEMO_REVERSAL_EPHYS
+    title: Demo reversal learning electrophysiology dataset
+    description: Mouse OFC and striatum extracellular electrophysiology during probabilistic reversal learning with choice, reward omission, reversal points, and trial outcomes.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [orbitofrontal_cortex, OFC, striatum, dorsal_striatum, ventral_striatum]
+    modalities: [extracellular_ephys, spikes, LFP]
+    tasks: [reversal_learning, probabilistic_reversal_learning]
+    behavioral_events: [choice, reward, omission, error, reversal_point, trial_outcome]
+    analysis_goals: [reward_prediction_error, value_estimation, latent_state_modeling, q_learning]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [reward learning, cognitive flexibility, value representation, dopamine]
+    scientific_relevance: Classic reversal learning paradigm for studying flexible decision-making
+    expected_queries: [reversal learning, reward omission, OFC, striatum]
+
+  - dataset_id: DEMO_DELAY_DISCOUNTING
+    title: Demo delay discounting behavior and neural dataset
+    description: Rat mPFC and nucleus accumbens fiber photometry during delay discounting with intertemporal choice, offer onset, delay period, immediate reward, delayed reward, and reaction time.
+    source_type: curated_demo
+    source_name: demo
+    species: [rat]
+    brain_regions: [medial_prefrontal_cortex, mPFC, nucleus_accumbens, ventral_striatum]
+    modalities: [fiber_photometry, behavior_video]
+    tasks: [delay_discounting, intertemporal_choice]
+    behavioral_events: [choice, reward, reaction_time, delay_period, offer_onset]
+    analysis_goals: [subjective_value_modeling, impulsivity_index, temporal_discounting]
+    data_standards: [BIDS]
+    file_formats: [nwb, csv]
+    keywords: [impulsivity, temporal discounting, dopamine, reward anticipation]
+    scientific_relevance: Intertemporal choice paradigm for studying value and impulsivity
+    expected_queries: [delay discounting, fiber photometry, reward choice, impulsivity]
+
+  - dataset_id: DEMO_REACHING_ECOG_IEEG
+    title: Demo reaching ECoG and iEEG dataset
+    description: Human ECoG and iEEG recordings during center-out reaching and grasping with target onset, movement onset, reach direction, BCI cursor control, and kinematic tracking.
+    source_type: curated_demo
+    source_name: demo
+    species: [human]
+    brain_regions: [motor_cortex, M1, primary_motor_cortex, somatosensory_cortex, parietal_cortex]
+    modalities: [ecog, ieeg, pose_tracking, bci]
+    tasks: [reaching, center_out_reaching, grasping, bci_control]
+    behavioral_events: [movement_onset, choice, target_onset, reach_direction]
+    analysis_goals: [motor_decoding, trajectory_prediction, closed_loop_control, cursor_velocity_decoding]
+    data_standards: [BIDS]
+    file_formats: [edf, bids]
+    keywords: [brain-computer interface, motor control, neural prosthetics, movement]
+    scientific_relevance: Human intracranial recordings for BCI development
+    expected_queries: [reaching, ECoG, iEEG, motor cortex, BCI]
+
+  - dataset_id: DEMO_VISUAL_DECISION_NEUROPIXELS
+    title: Demo visual decision-making Neuropixels dataset
+    description: Mouse visual cortex and PPC Neuropixels recordings during visual decision-making and visual discrimination with stimulus onset, choice, reward, feedback, and reaction time.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [visual_cortex, V1, primary_visual_cortex, posterior_parietal_cortex, PPC]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [visual_decision_making, visual_discrimination, two_alternative_forced_choice]
+    behavioral_events: [choice, reward, reaction_time, correct, error, stimulus_onset, feedback]
+    analysis_goals: [choice_decoding, sensory_encoding, decision_confidence, psychometric_analysis]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [visual perception, perceptual decision, stimulus choice, accumulation]
+    scientific_relevance: Large-scale recordings during visual decision-making
+    expected_queries: [visual decision, Neuropixels, mouse, visual cortex]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - MOTOR/BCI
+  # ============================================================================
+
+  - dataset_id: DEMO_MOTOR_IMAGERY_EEG
+    title: Demo motor imagery EEG dataset for BCI
+    description: Human scalp EEG recordings during motor imagery BCI task with left/right hand imagination, cursor control feedback, and real-time classification.
+    source_type: curated_demo
+    source_name: demo
+    species: [human]
+    brain_regions: [motor_cortex, M1, premotor_cortex, supplementary_motor_area]
+    modalities: [eeg, scalp_eeg]
+    tasks: [motor_imagery, bci_control, imagined_movement]
+    behavioral_events: [imagery_onset, imagery_offset, feedback, cursor_movement]
+    analysis_goals: [bci_classification, real_time_decoding, motor_intention_decoding]
+    data_standards: [BIDS]
+    file_formats: [edf, bids]
+    keywords: [brain-computer interface, motor imagery, EEG, imagined movement, neuroprosthetics]
+    scientific_relevance: Non-invasive BCI paradigm using motor imagery
+    expected_queries: [motor imagery, EEG, BCI, imagined movement]
+
+  - dataset_id: DEMO_NHP_REACHING_UTAH
+    title: Demo non-human primate reaching with Utah array
+    description: Macaque motor cortex and premotor cortex Utah array recordings during center-out reaching with hand position tracking, muscle EMG, and cursor control.
+    source_type: curated_demo
+    source_name: demo
+    species: [macaque, non_human_primate, rhesus]
+    brain_regions: [motor_cortex, M1, premotor_cortex, PMd, PMv]
+    modalities: [utah_array, extracellular_ephys, spikes, emg]
+    tasks: [reaching, center_out_reaching, arm_movement]
+    behavioral_events: [movement_onset, target_onset, reach_direction, movement_offset]
+    analysis_goals: [motor_decoding, trajectory_prediction, population_dynamics, neural_manifold]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [monkey, motor control, neural prosthetics, population coding, arm reaching]
+    scientific_relevance: Classic primate motor control paradigm with high-density recordings
+    expected_queries: [macaque, primate reaching, motor decoding, Utah array]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - HIPPOCAMPUS/NAVIGATION
+  # ============================================================================
+
+  - dataset_id: DEMO_HIPPOCAMPUS_NAVIGATION
+    title: Demo hippocampus spatial navigation dataset
+    description: Mouse CA1 and CA3 tetrode recordings during spatial navigation in a linear track and T-maze with place cell firing, theta oscillations, and spatial position tracking.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [hippocampus, CA1, CA3, dentate_gyrus]
+    modalities: [tetrode, extracellular_ephys, spikes, LFP, position_tracking]
+    tasks: [spatial_navigation, place_cell_recording, spatial_memory]
+    behavioral_events: [spatial_position, navigation, reward_location, turn_choice]
+    analysis_goals: [place_cell_decoding, spatial_encoding, theta_phase_coding, replay_detection]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [place cells, spatial coding, navigation, memory, theta rhythm]
+    scientific_relevance: Classic paradigm for studying hippocampal spatial coding
+    expected_queries: [hippocampus, spatial navigation, place cells, CA1]
+
+  - dataset_id: DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS
+    title: Demo virtual reality navigation Neuropixels
+    description: Mouse hippocampus and entorhinal cortex Neuropixels during virtual reality navigation with visual landmarks, reward locations, and running behavior.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [hippocampus, CA1, entorhinal_cortex, medial_entorhinal_cortex]
+    modalities: [neuropixels, extracellular_ephys, spikes, running_wheel, pupil_tracking]
+    tasks: [spatial_navigation, virtual_reality, foraging]
+    behavioral_events: [spatial_position, running_speed, reward, landmark]
+    analysis_goals: [place_cell_decoding, grid_cell_analysis, path_integration]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [virtual reality, spatial cognition, grid cells, entorhinal cortex]
+    scientific_relevance: Large-scale recordings during VR navigation
+    expected_queries: [navigation, Neuropixels, hippocampus, virtual reality]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - COGNITIVE CONTROL / WORKING MEMORY
+  # ============================================================================
+
+  - dataset_id: DEMO_WORKING_MEMORY_EPHYS
+    title: Demo working memory prefrontal electrophysiology
+    description: Mouse medial prefrontal cortex Neuropixels during delayed match-to-sample working memory task with sample, delay period, choice, and reward.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [medial_prefrontal_cortex, mPFC, anterior_cingulate_cortex, ACC]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [working_memory, delayed_match_to_sample, delayed_response]
+    behavioral_events: [sample_onset, delay_period, choice, reward, error]
+    analysis_goals: [persistent_activity, delay_period_coding, memory_decoding]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [short-term memory, persistent activity, prefrontal cortex, cognitive control]
+    scientific_relevance: Working memory paradigm with delay period neural activity
+    expected_queries: [working memory, mPFC, delay period, prefrontal]
+
+  - dataset_id: DEMO_COGNITIVE_CONTROL_FMRI
+    title: Demo cognitive control fMRI dataset
+    description: Human whole-brain fMRI during Stroop and Go/NoGo tasks with conflict trials, error trials, and reaction time measurements.
+    source_type: curated_demo
+    source_name: demo
+    species: [human]
+    brain_regions: [anterior_cingulate_cortex, ACC, dorsolateral_prefrontal_cortex, DLPFC, inferior_frontal_gyrus]
+    modalities: [fmri, functional_mri, bold]
+    tasks: [cognitive_control, stroop, go_nogo, flanker, conflict_monitoring]
+    behavioral_events: [stimulus_onset, response, error, conflict_trial, congruent_trial]
+    analysis_goals: [error_related_activity, conflict_detection, response_inhibition_analysis]
+    data_standards: [BIDS]
+    file_formats: [nifti, bids]
+    keywords: [executive function, cognitive control, conflict, inhibition, attention]
+    scientific_relevance: Classic cognitive control paradigm with fMRI
+    expected_queries: [fMRI, cognitive control, Stroop, Go/NoGo, ACC]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - SPEECH/LANGUAGE
+  # ============================================================================
+
+  - dataset_id: DEMO_SPEECH_ECOG
+    title: Demo speech production ECoG dataset
+    description: Human sensorimotor cortex ECoG during speech production and perception with phoneme articulation, word reading, and auditory feedback.
+    source_type: curated_demo
+    source_name: demo
+    species: [human]
+    brain_regions: [motor_cortex, sensorimotor_cortex, auditory_cortex, Brocas_area, inferior_frontal_gyrus]
+    modalities: [ecog, ieeg, audio]
+    tasks: [speech, speech_production, speech_perception, language, word_reading]
+    behavioral_events: [phoneme_onset, word_onset, articulation, auditory_stimulus]
+    analysis_goals: [speech_decoding, phoneme_classification, articulatory_encoding]
+    data_standards: [BIDS]
+    file_formats: [edf, wav, bids]
+    keywords: [speech, language, articulation, phonemes, auditory, vocalization]
+    scientific_relevance: Human intracranial recordings during speech for neuroprosthetics
+    expected_queries: [speech, ECoG, language, human iEEG]
+
+  - dataset_id: DEMO_AUDITORY_PROCESSING
+    title: Demo auditory processing electrophysiology
+    description: Mouse auditory cortex Neuropixels during passive listening and auditory discrimination with tone pips, frequency sweeps, and natural sounds.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [auditory_cortex, A1, primary_auditory_cortex, inferior_colliculus]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [auditory_processing, auditory_discrimination, passive_listening]
+    behavioral_events: [stimulus_onset, sound_onset, frequency, amplitude]
+    analysis_goals: [sensory_encoding, frequency_tuning, spectrotemporal_receptive_field]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [hearing, auditory, tonotopy, sound, frequency tuning]
+    scientific_relevance: Auditory cortex recordings during sound processing
+    expected_queries: [auditory, sound, hearing, auditory cortex]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - SEIZURE/CLINICAL
+  # ============================================================================
+
+  - dataset_id: DEMO_SEIZURE_IEEG
+    title: Demo seizure monitoring iEEG dataset
+    description: Human temporal and frontal lobe iEEG during epilepsy monitoring with seizure onset zones, interictal spikes, and annotated seizure events.
+    source_type: curated_demo
+    source_name: demo
+    species: [human]
+    brain_regions: [temporal_lobe, hippocampus, frontal_lobe, amygdala]
+    modalities: [ieeg, seeg, LFP]
+    tasks: [seizure_monitoring, epilepsy_monitoring, resting_state]
+    behavioral_events: [seizure_onset, seizure_offset, interictal_spike, ictal_activity]
+    analysis_goals: [seizure_detection, seizure_prediction, epileptogenic_zone_localization]
+    data_standards: [BIDS]
+    file_formats: [edf, bids]
+    keywords: [epilepsy, seizure, ictal, interictal, clinical, monitoring]
+    scientific_relevance: Clinical iEEG for epilepsy research and seizure prediction
+    expected_queries: [seizure, iEEG, epilepsy, seizure onset]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - NATURALISTIC/AROUSAL
+  # ============================================================================
+
+  - dataset_id: DEMO_NATURALISTIC_VISION
+    title: Demo naturalistic vision with pupil tracking
+    description: Mouse visual cortex two-photon calcium imaging during naturalistic movie viewing with pupil dilation, running, and arousal state tracking.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [visual_cortex, V1, primary_visual_cortex, higher_visual_areas]
+    modalities: [calcium_imaging, two_photon, pupil_tracking, running_wheel]
+    tasks: [naturalistic_vision, passive_viewing, arousal_modulation]
+    behavioral_events: [pupil_dilation, running_speed, arousal_state, movie_frame]
+    analysis_goals: [sensory_encoding, arousal_modulation, state_dependent_coding]
+    data_standards: [NWB]
+    file_formats: [nwb, tiff]
+    keywords: [natural scenes, movies, arousal, pupil, running, behavioral state]
+    scientific_relevance: Naturalistic stimuli with behavioral state monitoring
+    expected_queries: [naturalistic vision, pupil, arousal, two-photon]
+
+  - dataset_id: DEMO_SLEEP_EPHYS
+    title: Demo sleep state electrophysiology
+    description: Mouse hippocampus and cortex recordings during sleep with REM, NREM, SWS stages, sleep spindles, sharp-wave ripples, and replay events.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [hippocampus, CA1, prefrontal_cortex, visual_cortex]
+    modalities: [extracellular_ephys, spikes, LFP, emg]
+    tasks: [sleep, resting_state]
+    behavioral_events: [REM, NREM, slow_wave_sleep, spindle, sharp_wave_ripple]
+    analysis_goals: [sleep_staging, replay_detection, memory_consolidation]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [sleep, memory consolidation, replay, ripples, spindles, slow waves]
+    scientific_relevance: Sleep recordings for memory consolidation research
+    expected_queries: [sleep, resting state, replay, memory consolidation]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - BEHAVIOR/POSE
+  # ============================================================================
+
+  - dataset_id: DEMO_POSE_TRACKING_BEHAVIOR
+    title: Demo pose tracking social behavior dataset
+    description: Mouse behavior video with DeepLabCut and SLEAP pose tracking during social interaction, including approach, investigation, and aggression behaviors.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: []
+    modalities: [behavior_video, pose_tracking, deeplabcut, sleap]
+    tasks: [social_interaction, free_behavior, social_approach]
+    behavioral_events: [approach, investigation, grooming, aggression, escape]
+    analysis_goals: [behavior_classification, pose_estimation, social_behavior_analysis]
+    data_standards: [NWB]
+    file_formats: [nwb, mp4, csv]
+    keywords: [pose estimation, markerless tracking, social behavior, ethology, DeepLabCut, SLEAP]
+    scientific_relevance: Automated behavior analysis with modern pose tracking
+    expected_queries: [pose tracking, DeepLabCut, SLEAP, behavior video, social]
+
+  - dataset_id: DEMO_FACEMAP_PUPIL
+    title: Demo facemap and pupil arousal dataset
+    description: Mouse face video with Facemap analysis, pupil tracking, and whisker movements during passive viewing and spontaneous behavior.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [visual_cortex]
+    modalities: [behavior_video, facemap, pupil_tracking, whisker_tracking, calcium_imaging]
+    tasks: [passive_viewing, arousal_modulation, spontaneous_behavior]
+    behavioral_events: [pupil_dilation, whisker_movement, running_speed, grooming]
+    analysis_goals: [arousal_state_decoding, behavioral_state_classification]
+    data_standards: [NWB]
+    file_formats: [nwb, mp4]
+    keywords: [face tracking, arousal, pupil, whiskers, behavioral state, Facemap]
+    scientific_relevance: Behavioral state monitoring during neural recordings
+    expected_queries: [Facemap, pupil, arousal, whisker, behavioral state]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - DATA STANDARDS
+  # ============================================================================
+
+  - dataset_id: DEMO_DANDI_NWB_EPHYS
+    title: Demo DANDI-style NWB electrophysiology
+    description: Mouse cortex and hippocampus Neuropixels dataset formatted according to DANDI archive standards with full NWB metadata and provenance.
+    source_type: curated_demo
+    source_name: dandi
+    source_url: https://dandiarchive.org/dandiset/000000
+    species: [mouse]
+    brain_regions: [hippocampus, visual_cortex, CA1]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [visual_decision_making, passive_viewing]
+    behavioral_events: [stimulus_onset, choice, reward]
+    analysis_goals: [population_dynamics, dimensionality_reduction]
+    data_standards: [NWB, DANDI]
+    file_formats: [nwb]
+    keywords: [DANDI, NWB, Neurodata Without Borders, open data, reproducibility]
+    scientific_relevance: Example of FAIR-compliant neural data sharing
+    expected_queries: [DANDI, NWB, Neuropixels, open data]
+
+  - dataset_id: DEMO_OPENNEURO_BIDS_FMRI
+    title: Demo OpenNeuro BIDS fMRI dataset
+    description: Human whole-brain fMRI during cognitive task formatted according to BIDS standards with full metadata and derivatives.
+    source_type: curated_demo
+    source_name: openneuro
+    source_url: https://openneuro.org/datasets/ds000000
+    species: [human]
+    brain_regions: [prefrontal_cortex, parietal_cortex, visual_cortex]
+    modalities: [fmri, functional_mri, bold]
+    tasks: [working_memory, cognitive_control]
+    behavioral_events: [stimulus_onset, response, feedback]
+    analysis_goals: [activation_mapping, connectivity_analysis, task_decoding]
+    data_standards: [BIDS, OpenNeuro]
+    file_formats: [nifti, json, tsv]
+    keywords: [OpenNeuro, BIDS, fMRI, open data, neuroimaging, human]
+    scientific_relevance: Example of BIDS-compliant neuroimaging data sharing
+    expected_queries: [OpenNeuro, BIDS, fMRI, neuroimaging]
+
+  - dataset_id: DEMO_OPENNEURO_BIDS_IEEG
+    title: Demo OpenNeuro BIDS iEEG dataset
+    description: Human temporal lobe iEEG during memory task formatted according to BIDS-iEEG standards with electrode coordinates and events.
+    source_type: curated_demo
+    source_name: openneuro
+    source_url: https://openneuro.org/datasets/ds000001
+    species: [human]
+    brain_regions: [temporal_lobe, hippocampus, amygdala]
+    modalities: [ieeg, seeg, eeg]
+    tasks: [memory_encoding, memory_retrieval, recognition_memory]
+    behavioral_events: [stimulus_onset, response, encoding, retrieval]
+    analysis_goals: [memory_encoding_analysis, subsequent_memory_effect]
+    data_standards: [BIDS, OpenNeuro]
+    file_formats: [edf, json, tsv]
+    keywords: [OpenNeuro, BIDS-iEEG, intracranial, human, memory, epilepsy]
+    scientific_relevance: Example of BIDS-iEEG compliant clinical data sharing
+    expected_queries: [OpenNeuro, BIDS, iEEG, human, memory]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - REWARD/VALUE
+  # ============================================================================
+
+  - dataset_id: DEMO_DOPAMINE_PHOTOMETRY
+    title: Demo dopamine fiber photometry reward dataset
+    description: Mouse VTA and nucleus accumbens fiber photometry during Pavlovian conditioning with cue-reward associations, reward prediction error, and omission trials.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [ventral_tegmental_area, VTA, nucleus_accumbens, striatum]
+    modalities: [fiber_photometry, behavior_video]
+    tasks: [pavlovian_conditioning, classical_conditioning, reward_learning]
+    behavioral_events: [cue_onset, reward, omission, reward_prediction_error, anticipation]
+    analysis_goals: [reward_prediction_error, temporal_difference, dopamine_dynamics]
+    data_standards: [NWB]
+    file_formats: [nwb, csv]
+    keywords: [dopamine, reward, conditioning, prediction error, associative learning]
+    scientific_relevance: Classic paradigm for studying dopamine reward signals
+    expected_queries: [dopamine, fiber photometry, reward prediction, Pavlovian]
+
+  - dataset_id: DEMO_FORAGING_EPHYS
+    title: Demo foraging electrophysiology dataset
+    description: Mouse OFC and ACC Neuropixels during dynamic foraging task with patch leaving, reward rate estimation, and exploration-exploitation tradeoffs.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [orbitofrontal_cortex, OFC, anterior_cingulate_cortex, ACC]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [foraging, patch_foraging, explore_exploit]
+    behavioral_events: [patch_entry, patch_leave, reward, travel_time]
+    analysis_goals: [value_estimation, optimal_foraging, exploration_exploitation]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [foraging, explore exploit, marginal value, patch leaving, decision]
+    scientific_relevance: Foraging paradigm for studying value-based decisions
+    expected_queries: [foraging, OFC, ACC, explore exploit, value]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - OPERANT/CONDITIONING
+  # ============================================================================
+
+  - dataset_id: DEMO_OPERANT_CONDITIONING
+    title: Demo operant conditioning dataset
+    description: Rat basal ganglia electrophysiology during operant lever press task with fixed ratio, variable ratio schedules, and extinction learning.
+    source_type: curated_demo
+    source_name: demo
+    species: [rat]
+    brain_regions: [striatum, dorsal_striatum, dorsolateral_striatum, substantia_nigra]
+    modalities: [extracellular_ephys, spikes]
+    tasks: [operant_conditioning, instrumental_conditioning, lever_press]
+    behavioral_events: [lever_press, reward, magazine_entry, timeout]
+    analysis_goals: [action_value_encoding, habit_formation, extinction_learning]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [operant, instrumental, lever press, habit, goal-directed, basal ganglia]
+    scientific_relevance: Classic operant conditioning for habit research
+    expected_queries: [operant, lever press, basal ganglia, habit]
+
+  # ============================================================================
+  # NEW DEMO DATASETS - TRIAL STRUCTURE
+  # ============================================================================
+
+  - dataset_id: DEMO_TRIAL_ALIGNED_EPHYS
+    title: Demo trial-aligned neural activity dataset
+    description: Mouse cortex and striatum Neuropixels during sensorimotor task with precise trial alignment, PSTH computation, and event-locked analysis.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [motor_cortex, striatum, visual_cortex]
+    modalities: [neuropixels, extracellular_ephys, spikes]
+    tasks: [sensorimotor_task, go_nogo]
+    behavioral_events: [trial_start, stimulus_onset, response, outcome, trial_end]
+    analysis_goals: [event_alignment, trial_averaging, psth, peristimulus_time_histogram]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [trial structure, event aligned, PSTH, peristimulus, trial averaging]
+    scientific_relevance: Dataset optimized for event-locked analysis
+    expected_queries: [trial aligned, PSTH, event analysis, trial averaging]
+
+  - dataset_id: DEMO_TRIAL_OUTCOME_PREDICTION
+    title: Demo trial outcome prediction dataset
+    description: Mouse prefrontal and striatal recordings during decision task optimized for trial outcome prediction with pre-response neural activity.
+    source_type: curated_demo
+    source_name: demo
+    species: [mouse]
+    brain_regions: [medial_prefrontal_cortex, mPFC, striatum]
+    modalities: [extracellular_ephys, spikes]
+    tasks: [decision_making, two_alternative_forced_choice]
+    behavioral_events: [trial_outcome, correct, error, choice, reaction_time]
+    analysis_goals: [trial_outcome_prediction, choice_decoding, pre_response_decoding]
+    data_standards: [NWB]
+    file_formats: [nwb]
+    keywords: [prediction, decoding, choice, outcome, classification]
+    scientific_relevance: Dataset for neural prediction of behavioral outcomes
+    expected_queries: [trial outcome, prediction, choice decoding, error prediction]

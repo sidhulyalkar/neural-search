@@ -1,0 +1,17 @@
+# Ablation evaluation config for latent usefulness v0.8
+version: "0.8"
+seed_pairs: "data/eval/usefulness_seed_pairs.jsonl"
+k: 10
+variants:
+  - bm25_only
+  - dense_only
+  - graph_only
+  - affordance_only
+  - bm25_dense_rrf
+  - hybrid_static
+  - hybrid_intent_aware
+  - latent_usefulness_v08
+outputs:
+  ablation_report: "reports/ablation_v08.md"
+  benchmark_report: "reports/usefulness_benchmark_v08.md"
+  affordance_report: "reports/affordance_validation_v2.md"

@@ -1,0 +1,24 @@
+{
+  "nwb": {
+    "trials": {
+      "count": 340,
+      "columns": ["start_time", "stop_time", "stimulus_onset", "choice", "reward"]
+    },
+    "units": {
+      "count": 812,
+      "columns": ["spike_times", "electrodes"]
+    },
+    "electrodes": {
+      "count": 384
+    },
+    "devices": ["Neuropixels 1.0 probe"],
+    "processing_modules": ["behavior", "ecephys"],
+    "intervals": ["trials"],
+    "subject": {
+      "subject_id": "mouse_steinmetz_fixture",
+      "species": "mouse"
+    },
+    "sessions": ["2017-01-05"],
+    "acquisition": ["ElectricalSeries", "SpikeEventSeries"]
+  }
+}

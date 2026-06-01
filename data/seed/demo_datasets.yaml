@@ -1,0 +1,874 @@
+datasets:
+- source: demo
+  source_id: DEMO_GONOGO_CALCIUM
+  title: Demo Go/NoGo calcium imaging dataset
+  description: Mouse mPFC calcium imaging during a Go/NoGo response inhibition task with lick, hit, false alarm, cue onset,
+    reward, and omission events.
+  url: https://example.org/demo/gonogo_calcium
+  species:
+  - mouse
+  modalities:
+  - calcium_imaging
+  - two_photon
+  - behavior_video
+  brain_regions:
+  - medial_prefrontal_cortex
+  - mPFC
+  - prelimbic_cortex
+  tasks:
+  - go_nogo
+  - response_inhibition
+  behaviors:
+  - lick
+  - reward
+  - omission
+  - correct
+  - false_alarm
+  - hit
+  - miss
+  - cue_onset
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_GONOGO_CALCIUM
+- source: demo
+  source_id: DEMO_REVERSAL_EPHYS
+  title: Demo reversal learning electrophysiology dataset
+  description: Mouse OFC and striatum extracellular electrophysiology during probabilistic reversal learning with choice,
+    reward omission, reversal points, and trial outcomes.
+  url: https://example.org/demo/reversal_ephys
+  species:
+  - mouse
+  modalities:
+  - extracellular_ephys
+  - spikes
+  - LFP
+  brain_regions:
+  - orbitofrontal_cortex
+  - OFC
+  - striatum
+  - dorsal_striatum
+  - ventral_striatum
+  tasks:
+  - reversal_learning
+  - probabilistic_reversal_learning
+  behaviors:
+  - choice
+  - reward
+  - omission
+  - error
+  - reversal_point
+  - trial_outcome
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_REVERSAL_EPHYS
+- source: demo
+  source_id: DEMO_DELAY_DISCOUNTING
+  title: Demo delay discounting behavior and neural dataset
+  description: Rat mPFC and nucleus accumbens fiber photometry during delay discounting with intertemporal choice, offer onset,
+    delay period, immediate reward, delayed reward, and reaction time.
+  url: https://example.org/demo/delay_discounting
+  species:
+  - rat
+  modalities:
+  - fiber_photometry
+  - behavior_video
+  brain_regions:
+  - medial_prefrontal_cortex
+  - mPFC
+  - nucleus_accumbens
+  - ventral_striatum
+  tasks:
+  - delay_discounting
+  - intertemporal_choice
+  behaviors:
+  - choice
+  - reward
+  - reaction_time
+  - delay_period
+  - offer_onset
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_DELAY_DISCOUNTING
+- source: demo
+  source_id: DEMO_REACHING_ECOG_IEEG
+  title: Demo reaching ECoG and iEEG dataset
+  description: Human ECoG and iEEG recordings during center-out reaching and grasping with target onset, movement onset, reach
+    direction, BCI cursor control, and kinematic tracking.
+  url: https://example.org/demo/reaching_ecog_ieeg
+  species:
+  - human
+  modalities:
+  - ecog
+  - ieeg
+  - pose_tracking
+  - bci
+  brain_regions:
+  - motor_cortex
+  - M1
+  - primary_motor_cortex
+  - somatosensory_cortex
+  - parietal_cortex
+  tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+  - bci_control
+  behaviors:
+  - movement_onset
+  - choice
+  - target_onset
+  - reach_direction
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_REACHING_ECOG_IEEG
+- source: demo
+  source_id: DEMO_VISUAL_DECISION_NEUROPIXELS
+  title: Demo visual decision-making Neuropixels dataset
+  description: Mouse visual cortex and PPC Neuropixels recordings during visual decision-making and visual discrimination
+    with stimulus onset, choice, reward, feedback, and reaction time.
+  url: https://example.org/demo/visual_decision_neuropixels
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - visual_cortex
+  - V1
+  - primary_visual_cortex
+  - posterior_parietal_cortex
+  - PPC
+  tasks:
+  - visual_decision_making
+  - visual_discrimination
+  - two_alternative_forced_choice
+  behaviors:
+  - choice
+  - reward
+  - reaction_time
+  - correct
+  - error
+  - stimulus_onset
+  - feedback
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_VISUAL_DECISION_NEUROPIXELS
+- source: demo
+  source_id: DEMO_MOTOR_IMAGERY_EEG
+  title: Demo motor imagery EEG dataset for BCI
+  description: Human scalp EEG recordings during motor imagery BCI task with left/right hand imagination, cursor control feedback,
+    and real-time classification.
+  url: https://example.org/demo/motor_imagery_eeg
+  species:
+  - human
+  modalities:
+  - eeg
+  - scalp_eeg
+  brain_regions:
+  - motor_cortex
+  - M1
+  - premotor_cortex
+  - supplementary_motor_area
+  tasks:
+  - motor_imagery
+  - bci_control
+  - imagined_movement
+  behaviors:
+  - imagery_onset
+  - imagery_offset
+  - feedback
+  - cursor_movement
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_MOTOR_IMAGERY_EEG
+- source: demo
+  source_id: DEMO_NHP_REACHING_UTAH
+  title: Demo non-human primate reaching with Utah array
+  description: Macaque motor cortex and premotor cortex Utah array recordings during center-out reaching with hand position
+    tracking, muscle EMG, and cursor control.
+  url: https://example.org/demo/nhp_reaching_utah
+  species:
+  - macaque
+  - non_human_primate
+  - rhesus
+  modalities:
+  - utah_array
+  - extracellular_ephys
+  - spikes
+  - emg
+  brain_regions:
+  - motor_cortex
+  - M1
+  - premotor_cortex
+  - PMd
+  - PMv
+  tasks:
+  - reaching
+  - center_out_reaching
+  - arm_movement
+  behaviors:
+  - movement_onset
+  - target_onset
+  - reach_direction
+  - movement_offset
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_NHP_REACHING_UTAH
+- source: demo
+  source_id: DEMO_HIPPOCAMPUS_NAVIGATION
+  title: Demo hippocampus spatial navigation dataset
+  description: Mouse CA1 and CA3 tetrode recordings during spatial navigation in a linear track and T-maze with place cell
+    firing, theta oscillations, and spatial position tracking.
+  url: https://example.org/demo/hippocampus_navigation
+  species:
+  - mouse
+  modalities:
+  - tetrode
+  - extracellular_ephys
+  - spikes
+  - LFP
+  - position_tracking
+  brain_regions:
+  - hippocampus
+  - CA1
+  - CA3
+  - dentate_gyrus
+  tasks:
+  - spatial_navigation
+  - place_cell_recording
+  - spatial_memory
+  behaviors:
+  - spatial_position
+  - navigation
+  - reward_location
+  - turn_choice
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_HIPPOCAMPUS_NAVIGATION
+- source: demo
+  source_id: DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS
+  title: Demo virtual reality navigation Neuropixels
+  description: Mouse hippocampus and entorhinal cortex Neuropixels during virtual reality navigation with visual landmarks,
+    reward locations, and running behavior.
+  url: https://example.org/demo/virtual_navigation_neuropixels
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  - running_wheel
+  - pupil_tracking
+  brain_regions:
+  - hippocampus
+  - CA1
+  - entorhinal_cortex
+  - medial_entorhinal_cortex
+  tasks:
+  - spatial_navigation
+  - virtual_reality
+  - foraging
+  behaviors:
+  - spatial_position
+  - running_speed
+  - reward
+  - landmark
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_VIRTUAL_NAVIGATION_NEUROPIXELS
+- source: demo
+  source_id: DEMO_WORKING_MEMORY_EPHYS
+  title: Demo working memory prefrontal electrophysiology
+  description: Mouse medial prefrontal cortex Neuropixels during delayed match-to-sample working memory task with sample,
+    delay period, choice, and reward.
+  url: https://example.org/demo/working_memory_ephys
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - medial_prefrontal_cortex
+  - mPFC
+  - anterior_cingulate_cortex
+  - ACC
+  tasks:
+  - working_memory
+  - delayed_match_to_sample
+  - delayed_response
+  behaviors:
+  - sample_onset
+  - delay_period
+  - choice
+  - reward
+  - error
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_WORKING_MEMORY_EPHYS
+- source: demo
+  source_id: DEMO_COGNITIVE_CONTROL_FMRI
+  title: Demo cognitive control fMRI dataset
+  description: Human whole-brain fMRI during Stroop and Go/NoGo tasks with conflict trials, error trials, and reaction time
+    measurements.
+  url: https://example.org/demo/cognitive_control_fmri
+  species:
+  - human
+  modalities:
+  - fmri
+  - functional_mri
+  - bold
+  brain_regions:
+  - anterior_cingulate_cortex
+  - ACC
+  - dorsolateral_prefrontal_cortex
+  - DLPFC
+  - inferior_frontal_gyrus
+  tasks:
+  - cognitive_control
+  - stroop
+  - go_nogo
+  - flanker
+  - conflict_monitoring
+  behaviors:
+  - stimulus_onset
+  - response
+  - error
+  - conflict_trial
+  - congruent_trial
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_COGNITIVE_CONTROL_FMRI
+- source: demo
+  source_id: DEMO_SPEECH_ECOG
+  title: Demo speech production ECoG dataset
+  description: Human sensorimotor cortex ECoG during speech production and perception with phoneme articulation, word reading,
+    and auditory feedback.
+  url: https://example.org/demo/speech_ecog
+  species:
+  - human
+  modalities:
+  - ecog
+  - ieeg
+  - audio
+  brain_regions:
+  - motor_cortex
+  - sensorimotor_cortex
+  - auditory_cortex
+  - Brocas_area
+  - inferior_frontal_gyrus
+  tasks:
+  - speech
+  - speech_production
+  - speech_perception
+  - language
+  - word_reading
+  behaviors:
+  - phoneme_onset
+  - word_onset
+  - articulation
+  - auditory_stimulus
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_SPEECH_ECOG
+- source: demo
+  source_id: DEMO_AUDITORY_PROCESSING
+  title: Demo auditory processing electrophysiology
+  description: Mouse auditory cortex Neuropixels during passive listening and auditory discrimination with tone pips, frequency
+    sweeps, and natural sounds.
+  url: https://example.org/demo/auditory_processing
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - auditory_cortex
+  - A1
+  - primary_auditory_cortex
+  - inferior_colliculus
+  tasks:
+  - auditory_processing
+  - auditory_discrimination
+  - passive_listening
+  behaviors:
+  - stimulus_onset
+  - sound_onset
+  - frequency
+  - amplitude
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_AUDITORY_PROCESSING
+- source: demo
+  source_id: DEMO_SEIZURE_IEEG
+  title: Demo seizure monitoring iEEG dataset
+  description: Human temporal and frontal lobe iEEG during epilepsy monitoring with seizure onset zones, interictal spikes,
+    and annotated seizure events.
+  url: https://example.org/demo/seizure_ieeg
+  species:
+  - human
+  modalities:
+  - ieeg
+  - seeg
+  - LFP
+  brain_regions:
+  - temporal_lobe
+  - hippocampus
+  - frontal_lobe
+  - amygdala
+  tasks:
+  - seizure_monitoring
+  - epilepsy_monitoring
+  - resting_state
+  behaviors:
+  - seizure_onset
+  - seizure_offset
+  - interictal_spike
+  - ictal_activity
+  data_standards:
+  - BIDS
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_SEIZURE_IEEG
+- source: demo
+  source_id: DEMO_NATURALISTIC_VISION
+  title: Demo naturalistic vision with pupil tracking
+  description: Mouse visual cortex two-photon calcium imaging during naturalistic movie viewing with pupil dilation, running,
+    and arousal state tracking.
+  url: https://example.org/demo/naturalistic_vision
+  species:
+  - mouse
+  modalities:
+  - calcium_imaging
+  - two_photon
+  - pupil_tracking
+  - running_wheel
+  brain_regions:
+  - visual_cortex
+  - V1
+  - primary_visual_cortex
+  - higher_visual_areas
+  tasks:
+  - naturalistic_vision
+  - passive_viewing
+  - arousal_modulation
+  behaviors:
+  - pupil_dilation
+  - running_speed
+  - arousal_state
+  - movie_frame
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_NATURALISTIC_VISION
+- source: demo
+  source_id: DEMO_SLEEP_EPHYS
+  title: Demo sleep state electrophysiology
+  description: Mouse hippocampus and cortex recordings during sleep with REM, NREM, SWS stages, sleep spindles, sharp-wave
+    ripples, and replay events.
+  url: https://example.org/demo/sleep_ephys
+  species:
+  - mouse
+  modalities:
+  - extracellular_ephys
+  - spikes
+  - LFP
+  - emg
+  brain_regions:
+  - hippocampus
+  - CA1
+  - prefrontal_cortex
+  - visual_cortex
+  tasks:
+  - sleep
+  - resting_state
+  behaviors:
+  - REM
+  - NREM
+  - slow_wave_sleep
+  - spindle
+  - sharp_wave_ripple
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_SLEEP_EPHYS
+- source: demo
+  source_id: DEMO_POSE_TRACKING_BEHAVIOR
+  title: Demo pose tracking social behavior dataset
+  description: Mouse behavior video with DeepLabCut and SLEAP pose tracking during social interaction, including approach,
+    investigation, and aggression behaviors.
+  url: https://example.org/demo/pose_tracking_behavior
+  species:
+  - mouse
+  modalities:
+  - behavior_video
+  - pose_tracking
+  - deeplabcut
+  - sleap
+  brain_regions: []
+  tasks:
+  - social_interaction
+  - free_behavior
+  - social_approach
+  behaviors:
+  - approach
+  - investigation
+  - grooming
+  - aggression
+  - escape
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_POSE_TRACKING_BEHAVIOR
+- source: demo
+  source_id: DEMO_FACEMAP_PUPIL
+  title: Demo facemap and pupil arousal dataset
+  description: Mouse face video with Facemap analysis, pupil tracking, and whisker movements during passive viewing and spontaneous
+    behavior.
+  url: https://example.org/demo/facemap_pupil
+  species:
+  - mouse
+  modalities:
+  - behavior_video
+  - facemap
+  - pupil_tracking
+  - whisker_tracking
+  - calcium_imaging
+  brain_regions:
+  - visual_cortex
+  tasks:
+  - passive_viewing
+  - arousal_modulation
+  - spontaneous_behavior
+  behaviors:
+  - pupil_dilation
+  - whisker_movement
+  - running_speed
+  - grooming
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_FACEMAP_PUPIL
+- source: dandi
+  source_id: DEMO_DANDI_NWB_EPHYS
+  title: Demo DANDI-style NWB electrophysiology
+  description: Mouse cortex and hippocampus Neuropixels dataset formatted according to DANDI archive standards with full NWB
+    metadata and provenance.
+  url: https://example.org/demo/dandi_nwb_ephys
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - hippocampus
+  - visual_cortex
+  - CA1
+  tasks:
+  - visual_decision_making
+  - passive_viewing
+  behaviors:
+  - stimulus_onset
+  - choice
+  - reward
+  data_standards:
+  - NWB
+  - DANDI
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_DANDI_NWB_EPHYS
+- source: openneuro
+  source_id: DEMO_OPENNEURO_BIDS_FMRI
+  title: Demo OpenNeuro BIDS fMRI dataset
+  description: Human whole-brain fMRI during cognitive task formatted according to BIDS standards with full metadata and derivatives.
+  url: https://example.org/demo/openneuro_bids_fmri
+  species:
+  - human
+  modalities:
+  - fmri
+  - functional_mri
+  - bold
+  brain_regions:
+  - prefrontal_cortex
+  - parietal_cortex
+  - visual_cortex
+  tasks:
+  - working_memory
+  - cognitive_control
+  behaviors:
+  - stimulus_onset
+  - response
+  - feedback
+  data_standards:
+  - BIDS
+  - OpenNeuro
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_OPENNEURO_BIDS_FMRI
+- source: openneuro
+  source_id: DEMO_OPENNEURO_BIDS_IEEG
+  title: Demo OpenNeuro BIDS iEEG dataset
+  description: Human temporal lobe iEEG during memory task formatted according to BIDS-iEEG standards with electrode coordinates
+    and events.
+  url: https://example.org/demo/openneuro_bids_ieeg
+  species:
+  - human
+  modalities:
+  - ieeg
+  - seeg
+  - eeg
+  brain_regions:
+  - temporal_lobe
+  - hippocampus
+  - amygdala
+  tasks:
+  - memory_encoding
+  - memory_retrieval
+  - recognition_memory
+  behaviors:
+  - stimulus_onset
+  - response
+  - encoding
+  - retrieval
+  data_standards:
+  - BIDS
+  - OpenNeuro
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_OPENNEURO_BIDS_IEEG
+- source: demo
+  source_id: DEMO_DOPAMINE_PHOTOMETRY
+  title: Demo dopamine fiber photometry reward dataset
+  description: Mouse VTA and nucleus accumbens fiber photometry during Pavlovian conditioning with cue-reward associations,
+    reward prediction error, and omission trials.
+  url: https://example.org/demo/dopamine_photometry
+  species:
+  - mouse
+  modalities:
+  - fiber_photometry
+  - behavior_video
+  brain_regions:
+  - ventral_tegmental_area
+  - VTA
+  - nucleus_accumbens
+  - striatum
+  tasks:
+  - pavlovian_conditioning
+  - classical_conditioning
+  - reward_learning
+  behaviors:
+  - cue_onset
+  - reward
+  - omission
+  - reward_prediction_error
+  - anticipation
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_DOPAMINE_PHOTOMETRY
+- source: demo
+  source_id: DEMO_FORAGING_EPHYS
+  title: Demo foraging electrophysiology dataset
+  description: Mouse OFC and ACC Neuropixels during dynamic foraging task with patch leaving, reward rate estimation, and
+    exploration-exploitation tradeoffs.
+  url: https://example.org/demo/foraging_ephys
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - orbitofrontal_cortex
+  - OFC
+  - anterior_cingulate_cortex
+  - ACC
+  tasks:
+  - foraging
+  - patch_foraging
+  - explore_exploit
+  behaviors:
+  - patch_entry
+  - patch_leave
+  - reward
+  - travel_time
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_FORAGING_EPHYS
+- source: demo
+  source_id: DEMO_OPERANT_CONDITIONING
+  title: Demo operant conditioning dataset
+  description: Rat basal ganglia electrophysiology during operant lever press task with fixed ratio, variable ratio schedules,
+    and extinction learning.
+  url: https://example.org/demo/operant_conditioning
+  species:
+  - rat
+  modalities:
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - striatum
+  - dorsal_striatum
+  - dorsolateral_striatum
+  - substantia_nigra
+  tasks:
+  - operant_conditioning
+  - instrumental_conditioning
+  - lever_press
+  behaviors:
+  - lever_press
+  - reward
+  - magazine_entry
+  - timeout
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_OPERANT_CONDITIONING
+- source: demo
+  source_id: DEMO_TRIAL_ALIGNED_EPHYS
+  title: Demo trial-aligned neural activity dataset
+  description: Mouse cortex and striatum Neuropixels during sensorimotor task with precise trial alignment, PSTH computation,
+    and event-locked analysis.
+  url: https://example.org/demo/trial_aligned_ephys
+  species:
+  - mouse
+  modalities:
+  - neuropixels
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - motor_cortex
+  - striatum
+  - visual_cortex
+  tasks:
+  - sensorimotor_task
+  - go_nogo
+  behaviors:
+  - trial_start
+  - stimulus_onset
+  - response
+  - outcome
+  - trial_end
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_TRIAL_ALIGNED_EPHYS
+- source: demo
+  source_id: DEMO_TRIAL_OUTCOME_PREDICTION
+  title: Demo trial outcome prediction dataset
+  description: Mouse prefrontal and striatal recordings during decision task optimized for trial outcome prediction with pre-response
+    neural activity.
+  url: https://example.org/demo/trial_outcome_prediction
+  species:
+  - mouse
+  modalities:
+  - extracellular_ephys
+  - spikes
+  brain_regions:
+  - medial_prefrontal_cortex
+  - mPFC
+  - striatum
+  tasks:
+  - decision_making
+  - two_alternative_forced_choice
+  behaviors:
+  - trial_outcome
+  - correct
+  - error
+  - choice
+  - reaction_time
+  data_standards:
+  - NWB
+  has_behavior: true
+  has_trials: true
+  license: CC-BY-4.0
+  linked_paper_ids:
+  - PAPER_TRIAL_OUTCOME_PREDICTION

@@ -1,0 +1,398 @@
+# Neural Search Adversarial Benchmark Queries v0.3
+# =================================================
+# These queries test scientific reasoning, ambiguity handling, exclusions,
+# and analysis affordance matching. Failures are expected initially and
+# should reveal gaps rather than fail the build.
+# Created: 2026-05-23
+
+benchmark_queries:
+  # =========================================================================
+  # HARD NEGATIVE / EXCLUSION QUERIES (7 queries)
+  # =========================================================================
+
+  - id: adv_001
+    query: "Find OFC reversal learning datasets, but exclude fMRI and pure behavior-only studies."
+    expected_tasks: [reversal_learning]
+    expected_regions_any: [ofc, orbitofrontal_cortex]
+    hard_negative_modalities: [fmri]
+    expected_modalities_any: [calcium_imaging, extracellular_ephys, fiber_photometry, neuropixels]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests exclusion parsing + modality filtering. Results should have neural recordings, not fMRI."
+    rationale: "OFC reversal learning is a common paradigm but users often need specific modalities."
+
+  - id: adv_002
+    query: "Find dopamine reward prediction error datasets but not seizure monitoring, sleep, or auditory tasks."
+    expected_behaviors: [reward_prediction, dopamine, reward]
+    expected_regions_any: [vta, snc, nucleus_accumbens, striatum]
+    hard_negative_dataset_ids: []
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Scientific ambiguity and explicit task exclusions."
+    rationale: "Users want reward-related data without clinical monitoring confounds."
+
+  - id: adv_003
+    query: "Find visual cortex recordings from mouse NOT using EEG or fMRI."
+    expected_species: [mouse]
+    expected_regions_any: [visual_cortex, v1, primary_visual_cortex]
+    hard_negative_modalities: [eeg, fmri]
+    expected_modalities_any: [calcium_imaging, neuropixels, extracellular_ephys, two_photon]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests multi-constraint exclusion with species + region + modality."
+    rationale: "Mouse visual neuroscience typically uses invasive recordings, not EEG/fMRI."
+
+  - id: adv_004
+    query: "Find primate motor cortex reaching data without Utah arrays."
+    expected_species: [macaque, rhesus, non_human_primate]
+    expected_tasks: [reaching, center_out_reaching, grasping]
+    expected_regions_any: [motor_cortex, m1, primary_motor_cortex]
+    hard_negative_modalities: [utah_array]
+    expected_modalities_any: [neuropixels, extracellular_ephys, ecog]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Uncommon exclusion within expected domain."
+    rationale: "Some analyses require specific electrode configurations."
+
+  - id: adv_005
+    query: "Find human speech datasets with iEEG but NOT fMRI studies."
+    expected_species: [human]
+    expected_tasks: [speech, language, auditory_processing]
+    expected_modalities_any: [ieeg, ecog]
+    hard_negative_modalities: [fmri]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Clinical iEEG speech is distinct from fMRI language studies."
+    rationale: "High temporal resolution required for speech decoding."
+
+  - id: adv_006
+    query: "Find reversal learning datasets using electrophysiology, exclude calcium imaging and fiber photometry."
+    expected_tasks: [reversal_learning, probabilistic_reversal_learning]
+    expected_modalities_any: [extracellular_ephys, neuropixels]
+    hard_negative_modalities: [calcium_imaging, fiber_photometry]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests preference for spike-based modalities over optical."
+    rationale: "Some analyses need spike timing not available in calcium."
+
+  - id: adv_007
+    query: "Find hippocampus spatial navigation NOT from virtual reality or head-fixed paradigms."
+    expected_tasks: [spatial_navigation, place_cell_recording]
+    expected_regions_any: [hippocampus, ca1, ca3]
+    expected_behaviors: [navigation, spatial_position]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Paradigm-level exclusion (VR vs real-world)."
+    rationale: "Place cell properties differ between real and virtual navigation."
+
+  # =========================================================================
+  # ANALYSIS AFFORDANCE QUERIES (8 queries)
+  # =========================================================================
+
+  - id: adv_008
+    query: "Find datasets suitable for fitting Q-learning models where choices, rewards, and trial outcomes are explicitly available."
+    expected_tasks: [reversal_learning, probabilistic_learning, delay_discounting]
+    expected_behaviors: [choice, reward, trial_outcome]
+    expected_analysis_any: [q_learning_modeling, value_estimation, temporal_difference]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests analysis affordance detection for RL modeling."
+    rationale: "Q-learning requires specific behavioral structure not always present."
+
+  - id: adv_009
+    query: "Find motor cortex reaching datasets with continuous kinematics, not just event labels."
+    expected_tasks: [reaching, center_out_reaching]
+    expected_regions_any: [motor_cortex, primary_motor_cortex, m1]
+    expected_behaviors: [kinematics, position, velocity]
+    expected_analysis_any: [motor_decoding, trajectory_prediction]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests analysis affordance for continuous behavioral signals."
+    rationale: "Motor decoding requires continuous kinematics, not just trial events."
+
+  - id: adv_010
+    query: "Find datasets that support trial-aligned neural activity analysis with explicit trial structure."
+    expected_behaviors: [trial_start, stimulus_onset, response, trial_outcome]
+    expected_analysis_any: [event_alignment, trial_averaging, psth]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests trial structure affordance detection."
+    rationale: "Many datasets claim trials but lack precise event timestamps."
+
+  - id: adv_011
+    query: "Find calcium imaging datasets that could support population dynamics analysis but are missing session metadata."
+    expected_modalities_any: [calcium_imaging, two_photon]
+    expected_analysis_any: [population_dynamics, state_space_modeling, dimensionality_reduction]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests missingness awareness alongside analysis potential."
+    rationale: "Expose partially-ready datasets with known gaps."
+
+  - id: adv_012
+    query: "Find datasets suitable for BCI decoding training with labeled neural-behavioral pairs."
+    expected_tasks: [motor_imagery, bci_control, cursor_control]
+    expected_modalities_any: [eeg, ecog, ieeg, neuropixels]
+    expected_behaviors: [kinematics, movement, cursor_position]
+    expected_analysis_any: [motor_decoding, bci_classification]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests cross-modal analysis affordance."
+    rationale: "BCI training requires synchronized neural and behavioral data."
+
+  - id: adv_013
+    query: "Find datasets ready for sleep stage classification with EEG and annotated sleep stages."
+    expected_tasks: [sleep_stage_classification, sleep_monitoring]
+    expected_modalities_any: [eeg, polysomnography]
+    expected_behaviors: [sleep_stage, rem, nrem, wake]
+    expected_analysis_any: [sleep_stage_classification]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests clinical affordance detection."
+    rationale: "Sleep classification needs expert annotations."
+
+  - id: adv_014
+    query: "Find datasets with spike sorting completed and ready for functional connectivity analysis."
+    expected_modalities_any: [extracellular_ephys, neuropixels]
+    expected_analysis_any: [functional_connectivity, cross_correlation, spike_correlation]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests processing level affordance."
+    rationale: "Connectivity needs sorted units, not raw data."
+
+  - id: adv_015
+    query: "Find datasets that could support reinforcement learning model fitting but may be missing reward timing."
+    expected_tasks: [reversal_learning, delay_discounting, probabilistic_learning]
+    expected_behaviors: [choice, reward]
+    expected_analysis_any: [q_learning_modeling, temporal_difference]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests partial affordance with known gaps."
+    rationale: "RL modeling needs precise reward timing often missing."
+
+  # =========================================================================
+  # AMBIGUOUS NATURAL LANGUAGE QUERIES (6 queries)
+  # =========================================================================
+
+  - id: adv_016
+    query: "Find datasets about reward in the brain."
+    expected_behaviors: [reward, reward_prediction]
+    expected_regions_any: [striatum, ofc, vta, nucleus_accumbens]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Vague query that should find reward-related datasets broadly."
+    rationale: "Test system's ability to expand ambiguous terms."
+
+  - id: adv_017
+    query: "Find neural data from decision tasks."
+    expected_tasks: [decision_making, visual_decision_making, reversal_learning, delay_discounting, go_nogo]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Broad decision-making query."
+    rationale: "Many task types involve 'decision' - system should expand."
+
+  - id: adv_018
+    query: "Find datasets where animals make choices."
+    expected_species: [mouse, rat, macaque]
+    expected_behaviors: [choice, decision]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Colloquial phrasing for choice behavior."
+    rationale: "Test natural language understanding for behavioral concepts."
+
+  - id: adv_019
+    query: "Find brain recordings during behavior."
+    expected_modalities_any: [calcium_imaging, extracellular_ephys, neuropixels, eeg, ecog, ieeg]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Extremely vague but valid query."
+    rationale: "Should return datasets with both neural and behavioral data."
+
+  - id: adv_020
+    query: "Find experiments studying how mice learn."
+    expected_species: [mouse]
+    expected_tasks: [reversal_learning, motor_learning, probabilistic_learning]
+    expected_behaviors: [learning, adaptation]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Natural language learning query."
+    rationale: "Test expansion of 'learn' to learning-related tasks."
+
+  - id: adv_021
+    query: "Find recordings from the front of the brain."
+    expected_regions_any: [prefrontal_cortex, mpfc, ofc, frontal_cortex, dlpfc]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Colloquial anatomical reference."
+    rationale: "Test anatomical synonym expansion."
+
+  # =========================================================================
+  # MISSING METADATA AWARENESS QUERIES (5 queries)
+  # =========================================================================
+
+  - id: adv_022
+    query: "Find datasets that might support decoding but are missing behavioral labels."
+    expected_modalities_any: [neuropixels, extracellular_ephys, calcium_imaging]
+    expected_analysis_any: [choice_decoding, motor_decoding]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests missingness-aware search."
+    rationale: "Surface datasets with neural data but incomplete behavioral annotation."
+
+  - id: adv_023
+    query: "Find NWB datasets that are missing trial structure metadata."
+    expected_data_standards: [nwb]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests metadata completeness awareness."
+    rationale: "NWB validity doesn't guarantee all expected tables are present."
+
+  - id: adv_024
+    query: "Find datasets with calcium imaging that lack cell ROI segmentation info."
+    expected_modalities_any: [calcium_imaging, two_photon]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests processing level awareness."
+    rationale: "Raw calcium imaging vs segmented ROIs are very different."
+
+  - id: adv_025
+    query: "Find electrophysiology datasets where spike sorting status is unknown."
+    expected_modalities_any: [extracellular_ephys, neuropixels]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests unknown processing state awareness."
+    rationale: "Users need to know if they must sort spikes themselves."
+
+  - id: adv_026
+    query: "Find datasets that probably have behavior videos but metadata doesn't confirm it."
+    expected_modalities_any: [behavior_video, pose_tracking]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests inference with uncertainty."
+    rationale: "Many datasets have videos not reflected in structured metadata."
+
+  # =========================================================================
+  # PAPER-DATASET LINKING QUERIES (4 queries)
+  # =========================================================================
+
+  - id: adv_027
+    query: "Find datasets associated with papers about dopamine and reward prediction error."
+    expected_behaviors: [dopamine, reward_prediction]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests paper-dataset linking via content."
+    rationale: "Link datasets to conceptually related literature."
+
+  - id: adv_028
+    query: "Find papers that used reversal learning paradigms with mouse subjects."
+    expected_tasks: [reversal_learning]
+    expected_species: [mouse]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests paper search with task+species constraints."
+    rationale: "Find methodology papers for specific paradigms."
+
+  - id: adv_029
+    query: "Find datasets that have been used in published papers about BCI."
+    expected_tasks: [motor_imagery, bci_control]
+    expected_analysis_any: [bci_classification, motor_decoding]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests dataset-paper provenance."
+    rationale: "Published datasets may have stronger validation."
+
+  - id: adv_030
+    query: "Find recent papers about neuropixels recordings in decision-making."
+    expected_modalities_any: [neuropixels]
+    expected_tasks: [decision_making, visual_decision_making]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests temporal and content filtering of papers."
+    rationale: "Neuropixels is recent technology; relevance depends on year."
+
+  # =========================================================================
+  # COMPLEX MULTI-CONSTRAINT QUERIES (5 queries)
+  # =========================================================================
+
+  - id: adv_031
+    query: "Find mouse mPFC calcium imaging during go/no-go task with lick behavior and NWB format."
+    expected_species: [mouse]
+    expected_regions_any: [mpfc, medial_prefrontal_cortex]
+    expected_modalities_any: [calcium_imaging, two_photon]
+    expected_tasks: [go_nogo]
+    expected_behaviors: [lick]
+    expected_data_standards: [nwb]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests multi-constraint precision."
+    rationale: "Very specific search should narrow to exact matches."
+
+  - id: adv_032
+    query: "Find human iEEG speech production datasets from DANDI with phoneme-level annotations."
+    expected_species: [human]
+    expected_modalities_any: [ieeg, ecog]
+    expected_tasks: [speech, language]
+    expected_sources: [dandi]
+    expected_behaviors: [phoneme, articulation]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests clinical + archive + annotation level constraints."
+    rationale: "Phoneme-level annotations are rare and valuable."
+
+  - id: adv_033
+    query: "Find primate reaching datasets with Utah array in M1 suitable for population-level analysis."
+    expected_species: [macaque, rhesus, non_human_primate]
+    expected_tasks: [reaching, center_out_reaching]
+    expected_regions_any: [m1, motor_cortex]
+    expected_modalities_any: [utah_array]
+    expected_analysis_any: [population_dynamics, motor_decoding]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests classic motor neuroscience paradigm."
+    rationale: "Utah array M1 reaching is a benchmark preparation."
+
+  - id: adv_034
+    query: "Find OpenNeuro BIDS EEG motor imagery datasets suitable for left-right hand classification."
+    expected_sources: [openneuro]
+    expected_data_standards: [bids]
+    expected_modalities_any: [eeg]
+    expected_tasks: [motor_imagery]
+    expected_behaviors: [left_hand, right_hand]
+    expected_analysis_any: [bci_classification, motor_decoding]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests BCI benchmark dataset identification."
+    rationale: "Classic BCI benchmark with well-defined expected outputs."
+
+  - id: adv_035
+    query: "Find rodent striatum fiber photometry datasets during probabilistic reward learning with reward omission trials."
+    expected_species: [mouse, rat]
+    expected_regions_any: [striatum, nucleus_accumbens]
+    expected_modalities_any: [fiber_photometry]
+    expected_tasks: [probabilistic_learning, reversal_learning]
+    expected_behaviors: [reward, omission, choice]
+    minimum_precision_at_5: 0.0
+    minimum_label_recall_at_10: 0.0
+    notes: "Tests dopamine/reward learning paradigm specificity."
+    rationale: "Omission trials are critical for reward prediction error studies."
+
+# Metadata
+metadata:
+  version: "0.3.0"
+  total_queries: 35
+  categories:
+    hard_negative_exclusion: 7
+    analysis_affordance: 8
+    ambiguous_natural_language: 6
+    missing_metadata_awareness: 5
+    paper_dataset_linking: 4
+    complex_multi_constraint: 5
+  notes: |
+    These queries are intentionally challenging and many are expected to fail initially.
+    Failures expose gaps in:
+    - Exclusion/negative constraint handling
+    - Analysis affordance detection
+    - Natural language understanding
+    - Metadata completeness awareness
+    - Paper-dataset linking
+
+    Track failures as improvement opportunities, not build failures.

@@ -1,0 +1,916 @@
+{
+  "analysis_family_counts": {
+    "bci_decoding": 3,
+    "behavioral_modeling": 18,
+    "biomarker_discovery": 7,
+    "clinical_prediction": 9,
+    "connectivity": 5,
+    "decoding": 20,
+    "encoding_modeling": 2,
+    "event_aligned_analysis": 22,
+    "kinematics": 18,
+    "memory_analysis": 4,
+    "neuromodulator_analysis": 2,
+    "phenotyping": 7,
+    "population_dynamics": 4,
+    "reinforcement_learning": 18,
+    "speech_decoding": 4,
+    "spike_train_analysis": 16,
+    "time_frequency": 3
+  },
+  "data_form_counts": {
+    "behavior": 18,
+    "clinical": 7,
+    "eeg_meg": 3,
+    "extracellular_ephys": 16,
+    "fiber_photometry": 2,
+    "intracranial_human_ephys": 4,
+    "mri": 2,
+    "optical_imaging": 4
+  },
+  "dataset_count": 30,
+  "datasets": [
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "population_dynamics",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "optical_imaging"
+      ],
+      "dataset_id": "dataset:dandi:000001:fixture",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "events",
+        "fluorescence",
+        "roi_masks"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:dandi:000020",
+      "families": [
+        "behavior",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:dandi:000026",
+      "families": [
+        "behavior",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:dandi:DEMO_DANDI_NWB_EPHYS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_AUDITORY_PROCESSING",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "connectivity",
+        "encoding_modeling",
+        "kinematics",
+        "phenotyping",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "clinical",
+        "mri"
+      ],
+      "dataset_id": "dataset:demo:DEMO_COGNITIVE_CONTROL_FMRI",
+      "families": [
+        "behavior",
+        "clinical",
+        "human_noninvasive"
+      ],
+      "missing_requirements": [
+        "diagnosis",
+        "events",
+        "images",
+        "participants",
+        "sessions"
+      ],
+      "scales": [
+        "organism",
+        "participant",
+        "whole_brain"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "event_aligned_analysis",
+        "kinematics",
+        "neuromodulator_analysis",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "fiber_photometry"
+      ],
+      "dataset_id": "dataset:demo:DEMO_DELAY_DISCOUNTING",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "events",
+        "fluorescence",
+        "trials"
+      ],
+      "scales": [
+        "organism",
+        "population_signal"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "event_aligned_analysis",
+        "kinematics",
+        "neuromodulator_analysis",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "fiber_photometry"
+      ],
+      "dataset_id": "dataset:demo:DEMO_DOPAMINE_PHOTOMETRY",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "events",
+        "fluorescence"
+      ],
+      "scales": [
+        "organism",
+        "population_signal"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "population_dynamics",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "optical_imaging"
+      ],
+      "dataset_id": "dataset:demo:DEMO_FACEMAP_PUPIL",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "events",
+        "fluorescence",
+        "roi_masks",
+        "trials"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_FORAGING_EPHYS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "population_dynamics",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "optical_imaging"
+      ],
+      "dataset_id": "dataset:demo:DEMO_GONOGO_CALCIUM",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "fluorescence",
+        "roi_masks",
+        "trials"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_HIPPOCAMPUS_NAVIGATION",
+      "families": [
+        "behavior",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "bci_decoding",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "connectivity",
+        "phenotyping",
+        "time_frequency"
+      ],
+      "data_forms": [
+        "clinical",
+        "eeg_meg"
+      ],
+      "dataset_id": "dataset:demo:DEMO_MOTOR_IMAGERY_EEG",
+      "families": [
+        "clinical",
+        "human_noninvasive"
+      ],
+      "missing_requirements": [
+        "channels",
+        "diagnosis",
+        "events",
+        "participants",
+        "sampling_rate",
+        "sessions"
+      ],
+      "scales": [
+        "participant",
+        "whole_brain"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "population_dynamics",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior",
+        "optical_imaging"
+      ],
+      "dataset_id": "dataset:demo:DEMO_NATURALISTIC_VISION",
+      "families": [
+        "behavior",
+        "imaging"
+      ],
+      "missing_requirements": [
+        "events",
+        "fluorescence",
+        "roi_masks",
+        "trials"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_NHP_REACHING_UTAH",
+      "families": [
+        "behavior",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_OPERANT_CONDITIONING",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "kinematics",
+        "reinforcement_learning"
+      ],
+      "data_forms": [
+        "behavior"
+      ],
+      "dataset_id": "dataset:demo:DEMO_POSE_TRACKING_BEHAVIOR",
+      "families": [
+        "behavior"
+      ],
+      "missing_requirements": [
+        "events",
+        "trials"
+      ],
+      "scales": [
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "clinical_prediction",
+        "kinematics",
+        "memory_analysis",
+        "reinforcement_learning",
+        "speech_decoding"
+      ],
+      "data_forms": [
+        "behavior",
+        "intracranial_human_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_REACHING_ECOG_IEEG",
+      "families": [
+        "behavior",
+        "clinical_ephys"
+      ],
+      "missing_requirements": [
+        "channels",
+        "electrodes",
+        "events",
+        "trials"
+      ],
+      "scales": [
+        "mesoscale",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_REVERSAL_EPHYS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "memory_analysis",
+        "phenotyping",
+        "reinforcement_learning",
+        "speech_decoding",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "clinical",
+        "extracellular_ephys",
+        "intracranial_human_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_SEIZURE_IEEG",
+      "families": [
+        "behavior",
+        "clinical",
+        "clinical_ephys",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "channels",
+        "diagnosis",
+        "electrodes",
+        "participants",
+        "sessions",
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "mesoscale",
+        "organism",
+        "participant"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "phenotyping",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "clinical",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_SLEEP_EPHYS",
+      "families": [
+        "behavior",
+        "clinical",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "diagnosis",
+        "participants",
+        "sessions",
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "organism",
+        "participant"
+      ]
+    },
+    {
+      "analysis_families": [
+        "clinical_prediction",
+        "memory_analysis",
+        "speech_decoding"
+      ],
+      "data_forms": [
+        "intracranial_human_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_SPEECH_ECOG",
+      "families": [
+        "clinical_ephys"
+      ],
+      "missing_requirements": [
+        "channels",
+        "electrodes",
+        "events"
+      ],
+      "scales": [
+        "mesoscale"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_TRIAL_ALIGNED_EPHYS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_TRIAL_OUTCOME_PREDICTION",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "behavioral_modeling",
+        "decoding",
+        "event_aligned_analysis",
+        "kinematics",
+        "reinforcement_learning",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "behavior",
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_VIRTUAL_NAVIGATION_NEUROPIXELS",
+      "families": [
+        "behavior",
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "trials",
+        "units"
+      ],
+      "scales": [
+        "cell_population",
+        "organism"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_VISUAL_DECISION_NEUROPIXELS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "decoding",
+        "event_aligned_analysis",
+        "spike_train_analysis"
+      ],
+      "data_forms": [
+        "extracellular_ephys"
+      ],
+      "dataset_id": "dataset:demo:DEMO_WORKING_MEMORY_EPHYS",
+      "families": [
+        "electrophysiology"
+      ],
+      "missing_requirements": [
+        "events",
+        "spike_times",
+        "units"
+      ],
+      "scales": [
+        "cell_population"
+      ]
+    },
+    {
+      "analysis_families": [
+        "biomarker_discovery",
+        "clinical_prediction",
+        "connectivity",
+        "encoding_modeling",
+        "phenotyping"
+      ],
+      "data_forms": [
+        "clinical",
+        "mri"
+      ],
+      "dataset_id": "dataset:openneuro:DEMO_OPENNEURO_BIDS_FMRI",
+      "families": [
+        "clinical",
+        "human_noninvasive"
+      ],
+      "missing_requirements": [
+        "diagnosis",
+        "events",
+        "images",
+        "participants",
+        "sessions"
+      ],
+      "scales": [
+        "participant",
+        "whole_brain"
+      ]
+    },
+    {
+      "analysis_families": [
+        "bci_decoding",
+        "behavioral_modeling",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "connectivity",
+        "kinematics",
+        "memory_analysis",
+        "phenotyping",
+        "reinforcement_learning",
+        "speech_decoding",
+        "time_frequency"
+      ],
+      "data_forms": [
+        "behavior",
+        "clinical",
+        "eeg_meg",
+        "intracranial_human_ephys"
+      ],
+      "dataset_id": "dataset:openneuro:DEMO_OPENNEURO_BIDS_IEEG",
+      "families": [
+        "behavior",
+        "clinical",
+        "clinical_ephys",
+        "human_noninvasive"
+      ],
+      "missing_requirements": [
+        "channels",
+        "diagnosis",
+        "electrodes",
+        "participants",
+        "sampling_rate",
+        "sessions",
+        "trials"
+      ],
+      "scales": [
+        "mesoscale",
+        "organism",
+        "participant",
+        "whole_brain"
+      ]
+    },
+    {
+      "analysis_families": [
+        "bci_decoding",
+        "behavioral_modeling",
+        "biomarker_discovery",
+        "clinical_prediction",
+        "connectivity",
+        "kinematics",
+        "phenotyping",
+        "reinforcement_learning",
+        "time_frequency"
+      ],
+      "data_forms": [
+        "behavior",
+        "clinical",
+        "eeg_meg"
+      ],
+      "dataset_id": "dataset:openneuro:ds003505",
+      "families": [
+        "behavior",
+        "clinical",
+        "human_noninvasive"
+      ],
+      "missing_requirements": [
+        "channels",
+        "diagnosis",
+        "participants",
+        "sampling_rate",
+        "sessions",
+        "trials"
+      ],
+      "scales": [
+        "organism",
+        "participant",
+        "whole_brain"
+      ]
+    }
+  ],
+  "family_counts": {
+    "behavior": 18,
+    "clinical": 7,
+    "clinical_ephys": 4,
+    "electrophysiology": 16,
+    "human_noninvasive": 5,
+    "imaging": 6
+  },
+  "missing_requirement_counts": {
+    "channels": 6,
+    "diagnosis": 7,
+    "electrodes": 4,
+    "events": 24,
+    "fluorescence": 6,
+    "images": 2,
+    "participants": 7,
+    "roi_masks": 4,
+    "sampling_rate": 3,
+    "sessions": 7,
+    "spike_times": 16,
+    "trials": 14,
+    "units": 15
+  },
+  "record_path": "data/corpus/normalized",
+  "scale_counts": {
+    "cell_population": 20,
+    "mesoscale": 4,
+    "organism": 18,
+    "participant": 7,
+    "population_signal": 2,
+    "whole_brain": 5
+  },
+  "species_counts": {
+    "human": 9,
+    "macaque": 1,
+    "mouse": 19,
+    "non-human_primate": 1,
+    "non_human_primate": 1,
+    "rat": 2,
+    "rhesus": 1
+  },
+  "underrepresented_data_forms": [
+    "intracellular_ephys",
+    "connectomics",
+    "molecular",
+    "computational_model"
+  ]
+}

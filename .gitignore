@@ -81,6 +81,12 @@ data/seed/*.json
 !data/seed/.gitkeep
 data/eval/results/
 !data/eval/results/.gitkeep
+data/raw/
+!data/raw/.gitkeep
+
+# Generated notebooks
+neural_search/notebooks/generated/
+!neural_search/notebooks/generated/.gitkeep
 
 # Secrets
 secrets/
