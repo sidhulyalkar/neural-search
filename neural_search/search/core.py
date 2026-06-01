@@ -1026,7 +1026,8 @@ def _augment_result_with_optional_scores(
         query_ctx = parsed_query.get("_query_usefulness_ctx")
         usefulness_intent = parsed_query.get("_usefulness_intent")
         if query_ctx is not None:
-            raw_record = result.dataset_card_preview if result.dataset_card_preview else {}
+            # Use raw corpus record (has tasks/modalities/species) not card_preview (summary only)
+            raw_record = dataset if isinstance(dataset, Mapping) else {}
             cand_ctx = dataset_context_from_record(raw_record)
             if not cand_ctx.dataset_id:
                 cand_ctx = DatasetContext(dataset_id=str(result.dataset_id))
@@ -1292,7 +1293,8 @@ def search_datasets(
         results.append(result)
 
     results.sort(key=lambda item: item.score, reverse=True)
-    parsed_response = dict(parsed)
+    # Strip private/internal keys (DatasetContext objects, enum instances) before serialising
+    parsed_response = {k: v for k, v in parsed.items() if not k.startswith("_")}
     if filtered_constraints:
         parsed_response["filtered_negative_constraints"] = filtered_constraints
     return SearchResponse(
