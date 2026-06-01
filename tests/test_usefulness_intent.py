@@ -45,6 +45,10 @@ class TestClassifyQueryIntent:
         result = classify_query_intent("find surprising related datasets")
         assert result.intent == UsefulnessIntent.EXPLORATION
 
+    def test_meta_analysis_detected(self):
+        result = classify_query_intent("meta-analysis of decision making datasets across studies")
+        assert result.intent == UsefulnessIntent.META_ANALYSIS
+
     def test_confidence_bounded(self):
         for q in ["foo", "DANDI:000001", "replicate mouse study", "compare species"]:
             r = classify_query_intent(q)

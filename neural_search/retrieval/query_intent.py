@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any
 
 
 class UsefulnessIntent(Enum):
@@ -78,7 +79,7 @@ _EXPLANATIONS: dict[UsefulnessIntent, str] = {
 
 def classify_query_intent(
     query: str,
-    parsed_constraints: object | None = None,
+    parsed_constraints: "Any | None" = None,
 ) -> IntentClassification:
     """Classify the latent usefulness intent of a query using deterministic rules."""
     lower = query.lower()
