@@ -195,14 +195,23 @@ def score_usefulness(
         from neural_search.retrieval.graph_usefulness import normalized_metapath_score
         graph_dict = graph.model_dump(mode="json")
         node_ids = graph_dict.get("nodes", {})
-        q_in_graph = query_context.dataset_id in node_ids
-        c_in_graph = candidate.dataset_id in node_ids
-        if q_in_graph and c_in_graph:
+
+        def _resolve_node_id(did: str) -> str | None:
+            if not did:
+                return None
+            if did in node_ids:
+                return did
+            # Graph nodes use "node:" prefix; dataset_ids use "dataset:source:id"
+            prefixed = f"node:{did}"
+            if prefixed in node_ids:
+                return prefixed
+            return None
+
+        q_node = _resolve_node_id(query_context.dataset_id)
+        c_node = _resolve_node_id(candidate.dataset_id)
+        if q_node and c_node:
             graph_proximity = normalized_metapath_score(
-                graph_dict,
-                query_context.dataset_id,
-                candidate.dataset_id,
-                "dataset_has_task",
+                graph_dict, q_node, c_node, "dataset_has_task",
             )
         else:
             graph_proximity = 0.3

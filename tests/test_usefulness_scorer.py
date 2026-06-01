@@ -180,3 +180,36 @@ def test_graph_proximity_still_warns_without_graph():
     cctx = DatasetContext(dataset_id="c", tasks=["decision-making"])
     score = score_usefulness(qctx, cctx, UsefulnessIntent.REPLICATION, graph=None)
     assert any("graph_proximity" in w.lower() for w in score.warnings)
+
+
+def test_graph_proximity_resolves_node_prefix():
+    """score_usefulness should find nodes via node: prefix and return non-0.3 score."""
+    ds_a_id = make_node_id("dataset", "dandi", "000003")   # node:dataset:dandi:000003
+    ds_b_id = make_node_id("dataset", "dandi", "000004")   # node:dataset:dandi:000004
+    task_id = make_node_id("task", "decision_making")       # node:task:decision_making
+
+    nodes = {
+        ds_a_id: KnowledgeGraphNode(node_id=ds_a_id, node_type="dataset", label="DANDI 000003"),
+        ds_b_id: KnowledgeGraphNode(node_id=ds_b_id, node_type="dataset", label="DANDI 000004"),
+        task_id: KnowledgeGraphNode(node_id=task_id, node_type="task", label="Decision Making"),
+    }
+    e1 = make_edge_id(ds_a_id, "dataset_has_task", task_id)
+    e2 = make_edge_id(ds_b_id, "dataset_has_task", task_id)
+    edges = {
+        e1: KnowledgeGraphEdge(edge_id=e1, source_node_id=ds_a_id, target_node_id=task_id, edge_type="dataset_has_task"),
+        e2: KnowledgeGraphEdge(edge_id=e2, source_node_id=ds_b_id, target_node_id=task_id, edge_type="dataset_has_task"),
+    }
+    graph = KnowledgeGraph(nodes=nodes, edges=edges)
+
+    # DatasetContext carries bare dataset_id (no "node:" prefix) — the production format
+    q = DatasetContext(dataset_id="dataset:dandi:000003", tasks=["decision_making"])
+    c = DatasetContext(dataset_id="dataset:dandi:000004", tasks=["decision_making"])
+
+    score = score_usefulness(q, c, graph=graph)
+    assert score.dimension_scores["graph_proximity"] != 0.3, (
+        "graph_proximity returned neutral prior 0.3 — node: prefix resolution is broken"
+    )
+    assert score.dimension_scores["graph_proximity"] > 0.0
+    assert not any("not found" in w for w in score.warnings), (
+        f"Unexpected graph_proximity warning: {score.warnings}"
+    )
