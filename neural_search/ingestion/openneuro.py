@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from typing import Any
 
 import httpx
@@ -24,12 +25,15 @@ from neural_search.schemas import NormalizedDatasetRecord, UsabilityFlags
 
 OPENNEURO_API_URL = "https://openneuro.org/crn/graphql"
 
+logger = logging.getLogger(__name__)
 
-def _search_query() -> str:
+
+def _paginated_query() -> str:
     return """
-    query SearchDatasets($modality: String, $first: Int) {
-        datasets(first: $first, modality: $modality, filterBy: {public: true}) {
+    query SearchDatasets($first: Int, $after: String) {
+        datasets(first: $first, after: $after, filterBy: {public: true}) {
             edges {
+                cursor
                 node {
                     id
                     name
@@ -48,9 +52,17 @@ def _search_query() -> str:
                     }
                 }
             }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
         }
     }
     """
+
+
+def _search_query() -> str:
+    return _paginated_query()
 
 
 def fetch_openneuro(modality: str | None, limit: int) -> dict[str, Any]:
@@ -74,6 +86,51 @@ def fetch_openneuro(modality: str | None, limit: int) -> dict[str, Any]:
     if data.get("errors"):
         raise RuntimeError(json.dumps(data["errors"], indent=2))
     return data
+
+
+def fetch_all_openneuro(
+    *,
+    page_size: int = 100,
+    max_records: int | None = None,
+) -> list[dict[str, Any]]:
+    """Fetch all public OpenNeuro datasets using GraphQL cursor pagination."""
+    all_records: list[dict[str, Any]] = []
+    after: str | None = None
+
+    with httpx.Client(timeout=60.0, follow_redirects=True) as client:
+        while True:
+            resp = client.post(
+                OPENNEURO_API_URL,
+                json={
+                    "query": _paginated_query(),
+                    "variables": {"first": page_size, "after": after},
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            if data.get("errors"):
+                logger.warning("OpenNeuro GraphQL error: %s", data["errors"])
+                break
+
+            datasets_data = data.get("data", {}).get("datasets", {})
+            edges = datasets_data.get("edges", [])
+            page_info = datasets_data.get("pageInfo", {})
+
+            for edge in edges:
+                node = edge.get("node", {})
+                if node.get("id"):
+                    all_records.append(normalize_openneuro_dataset(node))
+                    if max_records is not None and len(all_records) >= max_records:
+                        return all_records
+
+            logger.info("OpenNeuro harvest: %d records, hasNextPage=%s", len(all_records), page_info.get("hasNextPage"))
+
+            if not page_info.get("hasNextPage"):
+                break
+            after = page_info.get("endCursor")
+
+    return all_records
 
 
 async def search_datasets(
