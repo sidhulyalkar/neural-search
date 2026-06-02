@@ -13,6 +13,7 @@ from typing import Any
 import httpx
 
 from neural_search.extraction import extract_dataset_labels
+from neural_search.ingestion.dataset_classifier import is_valid_dataset
 from neural_search.ingestion.registry import register
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,10 @@ GIN_API = "https://gin.g-node.org/api/v1"
 GIN_SEARCH_TERMS = [
     "neuropixels", "calcium imaging", "ephys", "fmri", "eeg", "ecog",
     "mouse", "human", "NWB", "BIDS", "spike sorting", "behavior",
+    "electrophysiology", "two-photon", "optogenetics", "patch clamp",
+    "hippocampus", "prefrontal cortex", "visual cortex", "motor cortex",
+    "sleep", "decision making", "reward", "working memory", "primate",
+    "rat", "zebrafish", "human intracranial", "fiber photometry",
 ]
 
 
@@ -72,31 +77,34 @@ def normalize_gin_repo(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("gin")
-def fetch_gin(limit: int = 100) -> list[dict[str, Any]]:
-    """Search GIN for neuroscience dataset repositories."""
+def fetch_gin(limit: int = 500) -> list[dict[str, Any]]:
+    """Search GIN for neuroscience datasets across all search terms."""
+    accepted: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
-    records: list[dict[str, Any]] = []
 
-    for term in GIN_SEARCH_TERMS:
-        if len(records) >= limit:
-            break
-        try:
-            resp = httpx.get(
-                f"{GIN_API}/repos/search",
-                params={"q": term, "limit": 50, "topic": True},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            for repo in resp.json().get("data", []):
-                rid = str(repo.get("id", ""))
-                if not rid or rid in seen_ids:
-                    continue
-                seen_ids.add(rid)
-                records.append(normalize_gin_repo(repo))
-                if len(records) >= limit:
-                    break
-        except Exception as exc:
-            logger.warning("GIN fetch error for term '%s': %s", term, exc)
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        for term in GIN_SEARCH_TERMS:
+            if len(accepted) >= limit:
+                break
+            try:
+                resp = client.get(
+                    f"{GIN_API}/repos/search",
+                    params={"q": term, "limit": 50, "topic": True},
+                )
+                resp.raise_for_status()
+                for repo in resp.json().get("data", []):
+                    sid = str(repo.get("id", ""))
+                    if not sid or sid in seen_ids:
+                        continue
+                    seen_ids.add(sid)
+                    rec = normalize_gin_repo(repo)
+                    result = is_valid_dataset(rec)
+                    if result.accepted:
+                        accepted.append(rec)
+                    if len(accepted) >= limit:
+                        break
+            except Exception as exc:
+                logger.warning("GIN fetch error for '%s': %s", term, exc)
 
-    logger.info("GIN: fetched %d repositories", len(records))
-    return records
+    logger.info("gin: accepted %d datasets", len(accepted))
+    return accepted
