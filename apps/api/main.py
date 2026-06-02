@@ -763,6 +763,20 @@ def _ingestion_response(result: ingestion_services.IngestionRunResult) -> Ingest
     return IngestResponse(**result.to_dict())
 
 
+# Demo report endpoint
+@app.get("/api/demo/report")
+async def get_demo_report() -> dict[str, Any]:
+    """Return the pre-computed killer demo report from reports/killer_demo.json."""
+    import json
+    report_path = Path("reports/killer_demo.json")
+    if not report_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Demo report not found. Run: python scripts/run_killer_demo.py",
+        )
+    return json.loads(report_path.read_text())
+
+
 # Reports endpoints
 @app.get("/api/reports/compilation")
 async def get_compilation_report() -> dict[str, Any]:

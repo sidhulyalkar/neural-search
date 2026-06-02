@@ -177,6 +177,11 @@ export async function exportComparisonMarkdown(datasetIds: string[]): Promise<Bl
   return response.blob()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getDemoReport(): Promise<any> {
+  return fetchJSON<any>(`${API_BASE}/demo/report`)
+}
+
 export async function exportComparisonJson(datasetIds: string[]): Promise<Blob> {
   const response = await fetch(`${API_BASE}/datasets/compare/export/json`, {
     method: 'POST',
