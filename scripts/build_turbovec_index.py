@@ -45,8 +45,8 @@ def main(argv: list[str] | None = None) -> int:
     with embed_path.open() as f:
         for line in f:
             rec = json.loads(line)
-            did = rec.get("entity_id", "")
-            vec = rec.get("vector", [])
+            did = rec.get("record_id", "") or rec.get("entity_id", "")
+            vec = rec.get("embedding", []) or rec.get("vector", [])
             if did and vec:
                 vecs_by_id[did].append(np.array(vec, dtype=np.float32))
 
