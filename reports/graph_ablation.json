@@ -1,0 +1,9 @@
+{
+  "n_queries": 20,
+  "total_pairs": 200,
+  "pairs_changed": 78,
+  "pct_pairs_changed": 39.0,
+  "mean_ndcg_with_graph": 0.0,
+  "mean_ndcg_without_graph": 0.0,
+  "ndcg_delta": 0.0
+}

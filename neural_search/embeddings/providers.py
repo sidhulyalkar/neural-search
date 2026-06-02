@@ -563,6 +563,7 @@ _PROVIDER_REGISTRY: dict[str, type[EmbeddingProviderBase]] = {
     "sentence-transformer": SentenceTransformerProvider,
     "specter2": SPECTER2Provider,
     "scibert": SciBERTProvider,
+    # "bge-large" is handled via early-return in get_provider (lazy import, optional dep)
 }
 
 
@@ -592,10 +593,14 @@ def get_provider(
             logger.info("sentence-transformers not available, using hashing provider")
             return HashingEmbeddingProvider(**kwargs)
 
+    if name == "bge-large":
+        from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
+        return DenseEmbeddingProvider(**kwargs)
+
     if name not in _PROVIDER_REGISTRY:
         raise ValueError(
             f"Unknown provider: {name}. "
-            f"Available: {list(_PROVIDER_REGISTRY.keys())}"
+            f"Available: {list_available_providers()}"
         )
 
     return _PROVIDER_REGISTRY[name](**kwargs)
@@ -603,7 +608,7 @@ def get_provider(
 
 def list_available_providers() -> list[str]:
     """List all registered provider names."""
-    return list(_PROVIDER_REGISTRY.keys())
+    return list(_PROVIDER_REGISTRY.keys()) + ["bge-large"]
 
 
 def check_provider_availability() -> dict[str, bool]:

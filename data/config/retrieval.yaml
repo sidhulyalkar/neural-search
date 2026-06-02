@@ -134,7 +134,8 @@ graph:
 
 field_embeddings:
   enabled: true
-  path: data/embeddings/v07_genomics.field_embeddings.jsonl
+  path: data/embeddings/real_all.dense.field_embeddings.jsonl
+  provider: bge-large
   # Field-specific weights for semantic matching
   field_weights:
     title: 0.20
