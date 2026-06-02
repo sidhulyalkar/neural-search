@@ -35,6 +35,7 @@ from neural_search.schemas import NormalizedDatasetRecord
 CORPUS_DIR = Path("data/corpus/normalized")
 EMBEDDINGS_DIR = Path("data/embeddings")
 FIELD_EMBEDDINGS_OUT = EMBEDDINGS_DIR / "real_all.field_embeddings.jsonl"
+FIELD_EMBEDDINGS_DENSE_OUT = EMBEDDINGS_DIR / "real_all.dense.field_embeddings.jsonl"
 FINGERPRINTS_OUT = EMBEDDINGS_DIR / "real_all.fingerprints.jsonl"
 
 # Corpus files: all real_*.jsonl, excluding .backup.jsonl variants
@@ -61,6 +62,12 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         default=64,
         help="Hashing provider dimensions (default: 64, matching v07 convention)",
+    )
+    parser.add_argument(
+        "--provider",
+        default="hashing",
+        choices=["hashing", "dense"],
+        help="Embedding provider: 'hashing' (default, fast CI) or 'dense' (BGE-large-en-v1.5, semantic)",
     )
     parser.add_argument(
         "--dry-run",
@@ -97,27 +104,39 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  papers   : {len(paper_records)}")
 
     if args.dry_run:
-        print("\n[dry-run] Skipping file writes.")
+        print(f"\n[dry-run] provider={args.provider}. Skipping file writes.")
         return 0
 
     # --- Field embeddings (all record types) ---
     EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
-    provider = HashingEmbeddingProvider(dimensions=args.dimensions)
+    if args.provider == "dense":
+        from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
+        provider = DenseEmbeddingProvider()
+        field_embeddings_out = FIELD_EMBEDDINGS_DENSE_OUT
+        print(f"\nUsing DenseEmbeddingProvider (BGE-large-en-v1.5, dim=1024)")
+    else:
+        provider = HashingEmbeddingProvider(dimensions=args.dimensions)
+        field_embeddings_out = FIELD_EMBEDDINGS_OUT
     print(
         f"\nBuilding field embeddings with provider={provider.provider_name}/"
         f"{provider.model_name} (dim={provider.dimension}) ..."
     )
     field_records = build_field_embedding_records(all_records, provider)
-    write_field_embedding_cache(field_records, FIELD_EMBEDDINGS_OUT)
-    print(f"Wrote {len(field_records)} field embedding records -> {FIELD_EMBEDDINGS_OUT}")
+    write_field_embedding_cache(field_records, field_embeddings_out)
+    print(f"Wrote {len(field_records)} field embedding records -> {field_embeddings_out}")
 
-    # --- Fingerprints (dataset records only) ---
-    print(f"\nBuilding fingerprints for {len(dataset_records)} datasets ...")
-    builder = DatasetFingerprintBuilder(text_model="hashing", combined_dim=args.dimensions)
-    fingerprints = builder.build_fingerprints(dataset_records)
-    from neural_search.embeddings.fingerprint import write_fingerprints
-    write_fingerprints(fingerprints, str(FINGERPRINTS_OUT))
-    print(f"Wrote {len(fingerprints)} fingerprints -> {FINGERPRINTS_OUT}")
+    # --- Fingerprints (dataset records only, hashing provider only) ---
+    # Dense fingerprints would be dimensionally incompatible with existing hashing fingerprints.
+    # The dense path only updates field embeddings; fingerprints are left unchanged.
+    if args.provider == "hashing":
+        print(f"\nBuilding fingerprints for {len(dataset_records)} datasets ...")
+        builder = DatasetFingerprintBuilder(text_model="hashing", combined_dim=args.dimensions)
+        fingerprints = builder.build_fingerprints(dataset_records)
+        from neural_search.embeddings.fingerprint import write_fingerprints
+        write_fingerprints(fingerprints, str(FINGERPRINTS_OUT))
+        print(f"Wrote {len(fingerprints)} fingerprints -> {FINGERPRINTS_OUT}")
+    else:
+        print("\nSkipping fingerprints (dense provider — fingerprints use separate hashing pipeline)")
 
     print("\nDone.")
     return 0
