@@ -132,17 +132,19 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 60)
 
     # Build corpus lookup for rich metadata (modalities, species, brain_regions, tasks)
-    # dataset_card_preview does not carry these fields — must pull from corpus records
+    # dataset_card_preview does not carry these fields — must pull from corpus records.
+    # build_combined_corpus() returns {"dataset": {...}, "assets": [], ...} nested records;
+    # the actual metadata is in the inner "dataset" dict keyed by "id".
     print("\nLoading corpus metadata index...")
     corpus_records = build_combined_corpus()
     corpus_lookup: dict[str, dict] = {}
     for rec in corpus_records:
-        did = str(rec.get("dataset_id") or rec.get("source_id") or "")
+        inner = rec.get("dataset") if isinstance(rec.get("dataset"), dict) else rec
+        did = str(inner.get("id") or inner.get("dataset_id") or inner.get("source_id") or "")
         if did:
-            corpus_lookup[did] = rec
-            # also index by bare source_id in case search result strips prefix
+            corpus_lookup[did] = inner
             bare = did.split(":")[-1] if ":" in did else did
-            corpus_lookup.setdefault(bare, rec)
+            corpus_lookup.setdefault(bare, inner)
     print(f"  Loaded {len(corpus_records)} records, {len(corpus_lookup)} index entries")
 
     # Stage 1 + 2: Decompose and retrieve per sub-query
@@ -156,18 +158,19 @@ def main(argv: list[str] | None = None) -> int:
         for result in response.results:
             did = str(result.dataset_id)
             if did not in all_results:
-                rec = corpus_lookup.get(did) or corpus_lookup.get(did.split(":")[-1]) or {}
+                # corpus_lookup stores the inner "dataset" dict with flat string lists
+                inner = corpus_lookup.get(did) or corpus_lookup.get(did.split(":")[-1]) or {}
                 all_results[did] = {
                     "dataset_id": did,
-                    "title": rec.get("title") or did,
-                    "description": rec.get("description") or " ".join(result.why_matched),
+                    "title": inner.get("title") or did,
+                    "description": inner.get("description") or " ".join(result.why_matched),
                     "usefulness_score": (result.usefulness_score or {}).get("total_score", result.score / 100.0),
-                    "modalities": rec.get("modalities") or [],
-                    "species": rec.get("species") or [],
-                    "brain_regions": rec.get("brain_regions") or [],
-                    "affordances": rec.get("affordances") or [],
-                    "tasks": rec.get("tasks") or result.matched_terms,
-                    "doi": rec.get("doi") or rec.get("metadata_json", {}).get("doi") if isinstance(rec.get("metadata_json"), dict) else None,
+                    "modalities": inner.get("modalities") or [],
+                    "species": inner.get("species") or [],
+                    "brain_regions": inner.get("brain_regions") or [],
+                    "affordances": inner.get("affordances") or [],
+                    "tasks": inner.get("tasks") or result.matched_terms,
+                    "doi": inner.get("doi"),
                     "sub_query_matches": 0,
                 }
                 dataset_sq_counts[did] = 0
