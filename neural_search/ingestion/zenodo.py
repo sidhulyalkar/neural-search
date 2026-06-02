@@ -22,6 +22,13 @@ ZENODO_QUERIES = [
     "neuroscience electrophysiology", "fmri brain imaging", "calcium imaging neural",
     "neuropixels spike sorting", "eeg brain recording", "ecog human intracranial",
     "hippocampus memory", "prefrontal cortex", "reward learning dopamine",
+    "two-photon imaging mouse", "optogenetics neural circuit", "patch clamp neuron",
+    "motor cortex behavior", "visual cortex stimulus", "basal ganglia striatum",
+    "cerebellum motor learning", "olfactory system", "primate electrophysiology",
+    "human eeg cognitive", "sleep slow wave", "decision making neural",
+    "working memory prefrontal", "place cells grid cells", "fear conditioning amygdala",
+    "auditory cortex sound", "somatosensory cortex touch", "brainstem spinal cord",
+    "NWB neurodata without borders", "BIDS brain imaging data",
 ]
 
 
@@ -76,36 +83,44 @@ def normalize_zenodo_record(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("zenodo")
-def fetch_zenodo(limit: int = 100) -> list[dict[str, Any]]:
-    """Search zenodo for neuroscience datasets."""
+def fetch_zenodo(limit: int = 500) -> list[dict[str, Any]]:
+    """Search Zenodo for neuroscience datasets across all queries with pagination."""
     accepted: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
 
     for query in ZENODO_QUERIES:
         if len(accepted) >= limit:
             break
-        try:
-            resp = httpx.get(
-                ZENODO_API,
-                params={"q": query, "type": "dataset", "size": 20, "sort": "mostrecent"},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            for item in resp.json().get("hits", {}).get("hits", []):
-                sid = str(item.get("id", ""))
-                if not sid or sid in seen_ids:
-                    continue
-                seen_ids.add(sid)
-                rec = normalize_zenodo_record(item)
-                result = is_valid_dataset(rec)
-                if result.accepted:
-                    accepted.append(rec)
-                else:
-                    _log_rejection(rec, result.failure_reason, "zenodo")
-                if len(accepted) >= limit:
+        page = 1
+        per_page = 25
+        while len(accepted) < limit:
+            try:
+                resp = httpx.get(
+                    ZENODO_API,
+                    params={"q": query, "type": "dataset", "size": per_page, "page": page, "sort": "mostrecent"},
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                hits = resp.json().get("hits", {}).get("hits", [])
+                if not hits:
                     break
-        except Exception as exc:
-            logger.warning("zenodo fetch error for '%s': %s", query, exc)
+                for item in hits:
+                    sid = str(item.get("id", ""))
+                    if not sid or sid in seen_ids:
+                        continue
+                    seen_ids.add(sid)
+                    rec = normalize_zenodo_record(item)
+                    result = is_valid_dataset(rec)
+                    if result.accepted:
+                        accepted.append(rec)
+                    if len(accepted) >= limit:
+                        break
+                if len(hits) < per_page:
+                    break
+                page += 1
+            except Exception as exc:
+                logger.warning("zenodo fetch error for '%s' page %d: %s", query, page, exc)
+                break
 
     logger.info("zenodo: accepted %d datasets", len(accepted))
     return accepted
