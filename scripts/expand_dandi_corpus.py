@@ -31,6 +31,7 @@ def main() -> None:
     print(f"New records (not yet in corpus): {len(new_records)}")
 
     if new_records:
+        OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(OUTPUT_PATH, "a", encoding="utf-8") as f:
             for rec in new_records:
                 f.write(json.dumps(rec) + "\n")
