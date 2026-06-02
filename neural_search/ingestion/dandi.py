@@ -160,6 +160,40 @@ def normalize_dandiset_record(
     )
 
 
+def fetch_all_dandisets(
+    *,
+    start_url: str | None = None,
+    page_size: int = 100,
+    max_records: int | None = None,
+) -> list[dict[str, Any]]:
+    """Page through all DANDI dandisets and return normalized records."""
+    import logging as _logging
+    log = _logging.getLogger(__name__)
+
+    url: str | None = start_url or f"{DANDI_API_URL}/dandisets/?page=1&page_size={page_size}"
+    all_records: list[dict[str, Any]] = []
+
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        while url:
+            try:
+                resp = client.get(url)
+                resp.raise_for_status()
+            except httpx.HTTPError as exc:
+                log.warning("DANDI page fetch failed: %s — %s", url, exc)
+                break
+
+            data = resp.json()
+            for raw in data.get("results", []):
+                all_records.append(normalize_dandiset(raw))
+                if max_records and len(all_records) >= max_records:
+                    return all_records
+
+            url = data.get("next")
+            log.info("DANDI harvest: %d records so far, next=%s", len(all_records), url)
+
+    return all_records
+
+
 def fetch_dandi(query: str, limit: int) -> dict[str, Any]:
     params = {"search": query, "page_size": limit}
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
