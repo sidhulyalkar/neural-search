@@ -134,6 +134,15 @@ def _provider_for_cache(
             # sentence-transformers not installed, fall back gracefully
             return None
 
+    if first.provider_name == "bge-large":
+        try:
+            from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
+
+            return DenseEmbeddingProvider(normalize=first.normalize)
+        except RuntimeError:
+            # sentence-transformers not installed
+            return None
+
     return None
 
 
