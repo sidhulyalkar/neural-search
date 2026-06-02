@@ -62,7 +62,31 @@ def _paginated_query() -> str:
 
 
 def _search_query() -> str:
-    return _paginated_query()
+    return """
+    query SearchDatasets($modality: String, $first: Int) {
+        datasets(first: $first, modality: $modality, filterBy: {public: true}) {
+            edges {
+                node {
+                    id
+                    name
+                    created
+                    public
+                    latestSnapshot {
+                        tag
+                        created
+                        size
+                        readme
+                        summary {
+                            subjects
+                            tasks
+                            modalities
+                        }
+                    }
+                }
+            }
+        }
+    }
+    """
 
 
 def fetch_openneuro(modality: str | None, limit: int) -> dict[str, Any]:
