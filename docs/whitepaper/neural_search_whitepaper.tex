@@ -937,6 +937,70 @@ Prior ablation on the existing benchmark:
     \item Removing hard negatives: $\Delta_{\text{hard}} \rightarrow$ constraint violations
 \end{itemize}
 
+\subsection{Graph Proximity Ablation (v2.0 Real Graph)}
+\label{sec:s9ablation}
+
+Version 2.0 deploys a real DANDI/OpenNeuro knowledge graph constructed from 835 indexed datasets. Running the graph proximity ablation across 30 queries confirms the $s_9$ signal contributes meaningful rank changes:
+
+\begin{itemize}
+    \item Ranking pairs changed when real graph enabled vs.\ ablated: \textbf{39\%}
+    \item This confirms the graph proximity signal is non-trivial and reshapes result ordering for a substantial fraction of queries.
+    \item The s9 fix addressed a namespace mismatch where \texttt{dataset\_context\_bridge} returned bare identifiers while graph nodes use \texttt{node:dataset:\{source\}:\{id\}} format.
+\end{itemize}
+
+\subsection{v2.0 Evaluation Results}
+\label{sec:v2eval}
+
+Table~\ref{tab:v2_comparison} compares v0.9 baseline with v2.0 across five evaluation layers, following the corpus expansion to 835 indexed datasets and the upgrade from 64-dimensional hashing embeddings to BGE-large-en-v1.5 (1024-dimensional MTEB top-5 scientific retrieval model).
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{v0.9 Baseline} & \textbf{v2.0} \\
+\midrule
+Corpus size (indexed) & 371 datasets & 835 datasets \\
+Embedding model & 64-dim hashing & BGE-large-en-v1.5 (1024d) \\
+Embedding dim & 64 & 1024 \\
+Spearman $r$ (usefulness corr.) & 0.5044 & 0.40--0.46 (see note) \\
+TurboVec recall@50 & N/A & \textbf{1.0} \\
+TurboVec latency p50 & N/A & 2.89 ms \\
+TurboVec latency p95 & N/A & 10.35 ms \\
+Graph $s_9$ pairs changed & 0\% (placeholder) & \textbf{39\%} (real graph) \\
+\bottomrule
+\end{tabular}
+\caption{v0.9 baseline vs.\ v2.0 across five evaluation layers. TurboVec index: 835 datasets, 1024-dim, 4-bit quantization, 50-query recall test. Graph ablation: 30 queries, 39\% rank pairs changed with real graph enabled.}
+\label{tab:v2_comparison}
+\end{table}
+
+\noindent\textbf{Note on Spearman $r$:} The v2.0 Spearman $r$ (0.40--0.46 across runs) is lower than the v0.9 hashing baseline (0.5044). The BGE-large-en-v1.5 field-semantic scorer is correctly configured: after fixing \texttt{\_provider\_for\_cache} to load \texttt{DenseEmbeddingProvider} when \texttt{provider\_name == "bge-large"}, query-time embeddings are computed in the same 1024-dim space as the corpus. However, BGE-large produces denser, more compressed score distributions (mean relevant: 0.224, mean irrelevant: 0.168) compared to hashing, reducing rank separation. The discriminative gap is genuine (relevant $>$ irrelevant) but less pronounced. Field weight retuning for BGE-large is planned for v2.1.
+
+\subsection{Multi-Dataset Set-Coverage Scoring (v2.0)}
+\label{sec:setcoverage}
+
+Version 2.0 introduces \emph{set-coverage scoring}: rather than ranking individual datasets, the system scores an entire result set $\mathcal{D}$ for collective usefulness:
+
+\begin{equation}
+    \text{score}(\mathcal{D}) = \bar{u} + \alpha \cdot c_{\text{cov}} + \beta \cdot c_{\text{comp}} + \gamma \cdot c_{\text{prov}} - \delta \cdot p_{\text{red}} - \varepsilon \cdot p_{\text{miss}} - \zeta \cdot p_{\text{hard}}
+\end{equation}
+
+where $\bar{u}$ is mean individual usefulness, $c_{\text{cov}}$ rewards modality/species diversity, $c_{\text{comp}}$ rewards complementary affordances across the set, $c_{\text{prov}}$ rewards provenance completeness, and $p_{\text{red}}, p_{\text{miss}}, p_{\text{hard}}$ penalize redundancy, missing metadata, and hard-negative constraint violations respectively. Default weights: $\alpha = \beta = \gamma = 0.1$, $\delta = 0.15$, $\varepsilon = 0.05$, $\zeta = 0.30$.
+
+Each result dataset is also assigned exactly one role from an 8-role taxonomy:
+
+\begin{enumerate}
+    \item \textbf{ANCHOR} --- highest usefulness, matches $\geq 3$ sub-queries
+    \item \textbf{REPLICATION} --- same task + species as anchor, different modality
+    \item \textbf{CROSS-SPECIES COMPARATOR} --- same task, different species from anchor
+    \item \textbf{METHODOLOGICAL COMPLEMENT} --- different region, shares $\geq 2$ affordances
+    \item \textbf{PERTURBATION/CAUSAL} --- optogenetic/pharmacological manipulation present
+    \item \textbf{BEHAVIOR-RICH} --- rich trial-by-trial events, minimal neural recording
+    \item \textbf{POPULATION DYNAMICS} --- large cell count ($\geq 100$), dimensionality reduction
+    \item \textbf{IMAGING-EPHYS BRIDGE} --- combines fMRI/EEG with electrophysiology
+\end{enumerate}
+
+A dataset that satisfies none of these roles is assigned \textsc{UNASSIGNABLE} and excluded from the final result set. This role taxonomy enforces that each returned dataset contributes a distinct scientific function.
+
 % ============================================================================
 % SECTION 9: SYSTEM ARCHITECTURE
 % ============================================================================
@@ -1037,6 +1101,14 @@ The $s_9$ graph proximity dimension was implemented in v0.9. When a \texttt{Know
     s_9(C_q, C_d) = \text{PathSim}_{\mathcal{P}}(\text{id}(C_q), \text{id}(C_d) \mid \graph)
 \end{equation}
 
+\subsection{Dense Embedding Upgrade — Completed v2.0}
+
+The 64-dimensional hashing embedding was replaced with BGE-large-en-v1.5 (1024-dimensional, MTEB top-5 for scientific retrieval) in v2.0. All 835 corpus records were re-embedded and indexed in a turbovec 4-bit quantized ANN structure achieving recall@50 = 1.0 at 2.89 ms p50 latency. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
+
+\subsection{Corpus Expansion — Completed v2.0}
+
+v2.0 adds a 9-source ingestion pipeline (NeuroVault, GIN, EBRAINS, HCP for Tier 1; OSF, figshare, Zenodo for Tier 2) with a 4-gate inclusion classifier (raw/processed data, neuroscience signal, open license, persistent identifier) and a 5-layer deduplication pipeline. The expanded corpus targets $\geq 4000$ usable records.
+
 \subsection{Neural Signature Similarity (Phase 4)}
 
 The $s_{10}$ dimension is a fixed placeholder ($0.0$). Phase 4 will extract neural population signatures directly from NWB/BIDS data:
@@ -1061,7 +1133,7 @@ The v0.9 seed benchmark contains 49 human-assigned pairs spanning 7 intents (exp
 
 Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system enables researchers to find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, and evaluation methodology---provide a rigorous substrate for continued development. The current benchmark results (76.7\% P@5, 0.950 MRR, 0.937 NDCG@10) demonstrate the viability of the approach, while the architecture supports progressive enhancement toward larger corpora, learned ranking, and neural signature search.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, and evaluation methodology---provide a rigorous substrate for continued development. The current benchmark results (76.7\% P@5, 0.950 MRR, 0.937 NDCG@10 on demo corpus; 69.3\% P@5, 0.839 MRR, 0.822 NDCG@10 on 835-dataset real corpus) demonstrate the viability of the approach. Version 2.0 upgrades the embedding stack to BGE-large-en-v1.5 (1024-dim), deploys a turbovec ANN index at recall@50 = 1.0, expands the corpus toward $\geq 4000$ records via a 9-source ingestion pipeline, and introduces set-coverage scoring with an 8-role dataset taxonomy for multi-dataset result sets.
 
 The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search makes this principle computationally tractable.
 

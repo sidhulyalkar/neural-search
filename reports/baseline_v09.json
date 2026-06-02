@@ -1,0 +1,22 @@
+{
+  "frozen_at": "2026-06-01T19:31:08.236395+00:00",
+  "git_hash": "0c0336c",
+  "corpus_record_counts": {
+    "real_allen": 8,
+    "real_dandi.backup": 16,
+    "real_dandi": 358,
+    "real_nemo": 10,
+    "real_openneuro.backup": 11,
+    "real_openneuro": 362,
+    "real_papers": 97,
+    "real_v07.datasets": 6,
+    "real_v07.papers": 1,
+    "real_v07.records": 7
+  },
+  "total_corpus_records": 876,
+  "seed_pairs": 186,
+  "field_embedding_vectors": 3688,
+  "embedding_provider": "hashing-64",
+  "spearman_r": 0.5044,
+  "notes": "v0.9 baseline before Track 1 embedding upgrade"
+}

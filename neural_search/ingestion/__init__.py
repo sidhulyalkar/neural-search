@@ -5,8 +5,10 @@ Connectors:
 - curated: Manually curated seed sources from YAML
 - openneuro: OpenNeuro BIDS dataset connector
 - openalex: OpenAlex paper linking connector
+- registry: Adapter registry for corpus expansion adapters
 """
 
+from neural_search.ingestion.registry import list_adapters, register, run_adapter
 from neural_search.ingestion.curated import (
     CuratedSource,
     Priority,
@@ -23,6 +25,10 @@ from neural_search.ingestion.curated import (
 from neural_search.ingestion.demo_seed import build_demo_seed, seed_demo_database
 
 __all__ = [
+    # Adapter registry
+    "register",
+    "run_adapter",
+    "list_adapters",
     # Demo seed
     "build_demo_seed",
     "seed_demo_database",
