@@ -962,7 +962,7 @@ Table~\ref{tab:v2_comparison} compares v0.9 baseline with v2.0 across five evalu
 Corpus size (indexed) & 371 datasets & 835 datasets \\
 Embedding model & 64-dim hashing & BGE-large-en-v1.5 (1024d) \\
 Embedding dim & 64 & 1024 \\
-Spearman $r$ (usefulness corr.) & 0.5044 & $\geq 0.50$ (see note) \\
+Spearman $r$ (usefulness corr.) & 0.5044 & 0.40--0.46 (see note) \\
 TurboVec recall@50 & N/A & \textbf{1.0} \\
 TurboVec latency p50 & N/A & 2.89 ms \\
 TurboVec latency p95 & N/A & 10.35 ms \\
@@ -973,7 +973,7 @@ Graph $s_9$ pairs changed & 0\% (placeholder) & \textbf{39\%} (real graph) \\
 \label{tab:v2_comparison}
 \end{table}
 
-\noindent\textbf{Note on Spearman $r$:} The v2.0 field-semantic scorer uses BGE-large-en-v1.5 embeddings for query-time scoring. A prior evaluation at Spearman $r = 0.4555$ used a misconfigured provider (hashing fallback); after fixing \texttt{\_provider\_for\_cache} to load \texttt{DenseEmbeddingProvider} when \texttt{provider\_name == "bge-large"}, the scorer correctly embeds queries in the same 1024-dim space as the corpus. The updated Spearman $r$ will be recorded following the current re-evaluation run.
+\noindent\textbf{Note on Spearman $r$:} The v2.0 Spearman $r$ (0.40--0.46 across runs) is lower than the v0.9 hashing baseline (0.5044). The BGE-large-en-v1.5 field-semantic scorer is correctly configured: after fixing \texttt{\_provider\_for\_cache} to load \texttt{DenseEmbeddingProvider} when \texttt{provider\_name == "bge-large"}, query-time embeddings are computed in the same 1024-dim space as the corpus. However, BGE-large produces denser, more compressed score distributions (mean relevant: 0.224, mean irrelevant: 0.168) compared to hashing, reducing rank separation. The discriminative gap is genuine (relevant $>$ irrelevant) but less pronounced. Field weight retuning for BGE-large is planned for v2.1.
 
 \subsection{Multi-Dataset Set-Coverage Scoring (v2.0)}
 \label{sec:setcoverage}
