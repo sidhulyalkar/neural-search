@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 import httpx
 
@@ -167,9 +170,6 @@ def fetch_all_dandisets(
     max_records: int | None = None,
 ) -> list[dict[str, Any]]:
     """Page through all DANDI dandisets and return normalized records."""
-    import logging as _logging
-    log = _logging.getLogger(__name__)
-
     url: str | None = start_url or f"{DANDI_API_URL}/dandisets/?page=1&page_size={page_size}"
     all_records: list[dict[str, Any]] = []
 
@@ -179,17 +179,18 @@ def fetch_all_dandisets(
                 resp = client.get(url)
                 resp.raise_for_status()
             except httpx.HTTPError as exc:
-                log.warning("DANDI page fetch failed: %s — %s", url, exc)
+                logger.warning("DANDI page fetch failed: %s — %s", url, exc)
+                logger.warning("Harvest terminated early; %d records collected before failure", len(all_records))
                 break
 
             data = resp.json()
             for raw in data.get("results", []):
                 all_records.append(normalize_dandiset(raw))
-                if max_records and len(all_records) >= max_records:
+                if max_records is not None and len(all_records) >= max_records:
                     return all_records
 
             url = data.get("next")
-            log.info("DANDI harvest: %d records so far, next=%s", len(all_records), url)
+            logger.info("DANDI harvest: %d records so far, next=%s", len(all_records), url)
 
     return all_records
 
