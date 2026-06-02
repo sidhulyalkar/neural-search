@@ -1,0 +1,11 @@
+{
+  "n_queries": 50,
+  "k": 50,
+  "mean_recall": 1.0,
+  "p50_latency_ms": 2.89,
+  "p95_latency_ms": 10.35,
+  "index_size": 835,
+  "dim": 1024,
+  "bit_width": 4,
+  "pass": true
+}
