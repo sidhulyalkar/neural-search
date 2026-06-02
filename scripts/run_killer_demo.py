@@ -123,12 +123,27 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     from neural_search.search.core import search_datasets
+    from neural_search.ingestion.demo_seed import build_combined_corpus
     from neural_search.retrieval.set_coverage_scorer import SetCoverageScorer, SetConstraints
     from neural_search.retrieval.role_assignment import assign_role
 
     print("=" * 60)
     print("Killer Demo — Neural Circuit Cognitive Control")
     print("=" * 60)
+
+    # Build corpus lookup for rich metadata (modalities, species, brain_regions, tasks)
+    # dataset_card_preview does not carry these fields — must pull from corpus records
+    print("\nLoading corpus metadata index...")
+    corpus_records = build_combined_corpus()
+    corpus_lookup: dict[str, dict] = {}
+    for rec in corpus_records:
+        did = str(rec.get("dataset_id") or rec.get("source_id") or "")
+        if did:
+            corpus_lookup[did] = rec
+            # also index by bare source_id in case search result strips prefix
+            bare = did.split(":")[-1] if ":" in did else did
+            corpus_lookup.setdefault(bare, rec)
+    print(f"  Loaded {len(corpus_records)} records, {len(corpus_lookup)} index entries")
 
     # Stage 1 + 2: Decompose and retrieve per sub-query
     print("\nStage 1-2: Sub-query decomposition and retrieval...")
@@ -141,17 +156,18 @@ def main(argv: list[str] | None = None) -> int:
         for result in response.results:
             did = str(result.dataset_id)
             if did not in all_results:
-                preview = result.dataset_card_preview or {}
+                rec = corpus_lookup.get(did) or corpus_lookup.get(did.split(":")[-1]) or {}
                 all_results[did] = {
                     "dataset_id": did,
-                    "title": preview.get("title") or did,
-                    "description": preview.get("description") or " ".join(result.why_matched),
-                    "usefulness_score": (result.usefulness_score or {}).get("total_score", result.score),
-                    "modalities": preview.get("modalities") or result.inferred_concepts,
-                    "species": preview.get("species") or [],
-                    "brain_regions": preview.get("brain_regions") or [],
-                    "affordances": preview.get("affordances") or [],
-                    "tasks": preview.get("tasks") or result.matched_terms,
+                    "title": rec.get("title") or did,
+                    "description": rec.get("description") or " ".join(result.why_matched),
+                    "usefulness_score": (result.usefulness_score or {}).get("total_score", result.score / 100.0),
+                    "modalities": rec.get("modalities") or [],
+                    "species": rec.get("species") or [],
+                    "brain_regions": rec.get("brain_regions") or [],
+                    "affordances": rec.get("affordances") or [],
+                    "tasks": rec.get("tasks") or result.matched_terms,
+                    "doi": rec.get("doi") or rec.get("metadata_json", {}).get("doi") if isinstance(rec.get("metadata_json"), dict) else None,
                     "sub_query_matches": 0,
                 }
                 dataset_sq_counts[did] = 0
