@@ -1,0 +1,193 @@
+{
+  "run_at": "2026-06-02T14:58:31.419960+00:00",
+  "query": "Map the neural circuit mechanisms underlying flexible cognitive control \u2014 integrating datasets spanning prefrontal-hippocampal interactions, dopaminergic reward modulation, motor adaptation, and cross-species learning-dependent plasticity \u2014 to identify convergent computational mechanisms that could be tested in a single unified experiment.",
+  "sub_queries": [
+    {
+      "id": "SQ1",
+      "query": "prefrontal cortex hippocampus interaction working memory",
+      "intent": "cross_dataset_comparison",
+      "species_constraint": [
+        "mouse",
+        "macaque",
+        "human"
+      ],
+      "brain_regions": [
+        "prefrontal_cortex",
+        "hippocampus"
+      ],
+      "task_family": "working_memory"
+    },
+    {
+      "id": "SQ2",
+      "query": "dopamine reward prediction error striatum",
+      "intent": "meta_analysis",
+      "species_constraint": [
+        "mouse",
+        "rat",
+        "macaque"
+      ],
+      "brain_regions": [
+        "striatum"
+      ],
+      "task_family": "reward_learning"
+    },
+    {
+      "id": "SQ3",
+      "query": "motor cortex adaptation learning plasticity",
+      "intent": "method_transfer",
+      "species_constraint": [
+        "mouse",
+        "macaque",
+        "human"
+      ],
+      "brain_regions": [
+        "motor_cortex"
+      ],
+      "task_family": "motor_task"
+    },
+    {
+      "id": "SQ4",
+      "query": "cross-species decision making flexible behavior reversal learning",
+      "intent": "cross_dataset_comparison",
+      "species_constraint": [
+        "mouse",
+        "rat",
+        "macaque",
+        "human"
+      ],
+      "brain_regions": [
+        "prefrontal_cortex",
+        "striatum"
+      ],
+      "task_family": "decision_making"
+    },
+    {
+      "id": "SQ5",
+      "query": "population dynamics prefrontal cortex latent space manifold",
+      "intent": "method_transfer",
+      "species_constraint": [
+        "mouse",
+        "macaque"
+      ],
+      "brain_regions": [
+        "prefrontal_cortex"
+      ],
+      "task_family": "any"
+    }
+  ],
+  "n_candidates": 51,
+  "set_coverage": {
+    "total_score": 0.31460666666666665,
+    "coverage_bonus": 0.8333,
+    "complementarity_bonus": 0.0
+  },
+  "role_assignments": [
+    {
+      "dataset_id": "dataset:openneuro:ds005346",
+      "role": "anchor",
+      "evidence": "matches 5 sub-queries, score=0.13",
+      "title": "BABA: Naturalistic fMRI and MEG Dataset"
+    },
+    {
+      "dataset_id": "dataset:dandi:001253",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.404; sparse metadata prevents full role classification",
+      "title": "An opponent striatal circuit for distributional reinforcement learning"
+    },
+    {
+      "dataset_id": "dataset:dandi:001434",
+      "role": "high_relevance",
+      "evidence": "matched 2 sub-queries, score=0.404; sparse metadata prevents full role classification",
+      "title": "Distinct spatially organized striatum-wide acetylcholine dynamics for the learning and extinction of Pavlovian associations"
+    },
+    {
+      "dataset_id": "dataset:dandi:001369",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.284; sparse metadata prevents full role classification",
+      "title": "Circuit dynamics of the olfactory pathway during olfactory learning. Frontiers in neural circuits."
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds001784",
+      "role": "high_relevance",
+      "evidence": "matched 2 sub-queries, score=0.254; sparse metadata prevents full role classification",
+      "title": "EMOTE-afMSIT"
+    },
+    {
+      "dataset_id": "dataset:dandi:000640",
+      "role": "high_relevance",
+      "evidence": "matched 2 sub-queries, score=0.194; sparse metadata prevents full role classification",
+      "title": "32-CH Local Field Potential Data During Probabilistic Reversal Learning Task"
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds000229",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.176; sparse metadata prevents full role classification",
+      "title": "Integration of sweet taste and metabolism determines carbohydrate reward - study 1"
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds007022",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.176; sparse metadata prevents full role classification",
+      "title": "LEARNING BRAIN: The time course of neuronal plasticity underlying learning in humans \u2013 a longitudinal neuroimaging study"
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds003766",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.176; sparse metadata prevents full role classification",
+      "title": "HD-EEG task with mouse tracking"
+    },
+    {
+      "dataset_id": "DEMO_SLEEP_EPHYS",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.174; sparse metadata prevents full role classification",
+      "title": "Demo sleep state electrophysiology"
+    },
+    {
+      "dataset_id": "DEMO_TRIAL_OUTCOME_PREDICTION",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.174; sparse metadata prevents full role classification",
+      "title": "Demo trial outcome prediction dataset"
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds006334",
+      "role": "high_relevance",
+      "evidence": "matched 3 sub-queries, score=0.164; sparse metadata prevents full role classification",
+      "title": "Neocortical and Hippocampal Theta Oscillations Track Audiovisual Integration and Replay of Speech Memories"
+    },
+    {
+      "dataset_id": "DEMO_DOPAMINE_PHOTOMETRY",
+      "role": "high_relevance",
+      "evidence": "matched 3 sub-queries, score=0.164; sparse metadata prevents full role classification",
+      "title": "Demo dopamine fiber photometry reward dataset"
+    },
+    {
+      "dataset_id": "DEMO_OPERANT_CONDITIONING",
+      "role": "high_relevance",
+      "evidence": "matched 1 sub-query, score=0.164; sparse metadata prevents full role classification",
+      "title": "Demo operant conditioning dataset"
+    },
+    {
+      "dataset_id": "dataset:openneuro:ds005752",
+      "role": "high_relevance",
+      "evidence": "matched 4 sub-queries, score=0.158; sparse metadata prevents full role classification",
+      "title": "The NIMH Healthy Research Volunteer Dataset"
+    },
+    {
+      "dataset_id": "DEMO_REVERSAL_EPHYS",
+      "role": "high_relevance",
+      "evidence": "matched 2 sub-queries, score=0.158; sparse metadata prevents full role classification",
+      "title": "Demo reversal learning electrophysiology dataset"
+    }
+  ],
+  "hard_criteria": {
+    "all_datasets_have_role": true,
+    "zero_hard_negative_violations": true,
+    "anchor_assigned": true
+  },
+  "coverage_criteria": {
+    "n_distinct_roles": 2,
+    "coverage_bonus": 0.8333,
+    "complementarity_bonus": 0.0
+  },
+  "all_hard_criteria_pass": true
+}
