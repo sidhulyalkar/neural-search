@@ -6,6 +6,8 @@ import { DatasetPage } from './pages/DatasetPage'
 import { OntologyPage } from './pages/OntologyPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { EvaluationPage } from './pages/EvaluationPage'
+import { DemoPage } from './pages/DemoPage'
+import { GraphPage } from './pages/GraphPage'
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/ontology" element={<OntologyPage />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/evaluation" element={<EvaluationPage />} />
+        <Route path="/demo" element={<DemoPage />} />
+        <Route path="/graph" element={<GraphPage />} />
       </Routes>
     </Layout>
   )
