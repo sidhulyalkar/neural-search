@@ -140,21 +140,35 @@ def normalize_physionet_dataset(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _collect_all_listing_links(client: httpx.Client, max_pages: int = 60) -> list[str]:
+    """Paginate through the PhysioNet content listing and collect all dataset links."""
+    seen: set[str] = set()
+    links: list[str] = []
+    for page in range(1, max_pages + 1):
+        try:
+            resp = client.get(PHYSIONET_LISTING, params={"page": page})
+            resp.raise_for_status()
+        except Exception as exc:
+            logger.warning("PhysioNet listing page %d failed: %s", page, exc)
+            break
+        batch = _parse_dataset_links(resp.text)
+        new_links = [lnk for lnk in batch if lnk not in seen]
+        if not new_links:
+            break
+        seen.update(new_links)
+        links.extend(new_links)
+        logger.debug("PhysioNet listing page %d: %d new links (%d total)", page, len(new_links), len(links))
+    return links
+
+
 @register("physionet")
 def fetch_physionet(limit: int = 200) -> list[dict[str, Any]]:
-    """Scrape PhysioNet content listing and return normalized neuro dataset records."""
+    """Scrape PhysioNet content listing (all pages) and return normalized neuro dataset records."""
     accepted: list[dict[str, Any]] = []
 
     with httpx.Client(timeout=20.0, follow_redirects=True) as client:
-        try:
-            resp = client.get(PHYSIONET_LISTING)
-            resp.raise_for_status()
-        except Exception as exc:
-            logger.warning("PhysioNet listing fetch failed: %s", exc)
-            return []
-
-        links = _parse_dataset_links(resp.text)
-        logger.info("PhysioNet: found %d dataset links", len(links))
+        links = _collect_all_listing_links(client)
+        logger.info("PhysioNet: found %d dataset links across all pages", len(links))
 
         for path in links:
             if len(accepted) >= limit:

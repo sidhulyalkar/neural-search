@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 ALLEN_BRAIN_MAP_API = "https://celltypes.brain-map.org/api/v2"
 ALLEN_CELL_TYPES_API = "https://celltypes.brain-map.org/api/v2"
 ALLEN_MOUSE_CONNECTIVITY_API = "https://connectivity.brain-map.org/api/v2"
-ALLEN_API = "http://api.brain-map.org/api/v2/data"
+ALLEN_API = "https://api.brain-map.org/api/v2/data"
 
 # Maps Allen CCF structure acronyms to our vocabulary
 _STRUCTURE_TO_REGION: dict[str, str] = {
