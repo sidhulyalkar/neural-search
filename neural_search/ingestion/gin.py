@@ -53,6 +53,7 @@ def normalize_gin_repo(raw: dict[str, Any]) -> dict[str, Any]:
     return {
         "source": "gin",
         "source_id": source_id,
+        "identifier": full_name,
         "title": title,
         "description": description,
         "url": url,
