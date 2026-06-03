@@ -23,8 +23,12 @@ logger = logging.getLogger(__name__)
 
 OSF_API = "https://api.osf.io/v2"
 OSF_NEURO_TAGS = [
-    "neuroscience", "neuroscience data", "fmri", "eeg", "electrophysiology",
-    "calcium imaging", "neuropixels", "spike sorting", "hippocampus", "cortex",
+    "neuroscience", "electrophysiology", "fmri", "eeg", "calcium imaging",
+    "neuropixels", "spike sorting", "hippocampus", "prefrontal cortex",
+    "neural data", "brain imaging", "two-photon imaging", "patch clamp",
+    "optogenetics", "NWB", "BIDS", "single unit recording", "LFP",
+    "place cells", "decision making", "working memory", "fear conditioning",
+    "motor cortex", "visual cortex", "auditory cortex", "cerebellum",
 ]
 REJECTION_LOG = Path("data/corpus/rejected/tier2_rejected.jsonl")
 
@@ -81,30 +85,40 @@ def normalize_osf_project(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("osf")
-def fetch_osf(limit: int = 100) -> list[dict[str, Any]]:
-    """Fetch public OSF project nodes that mention neuroscience keywords."""
+def fetch_osf(limit: int = 200) -> list[dict[str, Any]]:
+    """Fetch public OSF project nodes that mention neuroscience keywords, with pagination."""
     accepted: list[dict[str, Any]] = []
-    for tag in OSF_NEURO_TAGS:
-        if len(accepted) >= limit:
-            break
-        try:
-            resp = httpx.get(
-                f"{OSF_API}/nodes/",
-                params={"filter[public]": "true", "filter[tags]": tag, "page[size]": 50},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            for node in resp.json().get("data", []):
-                rec = normalize_osf_project(node)
-                result = is_valid_dataset(rec)
-                if result.accepted:
-                    accepted.append(rec)
-                else:
-                    _log_rejection(rec, result.failure_reason, "osf")
-                if len(accepted) >= limit:
+    seen_ids: set[str] = set()
+
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        for tag in OSF_NEURO_TAGS:
+            if len(accepted) >= limit:
+                break
+            next_url: str | None = f"{OSF_API}/nodes/"
+            params: dict = {"filter[public]": "true", "filter[tags]": tag, "page[size]": 50}
+            while next_url and len(accepted) < limit:
+                try:
+                    resp = client.get(next_url, params=params, timeout=30)
+                    resp.raise_for_status()
+                    payload = resp.json()
+                    params = {}  # subsequent pages use full URL from links.next
+                    for node in payload.get("data", []):
+                        sid = str(node.get("id", ""))
+                        if not sid or sid in seen_ids:
+                            continue
+                        seen_ids.add(sid)
+                        rec = normalize_osf_project(node)
+                        result = is_valid_dataset(rec)
+                        if result.accepted:
+                            accepted.append(rec)
+                        else:
+                            _log_rejection(rec, result.failure_reason, "osf")
+                        if len(accepted) >= limit:
+                            break
+                    next_url = (payload.get("links") or {}).get("next")
+                except Exception as exc:
+                    logger.warning("OSF fetch error for tag '%s': %s", tag, exc)
                     break
-        except Exception as exc:
-            logger.warning("OSF fetch error for tag '%s': %s", tag, exc)
 
     logger.info("OSF: accepted %d datasets (rejections logged)", len(accepted))
     return accepted

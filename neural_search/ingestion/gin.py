@@ -26,6 +26,15 @@ GIN_SEARCH_TERMS = [
     "hippocampus", "prefrontal cortex", "visual cortex", "motor cortex",
     "sleep", "decision making", "reward", "working memory", "primate",
     "rat", "zebrafish", "human intracranial", "fiber photometry",
+    "LFP", "local field potential", "single unit", "multi-unit",
+    "place cells", "grid cells", "theta", "gamma oscillation",
+    "auditory cortex", "somatosensory", "cerebellum", "striatum",
+    "amygdala", "thalamus", "brainstem", "basal ganglia",
+    "spatial navigation", "fear conditioning", "attention neural",
+    "neural decoding", "population activity", "trial", "stimulus response",
+    "connectome", "synapse", "axon", "dendrite morphology",
+    "meg brain", "intracranial eeg", "seizure detection",
+    "open ephys", "kilosort", "suite2p", "caiman",
 ]
 
 
@@ -78,34 +87,44 @@ def normalize_gin_repo(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("gin")
-def fetch_gin(limit: int = 500) -> list[dict[str, Any]]:
-    """Search GIN for neuroscience datasets across all search terms."""
+def fetch_gin(limit: int = 700) -> list[dict[str, Any]]:
+    """Search GIN for neuroscience datasets across all search terms with pagination."""
     accepted: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
+    page_size = 50
 
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
         for term in GIN_SEARCH_TERMS:
             if len(accepted) >= limit:
                 break
-            try:
-                resp = client.get(
-                    f"{GIN_API}/repos/search",
-                    params={"q": term, "limit": 50},
-                )
-                resp.raise_for_status()
-                for repo in resp.json().get("data", []):
-                    sid = str(repo.get("id", ""))
-                    if not sid or sid in seen_ids:
-                        continue
-                    seen_ids.add(sid)
-                    rec = normalize_gin_repo(repo)
-                    result = is_valid_dataset(rec)
-                    if result.accepted:
-                        accepted.append(rec)
-                    if len(accepted) >= limit:
+            page = 1
+            while len(accepted) < limit:
+                try:
+                    resp = client.get(
+                        f"{GIN_API}/repos/search",
+                        params={"q": term, "limit": page_size, "page": page},
+                    )
+                    resp.raise_for_status()
+                    repos = resp.json().get("data", [])
+                    if not repos:
                         break
-            except Exception as exc:
-                logger.warning("GIN fetch error for '%s': %s", term, exc)
+                    for repo in repos:
+                        sid = str(repo.get("id", ""))
+                        if not sid or sid in seen_ids:
+                            continue
+                        seen_ids.add(sid)
+                        rec = normalize_gin_repo(repo)
+                        result = is_valid_dataset(rec)
+                        if result.accepted:
+                            accepted.append(rec)
+                        if len(accepted) >= limit:
+                            break
+                    if len(repos) < page_size:
+                        break
+                    page += 1
+                except Exception as exc:
+                    logger.warning("GIN fetch error for '%s' page %d: %s", term, page, exc)
+                    break
 
     logger.info("gin: accepted %d datasets", len(accepted))
     return accepted

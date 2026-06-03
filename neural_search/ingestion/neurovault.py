@@ -71,10 +71,25 @@ def normalize_collection(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_SKIP_TITLE_FRAGMENTS = {"temporary collection", "test collection", "draft", "sandbox"}
+
+
+def _is_quality_collection(col: dict) -> bool:
+    """Basic quality gate: skip empty or throwaway collections."""
+    name = (col.get("name") or "").lower()
+    if any(frag in name for frag in _SKIP_TITLE_FRAGMENTS):
+        return False
+    n_images = col.get("number_of_images") or 0
+    description = col.get("description") or ""
+    # Must have at least some content
+    return bool(n_images > 0 or len(description) > 20)
+
+
 @register("neurovault")
-def fetch_neurovault(limit: int = 100) -> list[dict[str, Any]]:
-    """Fetch public NeuroVault collections."""
+def fetch_neurovault(limit: int = 800) -> list[dict[str, Any]]:
+    """Fetch public NeuroVault collections, skipping empty/throwaway ones."""
     records: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     url: str | None = NEUROVAULT_API
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
         while url and len(records) < limit:
@@ -87,8 +102,12 @@ def fetch_neurovault(limit: int = 100) -> list[dict[str, Any]]:
                 break
 
             for col in data.get("results", []):
-                if not col.get("id") or not col.get("name"):
+                sid = str(col.get("id", ""))
+                if not sid or not col.get("name") or sid in seen_ids:
                     continue
+                if not _is_quality_collection(col):
+                    continue
+                seen_ids.add(sid)
                 records.append(normalize_collection(col))
                 if len(records) >= limit:
                     break
