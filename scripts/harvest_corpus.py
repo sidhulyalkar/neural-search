@@ -25,6 +25,7 @@ SOURCE_OUTPUTS: dict[str, Path] = {
     "dandi": CORPUS_DIR / "real_dandi.jsonl",
     "openneuro": CORPUS_DIR / "real_openneuro.jsonl",
     "bluebrain": CORPUS_DIR / "real_bluebrain.jsonl",
+    "brain_image_library": CORPUS_DIR / "real_brain_image_library.jsonl",
     "allen": CORPUS_DIR / "real_allen.jsonl",
     "nemo": CORPUS_DIR / "real_nemo.jsonl",
     # Tier 2 - broader neuroscience repositories
@@ -44,6 +45,7 @@ SOURCE_LIMITS: dict[str, int] = {
     "dandi": 1000,
     "openneuro": 2000,
     "bluebrain": 300,
+    "brain_image_library": 300,
     "allen": 100,
     "nemo": 100,
     "neurovault": 600,
@@ -133,6 +135,7 @@ def run_harvest(
     import neural_search.ingestion.dandi  # noqa: F401
     import neural_search.ingestion.openneuro  # noqa: F401
     import neural_search.ingestion.bluebrain  # noqa: F401
+    import neural_search.ingestion.brain_image_library  # noqa: F401
     import neural_search.ingestion.allen_brain  # noqa: F401
     import neural_search.ingestion.nemo_archive  # noqa: F401
     import neural_search.ingestion.neurovault  # noqa: F401
