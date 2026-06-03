@@ -17,8 +17,14 @@ from neural_search.schemas import ExtractionResult, LabelEvidence
 
 MODALITY_SYNONYMS: dict[str, list[str]] = {
     # Electrophysiology
-    "calcium_imaging": ["calcium imaging", "two photon", "2 photon", "2p", "gcamp"],
-    "extracellular_ephys": ["extracellular", "spike sorting", "electrophysiology", "ephys"],
+    "calcium_imaging": ["calcium imaging", "two photon", "2 photon", "2p", "gcamp",
+                       "fluorescence imaging", "calcium transient", "calcium indicator",
+                       "miniscope", "gcampl", "gcamp6", "jgcamp", "rhcamp", "soma",
+                       "calcium signal", "calcium dye", "fluo-4", "oregon green"],
+    "extracellular_ephys": ["extracellular", "spike sorting", "electrophysiology", "ephys",
+                           "single unit", "single-unit", "single neuron", "multi-unit",
+                           "multiunit", "spike train", "action potential recording",
+                           "tetrode", "silicon probe", "electrode array", "neural probe"],
     "neuropixels": ["neuropixels", "neuropixel"],
     "eeg": ["eeg", "electroencephalography"],
     "ecog": ["ecog", "electrocorticography"],
