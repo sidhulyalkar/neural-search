@@ -15,6 +15,7 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.ingestion.registry import register
 from neural_search.normalized import (
     stable_normalized_id,
 )
@@ -311,6 +312,12 @@ def records_from_curated(limit: int | None = None) -> list[dict[str, Any]]:
     if limit:
         datasets = datasets[:limit]
     return [normalize_allen_dataset(d) for d in datasets]
+
+
+@register("allen")
+def fetch_allen_records(limit: int = 100) -> list[dict[str, Any]]:
+    """Registry adapter for curated Allen Brain records."""
+    return records_from_curated(limit=limit)
 
 
 def normalized_records_from_curated(

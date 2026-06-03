@@ -7,6 +7,7 @@ from scripts.harvest_corpus import (
     load_seen_ids,
     append_new_records,
     deduplicate_combined,
+    write_records,
 )
 
 
@@ -43,6 +44,17 @@ def test_append_new_records_skips_seen() -> None:
         lines = p.read_text().strip().split("\n")
         assert len(lines) == 2
         assert json.loads(lines[-1])["source_id"] == "b"
+
+
+def test_write_records_replaces_checkpoint() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "corpus.jsonl"
+        _write_jsonl(p, [{"source_id": "old", "title": "old"}])
+        count = write_records(p, [{"source_id": "new", "title": "new"}])
+        assert count == 1
+        lines = p.read_text().strip().split("\n")
+        assert len(lines) == 1
+        assert json.loads(lines[0])["source_id"] == "new"
 
 
 def test_deduplicate_combined_removes_duplicates() -> None:

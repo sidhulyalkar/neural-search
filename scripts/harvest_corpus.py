@@ -21,16 +21,18 @@ logger = logging.getLogger(__name__)
 CORPUS_DIR = Path("data/corpus/normalized")
 
 SOURCE_OUTPUTS: dict[str, Path] = {
-    # Tier 1 — curated neuroscience archives
+    # Tier 1 - curated neuroscience archives
     "dandi": CORPUS_DIR / "real_dandi.jsonl",
     "openneuro": CORPUS_DIR / "real_openneuro.jsonl",
     "bluebrain": CORPUS_DIR / "real_bluebrain.jsonl",
-    # Tier 2 — broader neuroscience repositories
+    "allen": CORPUS_DIR / "real_allen.jsonl",
+    "nemo": CORPUS_DIR / "real_nemo.jsonl",
+    # Tier 2 - broader neuroscience repositories
     "neurovault": CORPUS_DIR / "real_neurovault.jsonl",
     "gin": CORPUS_DIR / "real_gin.jsonl",
     "zenodo": CORPUS_DIR / "real_zenodo.jsonl",
     "physionet": CORPUS_DIR / "real_physionet.jsonl",
-    # Tier 3 — general repositories (low yield, staged for review)
+    # Tier 3 - general repositories (low yield, staged for review)
     "ebrains": CORPUS_DIR / "real_ebrains.jsonl",
     "osf": CORPUS_DIR / "real_osf.jsonl",
     "figshare": CORPUS_DIR / "real_figshare.jsonl",
@@ -42,6 +44,8 @@ SOURCE_LIMITS: dict[str, int] = {
     "dandi": 1000,
     "openneuro": 2000,
     "bluebrain": 300,
+    "allen": 100,
+    "nemo": 100,
     "neurovault": 600,
     "gin": 500,
     "ebrains": 300,
@@ -84,6 +88,15 @@ def append_new_records(
     return len(new)
 
 
+def write_records(path: Path, records: list[dict[str, Any]]) -> int:
+    """Replace a source checkpoint with the provided records."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        for rec in records:
+            f.write(json.dumps(rec) + "\n")
+    return len(records)
+
+
 def deduplicate_combined(sources: list[Path], output: Path) -> int:
     """Read all source JSONL files, deduplicate by (source, source_id), write combined."""
     seen: set[tuple[str, str]] = set()
@@ -114,11 +127,14 @@ def deduplicate_combined(sources: list[Path], output: Path) -> int:
 def run_harvest(
     sources: list[str],
     dry_run: bool = False,
+    refresh: bool = False,
 ) -> dict[str, int]:
     """Run specified adapters and return {source: new_records_added} mapping."""
     import neural_search.ingestion.dandi  # noqa: F401
     import neural_search.ingestion.openneuro  # noqa: F401
     import neural_search.ingestion.bluebrain  # noqa: F401
+    import neural_search.ingestion.allen_brain  # noqa: F401
+    import neural_search.ingestion.nemo_archive  # noqa: F401
     import neural_search.ingestion.neurovault  # noqa: F401
     import neural_search.ingestion.gin  # noqa: F401
     import neural_search.ingestion.ebrains  # noqa: F401
@@ -132,31 +148,53 @@ def run_harvest(
 
     for source in sources:
         if source not in _REGISTRY:
-            logger.warning("Source '%s' not in registry — skipping", source)
+            logger.warning("Source '%s' not in registry - skipping", source)
             continue
 
         output_path = SOURCE_OUTPUTS.get(source, CORPUS_DIR / f"real_{source}.jsonl")
         limit = SOURCE_LIMITS.get(source, 200)
         seen_ids = load_seen_ids(output_path)
 
-        logger.info("Running %s (seen=%d, limit=%d)…", source, len(seen_ids), limit)
+        logger.info(
+            "Running %s (seen=%d, limit=%d, refresh=%s)...",
+            source,
+            len(seen_ids),
+            limit,
+            refresh,
+        )
 
         try:
             records: list[dict[str, Any]] = run_adapter(source, limit=limit)
             logger.info("%s: fetched %d records", source, len(records))
         except Exception as exc:
-            logger.error("%s: adapter failed — %s", source, exc)
+            logger.error("%s: adapter failed - %s", source, exc)
             results[source] = 0
             continue
 
         if dry_run:
-            new_count = len([r for r in records if str(r.get("source_id", "")) not in seen_ids])
-            logger.info("[DRY-RUN] %s: would add %d new records", source, new_count)
-            results[source] = new_count
+            count = len(records) if refresh else len([
+                r for r in records if str(r.get("source_id", "")) not in seen_ids
+            ])
+            action = "replace with" if refresh else "add"
+            logger.info("[DRY-RUN] %s: would %s %d records", source, action, count)
+            results[source] = count
         else:
-            added = append_new_records(output_path, records, seen_ids)
-            logger.info("%s: added %d new records to %s", source, added, output_path)
-            results[source] = added
+            if refresh:
+                if not records and seen_ids:
+                    logger.error(
+                        "%s: refresh returned 0 records; keeping existing checkpoint %s",
+                        source,
+                        output_path,
+                    )
+                    results[source] = 0
+                    continue
+                written = write_records(output_path, records)
+                logger.info("%s: refreshed %d records in %s", source, written, output_path)
+                results[source] = written
+            else:
+                added = append_new_records(output_path, records, seen_ids)
+                logger.info("%s: added %d new records to %s", source, added, output_path)
+                results[source] = added
 
     if not dry_run:
         # Always deduplicate across all known source checkpoint files so the combined
@@ -176,11 +214,19 @@ def main(argv: list[str] | None = None) -> int:
         help="Sources to run (default: all)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Show counts without writing")
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Replace selected source checkpoint files instead of appending only new IDs",
+    )
     args = parser.parse_args(argv)
 
-    results = run_harvest(args.sources, dry_run=args.dry_run)
+    results = run_harvest(args.sources, dry_run=args.dry_run, refresh=args.refresh)
+    action = "would refresh" if args.dry_run and args.refresh else (
+        "refreshed" if args.refresh else ("(dry-run)" if args.dry_run else "added")
+    )
     for source, count in results.items():
-        print(f"{source}: {count} {'(dry-run)' if args.dry_run else 'added'}")
+        print(f"{source}: {count} {action}")
 
     return 0
 

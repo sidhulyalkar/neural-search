@@ -83,6 +83,7 @@ data/eval/results/
 !data/eval/results/.gitkeep
 data/raw/
 !data/raw/.gitkeep
+data/corpus/normalized/.bluebrain_s3_bundles_cache.json
 
 # Generated notebooks
 neural_search/notebooks/generated/

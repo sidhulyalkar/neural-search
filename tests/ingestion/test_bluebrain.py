@@ -1,15 +1,18 @@
 """Tests for the Blue Brain Open Data ingestion adapter."""
 from __future__ import annotations
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from neural_search.ingestion.bluebrain import (
     _bundle_title,
+    _child_asset,
     _extract_extensions,
     _has_data_files,
     _infer_data_standards,
+    _load_checkpoint_prefixes,
     _parse_path,
     _source_id,
     normalize_bluebrain_bundle,
@@ -52,7 +55,13 @@ def test_parse_path_transcriptomics():
     meta = _parse_path("Experimental_Data/Transcriptomics/Whole_brain/aibs_10x_mouse_wholebrain/")
     assert meta["category"] == "experimental"
     assert "transcriptomics" in meta["modalities"]
+    assert "mouse" in meta["species"]
     assert "whole_brain" in meta["brain_regions"]
+
+
+def test_parse_path_embedded_species_token():
+    meta = _parse_path("Experimental_Data/Neuron_density/rat_P14/LayerBoundariesProject/")
+    assert "rat" in meta["species"]
 
 
 # --- Unit tests: file utilities ---
@@ -73,7 +82,7 @@ def test_has_data_files_false_for_metadata_only():
         ("dir/README.txt", 200),
         ("dir/COMMIT_EDITMSG", 50),
     ]
-    # .txt and misc files should still count — they're not in _DATA_EXTS exclusions
+    # .txt and misc files should still count - they're not in _DATA_EXTS exclusions
     # Only .DS_Store is filtered
     assert _has_data_files(files) is False  # none of these are in _DATA_EXTS
 
@@ -109,6 +118,7 @@ def test_bundle_title_meaningful():
     title = _bundle_title("Experimental_Data/Reconstructed_morphologies/Categorized/Neurons/Mouse/Cortex/")
     assert "Mouse" in title or "mouse" in title.lower()
     assert "Cortex" in title or "cortex" in title.lower()
+    assert "\u2014" not in title
 
 
 def test_bundle_title_strips_generic_tokens():
@@ -140,6 +150,10 @@ def test_normalize_bluebrain_bundle_fields():
     assert rec["identifier"] == prefix.strip("/")
     assert rec["storage_url"].startswith("s3://openbluebrain/")
     assert rec["source_type"] == "canonical_dataset"
+    assert rec["record_type"] == "dataset_bundle"
+    assert len(rec["assets"]) == 3
+    assert rec["assets"][0]["record_type"] == "child_asset"
+    assert rec["metadata_json"]["child_assets"] == rec["assets"]
 
 
 def test_normalize_bluebrain_bundle_model_record():
@@ -159,6 +173,38 @@ def test_normalize_bluebrain_bundle_stable_source_id():
     id2 = _source_id(prefix)
     assert id1 == id2
     assert len(id1) == 16
+
+
+def test_child_asset_metadata():
+    prefix = "Model_Data/Electrophysiological_models/Hippocampus/"
+    key = prefix + "mechanisms/na.mod"
+    asset = _child_asset(prefix, key, 1234)
+    assert asset["path"] == key
+    assert asset["relative_path"] == "mechanisms/na.mod"
+    assert asset["storage_url"] == "s3://openbluebrain/" + key
+    assert asset["file_format"] == "mod"
+    assert asset["data_standard"] == "HOC/MOD"
+    assert asset["asset_type"] == "neuron_model_file"
+
+
+def test_load_checkpoint_prefixes(tmp_path):
+    checkpoint = tmp_path / "real_bluebrain.jsonl"
+    records = [
+        {"source": "bluebrain", "identifier": "Model_Data/Circuits/Rat"},
+        {
+            "source": "bluebrain",
+            "metadata_json": {"s3_prefix": "Experimental_Data/Neuron_density/rat_P14/"},
+        },
+        {"source": "openneuro", "identifier": "ds000001"},
+    ]
+    checkpoint.write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+
+    prefixes = _load_checkpoint_prefixes(checkpoint, limit=10)
+
+    assert prefixes == [
+        "Model_Data/Circuits/Rat/",
+        "Experimental_Data/Neuron_density/rat_P14/",
+    ]
 
 
 # --- Integration test: fetch with mocked S3 ---

@@ -61,3 +61,32 @@ def test_fetch_all_openneuro_respects_max_records() -> None:
     )
     records = fetch_all_openneuro(page_size=100, max_records=3)
     assert len(records) == 3
+
+
+@respx.mock
+def test_fetch_all_openneuro_skips_null_edge_node() -> None:
+    payload = _gql_response([STUB_NODE], False, None)
+    payload["data"]["datasets"]["edges"].insert(0, None)
+    payload["data"]["datasets"]["edges"].insert(1, {"cursor": "broken", "node": None})
+    payload["errors"] = [{"message": "Not Found"}]
+    respx.post(OPENNEURO_GQL).mock(return_value=httpx.Response(200, json=payload))
+
+    records = fetch_all_openneuro(page_size=100)
+
+    assert len(records) == 1
+    assert records[0]["source_id"] == "ds000001"
+
+
+def test_openneuro_registry_adapter(monkeypatch) -> None:
+    import neural_search.ingestion.openneuro as openneuro
+    from neural_search.ingestion.registry import run_adapter
+
+    monkeypatch.setattr(
+        openneuro,
+        "fetch_all_openneuro",
+        lambda max_records=None: [{"source": "openneuro", "source_id": "ds000001"}],
+    )
+
+    records = run_adapter("openneuro", limit=1)
+
+    assert records == [{"source": "openneuro", "source_id": "ds000001"}]
