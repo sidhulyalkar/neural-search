@@ -153,8 +153,9 @@ def run_harvest(
             results[source] = added
 
     if not dry_run:
-        all_source_files = [SOURCE_OUTPUTS.get(s, CORPUS_DIR / f"real_{s}.jsonl") for s in SOURCE_OUTPUTS]
-        total = deduplicate_combined(all_source_files, COMBINED_OUTPUT)
+        # Always deduplicate across all known source checkpoint files so the combined
+        # corpus accumulates data from every prior run, not just the current sources.
+        total = deduplicate_combined(list(SOURCE_OUTPUTS.values()), COMBINED_OUTPUT)
         logger.info("Combined corpus: %d total unique records → %s", total, COMBINED_OUTPUT)
 
     return results
