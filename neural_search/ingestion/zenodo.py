@@ -88,39 +88,39 @@ def fetch_zenodo(limit: int = 500) -> list[dict[str, Any]]:
     accepted: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
 
-    for query in ZENODO_QUERIES:
-        if len(accepted) >= limit:
-            break
-        page = 1
-        per_page = 25
-        while len(accepted) < limit:
-            try:
-                resp = httpx.get(
-                    ZENODO_API,
-                    params={"q": query, "type": "dataset", "size": per_page, "page": page, "sort": "mostrecent"},
-                    timeout=30,
-                )
-                resp.raise_for_status()
-                hits = resp.json().get("hits", {}).get("hits", [])
-                if not hits:
-                    break
-                for item in hits:
-                    sid = str(item.get("id", ""))
-                    if not sid or sid in seen_ids:
-                        continue
-                    seen_ids.add(sid)
-                    rec = normalize_zenodo_record(item)
-                    result = is_valid_dataset(rec)
-                    if result.accepted:
-                        accepted.append(rec)
-                    if len(accepted) >= limit:
-                        break
-                if len(hits) < per_page:
-                    break
-                page += 1
-            except Exception as exc:
-                logger.warning("zenodo fetch error for '%s' page %d: %s", query, page, exc)
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        for query in ZENODO_QUERIES:
+            if len(accepted) >= limit:
                 break
+            page = 1
+            per_page = 25
+            while len(accepted) < limit:
+                try:
+                    resp = client.get(
+                        ZENODO_API,
+                        params={"q": query, "type": "dataset", "size": per_page, "page": page, "sort": "mostrecent"},
+                    )
+                    resp.raise_for_status()
+                    hits = resp.json().get("hits", {}).get("hits", [])
+                    if not hits:
+                        break
+                    for item in hits:
+                        sid = str(item.get("id", ""))
+                        if not sid or sid in seen_ids:
+                            continue
+                        seen_ids.add(sid)
+                        rec = normalize_zenodo_record(item)
+                        result = is_valid_dataset(rec)
+                        if result.accepted:
+                            accepted.append(rec)
+                        if len(accepted) >= limit:
+                            break
+                    if len(hits) < per_page:
+                        break
+                    page += 1
+                except Exception as exc:
+                    logger.warning("zenodo fetch error for '%s' page %d: %s", query, page, exc)
+                    break
 
     logger.info("zenodo: accepted %d datasets", len(accepted))
     return accepted
