@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 
 const exampleQueries = [
-  'Find reversal learning datasets with reward omission and trial outcomes',
-  'Go/NoGo task with calcium imaging in mPFC and lick events',
-  'Visual decision-making with Neuropixels recordings',
-  'Find datasets where I can decode choice from neural activity',
-  'Human ECoG or iEEG reaching data for BCI classification',
-  'Delay discounting with fiber photometry and reward choice',
+  'Multi-region calcium imaging of PFC, hippocampus, and striatum during working memory',
+  'Cross-species comparison of decision-making: human fMRI and rodent electrophysiology',
+  'Large-scale Neuropixels recordings across cortex and thalamus with behavioral readout',
+  'Reversal learning datasets with reward omission, trial outcomes, and mPFC recordings',
+  'Human ECoG or iEEG reaching data for BCI decoding — multiple subjects',
+  'DANDI datasets with NWB format, calcium imaging, and published analysis notebooks',
+  'Delay discounting with fiber photometry across multiple limbic regions',
+  'OpenNeuro fMRI with task design, behavioral logfiles, and BIDS derivatives',
 ]
 
 const pillars = [
@@ -38,7 +40,7 @@ export function SearchPage() {
       <div className="pt-24 pb-16">
         <div className="mb-3">
           <span className="font-mono text-xs text-neural-600 tracking-widest uppercase">
-            v2.0 · 835 datasets
+            v2.0 · 873 datasets
           </span>
         </div>
 
@@ -104,10 +106,10 @@ export function SearchPage() {
       {/* Bottom links */}
       <div className="flex flex-wrap gap-6 pb-16">
         <Link to="/demo" className="text-sm text-neural-500 hover:text-accent-cyan transition-colors">
-          Killer Demo — cognitive control query →
+          Query Pipeline Demo — cognitive control →
         </Link>
         <Link to="/graph" className="text-sm text-neural-500 hover:text-accent-cyan transition-colors">
-          Corpus Map — 835 datasets visualized →
+          Corpus Map — 873 datasets visualized →
         </Link>
         <Link to="/ontology" className="text-sm text-neural-500 hover:text-neural-200 transition-colors">
           Browse Ontology →
