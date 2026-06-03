@@ -22,8 +22,20 @@ logger = logging.getLogger(__name__)
 
 FIGSHARE_API = "https://api.figshare.com/v2"
 FIGSHARE_SEARCH_TERMS = [
-    "neuroscience", "electrophysiology", "fmri", "calcium imaging",
-    "neuropixels", "eeg", "hippocampus", "cortex", "spike sorting",
+    "neuroscience electrophysiology", "fmri brain imaging", "calcium imaging neural",
+    "neuropixels spike sorting", "eeg brain recording", "hippocampus memory",
+    "prefrontal cortex", "reward learning dopamine", "two-photon imaging mouse",
+    "patch clamp neuron", "motor cortex behavior", "visual cortex stimulus",
+    "basal ganglia striatum", "cerebellum motor learning", "primate electrophysiology",
+    "human eeg cognitive", "decision making neural", "working memory prefrontal",
+    "place cells grid cells", "fear conditioning amygdala", "auditory cortex sound",
+    "NWB neurodata without borders", "BIDS brain imaging data", "single neuron firing",
+    "local field potential LFP", "neural population dynamics", "seizure epilepsy EEG",
+    "brain computer interface BCI", "calcium transient fluorescence",
+    "widefield mesoscale imaging", "fiber photometry in vivo", "theta oscillation",
+    "sharp wave ripple", "single cell transcriptomics brain", "snRNA-seq brain",
+    "MERFISH spatial transcriptomics brain", "optogenetics neural circuit",
+    "deep brain stimulation", "spinal cord neural", "retina photoreceptor",
 ]
 
 
@@ -78,36 +90,47 @@ def normalize_figshare_item(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("figshare")
-def fetch_figshare(limit: int = 100) -> list[dict[str, Any]]:
-    """Search figshare for neuroscience datasets (item_type=3)."""
+def fetch_figshare(limit: int = 200) -> list[dict[str, Any]]:
+    """Search figshare for neuroscience datasets (item_type=3) with pagination."""
     accepted: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
+    page_size = 50
 
-    for term in FIGSHARE_SEARCH_TERMS:
-        if len(accepted) >= limit:
-            break
-        try:
-            resp = httpx.post(
-                f"{FIGSHARE_API}/articles/search",
-                json={"search_for": term, "item_type": 3, "page_size": 30},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            for item in resp.json():
-                sid = str(item.get("id", ""))
-                if not sid or sid in seen_ids:
-                    continue
-                seen_ids.add(sid)
-                rec = normalize_figshare_item(item)
-                result = is_valid_dataset(rec)
-                if result.accepted:
-                    accepted.append(rec)
-                else:
-                    _log_rejection(rec, result.failure_reason, "figshare")
-                if len(accepted) >= limit:
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        for term in FIGSHARE_SEARCH_TERMS:
+            if len(accepted) >= limit:
+                break
+            page = 1
+            while len(accepted) < limit:
+                try:
+                    resp = client.post(
+                        f"{FIGSHARE_API}/articles/search",
+                        json={"search_for": term, "item_type": 3, "page_size": page_size, "page": page},
+                        timeout=30,
+                    )
+                    resp.raise_for_status()
+                    items = resp.json()
+                    if not items:
+                        break
+                    for item in items:
+                        sid = str(item.get("id", ""))
+                        if not sid or sid in seen_ids:
+                            continue
+                        seen_ids.add(sid)
+                        rec = normalize_figshare_item(item)
+                        result = is_valid_dataset(rec)
+                        if result.accepted:
+                            accepted.append(rec)
+                        else:
+                            _log_rejection(rec, result.failure_reason, "figshare")
+                        if len(accepted) >= limit:
+                            break
+                    if len(items) < page_size:
+                        break
+                    page += 1
+                except Exception as exc:
+                    logger.warning("figshare fetch error for '%s' page %d: %s", term, page, exc)
                     break
-        except Exception as exc:
-            logger.warning("figshare fetch error for '%s': %s", term, exc)
 
     logger.info("figshare: accepted %d datasets", len(accepted))
     return accepted
