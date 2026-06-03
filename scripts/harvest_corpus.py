@@ -120,7 +120,7 @@ def run_harvest(
     import neural_search.ingestion.physionet  # noqa: F401
     import neural_search.ingestion.osf  # noqa: F401
     import neural_search.ingestion.figshare  # noqa: F401
-    from neural_search.ingestion.registry import _REGISTRY  # type: ignore[attr-defined]
+    from neural_search.ingestion.registry import _REGISTRY, run_adapter  # type: ignore[attr-defined]
 
     results: dict[str, int] = {}
 
@@ -136,7 +136,7 @@ def run_harvest(
         logger.info("Running %s (seen=%d, limit=%d)…", source, len(seen_ids), limit)
 
         try:
-            records: list[dict[str, Any]] = _REGISTRY[source](limit=limit)
+            records: list[dict[str, Any]] = run_adapter(source, limit=limit)
             logger.info("%s: fetched %d records", source, len(records))
         except Exception as exc:
             logger.error("%s: adapter failed — %s", source, exc)
