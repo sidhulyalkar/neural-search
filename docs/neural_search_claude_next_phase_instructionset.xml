@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instructionSet id="neural-search-next-phase" version="1.0">
+  <metadata>
+    <project>Neural Search</project>
+    <purpose>Guide Claude Code through repository cleanup and the next experimentally reusable retrieval sprint.</purpose>
+    <northStar>Identify datasets that are experimentally reusable for a target scientific analysis, not merely topically similar.</northStar>
+  </metadata>
+
+  <context>
+    <summary>
+      The repository already contains ontology matching, hybrid search, graph infrastructure, field embeddings,
+      analysis affordances, source quality scoring, benchmark runners, hard-negative queries, dataset cards,
+      and whitepaper artifacts. The next phase should reduce sprawl, strengthen provenance-backed claims,
+      build executable affordance validation, and create a harder reusability benchmark.
+    </summary>
+    <keyProblem>
+      Current benchmarks are useful but not hard enough to prove that embeddings, graph context, affordances,
+      and hard-negative filtering improve scientific retrieval. Ablations show some components have marginal
+      or inconsistent impact. Build evaluation that tests experimental reusability, not only label overlap.
+    </keyProblem>
+    <anchorExample>
+      The EBRAINS GUI search for "delay discounting" returns lexical matches involving delayed reach-to-grasp,
+      reward/motivation mentions, and signal propagation delay. Neural Search should distinguish true
+      delay discounting/intertemporal choice from motor delay, working-memory delay, and signal propagation delay.
+    </anchorExample>
+  </context>
+
+  <workflowRules>
+    <rule>Use small commits with descriptive messages.</rule>
+    <rule>Do not add broad feature sprawl unless it directly supports experimental reusability ranking or evidence-backed explanation.</rule>
+    <rule>Do not prioritize frontend polish unless required to expose evidence fields.</rule>
+    <rule>Do not chase unrelated snapshot failures unless they block the deliverables.</rule>
+    <rule>Document starting test and lint status before changing architecture.</rule>
+    <rule>Keep claims honest. Mark speculative ideas as proposed or future work.</rule>
+  </workflowRules>
+
+  <phases>
+    <phase id="1" name="Repository cleanup and canonical map" priority="highest">
+      <goal>Make the repository clean, navigable, and safe to hand off.</goal>
+      <tasks>
+        <task>Run git status, pytest, and ruff to capture starting state.</task>
+        <task>Create or update docs/CLEANUP_LOG.md.</task>
+        <task>Remove __pycache__, *.pyc, .pytest_cache, .ruff_cache, .mypy_cache, node_modules, frontend dist, Python dist/build artifacts, root-level zip packages, and other generated clutter.</task>
+        <task>Ensure .gitignore excludes generated artifacts.</task>
+        <task>Add scripts/export_clean_repo.sh using git archive.</task>
+        <task>Consolidate docs: keep canonical docs in docs/ and move clearly superseded historical task prompts or handoff docs into archive_docs/ with an index.</task>
+      </tasks>
+      <commands>
+        <command>git status --short</command>
+        <command>python -m pip install -e ".[dev]"</command>
+        <command>pytest -q || true</command>
+        <command>ruff check neural_search tests || true</command>
+        <command>find . -type d -name __pycache__ -prune -exec rm -rf {} +</command>
+        <command>find . -type f -name "*.pyc" -delete</command>
+        <command>rm -rf .pytest_cache .ruff_cache .mypy_cache apps/web/node_modules apps/web/dist dist build *.egg-info</command>
+        <command>rm -f ./*.zip</command>
+      </commands>
+      <acceptanceCriteria>
+        <criterion>Clean export contains no .git, node_modules, caches, pyc files, build artifacts, or root-level zip packages.</criterion>
+        <criterion>docs/CLEANUP_LOG.md records what changed and why.</criterion>
+        <criterion>Canonical documentation is easy to find.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="2" name="Reusability claim schema" priority="highest">
+      <goal>Make provenance-backed claims the atomic unit of search, graph edges, and explanations.</goal>
+      <files>
+        <file>neural_search/core/claims.py</file>
+        <file>neural_search/file_inspection/claims.py</file>
+      </files>
+      <schema>
+        <field>claim_id</field>
+        <field>subject_id</field>
+        <field>predicate</field>
+        <field>object_id</field>
+        <field>object_label</field>
+        <field>source_type</field>
+        <field>source_ref</field>
+        <field>evidence_text</field>
+        <field>extractor</field>
+        <field>confidence</field>
+        <field>review_status</field>
+        <field>created_at</field>
+      </schema>
+      <acceptanceCriteria>
+        <criterion>Existing extracted labels can be represented as claims.</criterion>
+        <criterion>Claims serialize to JSONL.</criterion>
+        <criterion>Graph edges and result explanations can reference claim IDs.</criterion>
+        <criterion>Tests cover validation and serialization.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="3" name="Executable affordance validators" priority="highest">
+      <goal>Convert analysis affordances from loose tags into validators with requirements, blockers, confidence, and evidence.</goal>
+      <files>
+        <file>neural_search/affordances/validators.py</file>
+        <file>config/affordance_rubric.yaml</file>
+        <file>tests/test_affordance_validators.py</file>
+      </files>
+      <initialValidators>
+        <validator>delay_discounting_modeling</validator>
+        <validator>q_learning_modeling</validator>
+        <validator>choice_decoding</validator>
+        <validator>motor_decoding</validator>
+        <validator>trial_aligned_neural_analysis</validator>
+        <validator>cross_session_generalization</validator>
+      </initialValidators>
+      <resultShape>
+        <field>affordance_id</field>
+        <field>status: supported | partial | unsupported</field>
+        <field>confidence</field>
+        <field>matched_requirements</field>
+        <field>missing_requirements</field>
+        <field>hard_blockers</field>
+        <field>evidence_claim_ids</field>
+        <field>notes</field>
+      </resultShape>
+      <acceptanceCriteria>
+        <criterion>Validators run over normalized records and claims.</criterion>
+        <criterion>Missing requirements are explicit.</criterion>
+        <criterion>Hard blockers prevent high-confidence matches.</criterion>
+        <criterion>Tests include true positives, partial support, unsupported records, and false-positive decoys.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="4" name="Query sense disambiguation" priority="high">
+      <goal>Avoid lexical false positives by identifying scientific senses of overloaded terms.</goal>
+      <files>
+        <file>neural_search/search/sense_disambiguation.py</file>
+        <file>config/query_senses.yaml</file>
+        <file>tests/test_query_sense_disambiguation.py</file>
+      </files>
+      <initialConcepts>
+        <concept>delay</concept>
+        <concept>reward</concept>
+        <concept>choice</concept>
+        <concept>memory</concept>
+        <concept>spike</concept>
+        <concept>signal</concept>
+        <concept>model</concept>
+      </initialConcepts>
+      <acceptanceCriteria>
+        <criterion>delay discounting resolves to intertemporal choice / delayed reward valuation.</criterion>
+        <criterion>signal propagation delay, motor delay, and working-memory delay are recognized as negative senses for delay discounting queries.</criterion>
+        <criterion>Sense penalties or flags are integrated into retrieval/reranking traces.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="5" name="Reusability Gold v1 benchmark" priority="high">
+      <goal>Create a benchmark that evaluates experimental reusability, not only label overlap.</goal>
+      <files>
+        <file>data/eval/reusability_gold_v1.yaml</file>
+        <file>data/eval/reusability_gold_v1_labels.jsonl</file>
+        <file>docs/REUSABILITY_GOLD_V1.md</file>
+        <file>tests/test_reusability_gold_benchmark.py</file>
+      </files>
+      <requirements>
+        <requirement>Start with at least 25 queries.</requirement>
+        <requirement>Include ambiguity, analysis affordance, cross-modal/cross-species, natural-language, and exact lookup categories.</requirement>
+        <requirement>Use graded relevance from 0 to 3.</requirement>
+        <requirement>Include must-have variables, should-have variables, and hard-negative senses.</requirement>
+        <requirement>Report hard-negative violation rate, claim support rate, missing requirement penalties, and graded NDCG.</requirement>
+      </requirements>
+      <acceptanceCriteria>
+        <criterion>Benchmark loads and validates.</criterion>
+        <criterion>At least 10 hard-negative traps exist.</criterion>
+        <criterion>At least 6 affordance-driven queries exist.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="6" name="Candidate generation and scientific reranking" priority="medium-high">
+      <goal>Make retrieval architecture more interpretable by separating candidate generation from scientific reranking.</goal>
+      <candidateGenerators>
+        <generator>sparse_bm25</generator>
+        <generator>ontology_expansion</generator>
+        <generator>structured_filters</generator>
+        <generator>graph_neighborhood</generator>
+        <generator>field_embeddings</generator>
+        <generator>paper_dataset_links</generator>
+      </candidateGenerators>
+      <rerankerFeatures>
+        <feature>construct_compatibility</feature>
+        <feature>variable_compatibility</feature>
+        <feature>affordance_support</feature>
+        <feature>modality_species_region_constraints</feature>
+        <feature>provenance_confidence</feature>
+        <feature>missingness_penalty</feature>
+        <feature>hard_negative_violation</feature>
+      </rerankerFeatures>
+      <acceptanceCriteria>
+        <criterion>Candidate-generation traces are available.</criterion>
+        <criterion>Reranker feature contributions are visible.</criterion>
+        <criterion>Ablations can test candidate generators and reranker features separately.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="7" name="Evidence-backed result cards" priority="medium-high">
+      <goal>Expose matched constructs, matched affordances, matched requirements, missing requirements, hard-negative flags, and claim-backed evidence in search results.</goal>
+      <acceptanceCriteria>
+        <criterion>API or CLI search results include evidence fields.</criterion>
+        <criterion>Top results cite supporting claim IDs.</criterion>
+        <criterion>Benchmark reports surface missing requirements and hard-negative flags.</criterion>
+      </acceptanceCriteria>
+    </phase>
+
+    <phase id="8" name="Whitepaper and claim ledger sync" priority="medium">
+      <goal>Make all external claims accurate, reproducible, and caveated.</goal>
+      <files>
+        <file>docs/CLAIM_LEDGER.md</file>
+        <file>docs/WHITEPAPER_IMPLEMENTATION_ALIGNMENT.md</file>
+        <file>docs/whitepaper/neural_search_iclr_whitepaper.tex</file>
+      </files>
+      <acceptanceCriteria>
+        <criterion>No metric in the whitepaper lacks a source artifact and replication command.</criterion>
+        <criterion>Corpus size is consistent across README, paper, and reports.</criterion>
+        <criterion>Recall@10 is distinguished from Label Recall@10.</criterion>
+        <criterion>Embedding and graph claims are caveated if current ablations do not yet prove benefit.</criterion>
+      </acceptanceCriteria>
+    </phase>
+  </phases>
+
+  <suggestedCommits>
+    <commit>chore: clean generated artifacts and add export script</commit>
+    <commit>docs: consolidate project map and cleanup log</commit>
+    <commit>feat: add reusability claim schema</commit>
+    <commit>feat: add executable affordance validators</commit>
+    <commit>feat: add query sense disambiguation</commit>
+    <commit>test: add reusability gold v1 benchmark fixtures</commit>
+    <commit>feat: add evidence-backed reranking result explanations</commit>
+    <commit>docs: sync whitepaper claims and claim ledger</commit>
+  </suggestedCommits>
+
+  <doNotPrioritize>
+    <item>UI polish</item>
+    <item>More broad roadmap documents</item>
+    <item>Large whitepaper claims before benchmark improvements</item>
+    <item>More generic embedding providers without per-field ablations</item>
+    <item>Blind corpus expansion without reusability labels</item>
+    <item>A full learned reranker before interpretable features and labels are trustworthy</item>
+  </doNotPrioritize>
+</instructionSet>

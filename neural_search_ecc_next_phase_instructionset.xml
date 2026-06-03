@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<neural_search_development_instructionset version="2026-06-02" intended_agent="Claude Code with ECC">
+  <mission>
+    Convert Neural Search from a research/demo prototype into a trustworthy, reproducible, evidence-first neuroscience dataset discovery tool. Prioritize correctness, data quality, exact lookup reliability, provenance, evaluation validity, and product clarity over adding new speculative features.
+  </mission>
+
+  <operating_principles>
+    <principle id="p1">Do not expand the architecture before hardening the runtime path.</principle>
+    <principle id="p2">Every claim must map to a versioned artifact, benchmark, test, or source file.</principle>
+    <principle id="p3">Exact dataset accession lookup must be deterministic and should bypass normal ranking.</principle>
+    <principle id="p4">Expose uncertainty and missing metadata as first-class product information.</principle>
+    <principle id="p5">Keep demo, real-corpus, paper, and generated artifacts clearly separated.</principle>
+    <principle id="p6">Prefer small verified vertical slices over broad half-wired features.</principle>
+  </operating_principles>
+
+  <ecc_usage>
+    <recommendation>Use ECC for verification loops, Python/testing rules, TypeScript/frontend rules, security scanning, and structured handoffs.</recommendation>
+    <rules_to_install>
+      <rule_set>rules/common</rule_set>
+      <rule_set>rules/python</rule_set>
+      <rule_set>rules/typescript</rule_set>
+    </rules_to_install>
+    <rules_to_avoid_initially>
+      <rule_set>Do not copy every ECC rule pack. Keep Claude context focused on this Python/FastAPI/React project.</rule_set>
+      <rule_set>Do not duplicate plugin-installed hooks or skills through a second full installer.</rule_set>
+    </rules_to_avoid_initially>
+  </ecc_usage>
+
+  <current_evidence_summary>
+    <repo_snapshot>
+      <python_files>359</python_files>
+      <python_loc_approx>83097</python_loc_approx>
+      <markdown_docs>167</markdown_docs>
+      <pytest_collected_before_dependency_failure>497</pytest_collected_before_dependency_failure>
+    </repo_snapshot>
+    <real_corpus_files>
+      <file path="data/corpus/normalized/real_dandi.jsonl" records="358" />
+      <file path="data/corpus/normalized/real_openneuro.jsonl" records="362" />
+      <file path="data/corpus/normalized/real_allen.jsonl" records="8" />
+      <file path="data/corpus/normalized/real_nemo.jsonl" records="10" />
+    </real_corpus_files>
+    <real_corpus_completeness total_records="738">
+      <field name="description" coverage="50.1%" />
+      <field name="species" coverage="50.7%" />
+      <field name="modalities" coverage="48.4%" />
+      <field name="brain_regions" coverage="24.4%" />
+      <field name="tasks" coverage="36.7%" />
+      <field name="behavioral_events" coverage="42.0%" />
+      <field name="analysis_goals" coverage="0.0%" />
+      <field name="data_standards" coverage="52.2%" />
+      <field name="file_formats" coverage="0.0%" />
+      <field name="linked_papers" coverage="0.0%" />
+      <field name="analysis_affordances" coverage="0.0%" />
+    </real_corpus_completeness>
+    <known_benchmark_failures>
+      <failure query_id="rc_lookup_001" expected="dataset:dandi:000026" problem="direct lookup missed expected dataset" />
+      <failure query_id="rc_lookup_002" expected="dataset:dandi:000020" problem="direct lookup missed expected dataset" />
+      <failure query_id="rc_lookup_003" expected="dataset:openneuro:ds003505" problem="direct lookup missed expected dataset" />
+    </known_benchmark_failures>
+  </current_evidence_summary>
+
+  <phase_0_repo_hygiene>
+    <goal>Make the repo clean enough that future agent work does not drown in generated artifacts.</goal>
+    <tasks>
+      <task id="0.1">Create scripts/export_clean_repo.sh or improve the existing one so exported zips exclude .git, node_modules, __pycache__, .pytest_cache, raw large files, and stale generated artifacts.</task>
+      <task id="0.2">Move stale plans/reports into docs/archive or reports/archive. Keep docs/ACTIVE_ROADMAP.md as the single current roadmap.</task>
+      <task id="0.3">Add make doctor to check Python version, package install, Node/npm, expected corpus files, graph file, embedding index, and Docker readiness.</task>
+      <task id="0.4">Fix infra/Dockerfile.api. It currently copies packages/, but the repo uses neural_search/. Ensure Docker builds from a clean checkout.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>make doctor passes in a fresh clone.</test>
+      <test>docker compose build api succeeds.</test>
+      <test>clean export zip contains no .git, node_modules, pycache, or pytest cache.</test>
+    </acceptance_tests>
+  </phase_0_repo_hygiene>
+
+  <phase_1_corpus_snapshot_runtime>
+    <goal>Replace demo-only runtime with a versioned real-corpus runtime.</goal>
+    <tasks>
+      <task id="1.1">Implement CorpusSnapshotV1 with datasets, papers, graph, embedding index metadata, QA state, source files, counts, checksums, and created_at.</task>
+      <task id="1.2">Add neural_search/corpus/snapshot.py and neural_search/corpus/runtime.py.</task>
+      <task id="1.3">Add config/runtime.yaml with mode: demo | real, active_snapshot_path, graph_path, embeddings_path, qa_state_path.</task>
+      <task id="1.4">Refactor apps/api/main.py to load CorpusSnapshotV1 during lifespan instead of build_demo_seed() when mode=real.</task>
+      <task id="1.5">Expose active snapshot metadata in /healthz and /api/corpus/readiness.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>/healthz returns active mode, snapshot id, dataset_count, paper_count, graph_node_count, graph_edge_count.</test>
+      <test>/api/search uses the real corpus when runtime mode is real.</test>
+      <test>Demo mode remains available but visually and programmatically marked as demo.</test>
+    </acceptance_tests>
+  </phase_1_corpus_snapshot_runtime>
+
+  <phase_2_exact_lookup_lane>
+    <goal>Make direct accession lookup deterministic.</goal>
+    <tasks>
+      <task id="2.1">Create neural_search/search/exact_lookup.py.</task>
+      <task id="2.2">Parse identifiers including DANDI:000026, dandi 000026, dataset:dandi:000026, OpenNeuro ds003505, ds003505, and source_id variants.</task>
+      <task id="2.3">Before normal ranking, pin exact matches to rank 1 unless an explicit hard negative excludes them.</task>
+      <task id="2.4">Add why_matched evidence: Exact accession match, Source alias match, Dataset ID match.</task>
+      <task id="2.5">Add regression tests for v11 direct lookup failures.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>rc_lookup_001 returns dataset:dandi:000026 at rank 1.</test>
+      <test>rc_lookup_002 returns dataset:dandi:000020 at rank 1.</test>
+      <test>rc_lookup_003 returns dataset:openneuro:ds003505 at rank 1.</test>
+      <test>Exact lookup still respects explicit NOT constraints.</test>
+    </acceptance_tests>
+  </phase_2_exact_lookup_lane>
+
+  <phase_3_metadata_quality_sprint>
+    <goal>Increase useful field coverage for the 738-record real corpus, starting with DANDI and OpenNeuro.</goal>
+    <tasks>
+      <task id="3.1">Create corpus completeness report by source and field.</task>
+      <task id="3.2">Improve DANDI extraction for species, modalities, brain_regions, tasks, data_standards, file_formats, assets, and related publications.</task>
+      <task id="3.3">Improve OpenNeuro/BIDS extraction for participants, modality directories, task labels, events.tsv presence, dataset_description, file formats, and license.</task>
+      <task id="3.4">Every extracted label must include confidence, source_field, source_value, evidence_text, extractor_name, and extractor_version.</task>
+      <task id="3.5">Add a low-confidence review queue sorted by search impact and missingness.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>Coverage report generated at reports/corpus_completeness_v1.md and .json.</test>
+      <test>No critical field has 0% coverage unless documented as unavailable by source.</test>
+      <test>DANDI/OpenNeuro core field coverage improves relative to the current baseline.</test>
+    </acceptance_tests>
+  </phase_3_metadata_quality_sprint>
+
+  <phase_4_affordance_population_and_validation>
+    <goal>Populate and validate analysis_affordances for real dataset records.</goal>
+    <tasks>
+      <task id="4.1">Run metadata-based affordance detector across all real normalized datasets.</task>
+      <task id="4.2">Persist analysis_affordances back into normalized records or derived enriched records.</task>
+      <task id="4.3">For at least 50 NWB/BIDS datasets, inspect actual file structure/content using existing validators.</task>
+      <task id="4.4">Compute precision/recall against content-derived labels and human review where available.</task>
+      <task id="4.5">Show affordance support/missingness in API and frontend result cards.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>analysis_affordances coverage is non-zero and source-specific.</test>
+      <test>Affordance validation report includes precision/recall and failure examples.</test>
+      <test>UI displays supported, partial, unsupported, and unknown affordances separately.</test>
+    </acceptance_tests>
+  </phase_4_affordance_population_and_validation>
+
+  <phase_5_embedding_index_manifest>
+    <goal>Make dense retrieval reproducible and debuggable.</goal>
+    <tasks>
+      <task id="5.1">Create EmbeddingIndexManifest schema.</task>
+      <task id="5.2">Track model name, model version, provider, dimension, normalize flag, corpus snapshot id, embedding file checksum, ANN backend, bit width, and generated_at.</task>
+      <task id="5.3">Fail loudly or warn clearly if query provider cannot match corpus embedding provider.</task>
+      <task id="5.4">Run and report lexical, hashing, BGE, BGE+graph, BGE+graph+affordance benchmark ladder.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>Embedding index cannot silently mismatch dimensions or provider names.</test>
+      <test>Benchmark ladder report can be regenerated from make evaluation-suite.</test>
+      <test>API includes retrieval warnings if dense provider falls back or is disabled.</test>
+    </acceptance_tests>
+  </phase_5_embedding_index_manifest>
+
+  <phase_6_evidence_first_ui>
+    <goal>Make the interface elegant, transparent, and scientifically useful.</goal>
+    <tasks>
+      <task id="6.1">Redesign DatasetCard component around evidence: match badges, score breakdown, missing metadata, affordance matrix, linked papers, and suggested first analyses.</task>
+      <task id="6.2">Add source/id badges and one-click copyable accession IDs.</task>
+      <task id="6.3">Add filters/facets for source, species, modality, brain region, task, data standard, QA status, and affordance.</task>
+      <task id="6.4">Add search trace drawer: parsed query, exact lookup lane, constraints, score components, graph evidence, embedding evidence, warnings.</task>
+      <task id="6.5">Add comparison view that emphasizes compatibility and complementarity, not just metadata side-by-side.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>A scientist can understand why each result is present without reading raw JSON.</test>
+      <test>Missing metadata is visible, not hidden.</test>
+      <test>Every score badge links to evidence or explanation.</test>
+    </acceptance_tests>
+  </phase_6_evidence_first_ui>
+
+  <phase_7_evaluation_and_claim_ledger>
+    <goal>Make the whitepaper defensible.</goal>
+    <tasks>
+      <task id="7.1">Create benchmark_v1 with at least 100 queries across lookup, task, modality, species, region, affordance, cross-dataset comparison, and hard negatives.</task>
+      <task id="7.2">Create annotation protocol for at least two annotators on a representative subset.</task>
+      <task id="7.3">Compute inter-annotator agreement and adjudication notes.</task>
+      <task id="7.4">Create docs/CLAIM_LEDGER.md with claim, status, evidence artifact, metric, limitation, and paper section.</task>
+      <task id="7.5">Update whitepaper tables directly from generated JSON reports.</task>
+    </tasks>
+    <acceptance_tests>
+      <test>No headline metric in the paper is manually copied without a source artifact.</test>
+      <test>Demo metrics and real-corpus metrics are separated.</test>
+      <test>All future work claims are clearly labeled as future work.</test>
+    </acceptance_tests>
+  </phase_7_evaluation_and_claim_ledger>
+
+  <recommended_first_command_sequence>
+    <command>make doctor</command>
+    <command>python -m pytest tests/test_exact_lookup.py -q</command>
+    <command>python scripts/generate_corpus_completeness_report.py</command>
+    <command>python -m neural_search.corpus.snapshot build --config config/runtime.yaml</command>
+    <command>python -m neural_search.evaluation.run_benchmark --suite real_corpus --focus lookup</command>
+  </recommended_first_command_sequence>
+
+  <first_claude_prompt>
+    You are working in the Neural Search repository. Use ECC verification habits and keep changes small, tested, and evidence-backed. Do not add new broad features. First inspect the repository state, then implement the exact lookup lane and corpus snapshot runtime path. The acceptance target is that direct DANDI/OpenNeuro accession queries return exact expected datasets at rank 1, and the API can run against the real normalized corpus rather than only build_demo_seed(). Keep demo mode explicit. Add tests before or alongside implementation. Update the claim ledger and active roadmap when complete.
+  </first_claude_prompt>
+</neural_search_development_instructionset>
