@@ -129,7 +129,7 @@ export function DemoPage() {
       <div className="mb-16">
         <div className="mb-3">
           <span className="font-mono text-xs text-neural-600 tracking-widest uppercase">
-            Killer Demo · Multi-Dataset Retrieval
+            Query Pipeline · Multi-Dataset Retrieval
           </span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-extralight tracking-tight text-neural-100 mb-6 leading-tight">
@@ -137,7 +137,7 @@ export function DemoPage() {
           <span className="text-neural-500">Query Pipeline</span>
         </h1>
         <p className="text-neural-500 text-sm max-w-xl leading-relaxed">
-          A single complex query decomposed into five sub-queries, retrieving across 835 datasets,
+          A single complex query decomposed into five sub-queries, retrieving across 873 datasets,
           scored for set coverage, and assigned roles for multi-dataset analysis.
         </p>
       </div>
@@ -332,7 +332,7 @@ export function DemoPage() {
         <div className="py-10 border border-neural-800/50 rounded-lg px-6">
           <p className="text-neural-300 text-sm mb-2">Demo report not available</p>
           <p className="text-neural-600 text-xs mb-3">
-            Generate it by running the killer demo script.
+            Generate it by running the demo pipeline script.
           </p>
           <code className="text-xs text-neural-400 bg-neural-900 border border-neural-800 rounded px-3 py-2 block font-mono">
             python scripts/run_killer_demo.py
