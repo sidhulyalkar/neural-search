@@ -48,7 +48,7 @@ def normalize_gin_repo(raw: dict[str, Any]) -> dict[str, Any]:
     license_raw = raw.get("license")
     license_name = (
         license_raw.get("name") if isinstance(license_raw, dict) else None
-    ) or "CC-BY"  # GIN is an open-data platform; default when repo omits license
+    ) or ("CC-BY" if raw.get("private") is False else None)
 
     return {
         "source": "gin",
