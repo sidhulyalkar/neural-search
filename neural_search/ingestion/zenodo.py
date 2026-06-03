@@ -29,6 +29,18 @@ ZENODO_QUERIES = [
     "working memory prefrontal", "place cells grid cells", "fear conditioning amygdala",
     "auditory cortex sound", "somatosensory cortex touch", "brainstem spinal cord",
     "NWB neurodata without borders", "BIDS brain imaging data",
+    "single neuron firing rate", "local field potential LFP", "multiunit activity brain",
+    "neural population dynamics", "brain atlas connectome", "synaptic plasticity",
+    "seizure epilepsy EEG", "deep brain stimulation", "brain computer interface BCI",
+    "spinal cord neural", "peripheral nervous system", "autonomic nervous system",
+    "retina photoreceptor", "lateral geniculate nucleus", "superior colliculus",
+    "dopamine serotonin striatum", "acetylcholine cholinergic", "GABA inhibitory",
+    "glutamate excitatory", "action potential spike train", "membrane potential patch",
+    "calcium transient fluorescence", "GCaMP indicator neural", "voltage imaging",
+    "widefield mesoscale imaging", "fiber photometry in vivo", "miniscope calcium",
+    "spatial navigation maze", "head direction cells", "grid cells entorhinal",
+    "theta oscillation hippocampus", "sharp wave ripple", "gamma oscillation cortex",
+    "sensory perception threshold", "attention neural", "task performance neural",
 ]
 
 
