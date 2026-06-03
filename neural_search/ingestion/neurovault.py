@@ -76,23 +76,24 @@ def fetch_neurovault(limit: int = 100) -> list[dict[str, Any]]:
     """Fetch public NeuroVault collections."""
     records: list[dict[str, Any]] = []
     url: str | None = NEUROVAULT_API
-    while url and len(records) < limit:
-        try:
-            resp = httpx.get(url, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as exc:
-            logger.warning("NeuroVault fetch error: %s", exc)
-            break
-
-        for col in data.get("results", []):
-            if not col.get("id") or not col.get("name"):
-                continue
-            records.append(normalize_collection(col))
-            if len(records) >= limit:
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        while url and len(records) < limit:
+            try:
+                resp = client.get(url)
+                resp.raise_for_status()
+                data = resp.json()
+            except Exception as exc:
+                logger.warning("NeuroVault fetch error: %s", exc)
                 break
 
-        url = data.get("next") if len(records) < limit else None
+            for col in data.get("results", []):
+                if not col.get("id") or not col.get("name"):
+                    continue
+                records.append(normalize_collection(col))
+                if len(records) >= limit:
+                    break
+
+            url = data.get("next") if len(records) < limit else None
 
     logger.info("NeuroVault: fetched %d collections", len(records))
     return records
