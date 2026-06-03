@@ -21,13 +21,17 @@ logger = logging.getLogger(__name__)
 CORPUS_DIR = Path("data/corpus/normalized")
 
 SOURCE_OUTPUTS: dict[str, Path] = {
+    # Tier 1 — curated neuroscience archives
     "dandi": CORPUS_DIR / "real_dandi.jsonl",
     "openneuro": CORPUS_DIR / "real_openneuro.jsonl",
+    "bluebrain": CORPUS_DIR / "real_bluebrain.jsonl",
+    # Tier 2 — broader neuroscience repositories
     "neurovault": CORPUS_DIR / "real_neurovault.jsonl",
     "gin": CORPUS_DIR / "real_gin.jsonl",
-    "ebrains": CORPUS_DIR / "real_ebrains.jsonl",
     "zenodo": CORPUS_DIR / "real_zenodo.jsonl",
     "physionet": CORPUS_DIR / "real_physionet.jsonl",
+    # Tier 3 — general repositories (low yield, staged for review)
+    "ebrains": CORPUS_DIR / "real_ebrains.jsonl",
     "osf": CORPUS_DIR / "real_osf.jsonl",
     "figshare": CORPUS_DIR / "real_figshare.jsonl",
 }
@@ -37,6 +41,7 @@ COMBINED_OUTPUT = CORPUS_DIR / "combined_corpus.jsonl"
 SOURCE_LIMITS: dict[str, int] = {
     "dandi": 1000,
     "openneuro": 2000,
+    "bluebrain": 300,
     "neurovault": 600,
     "gin": 500,
     "ebrains": 300,
@@ -113,6 +118,7 @@ def run_harvest(
     """Run specified adapters and return {source: new_records_added} mapping."""
     import neural_search.ingestion.dandi  # noqa: F401
     import neural_search.ingestion.openneuro  # noqa: F401
+    import neural_search.ingestion.bluebrain  # noqa: F401
     import neural_search.ingestion.neurovault  # noqa: F401
     import neural_search.ingestion.gin  # noqa: F401
     import neural_search.ingestion.ebrains  # noqa: F401

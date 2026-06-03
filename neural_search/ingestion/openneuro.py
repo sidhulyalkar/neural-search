@@ -134,8 +134,9 @@ def fetch_all_openneuro(
             data = resp.json()
 
             if data.get("errors"):
-                logger.warning("OpenNeuro GraphQL error: %s", data["errors"])
-                break
+                # OpenNeuro returns partial results alongside errors (e.g. a single
+                # broken latestSnapshot). Log and continue; don't abort the crawl.
+                logger.warning("OpenNeuro GraphQL partial error: %s", data["errors"][:2])
 
             datasets_data = data.get("data", {}).get("datasets", {})
             edges = datasets_data.get("edges", [])
