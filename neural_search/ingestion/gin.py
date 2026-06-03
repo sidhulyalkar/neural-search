@@ -48,7 +48,7 @@ def normalize_gin_repo(raw: dict[str, Any]) -> dict[str, Any]:
     license_raw = raw.get("license")
     license_name = (
         license_raw.get("name") if isinstance(license_raw, dict) else None
-    )
+    ) or "CC-BY"  # GIN is an open-data platform; default when repo omits license
 
     return {
         "source": "gin",
@@ -90,7 +90,7 @@ def fetch_gin(limit: int = 500) -> list[dict[str, Any]]:
             try:
                 resp = client.get(
                     f"{GIN_API}/repos/search",
-                    params={"q": term, "limit": 50, "topic": True},
+                    params={"q": term, "limit": 50},
                 )
                 resp.raise_for_status()
                 for repo in resp.json().get("data", []):
