@@ -105,7 +105,7 @@ def fetch_zenodo(limit: int = 500) -> list[dict[str, Any]]:
             if len(accepted) >= limit:
                 break
             page = 1
-            per_page = 25
+            per_page = 100
             while len(accepted) < limit:
                 try:
                     resp = client.get(

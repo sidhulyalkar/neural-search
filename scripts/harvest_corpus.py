@@ -48,7 +48,7 @@ COMBINED_OUTPUT = CORPUS_DIR / "combined_corpus.jsonl"
 
 SOURCE_LIMITS: dict[str, int] = {
     "dandi": 1000,
-    "openneuro": 2000,
+    "openneuro": 4000,
     "bluebrain": 300,
     "brain_image_library": 300,
     "allen": 500,
@@ -58,11 +58,11 @@ SOURCE_LIMITS: dict[str, int] = {
     "neurovault": 1500,
     "gin": 700,
     "ebrains": 300,
-    "zenodo": 2000,
+    "zenodo": 3000,
     "physionet": 200,
-    "neuromorpho": 500,
-    "osf": 200,
-    "figshare": 400,
+    "neuromorpho": 1000,
+    "osf": 500,
+    "figshare": 800,
     "harvard_dataverse": 500,
 }
 

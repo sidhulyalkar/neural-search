@@ -29,6 +29,10 @@ OSF_NEURO_TAGS = [
     "optogenetics", "NWB", "BIDS", "single unit recording", "LFP",
     "place cells", "decision making", "working memory", "fear conditioning",
     "motor cortex", "visual cortex", "auditory cortex", "cerebellum",
+    "spatial navigation", "reward", "dopamine", "ecog", "meg brain",
+    "neural oscillation", "brain connectivity", "deep brain stimulation",
+    "retina electrophysiology", "spinal cord recording", "attention task",
+    "perceptual decision", "sensorimotor", "local field potential",
 ]
 REJECTION_LOG = Path("data/corpus/rejected/tier2_rejected.jsonl")
 
@@ -64,12 +68,16 @@ def normalize_osf_project(raw: dict[str, Any]) -> dict[str, Any]:
         linked_paper_abstracts=[],
     )
 
+    # OSF URLs are persistent identifiers even without a DOI
+    osf_url = f"https://osf.io/{source_id}/"
+
     return {
         "source": "osf",
         "source_id": source_id,
         "title": title,
         "description": description,
-        "url": f"https://osf.io/{source_id}/",
+        "url": osf_url,
+        "doi": osf_url,  # OSF URL serves as persistent identifier for classifier
         "license": license_name or None,
         "keywords": tags,
         "resource_type": "dataset" if attrs.get("category") == "data" else attrs.get("category", ""),
