@@ -41,6 +41,7 @@ SOURCE_OUTPUTS: dict[str, Path] = {
     "ebrains": CORPUS_DIR / "real_ebrains.jsonl",
     "osf": CORPUS_DIR / "real_osf.jsonl",
     "figshare": CORPUS_DIR / "real_figshare.jsonl",
+    "harvard_dataverse": CORPUS_DIR / "real_harvard_dataverse.jsonl",
 }
 
 COMBINED_OUTPUT = CORPUS_DIR / "combined_corpus.jsonl"
@@ -54,14 +55,15 @@ SOURCE_LIMITS: dict[str, int] = {
     "nemo": 100,
     "ibl": 200,
     "crcns": 300,
-    "neurovault": 800,
+    "neurovault": 1500,
     "gin": 700,
     "ebrains": 300,
-    "zenodo": 1000,
+    "zenodo": 2000,
     "physionet": 200,
     "neuromorpho": 500,
     "osf": 200,
-    "figshare": 200,
+    "figshare": 400,
+    "harvard_dataverse": 500,
 }
 
 
@@ -155,6 +157,7 @@ def run_harvest(
     import neural_search.ingestion.neuromorpho  # noqa: F401
     import neural_search.ingestion.osf  # noqa: F401
     import neural_search.ingestion.figshare  # noqa: F401
+    import neural_search.ingestion.harvard_dataverse  # noqa: F401
     from neural_search.ingestion.registry import _REGISTRY, run_adapter  # type: ignore[attr-defined]
 
     results: dict[str, int] = {}
