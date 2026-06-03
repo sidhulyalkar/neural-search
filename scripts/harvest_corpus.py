@@ -50,7 +50,7 @@ SOURCE_LIMITS: dict[str, int] = {
     "dandi": 1000,
     "openneuro": 2000,
     "bluebrain": 300,
-    "brain_image_library": 600,
+    "brain_image_library": 300,
     "allen": 500,
     "nemo": 100,
     "ibl": 200,

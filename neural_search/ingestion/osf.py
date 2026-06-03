@@ -47,11 +47,14 @@ def normalize_osf_project(raw: dict[str, Any]) -> dict[str, Any]:
     title = attrs.get("title") or f"OSF {source_id}"
     description = attrs.get("description", "")
     tags = attrs.get("tags", [])
-    license_raw = attrs.get("license")
-    license_name = (
-        license_raw.get("name", "") if isinstance(license_raw, dict)
-        else str(license_raw or "")
+    # License lives in embeds (requires embed[]=license in request), not attributes
+    embed_lic = (
+        raw.get("embeds", {})
+        .get("license", {})
+        .get("data", {})
+        .get("attributes", {})
     )
+    license_name = embed_lic.get("name", "") if embed_lic else ""
 
     extraction = extract_dataset_labels(
         title=title,
@@ -95,7 +98,12 @@ def fetch_osf(limit: int = 200) -> list[dict[str, Any]]:
             if len(accepted) >= limit:
                 break
             next_url: str | None = f"{OSF_API}/nodes/"
-            params: dict = {"filter[public]": "true", "filter[tags]": tag, "page[size]": 50}
+            params: dict = {
+                "filter[public]": "true",
+                "filter[tags]": tag,
+                "page[size]": 50,
+                "embed[]": "license",
+            }
             pages_this_tag = 0
             while next_url and len(accepted) < limit and pages_this_tag < 4:
                 try:
