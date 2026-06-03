@@ -51,3 +51,18 @@ def test_fetch_all_dandisets_respects_max_records() -> None:
     )
     records = fetch_all_dandisets(max_records=3, page_size=100)
     assert len(records) == 3
+
+
+def test_dandi_registry_adapter(monkeypatch) -> None:
+    import neural_search.ingestion.dandi as dandi
+    from neural_search.ingestion.registry import run_adapter
+
+    monkeypatch.setattr(
+        dandi,
+        "fetch_all_dandisets",
+        lambda max_records=None: [{"source": "dandi", "source_id": "000001"}],
+    )
+
+    records = run_adapter("dandi", limit=1)
+
+    assert records == [{"source": "dandi", "source_id": "000001"}]

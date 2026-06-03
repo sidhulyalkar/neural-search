@@ -17,6 +17,7 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.ingestion.registry import register
 from neural_search.normalized import (
     evidence_label_from_extraction,
     stable_normalized_id,
@@ -143,7 +144,8 @@ def fetch_all_openneuro(
             page_info = datasets_data.get("pageInfo", {})
 
             for edge in edges:
-                node = edge.get("node", {})
+                edge = edge or {}
+                node = edge.get("node") or {}
                 if node.get("id"):
                     all_records.append(normalize_openneuro_dataset(node))
                     if max_records is not None and len(all_records) >= max_records:
@@ -302,6 +304,12 @@ def records_from_response(data: dict[str, Any], limit: int) -> list[dict[str, An
             results.append(normalize_openneuro_dataset(node))
 
     return results[:limit]
+
+
+@register("openneuro")
+def fetch_openneuro_records(limit: int = 2000) -> list[dict[str, Any]]:
+    """Registry adapter for full OpenNeuro cursor pagination."""
+    return fetch_all_openneuro(max_records=limit)
 
 
 async def get_dataset(dataset_id: str) -> dict[str, Any] | None:

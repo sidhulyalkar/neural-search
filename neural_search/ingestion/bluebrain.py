@@ -7,7 +7,7 @@ and image/video collections.
 The S3 hierarchy encodes semantic metadata:
   <category>/<data_family>/<species>/<brain_region>/<files>
 
-Each indexed record is a *bundle* — a directory that contains at least one data
+Each indexed record is a *bundle* - a directory that contains at least one data
 file. Individual files are not top-level search results; they are stored as
 child-asset metadata within the bundle record.
 
@@ -18,7 +18,9 @@ License: CC-BY-4.0
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
+from pathlib import Path
 from typing import Any
 
 from neural_search.ingestion.registry import register
@@ -30,6 +32,11 @@ S3_CONSOLE_BASE = f"https://{BUCKET}.s3.amazonaws.com"
 GITHUB_URL = "https://github.com/BlueBrain/OpenData"
 LICENSE = "CC-BY-4.0"
 MAX_DEPTH = 8
+MAX_CHILD_ASSETS = 100
+CACHE_VERSION = 1
+S3_REFRESH_WORKERS = 16
+DEFAULT_CACHE_PATH = Path("data/corpus/normalized/.bluebrain_s3_bundles_cache.json")
+DEFAULT_CHECKPOINT_PATH = Path("data/corpus/normalized/real_bluebrain.jsonl")
 
 # Top-level prefixes to crawl. Skip: staging/, Publications/, Portals/.
 CRAWL_ROOTS = [
@@ -84,6 +91,7 @@ _SPECIES_MAP: dict[str, str] = {
     "human": "human",
     "mouse": "mouse",
     "rat": "rat",
+    "rat_p14": "rat",
     "macaque": "macaque",
     "monkey": "macaque",
     "other": "other",
@@ -115,6 +123,7 @@ _CATEGORY_MAP: dict[str, str] = {
     "model_data": "model",
     "simulation_data": "simulation",
     "images_videos": "image_video",
+    "brain_images": "image_video",
     "brain_systems": "experimental",
     "circuits": "model",
     "simulatable_circuit": "simulation",
@@ -207,6 +216,7 @@ def _parse_path(prefix: str) -> dict[str, Any]:
     brain_regions: list[str] = []
 
     for tok in tokens:
+        compact = tok.replace("_", "")
         if tok in _MODALITY_MAP:
             m = _MODALITY_MAP[tok]
             if m not in modalities:
@@ -215,6 +225,15 @@ def _parse_path(prefix: str) -> dict[str, Any]:
             s = _SPECIES_MAP[tok]
             if s not in species:
                 species.append(s)
+        elif tok.startswith("mouse") or "mouse" in compact:
+            if "mouse" not in species:
+                species.append("mouse")
+        elif tok.startswith("rat") or "rat" in compact:
+            if "rat" not in species:
+                species.append("rat")
+        elif tok.startswith("human") or "human" in compact:
+            if "human" not in species:
+                species.append("human")
         if tok in _BRAIN_REGION_MAP:
             r = _BRAIN_REGION_MAP[tok]
             if r not in brain_regions:
@@ -238,7 +257,7 @@ def _bundle_title(prefix: str) -> str:
         if p.lower() not in {"data", "models", "others", "other", "categorized",
                               "categorized_clean", "uncategorized"}
     ]
-    return " — ".join(meaningful) if meaningful else prefix.strip("/")
+    return " - ".join(meaningful) if meaningful else prefix.strip("/")
 
 
 def _bundle_description(prefix: str, meta: dict, extensions: list[str]) -> str:
@@ -290,6 +309,156 @@ def _infer_data_standards(extensions: list[str]) -> list[str]:
     return sorted(standards)
 
 
+def _asset_type_for_extension(extension: str) -> str:
+    if extension in {"swc", "asc"}:
+        return "morphology_file"
+    if extension in {"nwb", "abf"}:
+        return "electrophysiology_file"
+    if extension in {"hoc", "mod"}:
+        return "neuron_model_file"
+    if extension in {"h5", "hdf5", "sonata", "nrrd", "atlas"}:
+        return "model_or_volume_file"
+    if extension in {"tif", "tiff", "png", "jpg", "mp4", "avi", "mov"}:
+        return "image_or_video_file"
+    if extension in {"csv", "tsv", "json", "mat", "npy"}:
+        return "metadata_or_tabular_file"
+    if extension in {"zip", "tar", "gz", "bz2"}:
+        return "archive_file"
+    return "data_file"
+
+
+def _child_asset(prefix: str, key: str, size: int) -> dict[str, Any]:
+    extension = key.rsplit(".", 1)[-1].lower() if "." in key else ""
+    relative_path = key.removeprefix(prefix)
+    return {
+        "record_type": "child_asset",
+        "path": key,
+        "relative_path": relative_path,
+        "storage_url": f"s3://{BUCKET}/{key}",
+        "size_bytes": size,
+        "file_format": extension or None,
+        "data_standard": _DATA_STANDARD_MAP.get(extension),
+        "asset_type": _asset_type_for_extension(extension),
+        "metadata_json": {"bundle_prefix": prefix},
+    }
+
+
+def _child_assets(prefix: str, files: list[tuple[str, int]]) -> list[dict[str, Any]]:
+    assets = [_child_asset(prefix, key, size) for key, size in sorted(files)]
+    return assets[:MAX_CHILD_ASSETS]
+
+
+def _load_bundle_cache(
+    cache_path: str | Path | None,
+    limit: int,
+) -> list[dict[str, Any]] | None:
+    if cache_path is None:
+        return None
+    path = Path(cache_path)
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("BlueBrain: ignoring unreadable cache %s: %s", path, exc)
+        return None
+    if payload.get("version") != CACHE_VERSION:
+        return None
+    cached_limit = int(payload.get("limit") or 0)
+    complete = bool(payload.get("complete"))
+    if not complete and cached_limit < limit:
+        return None
+    bundles = payload.get("bundles")
+    if not isinstance(bundles, list):
+        return None
+    logger.info("BlueBrain: loaded %d cached bundles from %s", len(bundles), path)
+    return bundles[:limit]
+
+
+def _write_bundle_cache(
+    cache_path: str | Path | None,
+    bundles: list[dict[str, Any]],
+    limit: int,
+    complete: bool,
+) -> None:
+    if cache_path is None:
+        return
+    path = Path(cache_path)
+    payload = {
+        "version": CACHE_VERSION,
+        "limit": limit,
+        "complete": complete,
+        "bundles": bundles,
+    }
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        logger.info("BlueBrain: wrote bundle cache %s", path)
+    except OSError as exc:
+        logger.warning("BlueBrain: could not write cache %s: %s", path, exc)
+
+
+def _load_checkpoint_prefixes(
+    checkpoint_path: str | Path = DEFAULT_CHECKPOINT_PATH,
+    limit: int | None = None,
+) -> list[str]:
+    """Load known bundle prefixes from an existing BlueBrain checkpoint."""
+    path = Path(checkpoint_path)
+    if not path.exists():
+        return []
+    prefixes: list[str] = []
+    try:
+        with path.open(encoding="utf-8") as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if rec.get("source") != "bluebrain":
+                    continue
+                identifier = str(rec.get("identifier") or "").strip("/")
+                if not identifier:
+                    metadata = rec.get("metadata_json") or {}
+                    identifier = str(metadata.get("s3_prefix") or "").strip("/")
+                if identifier:
+                    prefixes.append(identifier + "/")
+                    if limit is not None and len(prefixes) >= limit:
+                        break
+    except OSError as exc:
+        logger.warning("BlueBrain: could not read checkpoint %s: %s", path, exc)
+        return []
+    return prefixes
+
+
+def _refresh_checkpoint_bundles(
+    client,
+    prefixes: list[str],
+    max_bundles: int,
+) -> list[dict[str, Any]]:
+    """Refresh file listings for known bundle prefixes without a full S3 crawl."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def refresh_one(prefix: str) -> dict[str, Any] | None:
+        try:
+            subdirs, files = _list_prefix(client, prefix)
+        except Exception as exc:
+            logger.warning("BlueBrain: prefix refresh failed for %s: %s", prefix, exc)
+            return None
+        if not _has_data_files(files):
+            return None
+        return {"prefix": prefix, "files": files, "subdirs": subdirs}
+
+    bundles: list[dict[str, Any]] = []
+    workers = min(S3_REFRESH_WORKERS, max(1, len(prefixes)))
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        for bundle in executor.map(refresh_one, prefixes):
+            if bundle is not None:
+                bundles.append(bundle)
+                if len(bundles) >= max_bundles:
+                    break
+    return bundles
+
+
 def _discover_bundles(
     client,
     prefix: str,
@@ -308,7 +477,7 @@ def _discover_bundles(
         bundles.append({"prefix": prefix, "files": files, "subdirs": subdirs})
         return
 
-    # No data files here — recurse into subdirectories
+    # No data files here - recurse into subdirectories
     for subdir in subdirs:
         if len(bundles) >= max_bundles:
             break
@@ -333,11 +502,13 @@ def normalize_bluebrain_bundle(prefix: str, files: list[tuple[str, int]]) -> dic
 
     title = _bundle_title(prefix)
     description = _bundle_description(prefix, meta, extensions)
+    assets = _child_assets(prefix, files)
 
     return {
         "source": "bluebrain",
         "source_id": _source_id(prefix),
         "source_type": "canonical_dataset",
+        "record_type": "dataset_bundle",
         "identifier": prefix.strip("/"),
         "title": title,
         "description": description,
@@ -354,6 +525,7 @@ def normalize_bluebrain_bundle(prefix: str, files: list[tuple[str, int]]) -> dic
         "data_category": meta["category"],
         "formats": extensions,
         "analysis_affordances": affordances,
+        "assets": assets,
         "has_behavior": False,
         "has_trials": False,
         "has_raw_data": meta["category"] == "experimental",
@@ -366,20 +538,54 @@ def normalize_bluebrain_bundle(prefix: str, files: list[tuple[str, int]]) -> dic
             "formats": extensions,
             "analysis_affordances": affordances,
             "file_count": len(files),
+            "child_assets": assets,
+            "child_assets_truncated": len(files) > len(assets),
         },
     }
 
 
-@register("bluebrain")
-def fetch_bluebrain(limit: int = 300) -> list[dict[str, Any]]:
+@register("bluebrain", cache_path=str(DEFAULT_CACHE_PATH))
+def fetch_bluebrain(
+    limit: int = 300,
+    cache_path: str | Path | None = None,
+    refresh_cache: bool = False,
+) -> list[dict[str, Any]]:
     """Crawl the Blue Brain Open Data S3 bucket and return bundle records."""
+    if not refresh_cache:
+        cached_bundles = _load_bundle_cache(cache_path, limit)
+        if cached_bundles is not None:
+            return [
+                normalize_bluebrain_bundle(b["prefix"], [tuple(item) for item in b["files"]])
+                for b in cached_bundles
+            ]
+
     try:
         client = _s3_client()
     except ImportError:
-        logger.error("boto3 not installed — cannot fetch Blue Brain data. Run: pip install boto3")
+        logger.error("boto3 not installed - cannot fetch Blue Brain data. Run: pip install boto3")
         return []
 
     raw_bundles: list[dict[str, Any]] = []
+    checkpoint_prefixes = _load_checkpoint_prefixes(limit=limit)
+    if checkpoint_prefixes:
+        logger.info(
+            "BlueBrain: refreshing %d known bundle prefixes from checkpoint",
+            len(checkpoint_prefixes),
+        )
+        raw_bundles = _refresh_checkpoint_bundles(client, checkpoint_prefixes, limit)
+        logger.info("BlueBrain: refreshed %d checkpoint bundles", len(raw_bundles))
+
+    if raw_bundles:
+        _write_bundle_cache(
+            cache_path,
+            raw_bundles,
+            limit=limit,
+            complete=len(raw_bundles) < limit,
+        )
+        return [
+            normalize_bluebrain_bundle(b["prefix"], b["files"])
+            for b in raw_bundles
+        ]
 
     for root in CRAWL_ROOTS:
         if len(raw_bundles) >= limit:
@@ -388,6 +594,12 @@ def fetch_bluebrain(limit: int = 300) -> list[dict[str, Any]]:
         _discover_bundles(client, root, depth=1, bundles=raw_bundles, max_bundles=limit)
 
     logger.info("BlueBrain: discovered %d bundles", len(raw_bundles))
+    _write_bundle_cache(
+        cache_path,
+        raw_bundles,
+        limit=limit,
+        complete=len(raw_bundles) < limit,
+    )
 
     records = [
         normalize_bluebrain_bundle(b["prefix"], b["files"])

@@ -19,6 +19,7 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.ingestion.registry import register
 from neural_search.normalized import (
     evidence_label_from_extraction,
     stable_normalized_id,
@@ -179,7 +180,7 @@ def fetch_all_dandisets(
                 resp = client.get(url)
                 resp.raise_for_status()
             except httpx.HTTPError as exc:
-                logger.warning("DANDI page fetch failed: %s — %s", url, exc)
+                logger.warning("DANDI page fetch failed: %s - %s", url, exc)
                 logger.warning("Harvest terminated early; %d records collected before failure", len(all_records))
                 break
 
@@ -206,6 +207,12 @@ def fetch_dandi(query: str, limit: int) -> dict[str, Any]:
 def records_from_response(payload: dict[str, Any], limit: int) -> list[dict[str, Any]]:
     results = payload.get("results", payload if isinstance(payload, list) else [])
     return [normalize_dandiset(item) for item in results[:limit]]
+
+
+@register("dandi")
+def fetch_dandi_records(limit: int = 1000) -> list[dict[str, Any]]:
+    """Registry adapter for full DANDI pagination."""
+    return fetch_all_dandisets(max_records=limit)
 
 
 def main(argv: list[str] | None = None) -> int:
