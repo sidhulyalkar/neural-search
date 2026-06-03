@@ -1,0 +1,182 @@
+"""Central corpus harvest orchestrator.
+
+Runs all registered ingestion adapters, writes per-source JSONL checkpoints,
+then deduplicates into combined_corpus.jsonl.
+
+Usage:
+    python scripts/harvest_corpus.py [--dry-run] [--sources dandi openneuro ...]
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+from pathlib import Path
+from typing import Any
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger(__name__)
+
+CORPUS_DIR = Path("data/corpus/normalized")
+
+SOURCE_OUTPUTS: dict[str, Path] = {
+    "dandi": CORPUS_DIR / "real_dandi.jsonl",
+    "openneuro": CORPUS_DIR / "real_openneuro.jsonl",
+    "neurovault": CORPUS_DIR / "real_neurovault.jsonl",
+    "gin": CORPUS_DIR / "real_gin.jsonl",
+    "ebrains": CORPUS_DIR / "real_ebrains.jsonl",
+    "zenodo": CORPUS_DIR / "real_zenodo.jsonl",
+    "physionet": CORPUS_DIR / "real_physionet.jsonl",
+    "osf": CORPUS_DIR / "real_osf.jsonl",
+    "figshare": CORPUS_DIR / "real_figshare.jsonl",
+}
+
+COMBINED_OUTPUT = CORPUS_DIR / "combined_corpus.jsonl"
+
+SOURCE_LIMITS: dict[str, int] = {
+    "dandi": 1000,
+    "openneuro": 2000,
+    "neurovault": 600,
+    "gin": 500,
+    "ebrains": 300,
+    "zenodo": 500,
+    "physionet": 200,
+    "osf": 200,
+    "figshare": 200,
+}
+
+
+def load_seen_ids(path: Path) -> set[str]:
+    """Return set of source_id values already in a JSONL file."""
+    if not path.exists():
+        return set()
+    seen: set[str] = set()
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            try:
+                rec = json.loads(line)
+                if sid := rec.get("source_id"):
+                    seen.add(str(sid))
+            except json.JSONDecodeError:
+                pass
+    return seen
+
+
+def append_new_records(
+    path: Path,
+    records: list[dict[str, Any]],
+    seen_ids: set[str],
+) -> int:
+    """Write records whose source_id is not in seen_ids. Returns count added."""
+    new = [r for r in records if str(r.get("source_id", "")) not in seen_ids]
+    if not new:
+        return 0
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        for rec in new:
+            f.write(json.dumps(rec) + "\n")
+    return len(new)
+
+
+def deduplicate_combined(sources: list[Path], output: Path) -> int:
+    """Read all source JSONL files, deduplicate by (source, source_id), write combined."""
+    seen: set[tuple[str, str]] = set()
+    records: list[dict[str, Any]] = []
+
+    for src in sources:
+        if not src.exists():
+            continue
+        with open(src, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                    key = (str(rec.get("source", "")), str(rec.get("source_id", "")))
+                    if key[1] and key not in seen:
+                        seen.add(key)
+                        records.append(rec)
+                except json.JSONDecodeError:
+                    pass
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with open(output, "w", encoding="utf-8") as f:
+        for rec in records:
+            f.write(json.dumps(rec) + "\n")
+
+    return len(records)
+
+
+def run_harvest(
+    sources: list[str],
+    dry_run: bool = False,
+) -> dict[str, int]:
+    """Run specified adapters and return {source: new_records_added} mapping."""
+    import neural_search.ingestion.dandi  # noqa: F401
+    import neural_search.ingestion.openneuro  # noqa: F401
+    import neural_search.ingestion.neurovault  # noqa: F401
+    import neural_search.ingestion.gin  # noqa: F401
+    import neural_search.ingestion.ebrains  # noqa: F401
+    import neural_search.ingestion.zenodo  # noqa: F401
+    import neural_search.ingestion.physionet  # noqa: F401
+    import neural_search.ingestion.osf  # noqa: F401
+    import neural_search.ingestion.figshare  # noqa: F401
+    from neural_search.ingestion.registry import _REGISTRY  # type: ignore[attr-defined]
+
+    results: dict[str, int] = {}
+
+    for source in sources:
+        if source not in _REGISTRY:
+            logger.warning("Source '%s' not in registry — skipping", source)
+            continue
+
+        output_path = SOURCE_OUTPUTS.get(source, CORPUS_DIR / f"real_{source}.jsonl")
+        limit = SOURCE_LIMITS.get(source, 200)
+        seen_ids = load_seen_ids(output_path)
+
+        logger.info("Running %s (seen=%d, limit=%d)…", source, len(seen_ids), limit)
+
+        try:
+            records: list[dict[str, Any]] = _REGISTRY[source](limit=limit)
+            logger.info("%s: fetched %d records", source, len(records))
+        except Exception as exc:
+            logger.error("%s: adapter failed — %s", source, exc)
+            results[source] = 0
+            continue
+
+        if dry_run:
+            new_count = len([r for r in records if str(r.get("source_id", "")) not in seen_ids])
+            logger.info("[DRY-RUN] %s: would add %d new records", source, new_count)
+            results[source] = new_count
+        else:
+            added = append_new_records(output_path, records, seen_ids)
+            logger.info("%s: added %d new records to %s", source, added, output_path)
+            results[source] = added
+
+    if not dry_run:
+        all_source_files = [SOURCE_OUTPUTS.get(s, CORPUS_DIR / f"real_{s}.jsonl") for s in SOURCE_OUTPUTS]
+        total = deduplicate_combined(all_source_files, COMBINED_OUTPUT)
+        logger.info("Combined corpus: %d total unique records → %s", total, COMBINED_OUTPUT)
+
+    return results
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Harvest neuroscience datasets from all sources")
+    parser.add_argument(
+        "--sources",
+        nargs="+",
+        default=list(SOURCE_OUTPUTS.keys()),
+        help="Sources to run (default: all)",
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Show counts without writing")
+    args = parser.parse_args(argv)
+
+    results = run_harvest(args.sources, dry_run=args.dry_run)
+    for source, count in results.items():
+        print(f"{source}: {count} {'(dry-run)' if args.dry_run else 'added'}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
