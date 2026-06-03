@@ -1,6 +1,9 @@
 """FastAPI application for Neural Search."""
 
+import os
+import re
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +17,15 @@ from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion import services as ingestion_services
-from neural_search.ingestion.demo_seed import build_demo_seed
+from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_seed
+
+# When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
+# (useful for CI and quick local demos). Default: full combined corpus.
+_DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
+
+
+def _load_corpus() -> list[dict[str, Any]]:
+    return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.notebooks.templates import (
     evaluate_template_for_dataset,
@@ -31,7 +42,7 @@ from neural_search.qa import (
     update_dataset_status,
 )
 from neural_search.recipes import get_recipe
-from neural_search.reports.dataset_compilation import compile_dataset_report
+from neural_search.reports.dataset_compilation import compile_dataset_report, compute_corpus_completeness
 from neural_search.reports.scientific_readiness import build_scientific_readiness_report
 from neural_search.schemas import (
     ComparisonResultRead,
@@ -48,20 +59,19 @@ _demo_data: list[dict[str, Any]] = []
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load ontology and demo data on startup."""
+    """Load ontology and corpus on startup."""
     global _demo_data
     load_ontology()
-    _demo_data = build_demo_seed()
+    _demo_data = _load_corpus()
     yield
 
 
 def _ensure_demo_data() -> list[dict[str, Any]]:
-    """Load demo data lazily for tests and local API usage."""
-
+    """Load corpus lazily for tests and local API usage."""
     global _demo_data
     if not _demo_data:
         load_ontology()
-        _demo_data = build_demo_seed()
+        _demo_data = _load_corpus()
     return _demo_data
 
 
@@ -115,7 +125,38 @@ class FrontendSearchResponse(BaseModel):
     query: str
     total_count: int
     results: list[FrontendSearchResult]
-    search_time_ms: float = 0.0
+
+
+def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Return the first record whose source_id matches the query exactly.
+
+    Recognised patterns:
+        DANDI:000026   DANDI/000026   dandi 26   026          → dandi source_id
+        ds003505       DS003505       openneuro/ds003505       → openneuro source_id
+    """
+    q = query.strip()
+
+    # DANDI: optional prefix + up to 7 digits
+    dandi_m = re.fullmatch(r'(?:dandi[:/\s]*)?0*(\d{1,7})', q, re.IGNORECASE)
+    if dandi_m:
+        num = dandi_m.group(1)
+        for record in records:
+            ds = record.get("dataset", {})
+            if ds.get("source") == "dandi":
+                sid = re.sub(r'^\D+', '', ds.get("source_id", "")).lstrip('0') or '0'
+                if sid == (num.lstrip('0') or '0'):
+                    return record
+
+    # OpenNeuro: optional prefix + ds + 6 digits
+    on_m = re.fullmatch(r'(?:openneuro[:/\s]*)?(ds\d{6})', q, re.IGNORECASE)
+    if on_m:
+        sid = on_m.group(1).lower()
+        for record in records:
+            ds = record.get("dataset", {})
+            if ds.get("source") == "openneuro" and ds.get("source_id", "").lower() == sid:
+                return record
+
+    return None
 
 
 @app.post("/api/search", response_model=FrontendSearchResponse)
@@ -145,6 +186,8 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
         {**record, "dataset": attach_qa_to_dataset(record["dataset"], qa_state)}
         for record in demo_data
     ]
+
+    exact_record = _try_exact_id_lookup(request.query or "", records_with_qa)
 
     response = search_datasets(
         query=request.query,
@@ -184,6 +227,38 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 readiness_score=result.dataset_card_preview.get("analysis_readiness_score"),
                 linked_papers=[_frontend_paper(paper) for paper in papers],
             ))
+
+    if exact_record:
+        exact_ds = exact_record.get("dataset", {})
+        exact_id = exact_ds.get("id") or exact_ds.get("source_id")
+        already_first = bool(
+            frontend_results
+            and (
+                frontend_results[0].dataset.get("id") == exact_id
+                or frontend_results[0].dataset.get("source_id") == exact_id
+            )
+        )
+        if not already_first:
+            without_dup = [
+                r for r in frontend_results
+                if r.dataset.get("id") != exact_id and r.dataset.get("source_id") != exact_id
+            ]
+            exact_papers = exact_record.get("papers", [])
+            pin = FrontendSearchResult(
+                dataset=exact_ds,
+                score=1.0,
+                why_matched=["exact ID match"],
+                warnings=[],
+                matched_terms=[],
+                inferred_concepts=[],
+                evidence_snippets=[],
+                missing_metadata_warnings=[],
+                reusable_reason=None,
+                suggested_next_actions=[],
+                readiness_score=None,
+                linked_papers=[_frontend_paper(p) for p in exact_papers],
+            )
+            frontend_results = [pin] + without_dup
 
     elapsed = (time.time() - start) * 1000
 
@@ -810,6 +885,12 @@ async def get_compilation_report() -> dict[str, Any]:
             for item in report["top_datasets_ready_for_demo"]
         ],
     }
+
+
+@app.get("/api/reports/corpus-completeness")
+async def get_corpus_completeness() -> dict[str, Any]:
+    """Field fill rates per source, showing metadata coverage gaps."""
+    return compute_corpus_completeness()
 
 
 # Evaluation endpoints
