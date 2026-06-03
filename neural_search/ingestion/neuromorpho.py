@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import logging
 import urllib.parse
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import httpx
@@ -76,20 +78,23 @@ def _map_region(raw: str) -> str | None:
     return None
 
 
-def _sample_archive_neurons(client: httpx.Client, archive: str, n: int = 10) -> list[dict]:
+def _sample_archive_neurons(archive: str, n: int = 5) -> list[dict]:
     """Fetch a small sample of neurons from one archive to extract metadata."""
-    q = urllib.parse.quote(f"archive:{archive}")
-    try:
-        resp = client.get(
-            f"{NEUROMORPHO_API}/neuron/select",
-            params={"q": f"archive:{archive}", "page": 0, "size": n},
-            timeout=20,
-        )
-        resp.raise_for_status()
-        return resp.json().get("_embedded", {}).get("neuronResources", [])
-    except Exception as exc:
-        logger.debug("neuromorpho: failed to sample archive %s: %s", archive, exc)
-        return []
+    for attempt in range(3):
+        try:
+            resp = httpx.get(
+                f"{NEUROMORPHO_API}/neuron/select",
+                params={"q": f"archive:{archive}", "page": 0, "size": n},
+                timeout=20,
+            )
+            resp.raise_for_status()
+            return resp.json().get("_embedded", {}).get("neuronResources", [])
+        except Exception as exc:
+            if attempt < 2:
+                time.sleep(2 ** attempt)
+            else:
+                logger.debug("neuromorpho: failed to sample archive %s: %s", archive, exc)
+    return []
 
 
 def _build_archive_record(archive: str, neuron_count: int, neurons: list[dict]) -> dict[str, Any]:
@@ -155,33 +160,34 @@ def _build_archive_record(archive: str, neuron_count: int, neurons: list[dict]) 
     }
 
 
-def _fetch_all_archives(client: httpx.Client) -> list[tuple[str, int]]:
+def _fetch_all_archives() -> list[tuple[str, int]]:
     """Return (archive_name, neuron_count) pairs for all NeuroMorpho archives."""
     archives: list[tuple[str, int]] = []
     page = 0
     page_size = 100
 
-    while True:
-        try:
-            resp = client.get(
-                f"{NEUROMORPHO_API}/neuron/partition/archive",
-                params={"page": page, "size": page_size},
-                timeout=20,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as exc:
-            logger.warning("neuromorpho: archive listing failed at page %d: %s", page, exc)
-            break
+    with httpx.Client(timeout=20.0, follow_redirects=True) as client:
+        while True:
+            try:
+                resp = client.get(
+                    f"{NEUROMORPHO_API}/neuron/partition/archive",
+                    params={"page": page, "size": page_size},
+                    timeout=20,
+                )
+                resp.raise_for_status()
+                data = resp.json()
+            except Exception as exc:
+                logger.warning("neuromorpho: archive listing failed at page %d: %s", page, exc)
+                break
 
-        fields = data.get("fields", {})
-        archives.extend(fields.items())
+            fields = data.get("fields", {})
+            archives.extend(fields.items())
 
-        page_info = data.get("page", {})
-        total_pages = page_info.get("totalPages", 1)
-        if page >= total_pages - 1:
-            break
-        page += 1
+            page_info = data.get("page", {})
+            total_pages = page_info.get("totalPages", 1)
+            if page >= total_pages - 1:
+                break
+            page += 1
 
     logger.info("neuromorpho: found %d archives", len(archives))
     return archives
@@ -189,22 +195,29 @@ def _fetch_all_archives(client: httpx.Client) -> list[tuple[str, int]]:
 
 @register("neuromorpho")
 def fetch_neuromorpho(limit: int = 500) -> list[dict[str, Any]]:
-    """Fetch NeuroMorpho archives as corpus records (one record per archive)."""
+    """Fetch NeuroMorpho archives as corpus records (one per archive, concurrent sampling)."""
+    archives = _fetch_all_archives()
+
+    target_archives = [(a, c) for a, c in archives if a][:limit]
     records: list[dict[str, Any]] = []
 
-    with httpx.Client(timeout=20.0, follow_redirects=True) as client:
-        archives = _fetch_all_archives(client)
+    def _process(item: tuple[str, int]) -> dict[str, Any]:
+        archive, neuron_count = item
+        neurons = _sample_archive_neurons(archive)
+        return _build_archive_record(archive, neuron_count, neurons)
 
-        for archive, neuron_count in archives:
-            if len(records) >= limit:
-                break
-            if not archive:
-                continue
-            neurons = _sample_archive_neurons(client, archive)
-            rec = _build_archive_record(archive, neuron_count, neurons)
-            records.append(rec)
-            if len(records) % 50 == 0:
-                logger.info("neuromorpho: %d/%d records", len(records), min(limit, len(archives)))
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futures = {pool.submit(_process, item): item for item in target_archives}
+        done = 0
+        for future in as_completed(futures):
+            try:
+                records.append(future.result())
+            except Exception as exc:
+                archive = futures[future][0]
+                logger.debug("neuromorpho: archive %s failed: %s", archive, exc)
+            done += 1
+            if done % 50 == 0:
+                logger.info("neuromorpho: %d/%d records", done, len(target_archives))
 
     logger.info("neuromorpho: fetched %d archive records", len(records))
     return records

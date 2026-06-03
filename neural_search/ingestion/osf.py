@@ -96,12 +96,14 @@ def fetch_osf(limit: int = 200) -> list[dict[str, Any]]:
                 break
             next_url: str | None = f"{OSF_API}/nodes/"
             params: dict = {"filter[public]": "true", "filter[tags]": tag, "page[size]": 50}
-            while next_url and len(accepted) < limit:
+            pages_this_tag = 0
+            while next_url and len(accepted) < limit and pages_this_tag < 4:
                 try:
                     resp = client.get(next_url, params=params, timeout=30)
                     resp.raise_for_status()
                     payload = resp.json()
                     params = {}  # subsequent pages use full URL from links.next
+                    pages_this_tag += 1
                     for node in payload.get("data", []):
                         sid = str(node.get("id", ""))
                         if not sid or sid in seen_ids:
