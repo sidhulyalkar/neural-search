@@ -31,6 +31,7 @@ import random
 import sys
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 _SILVER_PATH_MARKERS = ("silver", "qrels_silver")
 _SILVER_WATERMARK = (
@@ -83,7 +84,7 @@ def ranked_ids(run_entry: list[tuple[str, float]]) -> list[str]:
 
 
 def run_scores(run_entry: list[tuple[str, float]]) -> dict[str, float]:
-    return {rid: score for rid, score in run_entry}
+    return dict(run_entry)
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +92,7 @@ def run_scores(run_entry: list[tuple[str, float]]) -> dict[str, float]:
 # ---------------------------------------------------------------------------
 
 def dcg(labels: list[int]) -> float:
-    return sum((2 ** label - 1) / math.log2(idx + 2) for idx, label in enumerate(labels))
+    return float(sum((2 ** label - 1) / math.log2(idx + 2) for idx, label in enumerate(labels)))
 
 
 def ndcg_at_k(qrel: dict[str, int], ranked: list[str], k: int) -> float:
@@ -211,7 +212,7 @@ def compute_query_metrics(
     qrel: dict[str, int],
     ranked: list[str],
     scores: dict[str, float],
-) -> dict[str, float | dict]:
+) -> dict[str, Any]:
     return {
         "ndcg_at_10": ndcg_at_k(qrel, ranked, 10),
         "ndcg_at_20": ndcg_at_k(qrel, ranked, 20),
@@ -223,12 +224,12 @@ def compute_query_metrics(
     }
 
 
-def aggregate_metrics(per_query: list[dict]) -> dict[str, float | dict]:
+def aggregate_metrics(per_query: list[dict[str, Any]]) -> dict[str, Any]:
     scalar_keys = [
         "ndcg_at_10", "ndcg_at_20", "mrr",
         "precision_at_10", "recall_at_50", "hard_negative_violation_rate",
     ]
-    agg: dict[str, float | dict] = {}
+    agg: dict[str, Any] = {}
     for key in scalar_keys:
         vals = [row[key] for row in per_query if isinstance(row.get(key), (int, float))]
         m = mean(vals)
@@ -276,17 +277,17 @@ def main(argv: list[str] | None = None) -> int:
 
     qrels = load_qrels(args.qrels)
     if not qrels:
-        report = {
+        early_report: dict[str, Any] = {
             "status": "Pending benchmark artifact",
             "note": "No qrels loaded. Annotate candidates with annotate_candidates.py first.",
             "qrels_path": str(args.qrels),
         }
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
-        print(json.dumps({"status": report["status"]}, indent=2))
+        args.out.write_text(json.dumps(early_report, indent=2), encoding="utf-8")
+        print(json.dumps({"status": early_report["status"]}, indent=2))
         return 0
 
-    all_run_reports: list[dict] = []
+    all_run_reports: list[dict[str, Any]] = []
 
     for run_path in args.runs:
         run = load_run(run_path)
@@ -314,6 +315,7 @@ def main(argv: list[str] | None = None) -> int:
         })
 
     # Single-run mode: compact output
+    report: dict[str, Any]
     if len(all_run_reports) == 1:
         report = all_run_reports[0]
     else:
