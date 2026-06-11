@@ -5,17 +5,29 @@ Presents one candidate at a time. User types 0/1/2/3 for relevance.
 Saves each label immediately to adjudicated_qrels.jsonl.
 
 Usage:
-    # Start fresh (default annotator)
+    # Start fresh (pooled candidates, default annotator)
     python scripts/annotate_qrels_fast.py
 
-    # Resume from a specific query
+    # Resume where you left off
+    python scripts/annotate_qrels_fast.py --resume
+
+    # Annotate only one query
     python scripts/annotate_qrels_fast.py --query q_0003
+
+    # Limit candidates shown (good for quick sessions)
+    python scripts/annotate_qrels_fast.py --limit 20
+
+    # Shuffle order (reduces anchoring bias)
+    python scripts/annotate_qrels_fast.py --shuffle
+
+    # Hide retrieval system info (blind annotation, reduces system bias)
+    python scripts/annotate_qrels_fast.py --systems-hidden
 
     # Named annotator
     python scripts/annotate_qrels_fast.py --annotator sid_2026_06_11
 
-    # Use the base 10-candidate pool (not the expanded one)
-    python scripts/annotate_qrels_fast.py --candidates artifacts/field_state/qrels_candidates.jsonl
+    # Use a specific candidate pool
+    python scripts/annotate_qrels_fast.py --candidates artifacts/field_state/qrels_candidates_pooled.jsonl
 
 Relevance scale:
     3 = Highly relevant — modality, species, task, brain region all match; sufficient metadata
@@ -43,9 +55,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-DEFAULT_CANDIDATES = ROOT / "artifacts" / "field_state" / "qrels_candidates_full.jsonl"
+POOLED_CANDIDATES = ROOT / "artifacts" / "field_state" / "qrels_candidates_pooled.jsonl"
+LEGACY_CANDIDATES = ROOT / "artifacts" / "field_state" / "qrels_candidates_full.jsonl"
 FALLBACK_CANDIDATES = ROOT / "artifacts" / "field_state" / "qrels_candidates.jsonl"
 OUTPUT_PATH = ROOT / "artifacts" / "field_state" / "adjudicated_qrels.jsonl"
+
+# Default: use pooled candidates if available, fall back to legacy, then base
+DEFAULT_CANDIDATES = (
+    POOLED_CANDIDATES if POOLED_CANDIDATES.exists()
+    else (LEGACY_CANDIDATES if LEGACY_CANDIDATES.exists() else FALLBACK_CANDIDATES)
+)
 
 RELEVANCE_LABELS = {
     0: "not_relevant",
@@ -198,6 +217,7 @@ def display_candidate(
     index: int,
     total: int,
     labeled_count: int,
+    systems_hidden: bool = False,
 ) -> None:
     query_id = candidate["query_id"]
     query = query_map.get(query_id, {})
@@ -206,10 +226,14 @@ def display_candidate(
 
     title = candidate.get("dataset_title") or "(untitled)"
     source = candidate.get("dataset_source") or ""
+    source_url = candidate.get("dataset_source_url") or ""
     dataset_id = candidate.get("dataset_id") or ""
     desc = _desc_snippet(candidate.get("dataset_description") or "")
-    rank = candidate.get("rank", "?")
-    score = candidate.get("retrieval_score")
+    retrieval_sources = candidate.get("retrieval_sources") or []
+    ranks_by_system = candidate.get("ranks_by_system") or {}
+    usefulness_score = candidate.get("usefulness_score")
+    affordance_matches = candidate.get("affordance_matches") or []
+    is_hard_neg_warn = candidate.get("hard_negative_warning", False)
 
     meta = candidate.get("metadata", {})
     hard_negs = meta.get("query_known_failure_modes") or query.get("known_failure_modes") or []
@@ -224,13 +248,21 @@ def display_candidate(
     print("\033[2J\033[H", end="", flush=True)
     bar = "─" * 70
     print(bar)
-    print(
+
+    # Header line — hide system info if --systems-hidden
+    header = (
         f"{_bold('CANDIDATE')} {_c('cyan', str(index))}/{_c('cyan', str(total))}  "
         f"{_dim(f'labeled: {labeled_count}')}  "
-        f"query {_bold(query_id)}  rank {rank}"
-        + (f"  score {score:.3f}" if score else "")
+        f"query {_bold(query_id)}"
     )
+    if not systems_hidden and retrieval_sources:
+        n = len(retrieval_sources)
+        color = "green" if n >= 3 else ("cyan" if n == 2 else "dim")
+        header += f"  {_c(color, f'[{n} systems]')}"
+    print(header)
     print(bar)
+
+    # Query section
     print(f"\n{_bold('QUERY')}  [{_c('magenta', intent)}]")
     print(f"  {query_text}")
     if expected_modalities:
@@ -242,8 +274,15 @@ def display_candidate(
     if hard_negs:
         print(f"  {_c('red', '⚠ Hard negatives:')} {' | '.join(hard_negs)}")
 
+    # Hard negative warning for this candidate
+    if is_hard_neg_warn:
+        print(f"  {_c('red', '⚠ WARNING: this candidate may be a hard negative')}")
+
+    # Dataset section
     print(f"\n{_bold('DATASET')}  [{_c('blue', source)}:{dataset_id.split(':')[-1]}]")
     print(f"  {_c('bold', title)}")
+    if source_url:
+        print(f"  {_dim('URL:')} {source_url}")
     if rec_modalities:
         marker = _c("green", "✓") if set(rec_modalities) & set(expected_modalities) else _c("yellow", "?")
         print(f"  modalities: {marker} {', '.join(rec_modalities)}")
@@ -253,7 +292,18 @@ def display_candidate(
     if rec_tasks:
         marker = _c("green", "✓") if set(rec_tasks) & set(expected_tasks) else _c("yellow", "?")
         print(f"  tasks:      {marker} {', '.join(rec_tasks)}")
+    if affordance_matches:
+        print(f"  {_c('green', 'affordances:')} {', '.join(affordance_matches)}")
     print(f"\n  {desc}")
+
+    # Retrieval provenance (hidden if --systems-hidden)
+    if not systems_hidden and retrieval_sources:
+        sys_parts = []
+        for sys_name in sorted(retrieval_sources):
+            rank_str = f"@{ranks_by_system[sys_name]}" if sys_name in ranks_by_system else ""
+            sys_parts.append(f"{sys_name}{rank_str}")
+        score_str = f"  usefulness={usefulness_score:.3f}" if usefulness_score else ""
+        print(f"  {_dim('systems:')} {', '.join(sys_parts)}{score_str}")
 
     print(f"\n{bar}")
     print(
@@ -316,15 +366,26 @@ def run_annotation(
     output_path: Path,
     start_query: str | None = None,
     resume: bool = True,
+    shuffle: bool = False,
+    limit: int | None = None,
+    systems_hidden: bool = False,
 ) -> int:
     """Run the annotation loop. Returns number of labels saved this session."""
+    import random
+    import time
+
     queue = [c for c in candidates if not (resume and c["id"] in labeled_ids)]
 
     if start_query:
-        # Put start_query candidates first
         priority = [c for c in queue if c["query_id"] == start_query]
         rest = [c for c in queue if c["query_id"] != start_query]
         queue = priority + rest
+
+    if shuffle:
+        random.shuffle(queue)
+
+    if limit is not None:
+        queue = queue[:limit]
 
     if not queue:
         print("Nothing left to annotate (all candidates labeled).")
@@ -332,11 +393,10 @@ def run_annotation(
 
     total = len(queue)
     session_labels: list[dict] = []
-    index = 0
 
     for index, candidate in enumerate(queue, start=1):
         labeled_count = len(labeled_ids) + len(session_labels)
-        display_candidate(candidate, query_map, index, total, labeled_count)
+        display_candidate(candidate, query_map, index, total, labeled_count, systems_hidden=systems_hidden)
 
         while True:
             key = getch()
@@ -350,31 +410,58 @@ def run_annotation(
                 break
 
             elif key == "s":
-                # skip — don't label, don't add to labeled set
                 print(_dim("\n  [skipped]"))
-                import time
                 time.sleep(0.4)
                 break
 
             elif key in ("q", "\x03"):  # q or Ctrl-C
-                print(f"\n\n{_bold('Session ended.')} Labeled {len(session_labels)} pairs this session.")
-                if len(session_labels) >= 5:
-                    ndcg = compute_ndcg(session_labels)
-                    if ndcg is not None:
-                        print(f"Session NDCG@10 (preliminary): {ndcg:.4f} ({len(session_labels)} pairs)")
+                _print_session_summary(session_labels)
                 return len(session_labels)
 
             elif key == "?":
                 print_help()
-                display_candidate(candidate, query_map, index, total, len(labeled_ids) + len(session_labels))
+                display_candidate(
+                    candidate, query_map, index, total,
+                    len(labeled_ids) + len(session_labels),
+                    systems_hidden=systems_hidden,
+                )
 
-    # Completed queue
-    print(f"\n\n{_bold('All candidates annotated!')} Labeled {len(session_labels)} pairs this session.")
-    if len(session_labels) >= 5:
+    _print_session_summary(session_labels)
+    return len(session_labels)
+
+
+def _print_session_summary(session_labels: list[dict]) -> None:
+    from collections import Counter
+
+    n = len(session_labels)
+    if n == 0:
+        print("\nNo labels saved this session.")
+        return
+
+    print(f"\n\n{_bold('Session summary.')} {n} pairs labeled.")
+
+    by_query: dict[str, Counter] = {}
+    by_intent: dict[str, list[int]] = {}
+    for label in session_labels:
+        qid = label["query_id"]
+        if qid not in by_query:
+            by_query[qid] = Counter()
+        by_query[qid][label["relevance"]] += 1
+
+        intent = label.get("intent", "unknown")
+        by_intent.setdefault(intent, []).append(label["relevance"])
+
+    print(f"\n{'Query':<12} {'N':>4}  {'rel dist (0/1/2/3)'}")
+    for qid in sorted(by_query):
+        cnt = by_query[qid]
+        total = sum(cnt.values())
+        dist = "/".join(str(cnt.get(i, 0)) for i in range(4))
+        print(f"  {qid:<10} {total:>4}  {dist}")
+
+    if n >= 5:
         ndcg = compute_ndcg(session_labels)
         if ndcg is not None:
-            print(f"Session NDCG@10 (preliminary): {ndcg:.4f} ({len(session_labels)} pairs)")
-    return len(session_labels)
+            print(f"\nSession NDCG@10 (preliminary, {n} pairs): {ndcg:.4f}")
 
 
 def main() -> None:
@@ -386,9 +473,9 @@ def main() -> None:
     parser.add_argument(
         "--candidates",
         type=Path,
-        default=DEFAULT_CANDIDATES if DEFAULT_CANDIDATES.exists() else FALLBACK_CANDIDATES,
+        default=DEFAULT_CANDIDATES,
         metavar="FILE",
-        help="JSONL file of candidates to annotate (default: qrels_candidates_full.jsonl)",
+        help="JSONL file of candidates to annotate (default: qrels_candidates_pooled.jsonl if present)",
     )
     parser.add_argument(
         "--output",
@@ -399,12 +486,16 @@ def main() -> None:
     )
     parser.add_argument("--annotator", default="annotator_01", metavar="ID")
     parser.add_argument("--query", default=None, metavar="Q_ID", help="Start with this query first")
+    parser.add_argument("--resume", action="store_true", help="Skip already-labeled candidates")
     parser.add_argument("--no-resume", action="store_true", help="Show all candidates, even already-labeled ones")
+    parser.add_argument("--shuffle", action="store_true", help="Shuffle candidate order to reduce anchoring bias")
+    parser.add_argument("--limit", type=int, default=None, metavar="N", help="Cap number of candidates shown this session")
+    parser.add_argument("--systems-hidden", action="store_true", help="Hide retrieval system provenance (blind annotation)")
     args = parser.parse_args()
 
     if not args.candidates.exists():
         print(f"ERROR: candidates file not found: {args.candidates}", file=sys.stderr)
-        print("Run scripts/eval/expand_candidate_pool.py first.", file=sys.stderr)
+        print("Run: python scripts/eval/build_pooled_qrels_candidates.py", file=sys.stderr)
         sys.exit(1)
 
     candidates = load_candidates(args.candidates)
@@ -422,16 +513,25 @@ def main() -> None:
                     query_map[q["query_id"]] = q
 
     already_labeled = len(labeled_ids)
-    remaining = len([c for c in candidates if c["id"] not in labeled_ids])
-    print(f"Loaded {len(candidates)} candidates, {already_labeled} already labeled, {remaining} remaining.")
+    remaining = sum(1 for c in candidates if c["id"] not in labeled_ids)
+    pool_name = args.candidates.name
+    print(f"Pool: {pool_name} — {len(candidates)} candidates, {already_labeled} labeled, {remaining} remaining.")
 
     if not sys.stdin.isatty():
         print("WARNING: stdin is not a terminal. Annotation requires interactive input.", file=sys.stderr)
         sys.exit(1)
 
+    resume = not args.no_resume  # default to resuming
+    if args.limit:
+        print(f"Session limit: {args.limit} candidates")
+    if args.shuffle:
+        print("Shuffle: ON (order randomized, reduces anchoring bias)")
+    if args.systems_hidden:
+        print("Systems hidden: ON (blind annotation mode)")
+
     print(f"Annotator: {args.annotator}")
     print(f"Output: {args.output}")
-    print(f"Press '?' during annotation to see the relevance scale.\n")
+    print("Press '?' during annotation to see the relevance scale.\n")
     input("Press Enter to start...")
 
     saved = run_annotation(
@@ -441,13 +541,16 @@ def main() -> None:
         args.annotator,
         args.output,
         start_query=args.query,
-        resume=not args.no_resume,
+        resume=resume,
+        shuffle=args.shuffle,
+        limit=args.limit,
+        systems_hidden=args.systems_hidden,
     )
 
     total_labeled = already_labeled + saved
     print(f"\nTotal labeled pairs in {args.output.name}: {total_labeled}")
     if total_labeled >= 5:
-        print(f"Run: python scripts/eval/report_benchmark_metrics.py")
+        print("Run: python scripts/eval/report_benchmark_metrics.py")
 
 
 if __name__ == "__main__":
