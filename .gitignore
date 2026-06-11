@@ -97,3 +97,30 @@ secrets/
 # Build artifacts
 *.zip
 neural_search_mvp_build_packet.zip
+
+# Large generated data/index artifacts
+data/embeddings/
+data/index/
+data/graph/
+data/corpus/normalized/
+data/corpus/rejected/
+artifacts/field_state/*.jsonl
+artifacts/field_state/concept_memory/*.jsonl
+artifacts/field_state/concept_memory/concept_graph.json
+artifacts/field_state/concept_memory/concept_index.json
+reports/eval/runs/
+reports/eval/*.jsonl
+
+# Large model/index/data file types
+*.npy
+*.npz
+*.pt
+*.pth
+*.bin
+*.pkl
+*.pickle
+*.faiss
+*.index
+*.sqlite
+*.db
+*.parquet
