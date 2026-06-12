@@ -3,18 +3,10 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-try:
-    import networkx as nx
-
-    _NX_AVAILABLE = True
-except ImportError:
-    nx = None
-    _NX_AVAILABLE = False
-
+from neural_search.field_state.concept_memory.artifact_utils import artifact_timestamp
 from neural_search.field_state.concept_memory.retrieval import search_concepts
 from neural_search.field_state.concept_memory.schema import (
     ConceptBasis,
@@ -74,7 +66,7 @@ def atomic_write(path: Path, text: str) -> None:
 
 
 def _now_utc() -> str:
-    return datetime.now(UTC).isoformat()
+    return artifact_timestamp()
 
 
 def _table_row(*cells: str) -> str:
@@ -84,6 +76,15 @@ def _table_row(*cells: str) -> str:
 def _header_row(*cols: str) -> list[str]:
     sep = "| " + " | ".join("---" for _ in cols) + " |"
     return [_table_row(*cols), sep]
+
+
+def _claim_safety_notice() -> list[str]:
+    return [
+        "## Claim Safety Notice",
+        "",
+        "Concept Memory is structural/provenance infrastructure. Retrieval improvement claims require qrels-backed ablation results and are not established by these reports.",
+        "",
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -99,23 +100,47 @@ def render_concept_graph_summary(
     relation_counts: Counter[str] = Counter(lnk.relation_type for lnk in evidence_links)
     reviewed = sum(1 for c in concepts if c.review_status != "unreviewed")
     unreviewed = len(concepts) - reviewed
+    reviewed_support = sum(
+        1 for lnk in evidence_links
+        if lnk.relation_type == "supports" and lnk.review_status != "unreviewed"
+    )
+    reviewed_contradictions = sum(
+        1 for lnk in evidence_links
+        if lnk.relation_type == "contradicts" and lnk.review_status != "unreviewed"
+    )
+    metadata_links = sum(
+        1 for lnk in evidence_links
+        if lnk.relation_type not in {"supports", "contradicts"}
+    )
 
     sorted_concepts = sorted(concepts, key=lambda c: -c.evidence_count)
     top10 = sorted_concepts[:10]
     orphans = [c for c in concepts if c.evidence_count == 0]
-    high_evidence = [c for c in concepts if c.evidence_count >= 3]
+    reviewed_support_concepts = [
+        c for c in concepts
+        if any(
+            lnk.review_status != "unreviewed"
+            and lnk.relation_type == "supports"
+            and (lnk.source_concept_id == c.concept_id or lnk.target_concept_id == c.concept_id)
+            for lnk in evidence_links
+        )
+    ]
 
     lines = [
         "# Concept Graph Summary",
         "",
         f"Generated: {_now_utc()}",
         "",
+        *_claim_safety_notice(),
         f"- **Total concepts**: {len(concepts)}",
-        f"- **Total evidence links**: {len(evidence_links)}",
+        f"- **Total metadata/evidence links**: {len(evidence_links)}",
+        f"- **Metadata-derived or neutral links**: {metadata_links}",
+        f"- **Reviewed supporting evidence links**: {reviewed_support}",
+        f"- **Reviewed contradictory evidence links**: {reviewed_contradictions}",
         f"- **Reviewed concepts**: {reviewed}",
         f"- **Unreviewed concepts**: {unreviewed}",
         f"- **Orphan concepts** (evidence_count == 0): {len(orphans)}",
-        f"- **High-evidence concepts** (evidence_count >= 3): {len(high_evidence)}",
+        f"- **Concepts with reviewed supporting evidence**: {len(reviewed_support_concepts)}",
         "",
         "## Concepts by Type",
         "",
@@ -126,7 +151,7 @@ def render_concept_graph_summary(
 
     lines += [
         "",
-        "## Evidence Links by Relation Type",
+        "## Metadata/Evidence Links by Relation Type",
         "",
         *_header_row("relation_type", "count"),
     ]
@@ -135,7 +160,7 @@ def render_concept_graph_summary(
 
     lines += [
         "",
-        "## Top 10 Most Connected Concepts",
+        "## Most Connected Metadata Concepts",
         "",
         *_header_row("concept_id", "canonical_name", "type", "evidence_count"),
     ]
@@ -150,9 +175,9 @@ def render_concept_graph_summary(
     else:
         lines.append("_No orphan concepts._")
 
-    lines += ["", "## High-Evidence Concepts (evidence_count >= 3)", ""]
-    if high_evidence:
-        for c in high_evidence:
+    lines += ["", "## Concepts With Reviewed Supporting Evidence", ""]
+    if reviewed_support_concepts:
+        for c in reviewed_support_concepts:
             lines.append(f"- `{c.concept_id}` — {c.canonical_name} ({c.concept_type})")
     else:
         lines.append("_None._")
@@ -170,6 +195,8 @@ def render_concept_basis_summary(bases: list[ConceptBasis]) -> str:
         "# Concept Basis Summary",
         "",
         f"Generated: {_now_utc()}",
+        "",
+        *_claim_safety_notice(),
         f"Total bases: {len(bases)}",
         "",
         *_header_row(
@@ -177,9 +204,10 @@ def render_concept_basis_summary(bases: list[ConceptBasis]) -> str:
             "canonical_name",
             "type",
             "strength",
-            "claims",
-            "datasets",
-            "papers",
+            "supporting_count",
+            "contradicting_count",
+            "metadata_count",
+            "missing_count",
             "summary (120 chars)",
         ),
     ]
@@ -190,9 +218,10 @@ def render_concept_basis_summary(bases: list[ConceptBasis]) -> str:
             b.canonical_name,
             b.concept_type,
             b.evidence_strength,
-            str(len(b.supporting_claim_ids)),
-            str(len(b.supporting_dataset_ids)),
-            str(len(b.supporting_paper_ids)),
+            str(b.supporting_count),
+            str(b.contradicting_count),
+            str(b.neutral_or_metadata_count),
+            str(b.missing_count),
             summary_short,
         ))
     return "\n".join(lines)
@@ -206,10 +235,12 @@ def render_concept_basis_summary(bases: list[ConceptBasis]) -> str:
 def render_top_concepts(concepts: list[ConceptNode], limit: int = 20) -> str:
     ranked = sorted(concepts, key=lambda c: (-c.evidence_count, -c.confidence))[:limit]
     lines = [
-        "# Top Concepts",
+        "# Metadata-Supported Concepts",
         "",
         f"Generated: {_now_utc()}",
-        f"Top {limit} concepts ranked by evidence_count, then confidence.",
+        "",
+        *_claim_safety_notice(),
+        f"Top {limit} concepts ranked by metadata/evidence link count, then confidence.",
         "",
         *_header_row("rank", "concept_id", "canonical_name", "type", "evidence_count", "confidence", "review_status"),
     ]
@@ -262,10 +293,12 @@ def render_unsupported_concepts(
             rows.append((c, reason))
 
     lines = [
-        "# Unsupported Concepts",
+        "# Missing Reviewed Evidence Concepts",
         "",
         f"Generated: {_now_utc()}",
-        f"Concepts lacking adequate evidence or source traceability: {len(rows)}",
+        "",
+        *_claim_safety_notice(),
+        f"Concepts lacking reviewed supporting evidence or source traceability: {len(rows)}",
         "",
     ]
     if rows:
@@ -273,7 +306,7 @@ def render_unsupported_concepts(
         for c, reason in rows:
             lines.append(_table_row(c.concept_id, c.canonical_name, c.concept_type, reason))
     else:
-        lines.append("_All concepts have at least some support._")
+        lines.append("_All concepts have at least some reviewed support or traceability._")
     return "\n".join(lines)
 
 
@@ -302,6 +335,8 @@ def render_dataset_method_concept_map(
         "# Dataset–Method Concept Map",
         "",
         f"Generated: {_now_utc()}",
+        "",
+        *_claim_safety_notice(),
         f"Dataset concepts: {len(datasets)}",
         "",
     ]
@@ -346,6 +381,8 @@ def render_claim_basis_map(
         "# Claim Basis Map",
         "",
         f"Generated: {_now_utc()}",
+        "",
+        *_claim_safety_notice(),
         f"Claim concepts: {len(claims)}",
         "",
     ]
@@ -364,7 +401,11 @@ def render_claim_basis_map(
             "",
             f"- **Concept ID**: `{c.concept_id}`",
             f"- **Evidence strength**: {strength}",
+            f"- **Reviewed supporting evidence**: {b.reviewed_supporting_count if b else 0}",
+            f"- **Reviewed contradictory evidence**: {b.reviewed_contradicting_count if b else 0}",
+            f"- **Metadata-derived links**: {b.neutral_or_metadata_count if b else 0}",
             f"- **Supporting concepts**: {', '.join(supporting_names) if supporting_names else '_none_'}",
+            f"- **Contradictory evidence links**: {', '.join(b.contradicting_evidence_links) if b and b.contradicting_evidence_links else '_none_'}",
             f"- **Missing evidence**: {uncertainty}",
             f"- **Review status**: {c.review_status}",
             "",
@@ -386,6 +427,8 @@ def render_retrieval_examples(
         "# Retrieval Examples",
         "",
         f"Generated: {_now_utc()}",
+        "",
+        *_claim_safety_notice(),
         "Top-5 results for 5 example queries using lexical + graph-boost retrieval.",
         "",
     ]

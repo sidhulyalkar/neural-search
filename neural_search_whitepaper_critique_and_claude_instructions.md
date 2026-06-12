@@ -1,7 +1,7 @@
 # Neural Search Whitepaper Critique and Claude Implementation Instruction Set
 
-**Document reviewed:** `neural_search_iclr_whitepaper.tex`  
-**Review date:** May 27, 2026  
+**Document reviewed:** `neural_search_whitepaper.tex`
+**Review date:** May 27, 2026
 **Goal:** Turn Neural Search from a strong prototype/whitepaper into a credible provenance-aware retrieval system for scientific datasets that combines structured constraints, ontology-aware metadata, knowledge graph linkages, and learned embeddings to identify datasets that are experimentally reusable, not merely topically similar.
 
 ---

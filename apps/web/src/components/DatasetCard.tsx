@@ -1,10 +1,18 @@
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { generateNotebook } from '../api/search'
-import type { SearchResultItem } from '../types'
+import {
+  exportDatasetCard,
+  generateNotebook,
+  logRetrievalFeedback,
+  saveFrontendDataset,
+} from '../api/search'
+import type { FeedbackUsefulness, SearchResultItem, WouldUseForAnalysis } from '../types'
 
 interface DatasetCardProps {
   result: SearchResultItem
+  queryText?: string
+  sessionId?: string | null
   isSelected?: boolean
   onToggleSelect?: (datasetId: string) => void
   selectionDisabled?: boolean
@@ -33,13 +41,205 @@ function Score({ value, label }: { value: number; label: string }) {
   )
 }
 
+function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'cyan' | 'amber' | 'red' | 'green' | 'violet' }) {
+  const tones = {
+    neutral: 'text-neural-500 border-neural-800 bg-neural-900',
+    cyan: 'text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5',
+    amber: 'text-amber-300 border-amber-500/30 bg-amber-500/5',
+    red: 'text-red-300 border-red-500/30 bg-red-500/5',
+    green: 'text-accent-emerald border-accent-emerald/30 bg-accent-emerald/5',
+    violet: 'text-accent-violet border-accent-violet/30 bg-accent-violet/5',
+  }
+  return (
+    <span className={`text-xs border rounded px-2 py-0.5 ${tones[tone]}`}>
+      {children}
+    </span>
+  )
+}
+
+function MetaLine({ label, values }: { label: string; values?: string[] }) {
+  const visible = (values || []).filter(Boolean)
+  return (
+    <p className="text-xs text-neural-600 truncate">
+      <span className="text-neural-500">{label}:</span>{' '}
+      <span className="text-neural-400">{visible.length ? visible.slice(0, 4).join(', ') : 'unknown'}</span>
+    </p>
+  )
+}
+
+function ListBlock({ title, items }: { title: string; items?: string[] }) {
+  const visible = (items || []).filter(Boolean)
+  if (!visible.length) return null
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wide text-neural-600 mb-1">{title}</p>
+      <ul className="space-y-1">
+        {visible.slice(0, 6).map((item) => (
+          <li key={item} className="text-xs text-neural-400 leading-relaxed">{item}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function EvidencePanel({
+  result,
+  rawJsonOpen,
+  onRawJsonToggle,
+}: {
+  result: SearchResultItem
+  rawJsonOpen: boolean
+  onRawJsonToggle: () => void
+}) {
+  const { evidence_packet, neuro_judge, score_breakdown, linked_papers } = result
+  const packetPapers = evidence_packet?.linked_papers || linked_papers || []
+  const scoreEntries = Object.entries(score_breakdown || {})
+    .filter(([, value]) => Number.isFinite(value))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+
+  return (
+    <div className="mt-5 border border-neural-800/60 rounded-lg p-4 bg-neural-950/70">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <Badge tone="amber">preliminary neuro-judge, not human gold</Badge>
+        {neuro_judge?.judge_model && <Badge>{neuro_judge.judge_model}</Badge>}
+        {neuro_judge?.evidence_packet_hash && <Badge>{neuro_judge.evidence_packet_hash}</Badge>}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-neural-600 mb-1">Evidence packet</p>
+            <p className="text-xs text-neural-400 leading-relaxed">
+              {evidence_packet?.query_text || 'No query-specific evidence packet was attached.'}
+            </p>
+            {evidence_packet?.description && (
+              <p className="mt-2 text-xs text-neural-500 line-clamp-3 leading-relaxed">
+                {evidence_packet.description}
+              </p>
+            )}
+          </div>
+
+          <ListBlock title="Concept matches" items={evidence_packet?.matched_concept_names} />
+          <ListBlock title="Concept missing evidence" items={evidence_packet?.concept_missing_evidence} />
+          <ListBlock title="Evidence for" items={neuro_judge?.evidence_for} />
+          <ListBlock title="Evidence against" items={neuro_judge?.evidence_against} />
+          <ListBlock title="Missing information" items={neuro_judge?.missing_information} />
+        </div>
+
+        <div className="space-y-4">
+          <ListBlock title="Required dimensions present" items={neuro_judge?.required_dimensions_present} />
+          <ListBlock title="Required dimensions missing" items={neuro_judge?.required_dimensions_missing} />
+          <ListBlock title="Failure modes" items={neuro_judge?.failure_modes} />
+          <ListBlock title="Hard-negative checks" items={[
+            ...(evidence_packet?.hard_negatives || []),
+            ...(evidence_packet?.known_failure_warnings || []),
+            ...(evidence_packet?.concept_hard_negative_conflicts || []),
+          ]} />
+
+          {evidence_packet?.affordance_matches && evidence_packet.affordance_matches.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-wide text-neural-600 mb-1">Affordance matches</p>
+              <div className="space-y-1">
+                {evidence_packet.affordance_matches.slice(0, 6).map((match) => (
+                  <p key={`${match.affordance}-${match.rationale}`} className="text-xs text-neural-400">
+                    {match.affordance}: {match.matched ? 'matched' : 'not matched'}
+                    {typeof match.confidence === 'number' ? ` · ${Math.round(match.confidence * 100)}%` : ''}
+                    {match.rationale ? ` · ${match.rationale}` : ''}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs uppercase tracking-wide text-neural-600 mb-1">Score breakdown</p>
+            <div className="grid grid-cols-2 gap-1">
+              {scoreEntries.length ? scoreEntries.map(([key, value]) => (
+                <p key={key} className="text-xs text-neural-500">
+                  {key.replace(/_/g, ' ')}: <span className="text-neural-300">{value.toFixed(3)}</span>
+                </p>
+              )) : (
+                <p className="text-xs text-neural-600">No component scores available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {packetPapers.length > 0 && (
+        <div className="mt-4 border-t border-neural-800/60 pt-4">
+          <p className="text-xs uppercase tracking-wide text-neural-600 mb-2">Linked paper</p>
+          {packetPapers.slice(0, 1).map((paper) => (
+            <div key={paper.id}>
+              <p className="text-sm text-neural-300">{paper.title}</p>
+              {(paper.abstract_snippet || paper.abstract) && (
+                <p className="mt-1 text-xs text-neural-500 line-clamp-3 leading-relaxed">
+                  {paper.abstract_snippet || paper.abstract}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 border-t border-neural-800/60 pt-4">
+        <button
+          type="button"
+          onClick={onRawJsonToggle}
+          className="text-xs text-neural-400 hover:text-neural-200"
+        >
+          {rawJsonOpen ? 'Hide raw evidence JSON' : 'View raw evidence JSON'}
+        </button>
+        {rawJsonOpen && (
+          <pre className="mt-3 max-h-72 overflow-auto rounded border border-neural-800 bg-neural-900 p-3 text-xs text-neural-400">
+            {JSON.stringify(evidence_packet?.raw_json || evidence_packet || neuro_judge || {}, null, 2)}
+          </pre>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const reasonTagOptions = [
+  'wrong_modality',
+  'wrong_species',
+  'wrong_region',
+  'missing_raw_data',
+  'insufficient_metadata',
+  'good_match',
+  'interesting_reuse_candidate',
+  'needs_manual_review',
+  'wrong_task',
+  'processed_only',
+  'low_evidence',
+]
+
 export function DatasetCard({
   result,
+  queryText = '',
+  sessionId = null,
   isSelected = false,
   onToggleSelect,
   selectionDisabled = false,
 }: DatasetCardProps) {
-  const { dataset, score, why_matched, warnings, readiness_score, linked_papers } = result
+  const {
+    dataset,
+    score,
+    why_matched,
+    warnings,
+    readiness_score,
+    linked_papers,
+    neuro_judge,
+    evidence_packet,
+    score_breakdown,
+  } = result
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [rawJsonOpen, setRawJsonOpen] = useState(false)
+  const [usefulness, setUsefulness] = useState<FeedbackUsefulness>('unsure')
+  const [wouldUse, setWouldUse] = useState<WouldUseForAnalysis>('maybe')
+  const [reasonTags, setReasonTags] = useState<string[]>([])
+  const [note, setNote] = useState('')
 
   const notebookMutation = useMutation({
     mutationFn: () => generateNotebook(dataset.id),
@@ -53,6 +253,56 @@ export function DatasetCard({
     },
   })
 
+  const feedbackMutation = useMutation({
+    mutationFn: (overrides: Partial<Parameters<typeof logRetrievalFeedback>[0]> = {}) => logRetrievalFeedback({
+      session_id: sessionId,
+      query_id: evidence_packet?.query_id || null,
+      query_text: queryText || evidence_packet?.query_text || '',
+      retrieval_method: result.retrieval_method || 'hybrid_search',
+      rank: result.rank ?? null,
+      dataset_id: dataset.id,
+      dataset_title: dataset.title,
+      usefulness,
+      would_use_for_analysis: wouldUse,
+      clicked: false,
+      opened_evidence: detailsOpen,
+      saved: false,
+      exported: false,
+      reason_tags: reasonTags,
+      free_text_note: note,
+      judge_snapshot: neuro_judge || {},
+      ...overrides,
+    }),
+  })
+
+  const saveMutation = useMutation({
+    mutationFn: (exported = false) => saveFrontendDataset({
+      session_id: sessionId,
+      query_id: evidence_packet?.query_id || null,
+      query_text: queryText || evidence_packet?.query_text || '',
+      dataset_id: dataset.id,
+      dataset_title: dataset.title,
+      rank: result.rank ?? null,
+      retrieval_method: result.retrieval_method || 'hybrid_search',
+      exported,
+      judge_snapshot: neuro_judge || {},
+    }),
+  })
+
+  const exportMutation = useMutation({
+    mutationFn: () => exportDatasetCard(dataset.id, 'json'),
+    onSuccess: (blob) => {
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${dataset.id}_reuse_card.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      saveMutation.mutate(true)
+      feedbackMutation.mutate({ exported: true })
+    },
+  })
+
   const tags = [
     ...(dataset.species || []).slice(0, 2),
     ...(dataset.modalities || []).slice(0, 2),
@@ -62,6 +312,30 @@ export function DatasetCard({
     .map((t) => t.replace(/_/g, ' '))
     .filter(Boolean)
     .slice(0, 7)
+  const dataStandards = [
+    dataset.data_standard,
+    ...(dataset.data_standards || []),
+    ...(evidence_packet?.file_format_evidence || []),
+  ].filter((value): value is string => Boolean(value))
+  const hardNegativeWarnings = [
+    ...(warnings || []),
+    ...(evidence_packet?.known_failure_warnings || []),
+    ...(evidence_packet?.concept_hard_negative_conflicts || []),
+  ]
+  const judgeLabelTone = neuro_judge?.label_provenance === 'expert_audited_consensus'
+    ? 'green'
+    : neuro_judge?.abstain_recommended
+    ? 'amber'
+    : 'violet'
+  const rawSummary = evidence_packet
+    ? `raw: ${evidence_packet.has_raw_data === true ? 'yes' : evidence_packet.has_raw_data === false ? 'no' : 'unknown'} · processed: ${evidence_packet.has_processed_data === true ? 'yes' : evidence_packet.has_processed_data === false ? 'no' : 'unknown'}`
+    : 'raw/processed evidence unavailable'
+
+  const toggleReasonTag = (tag: string) => {
+    setReasonTags((current) => current.includes(tag)
+      ? current.filter((item) => item !== tag)
+      : [...current, tag])
+  }
 
   return (
     <article
@@ -78,9 +352,11 @@ export function DatasetCard({
               {sourceLabel[dataset.source] || dataset.source.toUpperCase()}
             </span>
 
-            {dataset.data_standard && (
-              <span className="font-mono text-xs text-neural-600">{dataset.data_standard}</span>
-            )}
+            <span className="font-mono text-xs text-neural-600">{dataset.source_id || dataset.id}</span>
+
+            {dataStandards.slice(0, 2).map((standard) => (
+              <span key={standard} className="font-mono text-xs text-neural-600">{standard}</span>
+            ))}
 
             {/* Comparison checkbox */}
             {onToggleSelect && (
@@ -114,6 +390,15 @@ export function DatasetCard({
             </p>
           )}
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-3">
+            <MetaLine label="Species" values={dataset.species} />
+            <MetaLine label="Modality" values={dataset.modalities} />
+            <MetaLine label="Region" values={dataset.brain_regions} />
+            <MetaLine label="Tasks" values={dataset.tasks} />
+            <MetaLine label="License" values={dataset.license ? [dataset.license] : []} />
+            <MetaLine label="Raw data" values={[rawSummary]} />
+          </div>
+
           {/* Tags */}
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
@@ -134,6 +419,26 @@ export function DatasetCard({
               {why_matched.slice(0, 3).join(' · ')}
             </p>
           )}
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge tone="cyan">retrieval {Math.round(score * 100)}</Badge>
+            {neuro_judge ? (
+              <>
+                <Badge tone={judgeLabelTone}>neuro-judge {neuro_judge.label}</Badge>
+                <Badge>conf {Math.round((neuro_judge.confidence || 0) * 100)}%</Badge>
+                <Badge>evidence {Math.round((neuro_judge.evidence_completeness || 0) * 100)}%</Badge>
+                {neuro_judge.abstain_recommended && <Badge tone="amber">abstain recommended</Badge>}
+                <Badge tone={neuro_judge.label_provenance === 'expert_audited_consensus' ? 'green' : 'neutral'}>
+                  {neuro_judge.label_provenance || 'neuro_judge'}
+                </Badge>
+              </>
+            ) : (
+              <Badge>no neuro-judge snapshot</Badge>
+            )}
+            {result.prior_feedback && result.prior_feedback.length > 0 && (
+              <Badge tone="green">{result.prior_feedback.length} feedback event{result.prior_feedback.length > 1 ? 's' : ''}</Badge>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-4">
@@ -174,6 +479,37 @@ export function DatasetCard({
               {notebookMutation.isPending ? 'Generating…' : 'Notebook'}
             </button>
 
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                setDetailsOpen((value) => !value)
+                feedbackMutation.mutate({ opened_evidence: true })
+              }}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              {detailsOpen ? 'Close evidence' : 'Open evidence'}
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                saveMutation.mutate(false)
+                feedbackMutation.mutate({ saved: true })
+              }}
+              disabled={saveMutation.isPending}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              {saveMutation.isPending ? 'Saving…' : 'Save'}
+            </button>
+
+            <button
+              onClick={(e) => { e.preventDefault(); exportMutation.mutate() }}
+              disabled={exportMutation.isPending}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              {exportMutation.isPending ? 'Exporting…' : 'Export JSON'}
+            </button>
+
             {linked_papers && linked_papers.length > 0 && (
               <span className="text-xs text-neural-600">
                 {linked_papers.length} paper{linked_papers.length > 1 ? 's' : ''}
@@ -187,6 +523,18 @@ export function DatasetCard({
             )}
           </div>
 
+          {neuro_judge?.rationale_short && (
+            <p className="mt-3 text-xs text-neural-500 leading-relaxed">
+              Judge rationale: {neuro_judge.rationale_short}
+            </p>
+          )}
+
+          {hardNegativeWarnings.length > 0 && (
+            <p className="mt-2 text-xs text-amber-300/80">
+              Hard-negative warning: {hardNegativeWarnings.slice(0, 2).join(' · ')}
+            </p>
+          )}
+
           {notebookMutation.error && (
             <p className="mt-2 text-xs text-red-400">
               {notebookMutation.error instanceof Error
@@ -194,6 +542,85 @@ export function DatasetCard({
                 : 'Notebook generation failed.'}
             </p>
           )}
+
+          {detailsOpen && (
+            <EvidencePanel
+              result={result}
+              rawJsonOpen={rawJsonOpen}
+              onRawJsonToggle={() => setRawJsonOpen((value) => !value)}
+            />
+          )}
+
+          <div className="mt-5 border border-neural-800/60 rounded-lg p-3">
+            <div className="flex flex-wrap gap-2 mb-3">
+              {(['useful', 'partially_useful', 'not_useful', 'unsure'] as FeedbackUsefulness[]).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setUsefulness(value)}
+                  className={`text-xs rounded px-2 py-1 border transition-colors ${
+                    usefulness === value
+                      ? 'border-accent-cyan text-accent-cyan bg-accent-cyan/5'
+                      : 'border-neural-800 text-neural-500 hover:text-neural-200'
+                  }`}
+                >
+                  {value.replace(/_/g, ' ')}
+                </button>
+              ))}
+              <select
+                value={wouldUse}
+                onChange={(e) => setWouldUse(e.target.value as WouldUseForAnalysis)}
+                className="bg-neural-900 border border-neural-800 rounded px-2 py-1 text-xs text-neural-300"
+              >
+                <option value="yes">would use: yes</option>
+                <option value="maybe">would use: maybe</option>
+                <option value="no">would use: no</option>
+              </select>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {reasonTagOptions.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleReasonTag(tag)}
+                  className={`text-xs rounded px-2 py-0.5 border ${
+                    reasonTags.includes(tag)
+                      ? 'border-accent-violet text-accent-violet bg-accent-violet/5'
+                      : 'border-neural-800 text-neural-600 hover:text-neural-300'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Feedback note"
+                className="flex-1 bg-neural-950 border border-neural-800 rounded px-3 py-1.5 text-xs text-neural-300 placeholder-neural-700"
+              />
+              <button
+                type="button"
+                onClick={() => feedbackMutation.mutate()}
+                disabled={feedbackMutation.isPending}
+                className="text-xs bg-neural-800 text-neural-200 rounded px-3 py-1.5 hover:bg-neural-700 disabled:opacity-50"
+              >
+                {feedbackMutation.isPending ? 'Logging…' : 'Log feedback'}
+              </button>
+            </div>
+            <p className="mt-2 text-xs text-neural-700">
+              Stored as user_feedback_downstream_signal, not a gold relevance label.
+            </p>
+            {feedbackMutation.isSuccess && (
+              <p className="mt-2 text-xs text-accent-emerald">Feedback logged.</p>
+            )}
+            {(feedbackMutation.error || saveMutation.error || exportMutation.error) && (
+              <p className="mt-2 text-xs text-red-400">Action could not be logged or exported.</p>
+            )}
+          </div>
         </div>
 
         {/* Right: scores */}

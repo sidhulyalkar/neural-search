@@ -34,9 +34,14 @@ from pathlib import Path
 from typing import Any
 
 _SILVER_PATH_MARKERS = ("silver", "qrels_silver")
+_NEURO_JUDGE_PATH_MARKERS = ("neuro_qrels", "neuro_judge", "neuro-consensus")
 _SILVER_WATERMARK = (
     "SILVER LABEL DIAGNOSTIC — NOT EXPERT VALIDATION. "
     "Do not report these metrics as final scientific results."
+)
+_NEURO_JUDGE_WATERMARK = (
+    "NEURO-JUDGE DIAGNOSTIC — RAG-GROUNDED LLM LABELS, NOT HUMAN GOLD. "
+    "Use for development triage and report separately from expert validation."
 )
 
 
@@ -53,7 +58,13 @@ def load_qrels(path: Path) -> dict[str, dict[str, int]]:
             if not line.strip():
                 continue
             row = json.loads(line)
-            qrels[str(row["query_id"])][str(row["record_id"])] = int(row["label"])
+            record_id = row.get("record_id") or row.get("dataset_id")
+            label = row.get("label")
+            if label is None or isinstance(label, str):
+                label = row.get("relevance")
+            if record_id is None or label is None:
+                continue
+            qrels[str(row["query_id"])][str(record_id)] = int(label)
     return dict(qrels)
 
 
@@ -247,6 +258,11 @@ def _is_silver_path(path: Path) -> bool:
     return any(marker in path.name.lower() for marker in _SILVER_PATH_MARKERS)
 
 
+def _is_neuro_judge_path(path: Path) -> bool:
+    path_text = str(path).lower()
+    return any(marker in path_text for marker in _NEURO_JUDGE_PATH_MARKERS)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Compute IR metrics from qrels and run files.")
     parser.add_argument("--qrels", type=Path, required=True)
@@ -265,11 +281,12 @@ def main(argv: list[str] | None = None) -> int:
     if not args.runs:
         parser.error("At least one --run file is required.")
 
-    # Silver guard — require explicit acknowledgement
-    if _is_silver_path(args.qrels) and not args.allow_silver:
+    # Silver/neuro-judge guard — require explicit acknowledgement
+    if (_is_silver_path(args.qrels) or _is_neuro_judge_path(args.qrels)) and not args.allow_silver:
+        label_kind = "neuro-judge" if _is_neuro_judge_path(args.qrels) else "silver"
         print(
-            "ERROR: qrels path appears to be silver labels (contains 'silver').\n"
-            "Silver labels are machine-generated and NOT expert-validated.\n"
+            f"ERROR: qrels path appears to be {label_kind} labels.\n"
+            "These labels are machine-generated and NOT expert-validated.\n"
             "Add --allow-silver to proceed. Do NOT report these metrics in the whitepaper.",
             file=sys.stderr,
         )
@@ -324,9 +341,11 @@ def main(argv: list[str] | None = None) -> int:
             "runs": all_run_reports,
         }
 
-    # Watermark silver-label reports
+    # Watermark non-human-label reports
     if _is_silver_path(args.qrels):
         report["silver_label_warning"] = _SILVER_WATERMARK
+    if _is_neuro_judge_path(args.qrels):
+        report["neuro_judge_warning"] = _NEURO_JUDGE_WATERMARK
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")

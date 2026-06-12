@@ -7,8 +7,9 @@ No LLM calls, no network calls.
 from __future__ import annotations
 
 import re
+from math import log1p
 
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
 from neural_search.field_state.concept_memory.evidence import (
     get_concept_evidence_links,
@@ -71,18 +72,36 @@ def _lexical_score(query: str, concept: ConceptNode) -> float:
     return min(score, 1.0)
 
 
-def _graph_boost(
+def _matched_terms(query: str, concept: ConceptNode) -> list[str]:
+    """Return query tokens that matched indexed text fields."""
+    tokens = _tokenize(query)
+    canonical_lower = concept.canonical_name.lower()
+    aliases_lower = [a.lower() for a in concept.aliases]
+    description_lower = (concept.description or "").lower()
+    tags_lower = [t.lower() for t in concept.tags]
+    matched: list[str] = []
+    for token in tokens:
+        if (
+            token in canonical_lower
+            or any(token in alias for alias in aliases_lower)
+            or token in description_lower
+            or any(token in tag for tag in tags_lower)
+        ):
+            matched.append(token)
+    return list(dict.fromkeys(matched))
+
+
+def _graph_boost_components(
     concept: ConceptNode,
     evidence_links: list[EvidenceLink],
     graph: nx.DiGraph | None = None,
-) -> float:
+) -> tuple[float, float]:
     """Compute a small boost based on graph connectivity.
 
-    Boost rules (additive, capped at 0.3):
+    Boost rules (additive, capped at 0.3, then degree-normalized):
     + 0.05 for each reviewed evidence link (max 0.15)
     + 0.02 for each connected claim (max 0.10)
     + 0.02 for each connected dataset (max 0.10)
-    - 0.05 penalty if review_status == "unreviewed" and evidence_count == 0
     """
     outgoing = get_concept_evidence_links(concept.concept_id, evidence_links)
     incoming = get_incoming_evidence_links(concept.concept_id, evidence_links)
@@ -112,12 +131,42 @@ def _graph_boost(
     claim_boost = min(claim_count * 0.02, 0.10)
     dataset_boost = min(dataset_count * 0.02, 0.10)
 
-    boost = reviewed_boost + claim_boost + dataset_boost
+    raw_boost = min(reviewed_boost + claim_boost + dataset_boost, 0.3)
+    degree = len(connected_ids)
+    if graph is not None and concept.concept_id in graph:
+        degree = max(degree, int(graph.degree(concept.concept_id)))
+    normalizer = 1.0 + log1p(max(degree - 1, 0))
+    normalized_boost = min(raw_boost / normalizer, 0.3)
+    return raw_boost, normalized_boost
 
-    if concept.review_status == "unreviewed" and concept.evidence_count == 0:
-        boost -= 0.05
 
-    return min(boost, 0.3)
+def _graph_boost(
+    concept: ConceptNode,
+    evidence_links: list[EvidenceLink],
+    graph: nx.DiGraph | None = None,
+) -> float:
+    """Return the degree-normalized graph boost."""
+    _, normalized = _graph_boost_components(concept, evidence_links, graph)
+    return normalized
+
+
+def _missingness_penalty(concept: ConceptNode) -> tuple[float, list[str]]:
+    """Return a bounded penalty and warnings for sparse concept metadata."""
+    penalty = 0.0
+    warnings: list[str] = []
+    if concept.evidence_count == 0:
+        penalty += 0.03
+        warnings.append("no recorded evidence_count")
+    if not concept.description:
+        penalty += 0.03
+        warnings.append("missing description")
+    if not concept.source_ids and not concept.source_artifacts and not concept.source_note_paths:
+        penalty += 0.02
+        warnings.append("missing source provenance")
+    if concept.review_status == "unreviewed":
+        penalty += 0.02
+        warnings.append("unreviewed concept")
+    return min(penalty, 0.10), warnings
 
 
 def get_top_evidence_texts(
@@ -163,8 +212,13 @@ def search_concepts(
             continue
 
         lex = _lexical_score(query, concept)
-        boost = _graph_boost(concept, evidence_links, graph)
-        final = lex + boost
+        if lex <= 0.0:
+            # Graph connectivity is a reranking signal, not standalone evidence
+            # that a concept answers the user's text query.
+            continue
+        raw_boost, normalized_boost = _graph_boost_components(concept, evidence_links, graph)
+        missingness_penalty, warnings = _missingness_penalty(concept)
+        final = max(0.0, lex + normalized_boost - missingness_penalty)
 
         if final < min_score:
             continue
@@ -196,7 +250,14 @@ def search_concepts(
                 concept_type=concept.concept_type,
                 score=round(final, 6),
                 lexical_score=round(lex, 6),
-                graph_boost=round(boost, 6),
+                graph_boost=round(normalized_boost, 6),
+                graph_boost_raw=round(raw_boost, 6),
+                graph_boost_degree_normalized=round(normalized_boost, 6),
+                missingness_penalty=round(missingness_penalty, 6),
+                final_score=round(final, 6),
+                matched_terms=_matched_terms(query, concept),
+                matched_concepts=[concept.concept_id],
+                warnings=warnings,
                 evidence_count=concept.evidence_count,
                 top_evidence=top_evidence,
                 related_claims=related_claims,

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neural Search Benchmark Query",
+  "type": "object",
+  "required": ["query_id", "query", "intent"],
+  "properties": {
+    "query_id": {"type": "string"},
+    "query": {"type": "string", "minLength": 1},
+    "intent": {
+      "type": "string",
+      "enum": [
+        "STRICT_LOOKUP",
+        "REPLICATION",
+        "META_ANALYSIS",
+        "PIPELINE_REUSE",
+        "CROSS_DATASET_COMPARISON",
+        "EXPLORATION",
+        "METHOD_TRANSFER"
+      ]
+    },
+    "must_include": {"type": "array", "items": {"type": "string"}},
+    "must_exclude": {"type": "array", "items": {"type": "string"}},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": true
+}

@@ -17,9 +17,13 @@ from typing import cast
 from neural_search.field_state.concept_memory.cli import (
     cmd_concept_basis,
     cmd_concept_build,
+    cmd_concept_coverage,
+    cmd_concept_eval,
+    cmd_concept_explain,
     cmd_concept_export_obsidian,
     cmd_concept_neighborhood,
     cmd_concept_report,
+    cmd_concept_rerank,
     cmd_concept_search,
     cmd_concept_validate,
 )
@@ -492,6 +496,84 @@ def build_parser() -> argparse.ArgumentParser:
         "concept-validate", help="Validate concept memory artifact integrity."
     )
     concept_validate_parser.set_defaults(func=cmd_concept_validate)
+
+    # concept-rerank
+    concept_rerank_parser = subparsers.add_parser(
+        "concept-rerank",
+        help="Rerank dataset results using concept memory signals.",
+    )
+    concept_rerank_parser.add_argument("--query", required=True, help="Search query.")
+    concept_rerank_parser.add_argument(
+        "--limit", type=int, default=10, help="Max results."
+    )
+    concept_rerank_parser.add_argument(
+        "--field", default="neuroscience_dataset_reuse", help="Field memory namespace."
+    )
+    concept_rerank_parser.add_argument(
+        "--lexical-only",
+        action="store_true",
+        default=False,
+        help="Use base lexical score only (disables concept/evidence boosts).",
+    )
+    concept_rerank_parser.set_defaults(func=cmd_concept_rerank)
+
+    # concept-explain
+    concept_explain_parser = subparsers.add_parser(
+        "concept-explain",
+        help="Show concept-grounded explanation for a specific dataset result.",
+    )
+    concept_explain_parser.add_argument("--query", required=True, help="Search query.")
+    concept_explain_parser.add_argument(
+        "--dataset-id", required=True, dest="dataset_id", help="Dataset ID."
+    )
+    concept_explain_parser.add_argument(
+        "--field", default="neuroscience_dataset_reuse", help="Field memory namespace."
+    )
+    concept_explain_parser.add_argument(
+        "--json", action="store_true", default=False, help="Also print JSON."
+    )
+    concept_explain_parser.set_defaults(func=cmd_concept_explain)
+
+    # concept-eval
+    concept_eval_parser = subparsers.add_parser(
+        "concept-eval",
+        help="Run ablation evaluation over qrels and benchmark queries.",
+    )
+    concept_eval_parser.add_argument(
+        "--qrels", type=Path, default=None, help="Path to adjudicated_qrels.jsonl."
+    )
+    concept_eval_parser.add_argument(
+        "--queries",
+        type=Path,
+        default=Path("artifacts/benchmark_queries.jsonl"),
+        help="Path to benchmark_queries.jsonl.",
+    )
+    concept_eval_parser.add_argument(
+        "--field", default="neuroscience_dataset_reuse", help="Field memory namespace."
+    )
+    concept_eval_parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output path for the Markdown report.",
+    )
+    concept_eval_parser.set_defaults(func=cmd_concept_eval)
+
+    # concept-coverage
+    concept_coverage_parser = subparsers.add_parser(
+        "concept-coverage",
+        help="Generate concept coverage audit report for the indexed corpus.",
+    )
+    concept_coverage_parser.add_argument(
+        "--field", default="neuroscience_dataset_reuse", help="Field memory namespace."
+    )
+    concept_coverage_parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output path for the Markdown report.",
+    )
+    concept_coverage_parser.set_defaults(func=cmd_concept_coverage)
 
     return parser
 

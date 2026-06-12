@@ -1,6 +1,6 @@
 # Claim Basis Map
 
-Generated: 2026-06-11T01:15:28.860048+00:00
+Generated: 2026-06-11T01:44:35.216841+00:00
 Claim concepts: 6
 
 ### claim_affordance_extraction

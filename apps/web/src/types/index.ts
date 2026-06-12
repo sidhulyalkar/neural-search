@@ -59,6 +59,90 @@ export interface LinkedPaper {
   url?: string
   confidence?: number
   link_evidence?: string[]
+  abstract?: string
+  abstract_snippet?: string
+}
+
+export interface NeuroJudgeSnapshot {
+  label?: number
+  confidence?: number
+  rationale_short?: string
+  evidence_for?: string[]
+  evidence_against?: string[]
+  missing_information?: string[]
+  matched_dimensions?: string[]
+  failure_modes?: string[]
+  hard_negative_detected?: boolean
+  judge_model?: string
+  judge_models?: string[]
+  prompt_version?: string
+  evidence_packet_hash?: string
+  label_provenance?: string
+  evidence_completeness?: number
+  required_dimensions_present?: string[]
+  required_dimensions_missing?: string[]
+  abstain_recommended?: boolean
+  abstain_reason?: string | null
+  watermark?: string
+}
+
+export interface EvidencePacketSummary {
+  query_id?: string
+  query_text?: string
+  query_intent?: string
+  hard_negatives?: string[]
+  expected_species?: string[]
+  expected_modalities?: string[]
+  expected_brain_regions?: string[]
+  expected_tasks?: string[]
+  expected_analysis_affordances?: string[]
+  dataset_id?: string
+  title?: string
+  source_archive?: string
+  source_url?: string
+  description?: string
+  affordance_matches?: Array<{
+    affordance?: string
+    matched?: boolean
+    confidence?: number
+    missing_requirements?: string[]
+    rationale?: string
+  }>
+  concept_explanation_summary?: string
+  matched_concept_names?: string[]
+  concept_missing_evidence?: string[]
+  concept_hard_negative_conflicts?: string[]
+  has_raw_data?: boolean | null
+  has_processed_data?: boolean | null
+  file_format_evidence?: string[]
+  known_failure_warnings?: string[]
+  linked_papers?: LinkedPaper[]
+  raw_json?: Record<string, unknown>
+}
+
+export type FeedbackUsefulness = 'useful' | 'partially_useful' | 'not_useful' | 'unsure'
+export type WouldUseForAnalysis = 'yes' | 'maybe' | 'no'
+
+export interface RetrievalFeedbackEvent {
+  feedback_id?: string
+  timestamp?: string
+  session_id?: string | null
+  query_id?: string | null
+  query_text: string
+  retrieval_method: string
+  rank?: number | null
+  dataset_id: string
+  dataset_title: string
+  usefulness: FeedbackUsefulness
+  would_use_for_analysis?: WouldUseForAnalysis | null
+  clicked?: boolean
+  opened_evidence?: boolean
+  saved?: boolean
+  exported?: boolean
+  reason_tags: string[]
+  free_text_note?: string
+  judge_snapshot?: NeuroJudgeSnapshot
+  provenance?: 'user_feedback_downstream_signal'
 }
 
 export interface SearchResultItem {
@@ -74,6 +158,12 @@ export interface SearchResultItem {
   suggested_next_actions: string[]
   readiness_score?: number
   linked_papers?: LinkedPaper[]
+  rank?: number
+  retrieval_method?: string
+  score_breakdown?: Record<string, number>
+  neuro_judge?: NeuroJudgeSnapshot | null
+  evidence_packet?: EvidencePacketSummary | null
+  prior_feedback?: RetrievalFeedbackEvent[]
 }
 
 export interface SearchResult {

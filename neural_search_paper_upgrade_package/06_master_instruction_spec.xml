@@ -16,7 +16,7 @@
   </project>
 
   <paper_revision>
-    <main_file>neural_search_iclr_whitepaper.tex</main_file>
+    <main_file>neural_search_whitepaper.tex</main_file>
     <appendix_source>neural_search_whitepaper.tex</appendix_source>
     <objectives>
       <objective>Transform the paper from a vision whitepaper into a credible systems and retrieval research paper.</objective>

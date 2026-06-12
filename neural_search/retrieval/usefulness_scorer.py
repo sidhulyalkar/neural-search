@@ -43,8 +43,11 @@ class UsefulnessScore:
     warnings: list[str] = field(default_factory=list)
 
 
-# Normalized weight profiles (must sum to 1.0) per intent.
-# neural_signature_similarity is always 0.0 in v0.8 (future work).
+# Normalized base weight profiles (must sum to 1.0) per intent. Inactive
+# dimensions are removed at scoring time and the remaining weights are
+# renormalized so unimplemented features do not penalize candidates.
+INACTIVE_DIMENSIONS = frozenset({"neural_signature_similarity"})
+
 INTENT_WEIGHT_PROFILES: dict[UsefulnessIntent, dict[str, float]] = {
     UsefulnessIntent.STRICT_LOOKUP: {
         "modality_alignment": 0.18,
@@ -136,10 +139,35 @@ INTENT_WEIGHT_PROFILES: dict[UsefulnessIntent, dict[str, float]] = {
 def _jaccard(a: list[str], b: list[str]) -> float:
     sa, sb = {s.lower() for s in a}, {s.lower() for s in b}
     if not sa and not sb:
-        return 0.5  # unknown -> neutral
+        return 0.0
     if not sa or not sb:
         return 0.0
     return len(sa & sb) / len(sa | sb)
+
+
+def _active_weights(weights: dict[str, float], dims: dict[str, float]) -> dict[str, float]:
+    """Return weights over implemented dimensions, normalized to sum to one."""
+    active = {
+        dim: weight
+        for dim, weight in weights.items()
+        if dim in dims and dim not in INACTIVE_DIMENSIONS and weight > 0.0
+    }
+    total = sum(active.values())
+    if total <= 0:
+        return {}
+    return {dim: weight / total for dim, weight in active.items()}
+
+
+def _warn_if_both_missing(
+    field_name: str,
+    query_values: list[str],
+    candidate_values: list[str],
+    warnings: list[str],
+) -> None:
+    if not query_values and not candidate_values:
+        warnings.append(
+            f"{field_name}: missing in both query and candidate; similarity set to 0.0"
+        )
 
 
 def _log_power(count: int | None) -> float:
@@ -165,6 +193,7 @@ def score_usefulness(
     dims: dict[str, float] = {}
 
     # modality_alignment
+    _warn_if_both_missing("modalities", query_context.modalities, candidate.modalities, warnings)
     ma = _jaccard(query_context.modalities, candidate.modalities)
     dims["modality_alignment"] = ma
     if query_context.modalities and candidate.modalities:
@@ -172,6 +201,7 @@ def score_usefulness(
         evidence.append(f"Shared modalities: {sorted(shared) or 'none'}")
 
     # task_compatibility
+    _warn_if_both_missing("tasks", query_context.tasks, candidate.tasks, warnings)
     tc = _jaccard(query_context.tasks, candidate.tasks)
     dims["task_compatibility"] = tc
     if query_context.tasks and candidate.tasks:
@@ -179,12 +209,15 @@ def score_usefulness(
         evidence.append(f"Shared tasks: {sorted(shared) or 'none'}")
 
     # species_match
+    _warn_if_both_missing("species", query_context.species, candidate.species, warnings)
     dims["species_match"] = _jaccard(query_context.species, candidate.species)
 
     # region_overlap
+    _warn_if_both_missing("brain_regions", query_context.brain_regions, candidate.brain_regions, warnings)
     dims["region_overlap"] = _jaccard(query_context.brain_regions, candidate.brain_regions)
 
     # affordance_compatibility
+    _warn_if_both_missing("affordances", query_context.affordances, candidate.affordances, warnings)
     dims["affordance_compatibility"] = _jaccard(query_context.affordances, candidate.affordances)
     if query_context.affordances:
         shared = {a.lower() for a in query_context.affordances} & {a.lower() for a in candidate.affordances}
@@ -236,23 +269,26 @@ def score_usefulness(
     dims["statistical_power"] = power
 
     # pipeline_transferability — based on shared data standards
+    _warn_if_both_missing("data_standards", query_context.data_standards, candidate.data_standards, warnings)
     dims["pipeline_transferability"] = _jaccard(query_context.data_standards, candidate.data_standards)
     if query_context.data_standards and candidate.data_standards:
         shared = {s.lower() for s in query_context.data_standards} & {s.lower() for s in candidate.data_standards}
         evidence.append(f"Shared data standards: {sorted(shared) or 'none'}")
 
-    # neural_signature_similarity — not implemented in v0.8
+    # neural_signature_similarity — not implemented; excluded from active weights
     dims["neural_signature_similarity"] = 0.0
-    warnings.append("neural_signature_similarity: not implemented in v0.8; score fixed at 0.0")
+    warnings.append(
+        "neural_signature_similarity: not implemented; excluded from active weight normalization"
+    )
 
-    # Weighted sum
-    total = sum(weights.get(d, 0.0) * v for d, v in dims.items())
+    effective_weights = _active_weights(weights, dims)
+    total = sum(effective_weights.get(d, 0.0) * v for d, v in dims.items())
 
     return UsefulnessScore(
         total_score=min(1.0, max(0.0, total)),
         intent=intent,
         dimension_scores=dims,
-        weights=dict(weights),
+        weights=effective_weights,
         evidence=evidence,
         warnings=warnings,
     )

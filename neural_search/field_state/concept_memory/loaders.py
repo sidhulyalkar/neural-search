@@ -64,6 +64,15 @@ def _make_link(
     tgt_id: str,
     relation: str,
     source_artifact: str | None = None,
+    *,
+    evidence_text: str | None = None,
+    evidence_source_id: str | None = None,
+    source_repository: str | None = None,
+    source_record_id: str | None = None,
+    source_field: str | None = None,
+    extractor_name: str | None = None,
+    extractor_version: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> EvidenceLink:
     eid = evidence_id(src_id, tgt_id, relation)
     return EvidenceLink(
@@ -72,7 +81,15 @@ def _make_link(
         target_concept_id=tgt_id,
         evidence_type="derived_from_artifact",
         relation_type=relation,
+        evidence_text=evidence_text,
+        evidence_source_id=evidence_source_id,
         source_artifact=source_artifact,
+        source_repository=source_repository,
+        source_record_id=source_record_id,
+        source_field=source_field,
+        extractor_name=extractor_name,
+        extractor_version=extractor_version,
+        metadata=metadata or {},
     )
 
 
@@ -322,13 +339,17 @@ def load_corpus(
                 items: list[str],
                 ctype: str,
                 relation: str,
+                source_field: str,
                 *,
                 normalise: bool = True,
+                source_repository: str = str(source),
+                source_record_id: str = str(dataset_id),
             ) -> None:
                 for raw_val in items:
                     if not raw_val:
                         continue
-                    norm = normalize_concept_name(raw_val) if normalise else raw_val.lower().strip()
+                    raw_label = str(raw_val)
+                    norm = normalize_concept_name(raw_label) if normalise else raw_label.lower().strip()
                     if not norm:
                         continue
                     tgt_cid = concept_id(ctype, norm)
@@ -338,19 +359,48 @@ def load_corpus(
                             canonical_name=norm,
                             concept_type=ctype,
                         )
-                    lnk = _make_link(source_cid, tgt_cid, relation)
+                    lnk = _make_link(
+                        source_cid,
+                        tgt_cid,
+                        relation,
+                        str(corpus_path),
+                        evidence_text=f"{source_field}: {raw_label}",
+                        evidence_source_id=source_record_id,
+                        source_repository=source_repository,
+                        source_record_id=source_record_id,
+                        source_field=source_field,
+                        extractor_name="concept_memory_corpus_loader",
+                        extractor_version="0.4.1",
+                        metadata={
+                            "provenance_status": "complete",
+                            "corpus_path": str(corpus_path),
+                        },
+                    )
                     links[lnk.evidence_id] = lnk
 
-            _add_relation(ds_cid, rec.get("modalities") or [], "modality", "has_modality")
-            _add_relation(ds_cid, rec.get("tasks") or [], "task", "has_task")
+            _add_relation(
+                ds_cid,
+                rec.get("modalities") or [],
+                "modality",
+                "has_modality",
+                "modalities",
+            )
+            _add_relation(ds_cid, rec.get("tasks") or [], "task", "has_task", "tasks")
             _add_relation(
                 ds_cid,
                 rec.get("brain_regions") or [],
                 "brain_region",
                 "has_brain_region",
+                "brain_regions",
                 normalise=False,
             )
-            _add_relation(ds_cid, rec.get("species") or [], "species", "has_species")
+            _add_relation(
+                ds_cid,
+                rec.get("species") or [],
+                "species",
+                "has_species",
+                "species",
+            )
 
     return LoadResult(
         concepts=list(concepts.values()),

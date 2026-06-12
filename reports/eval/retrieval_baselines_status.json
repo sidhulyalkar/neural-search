@@ -1,0 +1,102 @@
+{
+  "status": "completed",
+  "query_count": 15,
+  "corpus_size": 10404,
+  "top_k": 100,
+  "variants": [
+    "bm25",
+    "usefulness"
+  ],
+  "per_query": [
+    {
+      "query_id": "q_0001",
+      "query": "human fMRI reward prediction error reinforcement learning task",
+      "intent": "META_ANALYSIS",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0002",
+      "query": "mouse visual cortex calcium imaging population coding orientation selectivity",
+      "intent": "MODEL_VALIDATION",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0003",
+      "query": "extracellular electrophysiology spike sorting benchmark neuropixels single unit",
+      "intent": "PIPELINE_REUSE",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0004",
+      "query": "motor planning representation primate monkey electrophysiology reaching task",
+      "intent": "CROSS_DATASET_COMPARISON",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0005",
+      "query": "decision making behavioral data Q-learning reinforcement learning model fitting trial-level choices rewards",
+      "intent": "REANALYSIS_FEASIBILITY",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0006",
+      "query": "pose estimation calcium imaging behavior neural activity correlation mouse locomotion",
+      "intent": "METHOD_TRANSFER",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0007",
+      "query": "human fMRI N-back working memory task prefrontal cortex BOLD signal",
+      "intent": "REPLICATION",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0008",
+      "query": "hippocampus theta oscillations spatial navigation place cells rodent",
+      "intent": "EXPLORATION",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0009",
+      "query": "human resting-state fMRI functional connectivity default mode network",
+      "intent": "META_ANALYSIS",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0010",
+      "query": "two-photon calcium imaging GCaMP mouse cortex dF/F traces deconvolution",
+      "intent": "PIPELINE_REUSE",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0011",
+      "query": "dopamine reward prediction error ventral striatum mesolimbic pathway rodent",
+      "intent": "CROSS_DATASET_COMPARISON",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0012",
+      "query": "deep learning convolutional neural network visual cortex ventral stream object recognition",
+      "intent": "MODEL_VALIDATION",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0013",
+      "query": "sleep EEG slow oscillations spindles memory consolidation overnight recording",
+      "intent": "REANALYSIS_FEASIBILITY",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0014",
+      "query": "fMRI decoding brain reading multi-voxel pattern analysis MVPA face object place",
+      "intent": "METHOD_TRANSFER",
+      "bm25_results": 100
+    },
+    {
+      "query_id": "q_0015",
+      "query": "monkey LIP area lateral intraparietal decision making saccade accumulator model",
+      "intent": "REPLICATION",
+      "bm25_results": 100
+    }
+  ]
+}

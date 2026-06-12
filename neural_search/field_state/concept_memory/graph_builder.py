@@ -7,8 +7,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, cast
 
-import networkx as nx
+import networkx as nx  # type: ignore[import-untyped]
 
+from neural_search.field_state.concept_memory.artifact_utils import (
+    artifact_timestamp,
+    deterministic_artifacts,
+    deterministic_enabled,
+)
 from neural_search.field_state.concept_memory.loaders import (
     LoadResult,
     load_corpus,
@@ -16,6 +21,7 @@ from neural_search.field_state.concept_memory.loaders import (
     load_obsidian_notes,
     merge_load_results,
 )
+from neural_search.field_state.concept_memory.manifest import write_manifest
 from neural_search.field_state.concept_memory.schema import ConceptNode, EvidenceLink
 
 # ---------------------------------------------------------------------------
@@ -123,10 +129,18 @@ def write_concept_artifacts(
     concepts: list[ConceptNode],
     evidence_links: list[EvidenceLink],
     root: Path | None = None,
+    deterministic: bool | None = None,
+    corpus_path: Path | None = None,
 ) -> dict[str, Path]:
     """Write all concept memory artifacts. Returns label→absolute path dict."""
     base = root if root is not None else _repo_root()
     paths: dict[str, Path] = {}
+    det = deterministic_enabled(deterministic)
+    if det:
+        evidence_links = [
+            link.model_copy(update={"created_at": artifact_timestamp(True)})
+            for link in evidence_links
+        ]
 
     # 1. concepts.jsonl
     concepts_path = base / _CONCEPTS_JSONL
@@ -176,8 +190,14 @@ def write_concept_artifacts(
     _atomic_write(graph_json_path, json.dumps(graph_json, indent=2))
     paths["concept_graph"] = graph_json_path
 
-    # 5. concept_graph.graphml (optional — skip if networkx graphml export fails)
+    # 5. concept_graph.graphml (optional)
     tmp_graphml: Path | None = None
+    graphml_status: dict[str, Any] = {
+        "optional": True,
+        "status": "not_attempted",
+        "path": str(_CONCEPT_GRAPH_GRAPHML),
+        "error": None,
+    }
     try:
         g = build_concept_graph(concepts, evidence_links)
         graphml_path = base / _CONCEPT_GRAPH_GRAPHML
@@ -186,13 +206,34 @@ def write_concept_artifacts(
         nx.write_graphml(g, str(tmp_graphml))
         tmp_graphml.replace(graphml_path)
         paths["concept_graph_graphml"] = graphml_path
-    except Exception:  # noqa: BLE001
+        graphml_status = {
+            "optional": True,
+            "status": "written",
+            "path": str(_CONCEPT_GRAPH_GRAPHML),
+            "error": None,
+        }
+    except Exception as exc:  # noqa: BLE001
         # Clean up any partial temp file
         if tmp_graphml is not None:
             try:
                 tmp_graphml.unlink(missing_ok=True)
             except Exception:  # noqa: BLE001
                 pass
+        graphml_status = {
+            "optional": True,
+            "status": "failed",
+            "path": str(_CONCEPT_GRAPH_GRAPHML),
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+    manifest_path = write_manifest(
+        root=base,
+        artifact_paths=paths,
+        deterministic=det,
+        corpus_path=corpus_path,
+        graphml_status=graphml_status,
+    )
+    paths["manifest"] = manifest_path
 
     return paths
 
@@ -309,57 +350,67 @@ def build_full_concept_memory(
     vault_path: Path | None = None,
     corpus_path: Path | None = None,
     root: Path | None = None,
+    deterministic: bool | None = None,
 ) -> dict[str, Path]:
     """Orchestrate the full concept memory build from all available sources."""
     base = root if root is not None else _repo_root()
+    det = deterministic_enabled(deterministic)
 
-    # 1. Field-state artifacts (claims, gaps, opportunities)
-    field_state_result = load_field_state_artifacts(base)
+    with deterministic_artifacts(det):
+        # 1. Field-state artifacts (claims, gaps, opportunities)
+        field_state_result = load_field_state_artifacts(base)
 
-    # 2. Corpus datasets
-    effective_corpus = corpus_path
-    if effective_corpus is None:
-        default_corpus = base / "data" / "corpus" / "normalized" / "combined_corpus.jsonl"
-        if default_corpus.exists():
-            effective_corpus = default_corpus
-    if effective_corpus is not None:
-        try:
-            corpus_result = load_corpus(effective_corpus)
-        except Exception as exc:  # noqa: BLE001
-            corpus_result = LoadResult(warnings=[f"Corpus load failed: {exc}"])
-    else:
-        corpus_result = LoadResult()
+        # 2. Corpus datasets
+        effective_corpus = corpus_path
+        if effective_corpus is None:
+            default_corpus = base / "data" / "corpus" / "normalized" / "combined_corpus.jsonl"
+            if default_corpus.exists():
+                effective_corpus = default_corpus
+        if effective_corpus is not None:
+            try:
+                corpus_result = load_corpus(effective_corpus)
+            except Exception as exc:  # noqa: BLE001
+                corpus_result = LoadResult(warnings=[f"Corpus load failed: {exc}"])
+        else:
+            corpus_result = LoadResult()
 
-    # 3. Obsidian notes (optional)
-    if vault_path is not None:
-        obsidian_result = load_obsidian_notes(vault_path, field)
-    else:
-        obsidian_result = LoadResult()
+        # 3. Obsidian notes (optional)
+        if vault_path is not None:
+            obsidian_result = load_obsidian_notes(vault_path, field)
+        else:
+            obsidian_result = LoadResult()
 
-    # 4. Merge all results
-    merged = merge_load_results([field_state_result, corpus_result, obsidian_result])
-    concepts = merged.concepts
-    evidence_links = merged.evidence_links
+        # 4. Merge all results
+        merged = merge_load_results([field_state_result, corpus_result, obsidian_result])
+        concepts = merged.concepts
+        evidence_links = merged.evidence_links
 
-    # 5. Write artifacts
-    paths = write_concept_artifacts(concepts, evidence_links, base)
+        # 5. Write artifacts
+        paths = write_concept_artifacts(
+            concepts,
+            evidence_links,
+            base,
+            deterministic=det,
+            corpus_path=effective_corpus,
+        )
 
-    # 6. Print summary
-    type_counts: dict[str, int] = defaultdict(int)
-    for c in concepts:
-        type_counts[c.concept_type] += 1
+        # 6. Print summary
+        type_counts: dict[str, int] = defaultdict(int)
+        for c in concepts:
+            type_counts[c.concept_type] += 1
 
-    print("Concept memory built:")
-    print(f"  total concepts     : {len(concepts)}")
-    print(f"  total evidence links: {len(evidence_links)}")
-    print("  by type:")
-    for ctype, count in sorted(type_counts.items()):
-        print(f"    {ctype:<30} {count}")
-    if merged.warnings:
-        print(f"  warnings ({len(merged.warnings)}):")
-        for w in merged.warnings[:10]:
-            print(f"    {w}")
-        if len(merged.warnings) > 10:
-            print(f"    ... and {len(merged.warnings) - 10} more")
+        print("Concept memory built:")
+        print(f"  mode               : {'deterministic' if det else 'normal'}")
+        print(f"  total concepts     : {len(concepts)}")
+        print(f"  total evidence links: {len(evidence_links)}")
+        print("  by type:")
+        for ctype, count in sorted(type_counts.items()):
+            print(f"    {ctype:<30} {count}")
+        if merged.warnings:
+            print(f"  warnings ({len(merged.warnings)}):")
+            for w in merged.warnings[:10]:
+                print(f"    {w}")
+            if len(merged.warnings) > 10:
+                print(f"    ... and {len(merged.warnings) - 10} more")
 
     return paths

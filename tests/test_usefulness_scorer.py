@@ -102,6 +102,39 @@ class TestWeightNormalization:
         assert 0.0 <= score_lookup.total_score <= 1.0
         assert 0.0 <= score_pipeline.total_score <= 1.0
 
+    def test_inactive_neural_signature_weight_is_renormalized(self):
+        q = _ctx(tasks=["decision_making"])
+        c = _ctx(tasks=["decision_making"])
+        score = score_usefulness(q, c, UsefulnessIntent.EXPLORATION)
+        assert "neural_signature_similarity" not in score.weights
+        assert abs(sum(score.weights.values()) - 1.0) < 1e-6
+        assert any("neural_signature_similarity" in w for w in score.warnings)
+
+
+class TestMissingMetadataHandling:
+    def test_empty_empty_jaccard_dimensions_are_zero_not_neutral(self):
+        q = _ctx()
+        c = _ctx()
+        score = score_usefulness(q, c, UsefulnessIntent.STRICT_LOOKUP)
+        for dim in [
+            "modality_alignment",
+            "task_compatibility",
+            "species_match",
+            "region_overlap",
+            "affordance_compatibility",
+            "pipeline_transferability",
+        ]:
+            assert score.dimension_scores[dim] == 0.0
+
+    def test_missing_metadata_does_not_increase_similarity(self):
+        q = _ctx(modalities=["neuropixels"])
+        c_missing = _ctx()
+        c_mismatch = _ctx(modalities=["calcium_imaging"])
+        s_missing = score_usefulness(q, c_missing, UsefulnessIntent.STRICT_LOOKUP)
+        s_mismatch = score_usefulness(q, c_mismatch, UsefulnessIntent.STRICT_LOOKUP)
+        assert s_missing.dimension_scores["modality_alignment"] == 0.0
+        assert s_mismatch.dimension_scores["modality_alignment"] == 0.0
+
 
 class TestExplanations:
     def test_evidence_list_nonempty(self):

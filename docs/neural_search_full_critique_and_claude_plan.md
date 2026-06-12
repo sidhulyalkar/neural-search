@@ -2,7 +2,7 @@
 
 **Prepared for:** Sidharth Hulyalkar  
 **Project:** Neural Search  
-**Inputs reviewed:** uploaded repository zip `neural-search (5).zip`, uploaded whitepaper `neural_search_iclr_whitepaper.tex`, and the EBRAINS GUI search screenshot for `delay discounting`.
+**Inputs reviewed:** uploaded repository zip `neural-search (5).zip`, uploaded whitepaper `neural_search_whitepaper.tex`, and the EBRAINS GUI search screenshot for `delay discounting`.
 
 ---
 
@@ -116,7 +116,7 @@ CLAUDE.md or AGENTS.md
   ROADMAP.md
   CLEANUP_LOG.md
   whitepaper/
-    neural_search_iclr_whitepaper.tex
+    neural_search_whitepaper.tex
 /archive_docs/
   older task prompts and historical handoff docs
 ```
@@ -690,7 +690,7 @@ Update:
 ```text
 docs/CLAIM_LEDGER.md
 docs/WHITEPAPER_IMPLEMENTATION_ALIGNMENT.md
-docs/whitepaper/neural_search_iclr_whitepaper.tex
+docs/whitepaper/neural_search_whitepaper.tex
 ```
 
 Every quantitative claim should have:

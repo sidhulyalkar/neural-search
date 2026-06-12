@@ -353,7 +353,7 @@ python -m neural_search.evaluation.run_benchmark --suite demo_v02
 - [CURRENT_SYSTEM_MAP.md](CURRENT_SYSTEM_MAP.md) - Module architecture
 - [CLAIM_LEDGER.md](CLAIM_LEDGER.md) - Claim status tracking
 - [ARCHITECTURE_V05.md](ARCHITECTURE_V05.md) - System architecture
-- [Whitepaper](whitepaper/neural_search_iclr_whitepaper.tex) - ICLR-style paper
+- [Whitepaper](whitepaper/neural_search_whitepaper.tex) - ICLR-style paper
 
 ---
 

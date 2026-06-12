@@ -1,0 +1,22 @@
+{
+  "common_reason_tags": {},
+  "export_rate": 0.0,
+  "false_high_feedback": [],
+  "false_high_feedback_count": 0,
+  "false_low_feedback": [],
+  "false_low_feedback_count": 0,
+  "generated_at": "2026-06-11T23:18:28.374980+00:00",
+  "number_of_feedback_events": 0,
+  "number_of_queries": 0,
+  "number_of_sessions": 0,
+  "provenance": "user_feedback_downstream_signal",
+  "save_export_rate": 0.0,
+  "save_rate": 0.0,
+  "usefulness_by_evidence_completeness_bucket": {},
+  "usefulness_by_neuro_judge_label": {},
+  "usefulness_by_rank_bucket": {},
+  "usefulness_by_retrieval_method": {},
+  "usefulness_distribution": {},
+  "would_use_for_analysis_rate": 0.0,
+  "would_use_yes_rate": 0.0
+}

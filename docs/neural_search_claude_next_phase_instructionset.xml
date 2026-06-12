@@ -208,7 +208,7 @@
       <files>
         <file>docs/CLAIM_LEDGER.md</file>
         <file>docs/WHITEPAPER_IMPLEMENTATION_ALIGNMENT.md</file>
-        <file>docs/whitepaper/neural_search_iclr_whitepaper.tex</file>
+        <file>docs/whitepaper/neural_search_whitepaper.tex</file>
       </files>
       <acceptanceCriteria>
         <criterion>No metric in the whitepaper lacks a source artifact and replication command.</criterion>
