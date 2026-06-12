@@ -13,6 +13,10 @@ import yaml
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.embeddings import HashingEmbeddingProvider, cosine_similarity
+from neural_search.field_state.retrieval_bridge import (
+    compute_memory_graph_score,
+    load_memory_graph_store,
+)
 from neural_search.graph.search_features import (
     compute_graph_features_for_result,
     graph_context_score,
@@ -31,6 +35,11 @@ from neural_search.ontology import (
     match_tasks,
     normalize_text,
 )
+from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
+from neural_search.retrieval.query_intent import (
+    classify_query_intent as classify_usefulness_intent,
+)
+from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 from neural_search.schemas import DatasetCardRead, SearchResponse, SearchResult
 from neural_search.search.constraints import (
     negative_constraint_violations,
@@ -58,9 +67,6 @@ from neural_search.species import (
     species_query_matches,
     species_terms_for_values,
 )
-from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
-from neural_search.retrieval.query_intent import classify_query_intent as classify_usefulness_intent
-from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 
 
 # Lazy import for awareness to avoid circular imports
@@ -129,6 +135,12 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
     "planner": {
         "enabled": False,
         "blend_factor": 0.5,  # How much to weight planner weights vs base (0=base, 1=planner)
+    },
+    "memory_graph": {
+        "enabled": False,
+        "nodes_path": "artifacts/field_state/memory_graph_nodes.jsonl",
+        "edges_path": "artifacts/field_state/memory_graph_edges.jsonl",
+        "weight": 0.06,  # conservative initial weight
     },
     "hard_negative_filters": {"enabled": True},
 }
@@ -914,6 +926,8 @@ def _augment_result_with_optional_scores(
     dataset: Any = None,
     awareness_config: Mapping[str, Any] | None = None,
     query_awareness: Any = None,
+    memory_graph_store: Any = None,
+    memory_graph_config: Mapping[str, Any] | None = None,
 ) -> None:
     weights = retrieval_config.get("weights", {})
     base_final = float(result.score_breakdown.get("final_score", result.score / 100.0))
@@ -982,6 +996,18 @@ def _augment_result_with_optional_scores(
             result.graph_context = result.dataset_card_preview["graph_context"]
             result.linked_papers = graph_features.get("linked_papers", [])[:5]
         extra_score += float(weights.get("graph", 0.0)) * graph_score
+
+    # Memory-graph scoring
+    if memory_graph_config and memory_graph_config.get("enabled") and memory_graph_store is not None:
+        try:
+            mg_score = compute_memory_graph_score(memory_graph_store, result, parsed_query)
+            result.score_breakdown["memory_graph_score"] = round(mg_score, 3)
+            if mg_score != 0:
+                result.why_matched.append(f"Memory graph score: {mg_score:.3f}")
+            extra_score += float(memory_graph_config.get("weight", 0.06)) * mg_score
+        except Exception:
+            # Memory graph scoring is optional; never fail retrieval
+            result.score_breakdown["memory_graph_score"] = 0.0
 
     # Awareness scoring
     if awareness_config and awareness_config.get("enabled") and dataset is not None:
@@ -1252,6 +1278,21 @@ def search_datasets(
             # Awareness is optional; don't fail retrieval if it errors
             pass
 
+    # Memory graph scoring setup
+    memory_graph_config = (
+        config.get("memory_graph", {})
+        if isinstance(config.get("memory_graph", {}), Mapping)
+        else {}
+    )
+    memory_graph_store = (
+        load_memory_graph_store(
+            str(memory_graph_config.get("nodes_path", "")),
+            str(memory_graph_config.get("edges_path", "")),
+        )
+        if memory_graph_config.get("enabled")
+        else None
+    )
+
     for record in records:
         dataset = record.get("dataset", record)
         card = record.get("card")
@@ -1287,6 +1328,8 @@ def search_datasets(
             dataset=dataset,
             awareness_config=awareness_config,
             query_awareness=query_awareness,
+            memory_graph_store=memory_graph_store,
+            memory_graph_config=memory_graph_config,
         )
         # Generate rich explanation after all scores are computed
         _generate_rich_explanation(result, combined_query, dataset, parsed)
