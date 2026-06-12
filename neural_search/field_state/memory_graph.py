@@ -26,6 +26,7 @@ from neural_search.field_state.normalizers import (
     extract_raw_data_evidence,
     extract_regions_from_text,
     extract_species_from_text,
+    modality_satisfies_affordance,
 )
 from neural_search.graph.schema import (
     GraphEvidence,
@@ -39,6 +40,16 @@ log = logging.getLogger(__name__)
 
 BUILDER_NAME = "neural_search.field_state.memory_graph"
 BUILDER_VERSION = "v0.9.0"
+
+# Affordances where false positives (claiming support when modality can't deliver)
+# have the highest downstream cost.
+_CONTRAINDICATION_AFFORDANCES: tuple[str, ...] = (
+    "spike_sorting",
+    "lfp_analysis",
+    "calcium_transient_detection",
+    "connectivity_analysis",
+    "fmri_glm",
+)
 
 
 def _utc_now() -> str:
@@ -163,6 +174,7 @@ class MemoryGraphBuilder:
 
         # Label-type nodes from structured metadata
         self._add_label_list_nodes(ds_node_id, rec, "modalities", "modality", "dataset_has_modality", dataset_id)
+        self._add_contraindication_edges(ds_node_id, rec)
         self._add_label_list_nodes(ds_node_id, rec, "species", "species", "dataset_has_species", dataset_id)
         self._add_label_list_nodes(ds_node_id, rec, "brain_regions", "brain_region", "dataset_records_region", dataset_id)
         self._add_label_list_nodes(ds_node_id, rec, "tasks", "task", "dataset_has_task", dataset_id)
@@ -206,6 +218,43 @@ class MemoryGraphBuilder:
         # Text-based species/modality/region augmentation (inferred, lower confidence)
         if description:
             self._add_text_inferred_labels(ds_node_id, dataset_id, description)
+
+    def _add_contraindication_edges(self, ds_node_id: str, rec: dict[str, Any]) -> None:
+        """Add dataset_contraindicated_for edges when a modality cannot support an affordance.
+
+        Only fires when:
+        - the modality entry has confidence > 0.5 (explicit, not noise)
+        - the target affordance node already exists in the store
+        """
+        for label_obj in rec.get("modalities", []):
+            if isinstance(label_obj, dict):
+                modality_label = label_obj.get("label", "")
+                confidence = label_obj.get("confidence", 0.0)
+            else:
+                modality_label = str(label_obj)
+                confidence = 0.7
+            if not modality_label or confidence <= 0.5:
+                continue
+            modality_canonical = modality_label.lower().replace(" ", "_").replace("-", "_")
+            for affordance_id in _CONTRAINDICATION_AFFORDANCES:
+                if modality_satisfies_affordance(modality_canonical, affordance_id):
+                    continue
+                # Only add edge if the affordance node already exists in the graph
+                aff_concept_id = affordance_id.lower().replace(" ", "_").replace("-", "_")
+                aff_node_id = make_node_id("analysis_affordance", aff_concept_id)
+                if aff_node_id not in self.store._nodes:
+                    continue
+                self._upsert_edge(
+                    ds_node_id,
+                    "dataset_contraindicated_for",
+                    aff_node_id,
+                    confidence=confidence,
+                    props={
+                        "modality": modality_canonical,
+                        "affordance": affordance_id,
+                        "reason": f"{modality_canonical} cannot satisfy {affordance_id}",
+                    },
+                )
 
     def _add_label_list_nodes(
         self,
@@ -467,6 +516,12 @@ class MemoryGraphBuilder:
 # ---------------------------------------------------------------------------
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
+    """Load JSONL records from a file or directory of JSONL files."""
+    if path.is_dir():
+        records: list[dict[str, Any]] = []
+        for fpath in sorted(path.rglob("*.jsonl")):
+            records.extend(_load_jsonl(fpath))
+        return records
     records = []
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
