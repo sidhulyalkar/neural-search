@@ -7,12 +7,14 @@ import json
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
-
 import httpx
 
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL
+from neural_search.ingestion.doi_utils import (
+    dois_to_paper_ids,
+    extract_dois_from_dandi_metadata,
+)
 from neural_search.ingestion.live import (
     print_cli_error,
     print_normalized_records,
@@ -25,6 +27,8 @@ from neural_search.normalized import (
     stable_normalized_id,
 )
 from neural_search.schemas import NormalizedDatasetRecord, UsabilityFlags
+
+logger = logging.getLogger(__name__)
 
 DANDI_API_URL = "https://api.dandiarchive.org/api"
 
@@ -97,6 +101,10 @@ def normalize_dandiset_record(
     """Normalize a raw DANDI payload into the v0.3 provenance-aware schema."""
 
     legacy = normalize_dandiset(raw)
+    # Extract DANDI metadata dict (same path as normalize_dandiset uses)
+    _version = raw.get("most_recent_published_version") or raw.get("draft_version") or raw
+    _dandi_metadata: dict[str, Any] = _version.get("metadata") or raw.get("metadata") or {}
+    _extracted_dois = extract_dois_from_dandi_metadata(_dandi_metadata)
     metadata = legacy.get("metadata_json", {})
     extraction = extract_dataset_labels(
         title=legacy.get("title"),
@@ -160,6 +168,7 @@ def normalize_dandiset_record(
             has_processed_data=legacy.get("has_processed_data"),
             has_standard_format="NWB" in legacy.get("data_standards", []),
         ),
+        linked_papers=dois_to_paper_ids(_extracted_dois),
         missing_fields=extraction.missing_fields,
     )
 
