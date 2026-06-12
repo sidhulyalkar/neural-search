@@ -2,10 +2,13 @@
 
 from neural_search.ontology.loader import (
     DEFAULT_ONTOLOGY_PATH,
+    DEFAULT_BRAIN_REGIONS_PATH,
     OntologyValidationError,
+    get_brain_regions,
     get_all_tasks,
     get_ontology,
     get_task_by_id,
+    load_brain_regions,
     load_ontology,
     reload_ontology,
     validate_ontology,
@@ -25,6 +28,7 @@ from neural_search.ontology.matcher import (
 from neural_search.ontology.models import (
     AnalysisAffordance,
     BehaviorLabel,
+    BrainRegion,
     LabelMatch,
     Ontology,
     Task,
@@ -33,6 +37,8 @@ from neural_search.ontology.models import (
 __all__ = [
     "AnalysisAffordance",
     "BehaviorLabel",
+    "BrainRegion",
+    "DEFAULT_BRAIN_REGIONS_PATH",
     "DEFAULT_ONTOLOGY_PATH",
     "LabelMatch",
     "Ontology",
@@ -52,7 +58,8 @@ __all__ = [
     "match_modalities",
     "match_tasks",
     "normalize_text",
+    "get_brain_regions",
+    "load_brain_regions",
     "reload_ontology",
     "validate_ontology",
 ]
-
