@@ -195,9 +195,23 @@ def extract_dois_from_openneuro_metadata(metadata: dict) -> list[str]:  # type: 
 def dois_to_paper_ids(dois: list[str]) -> list[str]:
     """Convert DOI list to paper node IDs in the format 'paper:doi:{doi_slug}'.
 
-    doi_slug replaces '/' with ':' and lowercases.
+    doi_slug replaces '/' with ':' and lowercases. Full DOI URLs are stripped
+    to bare DOIs before conversion (e.g. 'https://doi.org/10.1038/x' -> '10.1038:x').
 
     Example:
         '10.1038/s41593-019-0409-2' -> 'paper:doi:10.1038:s41593-019-0409-2'
     """
-    return [f"paper:doi:{doi.lower().replace('/', ':')}" for doi in dois]
+    results: list[str] = []
+    for doi in dois:
+        bare = doi.strip()
+        for prefix in ("https://doi.org/", "http://doi.org/", "doi.org/", "doi:"):
+            if bare.lower().startswith(prefix):
+                bare = bare[len(prefix):]
+                break
+        bare = bare.strip("/").lower()
+        if not bare:
+            continue
+        slug = bare.replace("/", ":")
+        if all(p for p in slug.split(":")):
+            results.append(f"paper:doi:{slug}")
+    return results
