@@ -180,8 +180,13 @@ def main(argv: list[str] | None = None) -> int:
 
     corpus_files = collect_corpus_files()
     if not corpus_files:
-        print(f"ERROR: no real_*.jsonl source files found under {CORPUS_DIR}", file=sys.stderr)
-        return 1
+        # Fallback: accept the full corpus file produced by build_full_corpus.py
+        full_corpus = CORPUS_DIR / "combined_corpus.jsonl" / "full_corpus_v09.jsonl"
+        if full_corpus.exists():
+            corpus_files = [full_corpus]
+        else:
+            print(f"ERROR: no real_*.jsonl source files found under {CORPUS_DIR}", file=sys.stderr)
+            return 1
 
     print(f"Corpus files ({len(corpus_files)}):")
     for f in corpus_files:
