@@ -465,7 +465,10 @@ class MemoryGraphBuilder:
         return node_id
 
     def _upsert_paper_stub(self, paper_id: str) -> str:
-        parts = paper_id.split(":")[1:] if ":" in paper_id else [paper_id]
+        raw_parts = paper_id.split(":")[1:] if ":" in paper_id else [paper_id]
+        parts = [p for p in raw_parts if p]
+        if not parts:
+            parts = [paper_id.replace(":", "_") or "unknown"]
         node_id = make_node_id("paper", *parts)
         node = KnowledgeGraphNode(
             node_id=node_id,

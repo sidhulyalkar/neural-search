@@ -178,13 +178,106 @@ async def search_datasets(
     return records_from_response(data, limit)
 
 
+# Map OpenNeuro vocabulary terms to canonical modality IDs
+_OPENNEURO_MODALITY_MAP: dict[str, str] = {
+    "mri": "fmri",
+    "fmri": "fmri",
+    "bold": "fmri",
+    "functional mri": "fmri",
+    "t1w": "structural_mri",
+    "structural mri": "structural_mri",
+    "dwi": "diffusion_mri",
+    "diffusion": "diffusion_mri",
+    "eeg": "eeg",
+    "ecog": "ecog",
+    "ieeg": "ieeg",
+    "meg": "meg",
+    "pet": "pet",
+    "ct": "ct",
+    "nirs": "fNIRS",
+    "fnirs": "fNIRS",
+    "beh": "behavioral",
+    "behavioral": "behavioral",
+    "motion": "motion_capture",
+    "eye_tracking": "eye_tracking",
+    "eyetracking": "eye_tracking",
+}
+
+# Map OpenNeuro species names to canonical IDs
+_OPENNEURO_SPECIES_MAP: dict[str, str] = {
+    "homo sapiens": "human",
+    "human": "human",
+    "mus musculus": "mouse",
+    "mouse": "mouse",
+    "rattus norvegicus": "rat",
+    "rat": "rat",
+    "macaca mulatta": "macaque",
+    "rhesus macaque": "macaque",
+    "macaque": "macaque",
+}
+
+
+def _map_openneuro_modalities(raw_modalities: list[str]) -> list[str]:
+    """Normalize OpenNeuro modality strings to canonical IDs."""
+    result: list[str] = []
+    seen: set[str] = set()
+    for m in raw_modalities:
+        canonical = _OPENNEURO_MODALITY_MAP.get(m.lower().strip())
+        if canonical and canonical not in seen:
+            result.append(canonical)
+            seen.add(canonical)
+        elif m.lower().strip() not in seen:
+            # Keep original if not in map (may still be useful)
+            result.append(m.lower().strip())
+            seen.add(m.lower().strip())
+    return result
+
+
+def _map_openneuro_species(raw_species: list[str] | str | None) -> list[str]:
+    """Normalize OpenNeuro species strings to canonical IDs."""
+    if not raw_species:
+        return []
+    if isinstance(raw_species, str):
+        raw_species = [raw_species]
+    result: list[str] = []
+    seen: set[str] = set()
+    for s in raw_species:
+        canonical = _OPENNEURO_SPECIES_MAP.get(s.lower().strip())
+        if canonical and canonical not in seen:
+            result.append(canonical)
+            seen.add(canonical)
+    return result
+
+
 def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
     snapshot = node.get("latestSnapshot", {}) or {}
     summary = snapshot.get("summary", {}) or {}
-    title = node.get("name") or node.get("id")
+    on_metadata = node.get("metadata", {}) or {}
+    title_raw = node.get("name") or node.get("id")
+    snap_desc = snapshot.get("description") or {}
+    # Prefer snapshot description name as title when it's more informative
+    snap_name = snap_desc.get("Name") if isinstance(snap_desc, dict) else None
+    title = (snap_name or title_raw or node.get("id"))
     description = node.get("description") or snapshot.get("readme")
-    modalities = [str(value).casefold() for value in summary.get("modalities", []) or []]
-    text = " ".join(str(part) for part in [title, description, summary, modalities])
+
+    # Merge modalities from multiple sources, preferring summary > metadata
+    raw_modalities_summary = [str(v).lower() for v in (summary.get("modalities") or [])]
+    raw_modalities_meta = [str(v).lower() for v in (on_metadata.get("modalities") or [])]
+    raw_modalities = raw_modalities_summary or raw_modalities_meta
+    modalities = _map_openneuro_modalities(raw_modalities)
+
+    # Species from metadata
+    raw_species = on_metadata.get("species")
+    meta_species = _map_openneuro_species(raw_species)
+
+    # DOI from associatedPaperDOI / openneuroPaperDOI
+    doi_sources: list[str] = []
+    for doi_key in ("associatedPaperDOI", "openneuroPaperDOI"):
+        doi_val = on_metadata.get(doi_key)
+        if doi_val and isinstance(doi_val, str) and doi_val.strip():
+            doi_sources.append(doi_val.strip())
+
+    text = " ".join(str(part) for part in [title, description, summary, modalities] if part)
     extraction = extract_dataset_labels(
         title=title,
         description=description,
@@ -192,15 +285,22 @@ def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
         source_metadata={"summary": summary, "modalities": modalities, "standard": "BIDS"},
         linked_paper_abstracts=[],
     )
-    tasks = sorted({*summary.get("tasks", []), *(item.id for item in extraction.tasks)})
+
+    # Merge species: metadata-derived + extractor
+    species_ids: list[str] = list(dict.fromkeys(
+        meta_species + [item.id for item in extraction.species]
+    ))
+
+    tasks_raw = list(on_metadata.get("tasksCompleted") or summary.get("tasks") or [])
+    tasks = sorted({*tasks_raw, *(item.id for item in extraction.tasks)})
     return {
         "source": "openneuro",
         "source_id": node["id"],
         "title": title,
         "description": description,
         "url": f"https://openneuro.org/datasets/{node['id']}",
-        "license": None,
-        "species": [item.id for item in extraction.species],
+        "license": snap_desc.get("License") if isinstance(snap_desc, dict) else None,
+        "species": species_ids,
         "modalities": sorted({*modalities, *(item.id for item in extraction.modalities)}),
         "brain_regions": [item.id for item in extraction.brain_regions],
         "tasks": tasks,
@@ -209,13 +309,18 @@ def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
         "has_behavior": bool(extraction.behaviors) or "events.tsv" in text.casefold(),
         "has_trials": any(term in text.casefold() for term in ["trial", "events.tsv", "task"]),
         "has_raw_data": True,
-        "has_processed_data": "derivative" in text.casefold(),
+        "has_processed_data": "derivative" in text.casefold() or bool(on_metadata.get("dataProcessed")),
+        "linked_paper_dois": doi_sources,
         "metadata_json": {
             "raw_source": "openneuro",
             "subjects": summary.get("subjects"),
             "snapshot_tag": snapshot.get("tag"),
             "size_bytes": snapshot.get("size"),
             "created": node.get("created"),
+            "senior_author": on_metadata.get("seniorAuthor"),
+            "study_design": on_metadata.get("studyDesign"),
+            "study_domain": on_metadata.get("studyDomain"),
+            "ages": on_metadata.get("ages"),
         },
     }
 
@@ -238,6 +343,37 @@ def normalize_openneuro_record(
     source_value = " ".join(
         str(part) for part in [legacy.get("title"), legacy.get("description"), metadata] if part
     )
+
+    # Use legacy-normalized species (already mapped from OpenNeuro vocab + extraction)
+    legacy_species = legacy.get("species") or []
+    legacy_modalities = legacy.get("modalities") or []
+
+    # Build EvidenceLabel lists; for legacy-mapped labels use structured source
+    def _make_labels(ids: list[str], label_type: str, source_field: str) -> list:
+        seen: set[str] = set()
+        result = []
+        for label_id in ids:
+            if label_id in seen:
+                continue
+            seen.add(label_id)
+            from neural_search.schemas import EvidenceLabel
+            result.append(EvidenceLabel(
+                id=label_id,
+                label=label_id.replace("_", " "),
+                label_type=label_type,
+                confidence=0.75,
+                evidence_text=f"openneuro_metadata:{label_id}",
+                source_field=source_field,
+                source_value=source_value[:100],
+                extractor_name="openneuro_normalizer",
+                extractor_version="v0.9.0",
+            ))
+        return result
+
+    # DOI-based paper links
+    from neural_search.ingestion.doi_utils import dois_to_paper_ids
+    linked_papers = dois_to_paper_ids(legacy.get("linked_paper_dois") or [])
+
     return NormalizedDatasetRecord(
         dataset_id=stable_normalized_id("dataset", "openneuro", legacy["source_id"]),
         source="openneuro",
@@ -246,18 +382,8 @@ def normalize_openneuro_record(
         description=legacy.get("description"),
         url=legacy.get("url"),
         raw_payload_path=raw_payload_path,
-        species=[
-            evidence_label_from_extraction(
-                label, "species", source_field="summary", source_value=source_value
-            )
-            for label in extraction.species
-        ],
-        modalities=[
-            evidence_label_from_extraction(
-                label, "modality", source_field="summary", source_value=source_value
-            )
-            for label in extraction.modalities
-        ],
+        species=_make_labels(legacy_species, "species", "openneuro_metadata"),
+        modalities=_make_labels(legacy_modalities, "modality", "openneuro_summary"),
         brain_regions=[
             evidence_label_from_extraction(
                 label, "brain_region", source_field="summary", source_value=source_value
@@ -285,11 +411,12 @@ def normalize_openneuro_record(
         usability_flags=UsabilityFlags(
             has_trials=legacy.get("has_trials"),
             has_behavior=legacy.get("has_behavior"),
-            has_neural_data=bool(legacy.get("modalities")),
+            has_neural_data=bool(legacy_modalities),
             has_raw_data=legacy.get("has_raw_data"),
             has_processed_data=legacy.get("has_processed_data"),
             has_standard_format=True,
         ),
+        linked_papers=linked_papers,
         missing_fields=extraction.missing_fields,
     )
 
