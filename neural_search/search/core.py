@@ -1001,14 +1001,29 @@ def _augment_result_with_optional_scores(
     # Memory-graph scoring
     if memory_graph_config and memory_graph_config.get("enabled") and memory_graph_store is not None:
         try:
-            mg_score = compute_memory_graph_score(memory_graph_store, result, parsed_query)
-            result.score_breakdown["memory_graph_score"] = round(mg_score, 3)
-            if mg_score != 0:
-                result.why_matched.append(f"Memory graph score: {mg_score:.3f}")
-            extra_score += float(memory_graph_config.get("weight", 0.06)) * mg_score
-            result.memory_graph_evidence = compute_memory_graph_evidence(
+            mg_evidence = compute_memory_graph_evidence(
                 memory_graph_store, result, parsed_query
             )
+            result.memory_graph_evidence = mg_evidence
+            mg_score = compute_memory_graph_score(memory_graph_store, result, parsed_query)
+            result.score_breakdown["memory_graph_score"] = round(mg_score, 3)
+            extra_score += float(memory_graph_config.get("weight", 0.06)) * mg_score
+            # Build human-readable why_matched entry from evidence
+            _mg_parts: list[str] = []
+            if mg_evidence.get("modality_matches"):
+                _mg_parts.append("modality: " + ", ".join(mg_evidence["modality_matches"][:2]))
+            if mg_evidence.get("species_matches"):
+                _mg_parts.append("species: " + ", ".join(mg_evidence["species_matches"][:2]))
+            if mg_evidence.get("region_matches"):
+                _mg_parts.append("region: " + ", ".join(mg_evidence["region_matches"][:2]))
+            if mg_evidence.get("affordance_matches"):
+                _mg_parts.append("supports: " + ", ".join(mg_evidence["affordance_matches"][:2]))
+            if mg_evidence.get("has_raw_signal"):
+                _mg_parts.append("raw signal confirmed")
+            if mg_evidence.get("contraindicated"):
+                _mg_parts.append("⚠ contraindicated: " + ", ".join(mg_evidence["contraindicated"][:1]))
+            if _mg_parts:
+                result.why_matched.append("Graph: " + " · ".join(_mg_parts))
         except Exception:
             # Memory graph scoring is optional; never fail retrieval
             result.score_breakdown["memory_graph_score"] = 0.0
