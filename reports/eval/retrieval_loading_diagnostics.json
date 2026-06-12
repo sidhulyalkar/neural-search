@@ -1,0 +1,26 @@
+{
+  "artifact_sizes": {
+    "embedding_cache_rows": 0,
+    "memory_graph_edges": 180,
+    "memory_graph_nodes": 770
+  },
+  "test_queries": [
+    "Neuropixels recordings of hippocampal place cells in mice",
+    "Two-photon calcium imaging of visual cortex in mice",
+    "fMRI during decision making in humans",
+    "Spike sorting from silicon probes in frontal cortex",
+    "EEG motor imagery for BCI"
+  ],
+  "timings_seconds": {
+    "corpus_load_s": null,
+    "embedding_cache_load_s": 0.0006241930095711723,
+    "legacy_graph_load_s": null,
+    "memory_graph_load_s": 0.020274171998607926,
+    "query_parse_avg_s": 0.8514798525953665,
+    "turbovec_index_load_s": null
+  },
+  "warnings": [
+    "corpus load failed: [Errno 21] Is a directory: 'data/corpus/normalized/combined_corpus.jsonl'",
+    "turbovec index not found at data/index/turbovec_dense_1024.index"
+  ]
+}
