@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neural Search Embedding Manifest",
+  "type": "object",
+  "required": ["embedding_model", "embedding_dimension", "embedding_rows"],
+  "properties": {
+    "embedding_model": {"type": "string"},
+    "embedding_dimension": {"type": "integer"},
+    "embedding_rows": {"type": "integer"},
+    "normalize": {"type": "boolean"},
+    "tokenizer_config": {"type": ["object", "null"]},
+    "embedding_sha256": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

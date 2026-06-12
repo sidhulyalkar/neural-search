@@ -1,0 +1,16 @@
+source,records,doi_or_pid,license,doi_or_pid_coverage,license_coverage
+allen,500,500,500,1.0,1.0
+bluebrain,300,300,300,1.0,1.0
+brain_image_library,300,300,300,1.0,1.0
+crcns,153,153,153,1.0,1.0
+dandi,842,842,0,1.0,0.0
+figshare,800,800,800,1.0,1.0
+gin,380,380,380,1.0,1.0
+ibl,198,198,198,1.0,1.0
+nemo,10,10,10,1.0,1.0
+neuromorpho,1000,1000,1000,1.0,1.0
+neurovault,819,819,819,1.0,1.0
+openneuro,1749,1749,0,1.0,0.0
+osf,321,321,321,1.0,1.0
+physionet,32,32,32,1.0,1.0
+zenodo,3000,3000,3000,1.0,1.0

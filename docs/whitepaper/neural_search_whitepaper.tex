@@ -23,6 +23,7 @@
 \usepackage{enumitem}
 \usepackage{subcaption}
 \usepackage{multirow}
+\setlength{\emergencystretch}{3em}
 
 % ============================================================================
 % THEOREM ENVIRONMENTS
@@ -34,6 +35,12 @@
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{remark}{Remark}[section]
+\newtheorem{example}{Example}[section]
+
+% Make algorithmic line anchors globally unique under hyperref.
+\makeatletter
+\renewcommand{\theALG@line}{\thealgorithm.\arabic{ALG@line}}
+\makeatother
 
 % ============================================================================
 % CUSTOM COMMANDS
@@ -81,7 +88,7 @@
     \texttt{neural-search@research.org}
 }
 
-\date{May--June 2026}
+\date{June 2026}
 
 \begin{document}
 
@@ -91,7 +98,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-Neural Search is an experiment-aware discovery system for neural, behavioral, clinical, molecular, connectomics, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, and graph-based relational context. This whitepaper presents the mathematical foundations underlying the system, including information retrieval theory (BM25, vector space models, reciprocal rank fusion), knowledge graph theory (typed directed graphs, metapath reasoning, confidence propagation), representation learning (semantic fingerprints, field-specific embeddings), and evaluation methodology (NDCG, MRR, calibration). We formalize the hybrid scoring function, constraint satisfaction mechanics, and compatibility tensor that enable experiment-aware retrieval. Version 0.8 extends the system with \emph{latent usefulness scoring}: a 10-dimension intent-weighted scorer, graph-derived usefulness signals (affordance overlap, pipeline overlap, complementarity, PathSim hub-normalized metapath score), a graded NDCG evaluation framework with 4-level relevance labels, and an 8-variant ablation runner. The system achieves mean precision@5 of 76.7\%, label recall@10 of 87.8\%, MRR of 0.950, and NDCG@10 of 0.937 on benchmark queries while maintaining zero hard-negative violations.
+Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current implementation indexes 10,404 unique normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, and smaller sources. The corpus is represented by 60,175 BGE-large-en-v1.5 field embeddings and a 10,404-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a lightweight Field-State and evaluation-memory layer for tracking scientific claims, benchmark gaps, human qrels review, adjudication status, agreement summaries, and claim-evidence updates. This memory layer includes a local Obsidian-compatible review spine that preserves human notes separately from generated artifacts; it is infrastructure for reviewability, not a database and not a replacement for human relevance labels. Current validation artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, preliminary usefulness-score separation between relevant and irrelevant results, and graph-rank perturbation for 39\% of ranked pairs. The qrels review workflow has been smoke-tested by exporting 10 qrels review notes and validating the memory roundtrip, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation step is a 10K-snapshot retrieval benchmark with deterministic exact lookup, independent and adjudicated relevance labels, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
 \end{abstract}
 
 \tableofcontents
@@ -105,7 +112,7 @@ Neural Search is an experiment-aware discovery system for neural, behavioral, cl
 
 \subsection{Motivation and Problem Statement}
 
-The exponential growth of neuroscience datasets across repositories such as DANDI, OpenNeuro, Allen Brain Observatory, and NeMO Archive presents a fundamental discovery challenge. Researchers seeking datasets for replication, meta-analysis, or novel analysis face a search problem that traditional document retrieval cannot adequately address.
+The exponential growth of neuroscience datasets across repositories and standards such as DANDI and NWB \citep{dandiArchive2026,ruebel2022nwb}, OpenNeuro and BIDS \citep{markiewicz2021openneuro,gorgolewski2016bids}, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen Brain Observatory, GIN, OSF, CRCNS, IBL, Brain Image Library, and BlueBrain presents a fundamental discovery challenge. Researchers seeking datasets for replication, meta-analysis, or novel analysis face a search problem that traditional document retrieval cannot adequately address. The reproducibility goal is aligned with FAIR data principles \citep{wilkinson2016fair}.
 
 \begin{definition}[Scientific Dataset Search Problem]
 Given a query $\query$ expressing experimental intent (tasks, modalities, species, analysis goals, constraints), retrieve a ranked list of datasets $\dataset_1, \dataset_2, \ldots, \dataset_k$ such that each $\dataset_i$ maximally satisfies the experimental requirements while providing sufficient metadata, quality assurance, and analysis affordances for scientific reuse.
@@ -135,6 +142,20 @@ The central thesis of Neural Search is that \textbf{neuroscience search should r
     \item \textbf{Benchmarks as compass}: Ranking changes are evaluated against reproducible metrics.
 \end{enumerate}
 
+\subsection{Contributions and Current Scope}
+
+This paper distinguishes implemented infrastructure from completed empirical validation. The current contributions are:
+
+\begin{enumerate}
+    \item A neuroscience dataset retrieval architecture combining normalized corpus metadata, dense field embeddings, structured constraints, graph context, and intent-aware usefulness signals.
+    \item A benchmark protocol for graded dataset-query relevance, hard-negative violations, calibration, source-skew analysis, and ablation over sparse, dense, graph, provenance, and usefulness components.
+    \item A lightweight Field-State layer that tracks scientific claims, benchmark gaps, high-value next opportunities, heuristic opportunity scores, JSONL artifacts, and Markdown reports.
+    \item A local Obsidian-compatible review memory that preserves human notes, review overlays, validation decisions, memory indices, sync logs, and diff reports without turning Obsidian into the primary database.
+    \item An evaluation-memory system that exports qrels candidates, imports human labels, creates adjudicated qrels artifacts, computes agreement summaries, and links evidence status back to field-state claims.
+\end{enumerate}
+
+Items 1--5 are implemented as repository infrastructure and covered by targeted engineering tests. The empirical claim that Neural Search improves scientific retrieval quality on the 10,404-record corpus remains future validation until adjudicated qrels, run files, metric reports, hard-negative analyses, source-skew diagnostics, and calibration reports are complete.
+
 % ============================================================================
 % SECTION 2: MATHEMATICAL FOUNDATIONS
 % ============================================================================
@@ -153,7 +174,6 @@ Let $\mathcal{T} = \{t_1, t_2, \ldots, t_n\}$ be the vocabulary. A document $d$ 
     \mathbf{d} = (w_{1,d}, w_{2,d}, \ldots, w_{n,d}) \in \mathbb{R}^n
 \end{equation}
 where $w_{i,d}$ is the weight of term $t_i$ in document $d$.
-\end{equation}
 \end{definition}
 
 The relevance between query $\query$ and document $d$ is computed via cosine similarity:
@@ -181,7 +201,7 @@ where:
 
 BM25 is a probabilistic relevance model that addresses TF-IDF limitations through saturation and length normalization \citep{robertson2009probabilistic}:
 
-\begin{theorem}[BM25 Scoring Function]
+\begin{definition}[BM25 Scoring Function]
 \begin{equation}
     \BM(d, \query) = \sum_{t \in \query} \text{IDF}(t) \cdot \frac{f_{t,d} \cdot (k_1 + 1)}{f_{t,d} + k_1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}
 \end{equation}
@@ -193,7 +213,7 @@ where:
     \item $k_1 \in [1.2, 2.0]$ controls term frequency saturation
     \item $b \in [0, 1]$ controls length normalization (typically $b = 0.75$)
 \end{itemize}
-\end{theorem}
+\end{definition}
 
 The IDF component uses the Robertson-Sp\"arck Jones formula:
 \begin{equation}
@@ -358,7 +378,7 @@ where $d$ is the damping factor, $\sigma_{st}$ is the number of shortest paths f
 
 The Neural Search scoring function combines heterogeneous evidence:
 
-\begin{theorem}[Hybrid Score]
+\begin{definition}[Operational Hybrid Scoring Function]
 For dataset $d$ and query $\query$, the relevance score is:
 \begin{equation}
 \begin{split}
@@ -375,7 +395,7 @@ For dataset $d$ and query $\query$, the relevance score is:
 \end{split}
 \end{equation}
 where $\text{clamp}(x, a, b) = \max(a, \min(x, b))$.
-\end{theorem}
+\end{definition}
 
 \subsection{Component Score Functions}
 
@@ -448,10 +468,16 @@ In practice, hard negatives are filtered before scoring, ensuring zero violation
 Query intent determines weight profiles:
 
 \begin{definition}[Intent Classification]
-Let $\mathcal{I} = \{\texttt{lookup}, \texttt{task\_search}, \texttt{modality\_search}, \texttt{affordance\_search}, \texttt{similarity}, \texttt{exploration}\}$ be the intent space. The weight vector $\mathbf{w}_i$ varies by intent:
+Let the intent space be:
+\[
+\mathcal{I} =
+\{\texttt{lookup}, \texttt{task\_search}, \texttt{modality\_search},
+\texttt{affordance\_search}, \texttt{similarity}, \texttt{exploration}\}.
+\]
+The weight vector $\mathbf{w}_i$ varies by intent.
 \end{definition}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Intent-Specific Weight Profiles}
 \begin{tabular}{lcccccc}
@@ -505,41 +531,49 @@ A dataset candidate is represented as a context vector:
 where $N_s, N_t, N_u$ are session/trial/subject counts, $b_{\text{ts}}$ indicates timestamp availability, and $q$ is a quality score.
 \end{definition}
 
-\begin{theorem}[Usefulness Score]
+\begin{definition}[Operational Usefulness Scoring Function]
 For query context $C_q$, candidate $C_d$, and intent $i \in \mathcal{I}_U$:
 \begin{equation}
-    U(C_q, C_d, i) = \sum_{k=1}^{10} w_k(i) \cdot s_k(C_q, C_d)
+    U(C_q, C_d, i) = \sum_{k \in A} \tilde{w}_k(i) \cdot s_k(C_q, C_d)
 \end{equation}
-where $\sum_k w_k(i) = 1$ for all $i$, and the ten dimension scores are:
+where $A$ is the active feature set and inactive dimensions are excluded. Effective weights are renormalized:
+\begin{equation}
+    \tilde{w}_k(i) = \frac{w_k(i)}{\sum_{j \in A} w_j(i)}.
+\end{equation}
+The dimension scores are:
 \begin{align}
-    s_1 &= \text{Jaccard}(\text{modalities}_q, \text{modalities}_d) & \text{(modality alignment)} \\
-    s_2 &= \text{Jaccard}(\text{tasks}_q, \text{tasks}_d) & \text{(task alignment)} \\
-    s_3 &= \text{Jaccard}(\text{species}_q, \text{species}_d) & \text{(species alignment)} \\
-    s_4 &= \text{Jaccard}(\text{regions}_q, \text{regions}_d) & \text{(region alignment)} \\
-    s_5 &= \text{Jaccard}(\text{affordances}_q, \text{affordances}_d) & \text{(affordance alignment)} \\
-    s_6 &= \text{Jaccard}(\text{standards}_q, \text{standards}_d) & \text{(pipeline compatibility)} \\
-    s_7 &= f_{\log}(N_s) & \text{(scale: sessions)} \\
-    s_8 &= f_{\log}(N_t) & \text{(scale: trials)} \\
-    s_9 &= \text{PathSim}(\cdot \mid \mathcal{G}) & \text{(graph proximity; falls back to 0.3 if graph unavailable, implemented v0.9)} \\
-    s_{10} &= 0.0 & \text{(neural signature similarity, Phase-4 placeholder)}
+    s_1 &= \text{Jaccard}(\text{modalities}_q, \text{modalities}_d) \\
+    s_2 &= \text{Jaccard}(\text{tasks}_q, \text{tasks}_d) \\
+    s_3 &= \text{Jaccard}(\text{species}_q, \text{species}_d) \\
+    s_4 &= \text{Jaccard}(\text{regions}_q, \text{regions}_d) \\
+    s_5 &= \text{Jaccard}(\text{affordances}_q, \text{affordances}_d) \\
+    s_6 &= \text{Jaccard}(\text{standards}_q, \text{standards}_d) \\
+    s_7 &= f_{\log}(N_s) \\
+    s_8 &= f_{\log}(N_t) \\
+    s_9 &= \text{PathSim}(\cdot \mid \mathcal{G}) \\
+    s_{10} &= \text{inactive}.
 \end{align}
-\end{theorem}
+These correspond to modality, task, species, region, affordance, pipeline compatibility, session scale, trial scale, graph proximity, and neural-signature similarity respectively. The graph term uses a neutral prior if no graph is available, and neural-signature similarity is inactive until content extraction exists.
+\end{definition}
+
+The neural signature dimension $s_{10}$ is excluded from $A$ until content-level neural signature extraction is implemented. This prevents unimplemented features from lowering scores through non-zero intent weights.
 
 The log-power scale function handles count fields with wide dynamic range:
 \begin{equation}
     f_{\log}(n) = \begin{cases} 0.3 & n = 0 \text{ or None} \\ \min\!\left(1,\, \frac{\ln(1+n)}{\ln(1+10000)}\right) & \text{otherwise} \end{cases}
 \end{equation}
 
-Jaccard similarity uses a neutral prior for empty sets:
+Jaccard similarity does not reward missing metadata as similarity:
 \begin{equation}
-    \text{Jaccard}(A, B) = \begin{cases} 0.5 & A = B = \emptyset \\ 0 & A = \emptyset \text{ XOR } B = \emptyset \\ \frac{|A \cap B|}{|A \cup B|} & \text{otherwise} \end{cases}
+    \text{Jaccard}(A, B) = \begin{cases} 0 & A = B = \emptyset \\ 0 & A = \emptyset \text{ XOR } B = \emptyset \\ \frac{|A \cap B|}{|A \cup B|} & \text{otherwise} \end{cases}
 \end{equation}
+Missing fields are tracked as uncertainty and should contribute to result-card warnings, missingness penalties, and lower evidence confidence rather than increasing similarity.
 
 \subsection{Intent-Specific Weight Profiles}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Intent Weight Profiles ($w_k(i)$) — v0.8}
+\caption{Base intent weight profiles before inactive-dimension renormalization.}
 \small
 \begin{tabular}{lrrrrrrr}
 \toprule
@@ -628,7 +662,7 @@ A dataset $d$ is represented as a slot vector:
 
 \subsection{Compatibility Function}
 
-\begin{theorem}[Compatibility Score]
+\begin{definition}[Compatibility Scoring Model]
 The compatibility between datasets $d_i$ and $d_j$ given query intent is:
 \begin{equation}
 \begin{split}
@@ -640,7 +674,7 @@ The compatibility between datasets $d_i$ and $d_j$ given query intent is:
     &- \mu_m \cdot P_{\text{missing\_slot}}(d_i, d_j)
 \end{split}
 \end{equation}
-\end{theorem}
+\end{definition}
 
 \subsection{Compatibility Types}
 
@@ -754,6 +788,62 @@ where $B_b$ are confidence bins, $\text{acc}(B_b)$ is accuracy within bin $b$, a
     \end{cases}
 \end{equation}
 
+\section{Field-State Memory for Scientific Retrieval Validation}
+\label{sec:field-state-memory}
+
+Neural Search now includes a Field-State validation layer that records what the system claims, what evidence exists, and what benchmark gaps remain. This layer is intentionally lightweight: generated truth remains in JSONL artifacts under \texttt{artifacts/field\_state/} and Markdown reports under \texttt{reports/field\_state/}. The memory layer does not ingest papers, parse PDFs, call external APIs, or replace human evaluation.
+
+\subsection{Claims, Gaps, and Opportunities}
+
+Field-State records three first-class artifact types. A \texttt{FieldClaim} tracks a scientific or evaluation claim, including evidence level, confidence, related artifacts, missing tests, and status. A \texttt{BenchmarkGap} tracks validation work that is still required before a claim can be defended. A \texttt{FieldOpportunity} tracks high-value next work and is ranked by a transparent heuristic score:
+
+\begin{equation}
+\begin{split}
+    \text{score} ={}& 0.20\,s_{\text{novelty}} + 0.25\,s_{\text{feasibility}}
+    + 0.20\,s_{\text{impact}} \\
+    &+ 0.15\,s_{\text{uncertainty}} + 0.15\,s_{\text{fit}}
+    - 0.10\,s_{\text{risk}} .
+\end{split}
+\end{equation}
+
+The seeded Field-State ledger currently tracks claims about dense retrieval, hard negatives, human qrels, metadata richness, analysis affordance extraction, and graph proximity. These claims are not automatically upgraded by the presence of infrastructure. Evidence suggestions are written separately so that human review can decide whether a claim should change.
+
+\subsection{Obsidian Review Memory}
+
+The Obsidian memory base is a local Markdown review spine. Every generated note has stable \texttt{field\_state\_id} frontmatter and two explicit blocks:
+
+\begin{lstlisting}
+<!-- FIELDSTATE:BEGIN generated -->
+Machine-generated content.
+<!-- FIELDSTATE:END generated -->
+
+<!-- FIELDSTATE:BEGIN human -->
+Human review notes.
+<!-- FIELDSTATE:END human -->
+\end{lstlisting}
+
+On re-export, Neural Search replaces only the generated block and preserves the human block and safe human-edited frontmatter fields such as \texttt{review\_status}, \texttt{human\_reviewer}, \texttt{reviewed\_at}, \texttt{human\_priority}, and \texttt{human\_tags}. Imported review overlays are written to separate JSONL files; they annotate reports and snapshots but do not mutate the generated claim, gap, opportunity, or qrels artifacts.
+
+\subsection{Evaluation Memory and Qrels Review}
+
+The evaluation-memory layer connects retrieval candidates to human qrels review without treating generated labels as gold. Candidate query--dataset pairs are exported as Obsidian qrels notes. Human reviewers can enter 0--3 graded relevance and usefulness scores, hard-negative violation flags, label confidence, annotator identifiers, rationales, and reviewer notes. Imports write \texttt{artifacts/field\_state/qrels\_reviews.jsonl}; adjudication writes \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl}; agreement summaries and evaluation snapshots are written to \texttt{reports/field\_state/}.
+
+The intended validation loop is:
+
+\begin{center}
+\small
+\texttt{Retrieval candidates}
+$\rightarrow$ \texttt{Obsidian qrels review}
+$\rightarrow$ \texttt{human graded labels}
+$\rightarrow$ \texttt{adjudicated qrels}
+$\rightarrow$ \texttt{metrics and agreement}
+$\rightarrow$ \texttt{eval snapshot}
+$\rightarrow$ \texttt{claim evidence update}
+$\rightarrow$ \texttt{whitepaper validation report}.
+\end{center}
+
+As of the current artifact snapshot, this loop has been smoke-tested by exporting 10 qrels review notes and validating the memory roundtrip. This demonstrates artifact integrity and review-loop feasibility. It does not constitute final human relevance validation or publication-grade retrieval performance evidence.
+
 % ============================================================================
 % SECTION 8: EVALUATION METHODOLOGY
 % ============================================================================
@@ -830,71 +920,84 @@ A system with $\text{HN-VIOL} = 0$ never surfaces a hard-negative above the firs
 
 For usefulness evaluation, MRR counts only labels $\ell \in \{\texttt{useful}, \texttt{highly\_useful}\}$ as relevant, preventing \texttt{weakly\_useful} labels from inflating the score.
 
-\subsection{Benchmark Results}
+\subsection{Current Corpus and Validation Results}
 
-Current Neural Search performance on the 30-query benchmark (demo corpus, 26 datasets):
+This section reports only artifacts aligned with the current repository state. Retrieval metrics from smaller historical corpora have been removed from the main paper; they should remain in archived reports until a new benchmark is run on the 10,404-record snapshot.
 
-\begin{table}[h]
+\IfFileExists{generated/current_results_tables.tex}{%
+    \input{generated/current_results_tables.tex}%
+}{%
+    \noindent\textit{Generated results table file not found. The compact fallback tables below preserve the current reported artifact state; upload or regenerate \texttt{generated/current\_results\_tables.tex} for the full table bundle.}
+
+    \begin{table}[htbp]
+    \centering
+    \caption{Current corpus and index artifact summary.}
+    \small
+    \begin{tabular}{lc}
+    \toprule
+    Metric & Value \\
+    \midrule
+    Unique normalized records & 10,404 \\
+    Dense field embeddings & 60,175 \\
+    Embedding model & BGE-large-en-v1.5 \\
+    Embedding dimension & 1,024 \\
+    Indexed ids & 10,404 \\
+    Vector index recall@50 & 1.0 \\
+    Tier-2 rejections logged & 24,160 \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
+    \begin{table}[htbp]
+    \centering
+    \caption{Current validation artifacts.}
+    \small
+    \begin{tabular}{lc}
+    \toprule
+    Artifact & Value \\
+    \midrule
+    Usefulness labeled pairs & 270 \\
+    Usefulness Spearman r & 0.3999 \\
+    Mean useful / irrelevant score & 0.2244 / 0.1678 \\
+    Graph pairs changed & 39.0\% \\
+    10K retrieval benchmark & Pending benchmark artifact \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+}%
+
+\noindent\textit{The vector-index recall result validates the approximate vector index against exact nearest-neighbor retrieval under the current test configuration. It does not establish scientific relevance or usefulness. The next validation requirement is retrieval benchmarking on this exact snapshot, with exact-lookup checks, source-skew analysis, and independent relevance labels.}
+
+\begin{table}[htbp]
 \centering
-\caption{Neural Search Benchmark Performance}
-\begin{tabular}{lc}
+\caption{Per-source corpus quality artifacts required before publication claims.}
+\small
+\begin{tabular}{p{0.37\linewidth}p{0.55\linewidth}}
 \toprule
-Metric & Value \\
+Artifact & Current status \\
 \midrule
-Mean Precision@5 & 76.7\% \\
-Label Recall@10 & 87.8\% \\
-MRR & 0.950 \\
-NDCG@10 & 0.937 \\
-Hard-Negative Violations & 0 \\
+Per-source field completeness & Generated in \texttt{reports/eval/field\_completeness.csv} \\
+Per-source DOI/PID coverage & Generated in \texttt{reports/eval/pid\_license\_coverage.csv} \\
+Per-source license coverage & Generated in \texttt{reports/eval/pid\_license\_coverage.csv} \\
+Per-source modality extraction precision & Pending manual audit artifact \\
+Per-source species extraction precision & Pending manual audit artifact \\
+Per-source task extraction precision & Pending manual audit artifact \\
+Top Tier-2 rejection reasons & Generated in \texttt{reports/eval/rejection\_summary.csv} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\centering
-\caption{Neural Search Benchmark Performance --- Real Corpus (371 datasets, 30 queries)}
-\begin{tabular}{lc}
-\toprule
-Metric & Value \\
-\midrule
-Mean Precision@5 & 69.3\% \\
-Label Recall@10 & 85.5\% \\
-MRR & 0.839 \\
-NDCG@10 & 0.822 \\
-Hard-Negative Violations & 0 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Current Usefulness Score Calibration}
 
-\begin{table}[h]
-\centering
-\caption{Neural Search Scalability --- v0.9 vs.\ v1.1 (corpus doubled)}
-\begin{tabular}{lcc}
-\toprule
-Metric & v0.9 (371 datasets) & v1.1 (738 datasets) \\
-\midrule
-Mean Precision@5 & 69.3\% & 69.3\% \\
-Label Recall@10  & 85.5\% & 85.5\% \\
-MRR              & 0.839  & 0.839  \\
-NDCG@10          & 0.822  & 0.822  \\
-Hard-Neg Violations & 0   & 0      \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\noindent\textit{All four metrics held exactly flat when the corpus doubled from 371 to 738 datasets (DANDI 163$\to$358, OpenNeuro 190$\to$362), confirming that retrieval precision does not degrade with 2$\times$ corpus scale.}
-
-\subsection{Usefulness Score Calibration}
-
-Running 20 real-corpus benchmark queries through the live pipeline and measuring Spearman rank correlation between \texttt{usefulness\_score.total\_score} and benchmark relevance labels (180 pairs):
+Running 30 real-corpus benchmark queries through the usefulness scorer and measuring Spearman rank correlation between \texttt{usefulness\_score.total\_score} and benchmark relevance labels (270 pairs):
 
 \begin{itemize}
-    \item Spearman $r$ = 0.5044 ($p < 0.001$, $n = 180$ pairs)
-    \item Mean usefulness score for relevant results: 0.2377
-    \item Mean usefulness score for irrelevant results: 0.1532
+    \item Spearman $r$ = 0.3999 ($p < 0.001$, $n = 270$ pairs)
+    \item Mean usefulness score for relevant results: 0.2244
+    \item Mean usefulness score for irrelevant results: 0.1678
 \end{itemize}
 
-The moderate positive correlation ($r = 0.50$) indicates the 10-dimension usefulness scorer correctly assigns higher scores to relevant results. The absolute scores are lower than expected (max $\sim$0.35 vs theoretical 1.0) because $s_9$ (graph proximity) and $s_{10}$ (neural signature) return neutral priors without full graph/signature data.
+The positive correlation indicates that the 10-dimension usefulness scorer assigns higher scores to relevant results on average. This is current preliminary evidence of discriminative signal, not final validation of downstream scientific utility. Independent labels, larger query coverage, and content-derived affordance labels are required before making strong publication claims.
 
 \subsection{Ablation Analysis}
 
@@ -905,80 +1008,231 @@ For signal set $\mathcal{S}$, the ablation of signal $s$ measures:
 \end{equation}
 \end{definition}
 
-Version 0.8 introduces a systematic 8-variant ablation runner that isolates contributions across retrieval strategy families:
+The current ablation artifact reports graph-rank perturbation rather than a full 10K retrieval metric. A publication-grade ablation should be rerun after the 10K benchmark is frozen and labeled.
 
-\begin{table}[h]
-\centering
-\caption{8-Variant Ablation — v0.9 Seed Pairs (17 queries, 49 pairs across 7 intents)}
-\small
-\begin{tabular}{llcccc}
-\toprule
-Variant & Description & NDCG@10 & MRR & P@3 & HN-VIOL \\
-\midrule
-\texttt{bm25\_only}            & BM25 keyword on tasks+modalities+species & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{dense\_only}           & Cosine on text embedding                 & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{graph\_only}           & PathSim graph proximity only             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{affordance\_only}      & Affordance overlap Jaccard               & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{bm25\_dense\_rrf}      & RRF fusion of BM25 + dense               & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{hybrid\_static}        & All signals, uniform weights             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{hybrid\_intent\_aware} & All signals, intent-weighted             & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\texttt{latent\_usefulness\_v08} & Full 10-dim intent-weighted scorer     & 1.0000 & 1.0000 & 0.6078 & 0.0000 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\noindent\textit{Note: Ablation metrics computed on v0.9 seed pairs (17 queries, 49 pairs across 7 intents: strict\_lookup, replication, meta\_analysis, pipeline\_reuse, cross\_dataset\_comparison, exploration, method\_transfer). Graph proximity ($s_9$) is live in v0.9; neural signature similarity ($s_{10}$) is Phase-4 work. Metrics computed on 49-pair seed benchmark using proxy scoring (all variants score identically on minimal DatasetContext; differentiation requires full metadata ingestion pipeline).}
-
-Prior ablation on the existing benchmark:
-\begin{itemize}
-    \item Removing ontology matching: $\Delta_{\text{onto}} \approx -12\%$ P@5
-    \item Removing semantic embeddings: $\Delta_{\text{sem}} \approx -8\%$ P@5
-    \item Removing graph features: $\Delta_{\text{graph}} \approx -5\%$ P@5
-    \item Removing hard negatives: $\Delta_{\text{hard}} \rightarrow$ constraint violations
-\end{itemize}
-
-\subsection{Graph Proximity Ablation (v2.0 Real Graph)}
+\subsection{Graph Proximity Ablation}
 \label{sec:s9ablation}
 
-Version 2.0 deploys a real DANDI/OpenNeuro knowledge graph constructed from 835 indexed datasets. Running the graph proximity ablation across 30 queries confirms the $s_9$ signal contributes meaningful rank changes:
+The current graph proximity ablation confirms that the $s_9$ signal changes rank orderings, but it does not yet establish a metric gain on the expanded corpus:
 
 \begin{itemize}
     \item Ranking pairs changed when real graph enabled vs.\ ablated: \textbf{39\%}
     \item This confirms the graph proximity signal is non-trivial and reshapes result ordering for a substantial fraction of queries.
     \item The s9 fix addressed a namespace mismatch where \texttt{dataset\_context\_bridge} returned bare identifiers while graph nodes use \texttt{node:dataset:\{source\}:\{id\}} format.
+    \item The graph should be rebuilt and the ablation rerun against the 10,404-record snapshot with stronger labels.
 \end{itemize}
 
-\subsection{v2.0 Evaluation Results}
+\subsection{Current 10K Evaluation Status}
 \label{sec:v2eval}
 
-Table~\ref{tab:v2_comparison} compares v0.9 baseline with v2.0 across five evaluation layers, following the corpus expansion to 835 indexed datasets and the upgrade from 64-dimensional hashing embeddings to BGE-large-en-v1.5 (1024-dimensional MTEB top-5 scientific retrieval model).
+The generated artifact tables summarize the current repository state after expansion to 10,404 records and the upgrade to BGE-large-en-v1.5 field embeddings.
 
-\begin{table}[h]
+\noindent\textbf{Note on usefulness calibration:} The BGE-large scorer shows a relevant-vs-irrelevant score gap (0.2244 vs.\ 0.1678). This supports the usefulness scorer as a current signal, while still requiring 10K-snapshot retrieval evaluation and independent labels.
+
+\subsection{Engineering and Artifact Validation}
+
+The Field-State, Obsidian memory, and evaluation-memory infrastructure is currently covered by targeted engineering validation. The repository passes focused tests for schema validation, JSONL read/write, report generation, Obsidian export/import roundtrips, human-block preservation, memory validation, memory diffs, qrels candidate export, qrels review import, adjudication logic, agreement summaries, evaluation snapshots, claim-evidence suggestions, and whitepaper validation reports. These tests validate artifact integrity and reproducibility of the review workflow. They do not validate ranking quality or scientific usefulness.
+
+\subsection{Human Relevance Labeling Protocol}
+
+Human relevance validation uses 0--3 graded labels for each query--dataset pair. The evaluation-memory layer exports qrels candidates to review notes and imports human labels into \texttt{artifacts/field\_state/qrels\_reviews.jsonl}. Adjudicated labels are written separately to \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl}. The current smoke workflow exported 10 qrels review notes, imported 10 unreviewed review overlays, and produced an evaluation snapshot with 10 candidates exported, 0 reviewed candidates, and 0 adjudicated candidates. This status is workflow validation only; the qrels benchmark is not complete.
+
+\noindent\textbf{Neuro-judge labels are preliminary silver labels.} The repository includes a RAG-grounded neuro-judge workflow for prioritizing query--dataset pairs for review and for diagnosing evidence gaps. These labels are not human gold. The mock neuro-judge backend is a deterministic plumbing and regression-test instrument, not a scientific relevance labeler. Judge-derived metrics must remain diagnostic until collapse diagnostics, stratified validation sampling, expert audit, and calibration against adjudicated human labels are complete.
+
+\noindent\textbf{Neuro-judge v2 prompt.} The judge prompt was upgraded to PROMPT\_VERSION v2. Changes include: (1) description evidence extended from 600 to 1,200 characters, giving the judge access to more experimental detail; (2) a structured \emph{reasoning trace} field requiring the judge to work through five explicit steps (hard-negative check, dimension-by-dimension check, raw-data availability check, evidence completeness estimate, final score) before committing to a label---empirically improving accuracy on borderline cases; (3) a \emph{metadata signal quality} section distinguishing explicitly stated metadata fields from signals inferred by keyword heuristics, allowing the judge to calibrate confidence accordingly; and (4) tightened abstain calibration---a label of 3 with no \texttt{required\_dimensions\_present} now also triggers an abstain recommendation, not only the previous \texttt{label $\geq$ 2 + missing dimensions} condition.
+
+\noindent\textbf{Frontend feedback loop and downstream retrieval success reporting.} The existing React/Vite frontend has been extended with: evidence inspection panels on every result card (showing evidence for/against, matched dimensions, affordance matches, concept-memory signals, failure modes, and raw evidence JSON); neuro-judge badges with provenance watermarks distinguishing silver from expert-audited labels; sorting and filtering by judge label, confidence, evidence completeness, abstain status, modality, species, source, and feedback score; and inline feedback controls capturing usefulness, would-use-for-analysis, reason tags, and free-text notes. Feedback is written to \texttt{artifacts/frontend/retrieval\_feedback.jsonl} with provenance \texttt{user\_feedback\_downstream\_signal}. A downstream retrieval success report summarising usefulness by rank bucket, method, judge label, and evidence completeness is regenerated with \texttt{scripts/eval/compute\_downstream\_retrieval\_success.py}. A feedback audit queue (\texttt{build\_feedback\_audit\_queue.py}) and transparent reranking prior layer (\texttt{build\_feedback\_rerank\_priors.py}) close the human-in-the-loop triage cycle. Dataset organisation views grouping the judged corpus by relevance tier, modality, and metadata quality are generated by \texttt{build\_dataset\_organization\_views.py}. These are downstream usage signals; they supplement but do not replace expert qrels annotation.
+
+\subsection{Hard-Negative Evaluation}
+
+The benchmark design treats hard negatives as scientific failures rather than ordinary low-relevance results. The current infrastructure records hard-negative rationales in qrels notes and supports future hard-negative review notes under \texttt{Field-State/60\_Evaluation/hard\_negatives/}. However, a qrels-backed hard-negative violation rate has not yet been computed for the 10,404-record snapshot. Any claim that hard-negative handling improves retrieval quality should remain caveated until reviewed examples and violation-rate reports exist.
+
+\subsection{Calibration and Source-Skew Analysis}
+
+Calibration and source skew remain planned scientific retrieval validations. Expected Calibration Error (ECE) is the target metric for whether predicted usefulness scores reflect empirical relevance probability. Source-skew reports are required because high-volume sources such as Zenodo and Figshare can dominate candidate pools. The current reports include source distribution and corpus manifests, but a qrels-backed calibration report and source-skew metric report are still pending.
+
+\subsection{Claim-Evidence Tracking}
+
+Field-State generates claim evidence suggestions rather than automatically modifying claims. Current suggestions keep dense retrieval, hard-negative, affordance extraction, metadata richness, and graph proximity claims caveated until qrels-backed metrics, hard-negative reviews, content-validated affordance labels, metadata-quality analyses, or graph ablations are available. The system is designed so every whitepaper claim can be traced to an artifact, metric, human label, or explicit future-validation item.
+
+\begin{table}[htbp]
 \centering
-\begin{tabular}{lcc}
+\small
+\begin{tabular}{p{0.31\linewidth}p{0.22\linewidth}p{0.36\linewidth}}
 \toprule
-\textbf{Metric} & \textbf{v0.9 Baseline} & \textbf{v2.0} \\
+Claim & Current evidence & Missing validation \\
 \midrule
-Corpus size (indexed) & 371 datasets & 835 datasets \\
-Embedding model & 64-dim hashing & BGE-large-en-v1.5 (1024d) \\
-Embedding dim & 64 & 1024 \\
-Spearman $r$ (usefulness corr.) & 0.5044 & 0.40--0.46 (see note) \\
-TurboVec recall@50 & N/A & \textbf{1.0} \\
-TurboVec latency p50 & N/A & 2.89 ms \\
-TurboVec latency p95 & N/A & 10.35 ms \\
-Graph $s_9$ pairs changed & 0\% (placeholder) & \textbf{39\%} (real graph) \\
+Dense retrieval improves dataset matching & Dense field embeddings and vector-index validation; preliminary usefulness signal & Qrels-based dense-vs-baseline ablation, NDCG/MRR, hard-negative analysis \\
+Hard negatives are required for scientific retrieval evaluation & Benchmark design and review infrastructure implemented & Reviewed hard-negative cases and violation-rate reports \\
+Human qrels are required for credible NDCG/MRR & Qrels export/import/adjudication infrastructure implemented; 10 notes exported in smoke test & Multi-annotator labels, adjudication, agreement statistics, metric reports \\
+Metadata richness affects reuse potential & Field-State claim tracked as plausible & Metadata-quality score, reuse labels or proxy reuse outcomes, correlation or prediction report \\
+Analysis affordance extraction improves recommendations & Affordance representation and review hooks exist & Human or content-validated affordance labels and precision/recall report \\
+Graph proximity may improve dataset-method matching & Graph signal changes rankings in current artifact & Qrels-backed graph ablation on frozen 10K snapshot \\
 \bottomrule
 \end{tabular}
-\caption{v0.9 baseline vs.\ v2.0 across five evaluation layers. TurboVec index: 835 datasets, 1024-dim, 4-bit quantization, 50-query recall test. Graph ablation: 30 queries, 39\% rank pairs changed with real graph enabled.}
-\label{tab:v2_comparison}
+\caption{Claim-evidence status tracked by the Field-State validation layer. Infrastructure existence is separated from scientific retrieval validation.}
+\label{tab:field-state-claim-evidence}
 \end{table}
 
-\noindent\textbf{Note on Spearman $r$:} The v2.0 Spearman $r$ (0.40--0.46 across runs) is lower than the v0.9 hashing baseline (0.5044). The BGE-large-en-v1.5 field-semantic scorer is correctly configured: after fixing \texttt{\_provider\_for\_cache} to load \texttt{DenseEmbeddingProvider} when \texttt{provider\_name == "bge-large"}, query-time embeddings are computed in the same 1024-dim space as the corpus. However, BGE-large produces denser, more compressed score distributions (mean relevant: 0.224, mean irrelevant: 0.168) compared to hashing, reducing rank separation. The discriminative gap is genuine (relevant $>$ irrelevant) but less pronounced. Field weight retuning for BGE-large is planned for v2.1.
+\section{From Engineering Validation to Retrieval Science Validation}
+\label{sec:eng-vs-science}
 
-\subsection{Multi-Dataset Set-Coverage Scoring (v2.0)}
+Neural Search has passed engineering validation: ingestion, deduplication, embeddings, vector indexing, graph construction, latency, and rejection logging all work. Engineering validation is necessary but insufficient for scientific retrieval claims. It does not demonstrate that the system retrieves datasets scientists would actually trust, reuse, compare, or reanalyze for real research goals.
+
+Retrieval science validation requires relevance-labeled queries, graded usefulness judgments, hard-negative avoidance, ablation across system components, calibration of predicted scores, and expert review. Table~\ref{tab:eng-vs-sci} summarizes the distinction.
+
+\begin{table}[htbp]
+\centering
+\caption{Engineering metrics versus scientific retrieval metrics.}
+\label{tab:eng-vs-sci}
+\small
+\begin{tabular}{@{}p{0.22\linewidth}p{0.20\linewidth}p{0.50\linewidth}@{}}
+\toprule
+\textbf{Metric} & \textbf{Type} & \textbf{Interpretation} \\
+\midrule
+Corpus size & Engineering & Validates ingestion and deduplication. Not evidence of retrieval relevance. \\
+Vector Recall@50 & Engineering & Validates approximate nearest-neighbor behavior vs.\ exact NN retrieval. Not end-to-end relevance. \\
+Latency (p50/p95) & Engineering & Validates usability under current hardware. Not relevant quality. \\
+Graph rank perturbation & Behavioral & Proves graph affects rankings. Does not prove improvement in scientific relevance. \\
+Rejection rate & Engineering & Validates quality filtering. Does not validate retained-record scientific quality. \\
+\midrule
+NDCG@10, NDCG@20 & Scientific retrieval & Measures whether highly useful datasets rank near the top relative to adjudicated qrels. \\
+MRR & Scientific retrieval & Measures reciprocal rank of first scientifically useful result. \\
+Recall@50 (vs.\ qrels) & Scientific retrieval & Fraction of labeled relevant datasets retrieved in top 50. Distinct from vector-index recall. \\
+Hard-negative violation rate & Scientific retrieval & Fraction of plausible-but-unusable datasets incorrectly promoted above relevant ones. \\
+Inter-annotator agreement & Scientific retrieval & Validates label reliability before interpreting ranking metrics. \\
+Expected Calibration Error & Scientific retrieval & Measures whether predicted usefulness scores reflect empirical relevance probability. \\
+Prospective case studies & Scientific utility & Whether researchers can discover, choose, and reuse surfaced datasets for actual goals. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scientific Benchmark Design}
+
+The benchmark query suite targets realistic neuroscience reuse scenarios, not simple keyword lookup. Each query specifies a scientific intent class, the evidence fields required for reuse feasibility, and known failure modes (hard negatives that score high on surface features but are scientifically unusable).
+
+Intent classes used in the benchmark:
+\begin{enumerate}
+    \item \texttt{STRICT\_LOOKUP}: direct dataset accession or DOI lookup.
+    \item \texttt{REPLICATION}: find datasets suitable for reproducing a known experimental context.
+    \item \texttt{META\_ANALYSIS}: find datasets that can be aggregated across studies.
+    \item \texttt{PIPELINE\_REUSE}: find datasets compatible with an existing analysis pipeline.
+    \item \texttt{CROSS\_DATASET\_COMPARISON}: find datasets that support systematic comparison across species, modalities, or labs.
+    \item \texttt{EXPLORATION}: discover scientifically adjacent datasets.
+    \item \texttt{METHOD\_TRANSFER}: find datasets where a method can transfer from one experimental context to another.
+    \item \texttt{MODEL\_VALIDATION}: find datasets for validating computational or mechanistic models.
+    \item \texttt{REANALYSIS\_FEASIBILITY}: find datasets with sufficient behavioral and neural metadata to support model fitting or re-analysis.
+\end{enumerate}
+
+Example hard negatives used in the benchmark:
+\begin{itemize}
+    \item Mouse electrophysiology visual cortex when calcium imaging is required (modality mismatch).
+    \item Human resting-state fMRI when a reward learning task fMRI is requested (task mismatch).
+    \item EEG dataset without extracellular recordings when spike sorting is requested (data-type mismatch).
+    \item Decision-making dataset with only summary statistics when trial-level behavioral events are required for model fitting.
+\end{itemize}
+
+\subsection{Graded Relevance Labels}
+
+Relevance labels use a 0--3 graded scale:
+\begin{itemize}
+    \item \textbf{0 -- Not useful:} Topic, modality, or species mismatch; missing required data; or dataset is unusable for the stated scientific goal.
+    \item \textbf{1 -- Weakly useful:} Superficially related but missing key metadata, weak task match, unclear reuse feasibility, or useful only as background context.
+    \item \textbf{2 -- Useful:} Matches the main scientific goal and has enough metadata or data access for plausible reuse or comparison.
+    \item \textbf{3 -- Highly useful:} Strong match across scientific goal, modality, species, task, metadata completeness, reuse feasibility, and provenance.
+\end{itemize}
+
+No scientific retrieval claim should be made until adjudicated qrels from at least two annotators per query-dataset pair are available, inter-annotator agreement is computed (Cohen's kappa or Krippendorff's alpha), and disagreements are resolved.
+
+\section{Validation Protocol for Scientific Dataset Retrieval}
+\label{sec:validation-protocol}
+
+The validation protocol is designed to turn Neural Search from an architecture into a reproducible scientific retrieval benchmark. No end-to-end ranking claim should be made without a frozen corpus snapshot, relevance labels, run files, and metric reports.
+
+\subsection{Frozen Corpus Snapshot}
+
+Each benchmark run must use a frozen corpus snapshot. The corpus manifest should include:
+
+\begin{itemize}
+    \item corpus size and source distribution;
+    \item canonical record identifiers;
+    \item ingestion commit or source-harvest revision;
+    \item embedding model, embedding dimension, tokenizer, and model configuration;
+    \item graph build hash and graph input artifact hashes;
+    \item rejection log hash and top rejection reasons.
+\end{itemize}
+
+\subsection{Benchmark Query Suite}
+
+The target benchmark contains 100--150 queries across seven intent classes:
+
+\begin{enumerate}
+    \item \texttt{STRICT\_LOOKUP}: direct dataset accession, DOI, title, or source-specific identifier lookup.
+    \item \texttt{REPLICATION}: find datasets suitable for reproducing a known experimental context.
+    \item \texttt{META\_ANALYSIS}: find datasets that can be aggregated across studies.
+    \item \texttt{PIPELINE\_REUSE}: find datasets compatible with an existing analysis pipeline.
+    \item \texttt{CROSS\_DATASET\_COMPARISON}: find datasets that support systematic comparison.
+    \item \texttt{EXPLORATION}: discover scientifically adjacent datasets.
+    \item \texttt{METHOD\_TRANSFER}: find datasets suitable for applying a method from one domain to another.
+\end{enumerate}
+
+\subsection{Pooling and Annotation}
+
+Candidate pools should be built from top-$k$ results returned by BM25, dense BGE retrieval, BM25+BGE RRF, the hybrid scorer, graph scorer, and usefulness scorer. Pooling avoids evaluating only one system's candidate distribution and follows the reproducible run/qrels discipline used in modern retrieval benchmarks such as BEIR \citep{thakur2021beir}.
+
+Relevance uses four graded labels:
+\begin{equation}
+    \texttt{not\_useful}=0,\quad
+    \texttt{weakly\_useful}=1,\quad
+    \texttt{useful}=2,\quad
+    \texttt{highly\_useful}=3.
+\end{equation}
+
+Each pooled query--record pair should be judged by at least two annotators. Disagreements should be adjudicated by a third pass or consensus meeting. The benchmark report should include inter-annotator agreement before adjudication and label-distribution statistics after adjudication.
+
+\subsection{Metrics}
+
+The primary metrics are NDCG@10, NDCG@20 \citep{jarvelin2002cumulated}, MRR, Recall@50, hard-negative violation rate, source skew, and calibration expected calibration error (ECE) \citep{guo2017calibration}. Hard-negative constraints must be applied before ranking; a record that violates explicit exclusions is a retrieval failure even if it is otherwise topically similar.
+
+\subsection{Ablation Plan}
+
+The frozen benchmark should evaluate:
+
+\begin{itemize}
+    \item \texttt{no\_dense}
+    \item \texttt{no\_sparse}
+    \item \texttt{no\_graph}
+    \item \texttt{no\_provenance}
+    \item \texttt{no\_affordance}
+    \item \texttt{no\_field\_weighting}
+    \item \texttt{no\_missingness\_penalty}
+    \item \texttt{no\_usefulness\_reranker}
+\end{itemize}
+
+\subsection{Statistical Testing}
+
+Report bootstrap confidence intervals for all aggregate metrics. Compare retrieval variants with paired randomization or permutation tests over query-level metric differences. A metric delta should not be treated as meaningful unless the query-level paired test supports it and the failure analysis does not reveal systematic source or annotation artifacts.
+
+\begin{table}[htbp]
+\centering
+\caption{Planned graph ablation table for the frozen 10K benchmark.}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Variant & NDCG@10 & MRR & HN-VIOL & Source skew \\
+\midrule
+Hybrid without graph & Pending & Pending & Pending & Pending \\
+Hybrid with graph & Pending & Pending & Pending & Pending \\
+Graph-only candidate boost & Pending & Pending & Pending & Pending \\
+Metapath-specific graph scoring & Pending & Pending & Pending & Pending \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Multi-Dataset Set-Coverage Scoring}
 \label{sec:setcoverage}
 
-Version 2.0 introduces \emph{set-coverage scoring}: rather than ranking individual datasets, the system scores an entire result set $\mathcal{D}$ for collective usefulness:
+Neural Search includes \emph{set-coverage scoring}: rather than ranking individual datasets only, the system can score an entire result set $\mathcal{D}$ for collective usefulness:
 
 \begin{equation}
     \text{score}(\mathcal{D}) = \bar{u} + \alpha \cdot c_{\text{cov}} + \beta \cdot c_{\text{comp}} + \gamma \cdot c_{\text{prov}} - \delta \cdot p_{\text{red}} - \varepsilon \cdot p_{\text{miss}} - \zeta \cdot p_{\text{hard}}
@@ -1029,7 +1283,7 @@ Neural Search implements principled software engineering:
 
 \subsection{Module Architecture}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
     node distance=1.5cm,
@@ -1066,11 +1320,281 @@ Neural Search implements principled software engineering:
 \caption{Neural Search Module Architecture}
 \end{figure}
 
+\section{Graph-Indexed Concept Memory}
+\label{sec:concept-memory}
+
+\subsection{Motivation and Design}
+
+Dense retrieval surfaces datasets by embedding similarity but cannot explain \emph{why} a dataset is relevant to a specific scientific goal. Sparse retrieval is interpretable token by token but misses synonyms and concept-level structure. The Graph-Indexed Concept Memory (GICM) layer is a complementary component that indexes the field's conceptual knowledge---tasks, modalities, species, brain regions, methods, claims, and failure modes---as a typed, evidence-weighted directed graph, and uses that graph to rerank and explain retrieval results.
+
+GICM has two roles:
+\begin{enumerate}
+    \item \textbf{Semantic enrichment}: Each indexed dataset is connected to the concept nodes that describe it (task, modality, species, brain region, method). Retrieval can use these links to boost datasets that match the query's conceptual signature, not just its surface tokens.
+    \item \textbf{Result explainability}: For each retrieved dataset, GICM produces a structured explanation: which concept types matched, what evidence supports the match, what is missing, and whether any failure-mode conflicts were detected.
+\end{enumerate}
+
+\subsection{Concept Graph Construction}
+
+The concept graph is built from four sources: field-state artifacts (claims, benchmark gaps, opportunities), the indexed corpus, Obsidian vault notes (if available), and paper notes. Each source loader extracts \texttt{ConceptNode} records and \texttt{EvidenceLink} records. Alias normalization is applied at load time to merge synonymous terms (e.g., ``ephys'' $\to$ ``electrophysiology''). The resulting graph currently contains:
+
+\begin{itemize}
+    \item 13,281 concept nodes across 17 typed categories
+    \item 29,684 evidence links
+    \item 10,402 dataset concepts, 2,742 task concepts, 62 modality concepts, 39 brain-region concepts, 16 species concepts, and 20 field-state records
+\end{itemize}
+
+Concept nodes are assigned a stable deterministic ID (\texttt{concept:<type>:<slug>}), a canonical name, aliases, description, source provenance, evidence count, review status, and a confidence float in $[0, 1]$.
+
+\subsection{Retrieval Integration and Score Decomposition}
+
+The GICM reranking layer is \emph{disabled by default} and must be explicitly enabled. When active, every final score decomposes into four named components:
+
+\begin{equation}
+    \hat{s}(q, d) = s_\text{base}(q, d) + s_\text{concept}(q, d) + s_\text{evidence}(q, d) - p_\text{hn}(d)
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $s_\text{base}(q, d)$ is the lexical token-overlap score between the query and the dataset's canonical name, aliases, description, and tags.
+    \item $s_\text{concept}(q, d) = \min\!\left(\sum_{c \in \mathcal{N}(d)} \text{match}(q, c) \cdot w_\text{type}(c) \cdot \text{conf}(c, d),\; 1\right) \cdot \lambda_c$ where $\mathcal{N}(d)$ are concept nodes connected to dataset $d$, $w_\text{type}$ is a type weight (task: 0.40, modality: 0.30, species/brain region: 0.15, method: 0.10), and $\lambda_c = 0.30$ is a global concept-boost scale.
+    \item $s_\text{evidence}(q, d)$ is a small bonus for evidence links that are reviewed or carry strong provenance, scaled by $\lambda_e = 0.10$.
+    \item $p_\text{hn}(d)$ is a hard-negative penalty (up to 0.10) triggered when a dataset is linked to \texttt{failure\_mode} concept nodes.
+\end{itemize}
+
+All components are stored and can be serialized to JSON, enabling result-level auditing and future dashboard rendering.
+
+\subsection{Ablation Evaluation Plan}
+
+Four retrieval variants are defined for ablation comparison:
+
+\begin{enumerate}
+    \item \textbf{lexical\_only}: $s_\text{base}$ only
+    \item \textbf{concept\_boost}: $s_\text{base} + s_\text{concept}$
+    \item \textbf{concept\_boost\_ev}: $s_\text{base} + s_\text{concept} + s_\text{evidence}$
+    \item \textbf{full}: all components
+\end{enumerate}
+
+Metrics include NDCG@10 (graded relevance, 0--3 scale), MRR (binary threshold $\geq 1$), Recall@10, Recall@50, hard-negative violation rate, and source-skew concentration. Evaluation is run with \texttt{python -m neural\_search.field\_state.cli concept-eval}.
+
+\subsection{Validation Status}
+
+\textbf{The graph boost has not yet been scientifically validated.} The graph influence on final scores is only scientifically meaningful if it produces measurable improvement in qrels-backed retrieval metrics (NDCG@10, MRR) over the lexical-only baseline. As of the current system state, adjudicated qrels contain zero judgements. The ablation evaluation infrastructure is complete and operational, but the evaluation cannot produce metrics until human relevance labels are provided via the qrels workflow. Until then:
+
+\begin{itemize}
+    \item All score decompositions are structurally correct and unit-tested.
+    \item No retrieval quality claim based on concept boost should be made in publications.
+    \item The GICM layer should be described as a \emph{planned enrichment mechanism with a validated evaluation harness}, not a proven retrieval improvement.
+\end{itemize}
+
+\section{Benchmark-Backed Evaluation Protocol}
+\label{sec:benchmark-eval}
+
+\subsection{Motivation}
+
+Structural unit tests and ablation infrastructure verify that the retrieval pipeline is \emph{correctly implemented}, not that it retrieves \emph{scientifically relevant datasets}. The benchmark evaluation protocol bridges this gap by grounding retrieval quality assessment in human relevance judgments over realistic neuroscience dataset reuse queries.
+
+The central empirical question is: \textit{Does concept-memory reranking improve scientific dataset retrieval quality compared with sensible baselines, as measured by NDCG@10 and hard-negative violation rate on human-judged qrels?}
+
+\subsection{Benchmark Query Design}
+
+The v1 benchmark defines seven query intent types drawn from realistic dataset reuse scenarios:
+
+\begin{itemize}
+    \item \textbf{Exact lookup}: Retrieve a specific known dataset
+    \item \textbf{Replication}: Find datasets for replicating a published experiment
+    \item \textbf{Pipeline reuse}: Find datasets compatible with an existing analysis pipeline
+    \item \textbf{Cross-dataset comparison}: Find datasets for cross-study or cross-modality comparison
+    \item \textbf{Meta-analysis}: Find datasets for pooled statistical analysis
+    \item \textbf{Method transfer}: Find datasets for applying a method across domains
+    \item \textbf{Exploration}: Open-ended discovery matching a broad scientific theme
+\end{itemize}
+
+Each query specifies: \texttt{query\_text}, \texttt{intent}, \texttt{scientific\_goal}, \texttt{must\_have} constraints (modality, species, task), \texttt{hard\_negatives} (descriptions of datasets that look relevant but are not), and expected modalities, species, and tasks. The query schema is backward-compatible with the existing 15 legacy queries in \texttt{artifacts/benchmark\_queries.jsonl}.
+
+\subsection{Relevance Scale}
+
+Relevance judgments use a 4-point graded scale:
+
+\begin{center}
+\begin{tabular}{cll}
+\hline
+Score & Label & Definition \\
+\hline
+3 & Highly relevant & Directly reusable. All constraints met, sufficient metadata. \\
+2 & Partially relevant & Reusable with caveats. One key constraint missing or uncertain. \\
+1 & Weakly relevant & Superficially related but not directly reusable. \\
+0 & Not relevant & Off-topic, wrong modality/species, or hard-negative violation. \\
+\hline
+\end{tabular}
+\end{center}
+
+A hard-negative violation is recorded when a result explicitly matches a stated \texttt{hard\_negatives} description for the query. These are tracked separately as they indicate systemic failures (e.g., returning mouse calcium imaging when the query explicitly requires human fMRI).
+
+\subsection{Evaluation Metrics}
+
+For each retrieval variant, the following metrics are computed:
+
+\begin{itemize}
+    \item $\text{NDCG@10}$ and $\text{NDCG@20}$: Normalized Discounted Cumulative Gain using the graded 0--3 relevance scale
+    \item $\text{MRR}$: Mean Reciprocal Rank (binary threshold: relevance $\geq 2$)
+    \item $\text{P@10}$, $\text{R@10}$, $\text{R@50}$: Precision and Recall at rank cutoffs
+    \item $\text{HN rate}$: Fraction of top-10 results that are hard-negative violations
+    \item $\text{Source skew}$: Entropy-normalized concentration of top-10 results by data repository
+    \item Bootstrap 95\% CI (1000 samples) for NDCG@10, MRR, Recall@50
+\end{itemize}
+
+\subsection{Retrieval Variants}
+
+Ablation compares the following variants:
+
+\begin{enumerate}
+    \item \texttt{bm25}: BM25 sparse retrieval only
+    \item \texttt{usefulness}: BM25 re-ranked by the usefulness scorer
+    \item \texttt{concept\_boost}: Usefulness + concept memory graph boost
+    \item \texttt{concept\_boost\_ev}: + evidence boost
+    \item \texttt{concept\_full}: + hard-negative penalty
+\end{enumerate}
+
+\subsection{Candidate Pooling and Annotation}
+
+Annotation candidates are built by pooling the top-50 results from all active variants. Consensus candidates (retrieved by multiple variants) are prioritized for annotation. The concept-rerank strategy is included in the pool when field-state artifacts are present, ensuring GICM-specific results are represented in the annotation set.
+
+A minimum of 30\% of pairs are independently annotated by two annotators. Disagreements where $|s_A - s_B| \geq 2$ are adjudicated. The \texttt{qrels.jsonl} schema records: \texttt{relevance}, \texttt{rationale}, \texttt{hard\_negative\_violation}, \texttt{missing\_metadata}, \texttt{annotator\_id}, \texttt{adjudicated}, and \texttt{adjudication\_notes}.
+
+\subsection{Minimum Credible Benchmark}
+
+Results from this benchmark support paper-ready claims only when:
+
+\begin{itemize}
+    \item $\geq 100$ queries with adjudicated qrels
+    \item $\geq 1,500$ judged query-dataset pairs
+    \item All 7 intent types represented
+    \item $\geq 5$ distinct data repositories in the corpus
+    \item All annotator disagreements adjudicated
+    \item Bootstrap 95\% CI does not include 0 improvement for primary claims
+\end{itemize}
+
+\subsection{Current Status}
+
+\textbf{The benchmark is pending. Zero qrels have been adjudicated as of this writing.}
+
+The evaluation infrastructure is complete:
+\begin{itemize}
+    \item Benchmark specification is frozen (\texttt{docs/benchmark\_v1\_spec.md})
+    \item 15 legacy queries exist in \texttt{artifacts/benchmark\_queries.jsonl}
+    \item Candidate pool scripts operational (\texttt{sample\_candidate\_pool.py})
+    \item Metric computation with bootstrap CI operational (\texttt{compute\_ir\_metrics.py})
+    \item Failure analysis and result card gallery scripts operational
+    \item Annotation tool with resume mode operational
+    \item Frontend feedback loop operational: React search interface with evidence inspection, inline relevance feedback (usefulness, would-use-for-analysis, reason tags, free-text notes), neuro-judge badges with silver provenance watermarks, and save/export
+    \item Downstream retrieval success reporting operational (\texttt{compute\_downstream\_retrieval\_success.py})
+    \item Dataset organisation views operational (\texttt{build\_dataset\_organization\_views.py}) — groups judged corpus into relevance tiers, modality buckets, and special views (missing raw data, hard negatives, abstain-flagged, metadata gaps)
+    \item Feedback audit queue operational (\texttt{build\_feedback\_audit\_queue.py}) — priority scoring for judge/user disagreements, high-rank-not-useful cases, abstain-but-useful patterns
+    \item Transparent feedback reranking priors operational (\texttt{build\_feedback\_rerank\_priors.py}) — log-odds weight table ($\pm$1.5 cap) from aggregated downstream feedback, toggle-able in frontend; downstream signal only
+\end{itemize}
+
+No improvement claim based on concept-memory reranking appears in this paper. Any such claim requires qrels-backed evidence meeting the minimum credible benchmark targets above.
+
+\section{Limitations}
+\label{sec:limitations}
+
+\paragraph{Vector recall is not scientific usefulness.} The current turbovec recall@50 result validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current embedding configuration. It does not show that returned datasets are scientifically relevant, reusable, compatible with a method, or better than sparse and hybrid baselines under human relevance judgments.
+
+\paragraph{Engineering tests are not human labels.} The Field-State, Obsidian memory, and evaluation-memory tests validate schemas, JSONL persistence, report generation, roundtrips, human-block preservation, qrels import/export, adjudication logic, and snapshot generation. They do not substitute for expert relevance judgments or qrels-backed NDCG/MRR evaluation.
+
+\paragraph{Current qrels coverage is insufficient.} The qrels workflow has been smoke-tested by exporting 10 review notes, importing unreviewed overlays, and generating an evaluation snapshot. At the current snapshot, there are 10 exported candidates, 0 reviewed candidates, and 0 adjudicated candidates. This is enough to validate workflow mechanics, but not enough to support publication-grade retrieval claims.
+
+\paragraph{Future usefulness remains weakly validated.} Claims about future reuse potential, dataset-method compatibility, and downstream scientific value require longitudinal reuse outcomes or defensible proxy labels. Until those labels exist, usefulness scores should be interpreted as prioritization signals rather than validated predictions.
+
+\paragraph{Metadata incompleteness.} The current corpus is large, but structured metadata remains uneven across sources. Task and brain-region coverage are materially weaker than title, URL, description, and license coverage.
+
+\paragraph{Source skew.} High-volume general repositories such as Zenodo and Figshare can dominate candidate pools if source diversity and source reliability are not monitored. Benchmark reports must include source-skew diagnostics computed over qrels-backed run files.
+
+\paragraph{Extraction noise.} Many labels are extracted from titles, descriptions, keywords, and repository metadata rather than independently verified experimental files. Source-specific manual audits are required for modality, species, and task precision.
+
+\paragraph{Unvalidated affordance inference.} Analysis affordances are currently represented and predicted, but content-validated affordance precision/recall is pending. Metadata-only affordance claims should be surfaced with uncertainty.
+
+\paragraph{Graph construction bias.} Graph proximity changes ranking behavior, but improvement in scientific relevance remains unproven until the frozen 10K benchmark ablation is run. Graph edges can also amplify incomplete or noisy metadata.
+
+\paragraph{Dense embedding domain mismatch.} BGE-large-en-v1.5 provides a strong general dense retrieval representation, and broad embedding benchmarks such as MTEB are useful external references \citep{muennighoff2022mteb}. Scientific dataset usefulness may still require domain-specific calibration and field weighting.
+
+\paragraph{Benchmark label subjectivity.} Scientific usefulness is intent-dependent. Multi-annotator labeling, adjudication, and inter-annotator agreement are required before final performance claims.
+
+\paragraph{Obsidian traceability is not validation.} The Obsidian-compatible review layer improves human auditability by separating generated fields from protected human notes. It is a traceability mechanism, not an epistemic guarantee. Likewise, weak supervision, generated review prompts, or future LLM triage may help prioritize review work but should not be treated as gold labels.
+
+\paragraph{No content-level neural signatures yet.} Neural signature extraction is not yet implemented in the active usefulness scorer. The neural-signature dimension is excluded from active weight normalization until content-derived features are available.
+
+\section{Reproducibility Artifacts}
+\label{sec:reproducibility-artifacts}
+
+The paper should be regenerated from versioned artifacts rather than hand-written numbers. The expected artifact bundle is:
+
+\begin{itemize}
+    \item \texttt{corpus\_manifest.json}
+    \item \texttt{source\_distribution.csv}
+    \item \texttt{field\_completeness.csv}
+    \item \texttt{rejection\_summary.csv}
+    \item \texttt{embedding\_manifest.json}
+    \item \texttt{graph\_manifest.json}
+    \item \texttt{benchmark\_queries.jsonl}
+    \item \texttt{qrels.jsonl}
+    \item retrieval run files for each variant
+    \item \texttt{eval\_report.json}
+    \item \texttt{ablation\_report.json}
+    \item \texttt{calibration\_report.json}
+    \item \texttt{artifacts/frontend/retrieval\_feedback.jsonl} (downstream user feedback — not gold)
+    \item \texttt{artifacts/field\_state/dataset\_organization\_views.json}
+    \item \texttt{artifacts/field\_state/feedback\_audit\_queue.jsonl}
+    \item \texttt{artifacts/field\_state/feedback\_rerank\_priors.json}
+\end{itemize}
+
+The current repository includes scripts under \texttt{scripts/eval/} to freeze corpus metadata, build candidate pools, compute IR metrics, initialize ablation reports, audit extraction quality, generate paper tables, compute downstream retrieval success from user feedback, build dataset organisation views, build a feedback audit queue, and derive transparent feedback reranking priors. Missing artifacts should be reported as \texttt{Pending benchmark artifact}, not silently replaced with assumptions.
+
+\subsection{Field-State and Evaluation-Memory Commands}
+
+The lightweight validation-memory layer is regenerated from local artifacts with:
+
+\begin{lstlisting}[language=sh]
+python -m neural_search.field_state.cli init
+python -m neural_search.field_state.cli report
+python -m neural_search.field_state.cli opportunities
+python -m neural_search.field_state.cli snapshot
+python -m neural_search.field_state.cli export-obsidian --vault <vault>
+python -m neural_search.field_state.cli qrels-export \
+  --pool reports/eval/benchmark_pool.jsonl \
+  --queries artifacts/benchmark_queries.jsonl \
+  --corpus data/corpus/normalized/combined_corpus.jsonl \
+  --vault <vault> \
+  --field neuroscience_dataset_reuse
+python -m neural_search.field_state.cli qrels-import --vault <vault>
+python -m neural_search.field_state.cli qrels-adjudicate
+python -m neural_search.field_state.cli qrels-agreement
+python -m neural_search.field_state.cli eval-snapshot
+python -m neural_search.field_state.cli claim-evidence-update
+python -m neural_search.field_state.cli whitepaper-validation-report
+\end{lstlisting}
+
+These commands produce local JSONL and Markdown artifacts for reviewability. Their existence should be cited as workflow reproducibility, not as evidence of ranking quality unless paired with completed human labels and metric reports.
+
 % ============================================================================
 % SECTION 10: FUTURE DIRECTIONS
 % ============================================================================
 \section{Future Directions}
 \label{sec:future}
+
+\subsection{Validation-First Roadmap}
+
+The immediate path forward is validation rather than broad feature expansion. The priority order is:
+
+\begin{enumerate}
+    \item Complete a frozen human qrels benchmark with at least 300--500 reviewed query--dataset judgments for the 10,404-record snapshot.
+    \item Add a second annotator and adjudication workflow for a meaningful subset of labels; report pre-adjudication agreement and post-adjudication label distributions.
+    \item Compute NDCG@10, NDCG@20, MRR, Recall@50, hard-negative violation rate, Expected Calibration Error, and source-skew diagnostics for each retrieval variant.
+    \item Run ablations for dense, sparse, graph, provenance, affordance, missingness, field weighting, and usefulness-reranking components.
+    \item Validate analysis affordance extraction against human or content-derived labels before using affordance claims as ranking evidence.
+    \item Test metadata richness and provenance confidence against reuse outcomes or well-defined proxy labels.
+    \item Expand graph reasoning, memory workflows, and learned rerankers only after the benchmark establishes which signals are empirically useful.
+\end{enumerate}
 
 \subsection{Sparse + Dense Hybrid Retrieval}
 
@@ -1094,31 +1618,31 @@ After sufficient human relevance labels, train calibrated rerankers:
 \end{equation}
 where $\mathbf{x}_{d,\query}$ is the feature vector and $f_\theta$ is learned (e.g., LambdaMART, neural ranker).
 
-\subsection{Real Graph Proximity — Completed v0.9}
+\subsection{Graph Proximity}
 
-The $s_9$ graph proximity dimension was implemented in v0.9. When a \texttt{KnowledgeGraph} is available, PathSim is computed live:
+The $s_9$ graph proximity dimension computes PathSim when a \texttt{KnowledgeGraph} is available:
 \begin{equation}
     s_9(C_q, C_d) = \text{PathSim}_{\mathcal{P}}(\text{id}(C_q), \text{id}(C_d) \mid \graph)
 \end{equation}
 
-\subsection{Dense Embedding Upgrade — Completed v2.0}
+\subsection{Dense Embedding Stack}
 
-The 64-dimensional hashing embedding was replaced with BGE-large-en-v1.5 (1024-dimensional, MTEB top-5 for scientific retrieval) in v2.0. All 835 corpus records were re-embedded and indexed in a turbovec 4-bit quantized ANN structure achieving recall@50 = 1.0 at 2.89 ms p50 latency. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
+The current expanded corpus has 60,175 BGE-large-en-v1.5 dense field embeddings and a 10,404-record turbovec index with 4-bit metadata. The current recall report gives recall@50 = 1.0 with p50 latency of 7.24 ms and p95 latency of 24.47 ms. This is vector-index validation against exact nearest-neighbor retrieval, not end-to-end scientific relevance validation. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
 
-\subsection{Corpus Expansion — Completed v2.0}
+\subsection{Corpus Expansion}
 
-v2.0 adds a 9-source ingestion pipeline (NeuroVault, GIN, EBRAINS, HCP for Tier 1; OSF, figshare, Zenodo for Tier 2) with a 4-gate inclusion classifier (raw/processed data, neuroscience signal, open license, persistent identifier) and a 5-layer deduplication pipeline. The expanded corpus targets $\geq 4000$ usable records.
+The current corpus expansion achieves the 10K target with 10,404 unique normalized records. Major sources include Zenodo (3,000), OpenNeuro (1,749), NeuroMorpho (1,000), DANDI (842), NeuroVault (819), Figshare (800), Allen (500), GIN (380), Brain Image Library (300), BlueBrain (300), IBL (198), CRCNS (153), OSF (321), and 42 records from smaller sources. The Tier-2 ingestion pipeline uses a 4-gate inclusion classifier (raw/processed data, neuroscience signal, open license, persistent identifier), deduplication, and rejection logging. The current quality report passes all checks and records 24,160 Tier-2 rejections.
 
-\subsection{Neural Signature Similarity (Phase 4)}
+\subsection{Neural Signature Similarity}
 
-The $s_{10}$ dimension is a fixed placeholder ($0.0$). Phase 4 will extract neural population signatures directly from NWB/BIDS data:
+The $s_{10}$ dimension is currently a placeholder ($0.0$). Future work should extract neural population signatures directly from NWB/BIDS data:
 \begin{equation}
     s_{10}(C_q, C_d) = \cos\!\left(\text{Extractor}(\text{NWB}(C_d)),\, \text{Extractor}(\text{NWB}(C_q))\right)
 \end{equation}
 
 \subsection{Human-Labeled Benchmark Calibration}
 
-The v0.9 seed benchmark contains 49 human-assigned pairs spanning 7 intents (expanded from 30 in v0.8). The target for v1.1 is 200+ pairs to enable:
+The current repository has preliminary usefulness labels and qrels review infrastructure, but the paper needs a larger multi-annotator benchmark before making final retrieval claims. The next benchmark should include 100--150 queries and at least 300--500 reviewed query--dataset pairs in the first credible snapshot, then grow as failure analysis identifies undersampled intents and sources. The benchmark should enable:
 \begin{itemize}
     \item Calibrated usefulness score distributions
     \item Learned reranker training ($f_\theta$) on feature vectors
@@ -1131,11 +1655,41 @@ The v0.9 seed benchmark contains 49 human-assigned pairs spanning 7 intents (exp
 \section{Conclusion}
 \label{sec:conclusion}
 
-Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system enables researchers to find reusable experimental contexts rather than merely similar text.
+Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system is designed to help researchers find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, and evaluation methodology---provide a rigorous substrate for continued development. The current benchmark results (76.7\% P@5, 0.950 MRR, 0.937 NDCG@10 on demo corpus; 69.3\% P@5, 0.839 MRR, 0.822 NDCG@10 on 835-dataset real corpus) demonstrate the viability of the approach. Version 2.0 upgrades the embedding stack to BGE-large-en-v1.5 (1024-dim), deploys a turbovec ANN index at recall@50 = 1.0, expands the corpus toward $\geq 4000$ records via a 9-source ingestion pipeline, and introduces set-coverage scoring with an 8-role dataset taxonomy for multi-dataset result sets.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current implementation indexes 10,404 unique normalized records, stores 60,175 BGE-large field embeddings, and exposes a 10,404-record 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. That result validates approximate vector-index behavior against exact nearest neighbors under the current configuration; it does not validate end-to-end scientific relevance. Current repository artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, a usefulness-score Spearman correlation of 0.3999 over 270 labeled pairs, graph proximity changing 39\% of ranked pairs in the current ablation artifact, and a Field-State/evaluation-memory layer that makes claim status, qrels review state, and missing validation work explicit.
 
-The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search makes this principle computationally tractable.
+The next scientific milestone is not more horizontal expansion. It is rigorous validation: deterministic exact identifier lookup, 10K-snapshot benchmark reruns, multi-annotator relevance labels, source-specific extraction QA, graph rebuilds aligned to the current corpus, hard-negative violation tracking, calibration, source-skew diagnostics, and content-validated analysis affordances. These steps will determine whether latent usefulness retrieval can be defended as an empirically validated scientific search signal rather than an architectural promise.
+
+The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search now has the retrieval architecture and validation memory needed to test that principle honestly.
+
+\appendix
+\section{Field-State Validation Artifacts}
+\label{app:field-state-artifacts}
+
+The Field-State layer writes compact, reviewable artifacts rather than a large research-assistant database. Core JSONL artifacts are:
+
+\begin{itemize}
+    \item \texttt{artifacts/field\_state/claims.jsonl}
+    \item \texttt{artifacts/field\_state/benchmark\_gaps.jsonl}
+    \item \texttt{artifacts/field\_state/opportunities.jsonl}
+    \item \texttt{artifacts/field\_state/qrels\_candidates.jsonl}
+    \item \texttt{artifacts/field\_state/qrels\_reviews.jsonl}
+    \item \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl}
+    \item \texttt{artifacts/field\_state/qrels\_agreement.json}
+    \item \texttt{artifacts/field\_state/eval\_snapshot.json}
+    \item \texttt{artifacts/field\_state/claim\_evidence\_suggestions.jsonl}
+\end{itemize}
+
+Generated Markdown reports include weak claims, benchmark gaps, ranked opportunities, latest snapshots, qrels agreement summaries, evaluation snapshots, claim-evidence updates, and whitepaper validation reports under \texttt{reports/field\_state/}.
+
+\subsection{Qrels and Adjudication Format}
+
+Each qrels candidate records a query identifier, dataset identifier, source rank, retrieval score, candidate rationale, and optional hard-negative rationale. Imported human reviews record reviewer identity, a 0--3 relevance label, confidence, notes, evidence links, and review status. Adjudicated qrels are written separately so that raw reviewer judgments remain auditable.
+
+\subsection{Obsidian Roundtrip}
+
+The Obsidian-compatible vault export keeps generated metadata and protected human notes in separate blocks. The current smoke workflow exported 10 qrels review notes, imported unreviewed overlays, and validated the memory roundtrip. This proves the review workflow is reproducible, but it does not prove relevance quality until human labels are completed and adjudicated.
 
 % ============================================================================
 % REFERENCES
@@ -1163,16 +1717,6 @@ Sun, Y., Han, J., Yan, X., Yu, P.~S., and Wu, T.
 \newblock PathSim: Meta path-based top-k similarity search in heterogeneous information networks.
 \newblock \emph{Proceedings of the VLDB Endowment}, 4(11):992--1003, 2011.
 
-\bibitem[Karpukhin et~al.(2020)]{karpukhin2020dense}
-Karpukhin, V., O\u{g}uz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., and Yih, W.-t.
-\newblock Dense passage retrieval for open-domain question answering.
-\newblock In \emph{Proceedings of EMNLP}, pages 6769--6781, 2020.
-
-\bibitem[Bordes et~al.(2013)]{bordes2013translating}
-Bordes, A., Usunier, N., Garcia-Duran, A., Weston, J., and Yakhnenko, O.
-\newblock Translating embeddings for modeling multi-relational data.
-\newblock In \emph{Advances in Neural Information Processing Systems}, pages 2787--2795, 2013.
-
 \bibitem[J{\"a}rvelin and Kek{\"a}l{\"a}inen(2002)]{jarvelin2002cumulated}
 J{\"a}rvelin, K. and Kek{\"a}l{\"a}inen, J.
 \newblock Cumulated gain-based evaluation of IR techniques.
@@ -1183,15 +1727,40 @@ Guo, C., Pleiss, G., Sun, Y., and Weinberger, K.~Q.
 \newblock On calibration of modern neural networks.
 \newblock In \emph{Proceedings of ICML}, pages 1321--1330, 2017.
 
-\bibitem[Rubin{\'e}n et~al.(2024)]{rubinen2024dandi}
-Rubi{\'e}n, D.~A., et~al.
-\newblock The DANDI Archive: A platform for sharing standardized neurophysiology datasets.
-\newblock \emph{Scientific Data}, 2024.
+\bibitem[Wilkinson et~al.(2016)]{wilkinson2016fair}
+Wilkinson, M.~D., Dumontier, M., Aalbersberg, I.~J., Appleton, G., Axton, M., Baak, A., et~al.
+\newblock The FAIR guiding principles for scientific data management and stewardship.
+\newblock \emph{Scientific Data}, 3:160018, 2016.
+
+\bibitem[Gorgolewski et~al.(2016)]{gorgolewski2016bids}
+Gorgolewski, K.~J., Auer, T., Calhoun, V.~D., Craddock, R.~C., Das, S., Duff, E.~P., et~al.
+\newblock The Brain Imaging Data Structure, a format for organizing and describing outputs of neuroimaging experiments.
+\newblock \emph{Scientific Data}, 3:160044, 2016.
 
 \bibitem[Markiewicz et~al.(2021)]{markiewicz2021openneuro}
 Markiewicz, C.~J., et~al.
 \newblock The OpenNeuro resource for sharing of neuroscience data.
 \newblock \emph{eLife}, 10:e71774, 2021.
+
+\bibitem[DANDI Archive(2026)]{dandiArchive2026}
+DANDI Archive.
+\newblock DANDI Archive documentation and repository portal.
+\newblock \url{https://www.dandiarchive.org/}, accessed June 2026.
+
+\bibitem[R{\"u}bel et~al.(2022)]{ruebel2022nwb}
+R{\"u}bel, O., Tritt, A., Ly, R., Dichter, B.~K., Ghosh, S., Niu, L., et~al.
+\newblock The Neurodata Without Borders ecosystem for neurophysiological data science.
+\newblock \emph{eLife}, 11:e78362, 2022.
+
+\bibitem[Thakur et~al.(2021)]{thakur2021beir}
+Thakur, N., Reimers, N., R{\"u}ckl{\'e}, A., Srivastava, A., and Gurevych, I.
+\newblock BEIR: A heterogeneous benchmark for zero-shot evaluation of information retrieval models.
+\newblock In \emph{Proceedings of NeurIPS Datasets and Benchmarks}, 2021.
+
+\bibitem[Muennighoff et~al.(2022)]{muennighoff2022mteb}
+Muennighoff, N., Tazi, N., Magne, L., and Reimers, N.
+\newblock MTEB: Massive text embedding benchmark.
+\newblock \emph{arXiv preprint arXiv:2210.07316}, 2022.
 
 \end{thebibliography}
 

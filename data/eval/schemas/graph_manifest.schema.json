@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neural Search Graph Manifest",
+  "type": "object",
+  "required": ["graph_path", "graph_sha256"],
+  "properties": {
+    "graph_path": {"type": "string"},
+    "graph_sha256": {"type": "string"},
+    "graph_build_hash": {"type": ["string", "null"]},
+    "node_count": {"type": ["integer", "null"]},
+    "edge_count": {"type": ["integer", "null"]}
+  },
+  "additionalProperties": true
+}

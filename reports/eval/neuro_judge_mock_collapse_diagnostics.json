@@ -1,0 +1,397 @@
+{
+  "watermark": "DIAGNOSTIC ONLY - NOT HUMAN GOLD",
+  "evidence": {
+    "packet_count": 675,
+    "match_rates": {
+      "species": {
+        "required": 435,
+        "matched": 255,
+        "missing": 180,
+        "match_rate": 0.5862
+      },
+      "modality": {
+        "required": 407,
+        "matched": 292,
+        "missing": 115,
+        "match_rate": 0.7174
+      },
+      "brain_region": {
+        "required": 313,
+        "matched": 92,
+        "missing": 221,
+        "match_rate": 0.2939
+      },
+      "task": {
+        "required": 485,
+        "matched": 186,
+        "missing": 299,
+        "match_rate": 0.3835
+      },
+      "affordance": {
+        "required": 99,
+        "matched": 17,
+        "missing": 82,
+        "match_rate": 0.1717
+      },
+      "raw_data": {
+        "required": 56,
+        "matched": 0,
+        "missing": 56,
+        "match_rate": 0.0
+      }
+    },
+    "missing_expected_dimension_counts": {
+      "task": 299,
+      "brain_region": 221,
+      "species": 180,
+      "modality": 115,
+      "affordance": 82,
+      "raw_data": 56
+    },
+    "absent_field_counts": {
+      "file_format_evidence": 331,
+      "dataset_brain_regions": 321,
+      "dataset_tasks": 210,
+      "dataset_species": 185,
+      "dataset_modalities": 130,
+      "description": 109
+    },
+    "raw_data_present": 0,
+    "raw_data_absent_or_uncertain": 675,
+    "processed_only_evidence_count": 0,
+    "hard_negative_warning_count": 2,
+    "label2_reason_counts": {}
+  },
+  "judgments": {
+    "label_distribution": {
+      "0": 117,
+      "1": 175,
+      "2": 247,
+      "3": 136
+    },
+    "dominant_label": "2",
+    "dominant_label_fraction": 0.3659,
+    "confidence_distribution": {
+      "<0.5": 0,
+      "0.5-0.7": 401,
+      "0.7-0.9": 138,
+      ">=0.9": 136
+    },
+    "failure_mode_counts": {
+      "mock_rule:task_mismatch": 161,
+      "mock_rule:direct_match": 136,
+      "mock_rule:missing_species_evidence": 115,
+      "mock_rule:wrong_modality": 115,
+      "mock_rule:species_mismatch": 105,
+      "mock_rule:wrong_region_for_replication": 69,
+      "mock_rule:missing_raw_data": 54,
+      "mock_rule:missing_modality_evidence": 33,
+      "mock_rule:missing_required_evidence": 23,
+      "mock_rule:missing_affordance": 10,
+      "mock_rule:hard_negative": 2
+    },
+    "missing_dimension_counts_from_judgments": {
+      "task": 299,
+      "brain_region": 221,
+      "species": 180,
+      "modality": 115,
+      "affordance": 82,
+      "raw_data": 56
+    },
+    "label2_reason_counts": {
+      "mock_rule:task_mismatch": 160,
+      "mock_rule:missing_raw_data": 54,
+      "mock_rule:missing_required_evidence": 23,
+      "mock_rule:missing_affordance": 10
+    },
+    "label2_examples_by_reason": {
+      "mock_rule:task_mismatch": [
+        {
+          "query_id": "q_0001",
+          "dataset_id": "neurovault:4778",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        },
+        {
+          "query_id": "q_0001",
+          "dataset_id": "neurovault:1323",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        },
+        {
+          "query_id": "q_0001",
+          "dataset_id": "openneuro:ds004323",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        }
+      ],
+      "mock_rule:missing_raw_data": [
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_np1_np2_kim",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        },
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_repeated_site",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        },
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_brain_wide_map_2023",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        }
+      ],
+      "mock_rule:missing_affordance": [
+        {
+          "query_id": "q_0005",
+          "dataset_id": "zenodo:5592702",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        },
+        {
+          "query_id": "q_0005",
+          "dataset_id": "zenodo:16997337",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        },
+        {
+          "query_id": "q_0005",
+          "dataset_id": "osf:7k5w4",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        }
+      ],
+      "mock_rule:missing_required_evidence": [
+        {
+          "query_id": "q_0008",
+          "dataset_id": "zenodo:19115395",
+          "confidence": 0.68,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        },
+        {
+          "query_id": "q_0009",
+          "dataset_id": "neurovault:1883",
+          "confidence": 0.7,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        },
+        {
+          "query_id": "q_0009",
+          "dataset_id": "neurovault:109",
+          "confidence": 0.7,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        }
+      ]
+    },
+    "mean_evidence_completeness": 0.4911,
+    "abstain_recommended_count": 247
+  },
+  "consensus": {
+    "label_distribution": {
+      "0": 117,
+      "1": 175,
+      "2": 247,
+      "3": 136
+    },
+    "dominant_label": "2",
+    "dominant_label_fraction": 0.3659,
+    "confidence_distribution": {
+      "<0.5": 0,
+      "0.5-0.7": 401,
+      "0.7-0.9": 138,
+      ">=0.9": 136
+    },
+    "failure_mode_counts": {
+      "needs_human_review": 247,
+      "mock_rule:task_mismatch": 161,
+      "mock_rule:direct_match": 136,
+      "mock_rule:missing_species_evidence": 115,
+      "mock_rule:wrong_modality": 115,
+      "mock_rule:species_mismatch": 105,
+      "mock_rule:wrong_region_for_replication": 69,
+      "mock_rule:missing_raw_data": 54,
+      "mock_rule:missing_modality_evidence": 33,
+      "mock_rule:missing_required_evidence": 23,
+      "mock_rule:missing_affordance": 10,
+      "mock_rule:hard_negative": 2
+    },
+    "missing_dimension_counts_from_judgments": {
+      "task": 299,
+      "brain_region": 221,
+      "species": 180,
+      "modality": 115,
+      "affordance": 82,
+      "raw_data": 56
+    },
+    "label2_reason_counts": {
+      "mock_rule:task_mismatch": 160,
+      "mock_rule:missing_raw_data": 54,
+      "mock_rule:missing_required_evidence": 23,
+      "mock_rule:missing_affordance": 10
+    },
+    "label2_examples_by_reason": {
+      "mock_rule:task_mismatch": [
+        {
+          "query_id": "q_0001",
+          "dataset_id": "neurovault:4778",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        },
+        {
+          "query_id": "q_0001",
+          "dataset_id": "neurovault:1323",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        },
+        {
+          "query_id": "q_0001",
+          "dataset_id": "openneuro:ds004323",
+          "confidence": 0.66,
+          "rationale_short": "mock: task evidence does not match the query",
+          "missing": [
+            "task"
+          ]
+        }
+      ],
+      "mock_rule:missing_raw_data": [
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_np1_np2_kim",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        },
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_repeated_site",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        },
+        {
+          "query_id": "q_0003",
+          "dataset_id": "ibl:ibl_brain_wide_map_2023",
+          "confidence": 0.62,
+          "rationale_short": "mock: correct core match but explicit raw data evidence is missing",
+          "missing": [
+            "raw_data"
+          ]
+        }
+      ],
+      "mock_rule:missing_affordance": [
+        {
+          "query_id": "q_0005",
+          "dataset_id": "zenodo:5592702",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        },
+        {
+          "query_id": "q_0005",
+          "dataset_id": "zenodo:16997337",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        },
+        {
+          "query_id": "q_0005",
+          "dataset_id": "osf:7k5w4",
+          "confidence": 0.64,
+          "rationale_short": "mock: required analysis affordance is not evidenced",
+          "missing": [
+            "affordance"
+          ]
+        }
+      ],
+      "mock_rule:missing_required_evidence": [
+        {
+          "query_id": "q_0008",
+          "dataset_id": "zenodo:19115395",
+          "confidence": 0.68,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        },
+        {
+          "query_id": "q_0009",
+          "dataset_id": "neurovault:1883",
+          "confidence": 0.7,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        },
+        {
+          "query_id": "q_0009",
+          "dataset_id": "neurovault:109",
+          "confidence": 0.7,
+          "rationale_short": "mock: partial match with missing required evidence",
+          "missing": [
+            "brain_region"
+          ]
+        }
+      ]
+    },
+    "mean_evidence_completeness": 0.4911,
+    "abstain_recommended_count": 247
+  },
+  "collapse_assessment": {
+    "severe_label_collapse": false,
+    "label2_fraction": 0.3659,
+    "likely_cause": "no_severe_label_collapse_detected"
+  }
+}

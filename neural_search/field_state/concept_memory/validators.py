@@ -4,16 +4,22 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
+from neural_search.field_state.concept_memory.artifact_utils import (
+    artifact_timestamp,
+    deterministic_enabled,
+)
 from neural_search.field_state.concept_memory.basis import read_concept_basis
 from neural_search.field_state.concept_memory.graph_builder import (
+    _CONCEPT_GRAPH_GRAPHML,
     _CONCEPT_GRAPH_JSON,
     _CONCEPT_INDEX,
     _repo_root,
     read_concept_artifacts,
 )
+from neural_search.field_state.concept_memory.manifest import read_manifest
 from neural_search.field_state.concept_memory.schema import (
     VALID_CONCEPT_TYPES,
     VALID_EVIDENCE_STRENGTHS,
@@ -41,7 +47,7 @@ class ValidationResult:
     is_valid: bool
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
-    stats: dict[str, int] = field(default_factory=dict)
+    stats: dict[str, Any] = field(default_factory=dict)
 
     @property
     def error_count(self) -> int:
@@ -62,6 +68,7 @@ def validate_concept_memory(
     evidence_links: list[EvidenceLink],
     bases: list[ConceptBasis],
     obsidian_export_path: Path | None = None,
+    artifact_root: Path | None = None,
 ) -> ValidationResult:
     """Run all integrity checks and return a ValidationResult."""
     errors: list[str] = []
@@ -170,7 +177,7 @@ def validate_concept_memory(
 
     # --- Graph file checks (warnings) -----------------------------------------
 
-    repo = _repo_root()
+    repo = artifact_root if artifact_root is not None else _repo_root()
 
     graph_json_path = repo / _CONCEPT_GRAPH_JSON
     if not graph_json_path.exists():
@@ -189,6 +196,23 @@ def validate_concept_memory(
             json.loads(index_path.read_text(encoding="utf-8"))
         except Exception as exc:  # noqa: BLE001
             warnings.append(f"concept_index.json is not parseable: {exc}")
+
+    manifest = read_manifest(repo)
+    if manifest is None:
+        warnings.append("manifest.json not found; reproducibility metadata is incomplete")
+        graphml_status: Any = None
+    else:
+        graphml_status = manifest.get("graphml_export")
+
+    graphml_path = repo / _CONCEPT_GRAPH_GRAPHML
+    if isinstance(graphml_status, dict):
+        if graphml_status.get("status") != "written":
+            warnings.append(
+                "Optional GraphML export was not written"
+                f" (status={graphml_status.get('status')}, error={graphml_status.get('error')})"
+            )
+    elif not graphml_path.exists():
+        warnings.append("Optional concept_graph.graphml not found and no manifest status was recorded")
 
     # --- Obsidian export path traversal check (error) -------------------------
 
@@ -212,8 +236,24 @@ def validate_concept_memory(
 
     orphan_concepts = sum(1 for c in concepts if c.evidence_count == 0)
     reviewed_concepts = sum(1 for c in concepts if c.review_status != "unreviewed")
+    reviewed_links = sum(1 for link in evidence_links if link.review_status != "unreviewed")
+    unreviewed_links = len(evidence_links) - reviewed_links
+    supporting_links = sum(1 for link in evidence_links if link.relation_type == "supports")
+    contradicting_links = sum(1 for link in evidence_links if link.relation_type == "contradicts")
+    metadata_links = len(evidence_links) - supporting_links - contradicting_links
+    provenance_complete_links = sum(
+        1 for link in evidence_links
+        if link.source_repository and link.source_record_id and link.source_field
+    )
+    provenance_missing_links = len(evidence_links) - provenance_complete_links
+    qrels_path = repo / "artifacts" / "field_state" / "adjudicated_qrels.jsonl"
+    qrels_backed_retrieval_evidence = qrels_path.exists()
+    if not qrels_backed_retrieval_evidence:
+        warnings.append(
+            "No qrels-backed retrieval evidence found; do not claim Concept Memory improves retrieval"
+        )
 
-    stats: dict[str, int] = {
+    stats: dict[str, Any] = {
         "total_concepts": len(concepts),
         "total_evidence_links": len(evidence_links),
         "total_bases": len(bases),
@@ -221,6 +261,23 @@ def validate_concept_memory(
         "duplicate_evidence_ids": duplicate_evidence_ids,
         "orphan_concepts": orphan_concepts,
         "reviewed_concepts": reviewed_concepts,
+        "reviewed_links": reviewed_links,
+        "unreviewed_links": unreviewed_links,
+        "supporting_links": supporting_links,
+        "contradicting_links": contradicting_links,
+        "metadata_or_neutral_links": metadata_links,
+        "source_provenance_complete_links": provenance_complete_links,
+        "source_provenance_missing_links": provenance_missing_links,
+        "qrels_backed_retrieval_evidence": int(qrels_backed_retrieval_evidence),
+        "manifest_present": int(manifest is not None),
+        "deterministic_mode": int(
+            bool(manifest.get("deterministic"))
+            if isinstance(manifest, dict)
+            else deterministic_enabled()
+        ),
+        "graphml_written": int(
+            isinstance(graphml_status, dict) and graphml_status.get("status") == "written"
+        ),
     }
 
     return ValidationResult(
@@ -250,7 +307,7 @@ def write_validation_artifacts(
     """Write concept_validation.json and concept_validation.md."""
     base = root if root is not None else _repo_root()
 
-    validated_at = datetime.now(UTC).isoformat()
+    validated_at = artifact_timestamp()
 
     # 1. JSON artifact
     json_payload = {
@@ -323,7 +380,12 @@ def run_concept_validation(root: Path | None = None) -> ValidationResult:
     concepts, evidence_links = read_concept_artifacts(base)
     bases = read_concept_basis(base)
 
-    result = validate_concept_memory(concepts, evidence_links, bases)
+    result = validate_concept_memory(
+        concepts,
+        evidence_links,
+        bases,
+        artifact_root=base,
+    )
     write_validation_artifacts(result, base)
 
     return result

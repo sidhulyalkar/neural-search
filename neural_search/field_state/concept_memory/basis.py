@@ -6,7 +6,6 @@ from pathlib import Path
 
 from neural_search.field_state.concept_memory.evidence import (
     EvidenceSummary,
-    evidence_strength_from_count,
     summarize_evidence,
 )
 from neural_search.field_state.concept_memory.schema import (
@@ -42,6 +41,8 @@ def _atomic_write(path: Path, text: str) -> None:
 
 _BENCHMARK_GAP_TYPE = "benchmark_gap"
 _OPPORTUNITY_TYPE = "opportunity"
+_SUPPORTING_RELATIONS = frozenset({"supports"})
+_CONTRADICTING_RELATIONS = frozenset({"contradicts"})
 
 
 def _concept_ids_by_type(
@@ -96,11 +97,6 @@ def generate_concept_basis(
     """Build a ConceptBasis for a single concept."""
     ev_summary = summarize_evidence(concept, evidence_links, concepts_by_id)
 
-    total_link_count = ev_summary["outgoing_links"] + ev_summary["incoming_links"]
-    reviewed_count = ev_summary["reviewed_link_count"]
-
-    evidence_strength = evidence_strength_from_count(reviewed_count, total_link_count)
-
     # Summary — no hallucination; use only existing fields
     if concept.description:
         summary = f"Concept: {concept.canonical_name}. {concept.description}"
@@ -117,12 +113,57 @@ def generate_concept_basis(
         or lnk.target_concept_id == concept.concept_id
     ]
     evidence_link_ids = [lnk.evidence_id for lnk in all_links_for_concept[:20]]
+    supporting_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type in _SUPPORTING_RELATIONS
+    ]
+    contradicting_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type in _CONTRADICTING_RELATIONS
+    ]
+    neutral_or_metadata_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type not in _SUPPORTING_RELATIONS
+        and lnk.relation_type not in _CONTRADICTING_RELATIONS
+    ]
+    reviewed_supporting_count = sum(
+        1 for lnk in supporting_links if lnk.review_status != "unreviewed"
+    )
+    reviewed_contradicting_count = sum(
+        1 for lnk in contradicting_links if lnk.review_status != "unreviewed"
+    )
+    reviewed_neutral_or_metadata_count = sum(
+        1 for lnk in neutral_or_metadata_links if lnk.review_status != "unreviewed"
+    )
+    missing_count = 1 if not all_links_for_concept else 0
+
+    if supporting_links:
+        if reviewed_supporting_count >= 3 and len(supporting_links) >= 5:
+            evidence_strength = "strong"
+        elif reviewed_supporting_count >= 1 and len(supporting_links) >= 2:
+            evidence_strength = "moderate"
+        elif reviewed_supporting_count >= 1:
+            evidence_strength = "weak"
+        else:
+            evidence_strength = "weak"
+    elif neutral_or_metadata_links:
+        evidence_strength = "weak"
+    else:
+        evidence_strength = "none"
 
     # Uncertainty notes
     uncertainty_notes: list[str] = []
     if concept.evidence_count == 0:
         uncertainty_notes.append(
             "No evidence links found — purely derived from artifact names."
+        )
+    if neutral_or_metadata_links and not supporting_links:
+        uncertainty_notes.append(
+            "Only metadata or neutral links found — not reviewed scientific support."
+        )
+    if contradicting_links:
+        uncertainty_notes.append(
+            "Contradictory evidence is present — inspect before using this concept as support."
         )
     if concept.review_status == "unreviewed":
         uncertainty_notes.append(
@@ -168,6 +209,19 @@ def generate_concept_basis(
             concept, evidence_links, concepts_by_id
         ),
         evidence_links=evidence_link_ids,
+        supporting_count=len(supporting_links),
+        contradicting_count=len(contradicting_links),
+        neutral_or_metadata_count=len(neutral_or_metadata_links),
+        missing_count=missing_count,
+        reviewed_supporting_count=reviewed_supporting_count,
+        reviewed_contradicting_count=reviewed_contradicting_count,
+        reviewed_neutral_or_metadata_count=reviewed_neutral_or_metadata_count,
+        contradicting_evidence_links=[
+            lnk.evidence_id for lnk in contradicting_links[:20]
+        ],
+        metadata_evidence_links=[
+            lnk.evidence_id for lnk in neutral_or_metadata_links[:20]
+        ],
         evidence_strength=evidence_strength,
         uncertainty_notes=uncertainty_notes,
         next_validation_actions=next_validation_actions,

@@ -1,11 +1,13 @@
 """FastAPI application for Neural Search."""
 
+import json
 import os
 import re
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,6 +24,11 @@ from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_
 # When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
 # (useful for CI and quick local demos). Default: full combined corpus.
 _DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
+FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
+NEURO_JUDGE_WATERMARK = (
+    "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
+    "NOT PURE HUMAN GOLD"
+)
 
 
 def _load_corpus() -> list[dict[str, Any]]:
@@ -118,6 +125,12 @@ class FrontendSearchResult(BaseModel):
     suggested_next_actions: list[str] = Field(default_factory=list)
     readiness_score: float | None = None
     linked_papers: list[dict[str, Any]] = Field(default_factory=list)
+    rank: int | None = None
+    retrieval_method: str = "hybrid_search"
+    score_breakdown: dict[str, float] = Field(default_factory=dict)
+    neuro_judge: dict[str, Any] | None = None
+    evidence_packet: dict[str, Any] | None = None
+    prior_feedback: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class FrontendSearchResponse(BaseModel):
@@ -125,6 +138,136 @@ class FrontendSearchResponse(BaseModel):
     query: str
     total_count: int
     results: list[FrontendSearchResult]
+    search_time_ms: float | None = None
+
+
+def _read_jsonl(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    records: list[dict[str, Any]] = []
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if line:
+                records.append(json.loads(line))
+    return records
+
+
+def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, sort_keys=True) + "\n")
+
+
+def _normalized_query(value: str | None) -> str:
+    return " ".join((value or "").lower().split())
+
+
+def _dataset_lookup_keys(dataset: dict[str, Any]) -> set[str]:
+    keys: set[str] = set()
+    source = str(dataset.get("source", "")).lower()
+    for value in (dataset.get("id"), dataset.get("source_id")):
+        if value:
+            text = str(value).lower()
+            keys.add(text)
+            if source and not text.startswith(f"{source}:"):
+                keys.add(f"{source}:{text}")
+    return keys
+
+
+def _record_lookup_keys(record: dict[str, Any]) -> set[str]:
+    dataset = {
+        "id": record.get("dataset_id"),
+        "source_id": record.get("dataset_id"),
+        "source": record.get("source_archive"),
+    }
+    return _dataset_lookup_keys(dataset)
+
+
+def _neuro_judge_paths() -> tuple[Path, Path]:
+    consensus = Path("artifacts/field_state/neuro_qrels_consensus.jsonl")
+    if not consensus.exists():
+        consensus = Path("artifacts/field_state/neuro_qrels_consensus_mock.jsonl")
+    judgments = Path("artifacts/field_state/neuro_qrels_judgments.jsonl")
+    if not judgments.exists():
+        judgments = Path("artifacts/field_state/neuro_qrels_judgments_mock.jsonl")
+    return consensus, judgments
+
+
+def _load_neuro_judge_index() -> dict[tuple[str, str], dict[str, Any]]:
+    packets = _read_jsonl(Path("artifacts/field_state/neuro_judge_evidence_packets.jsonl"))
+    packet_by_qid_dataset: dict[tuple[str, str], dict[str, Any]] = {}
+    for packet in packets:
+        dataset_keys = _record_lookup_keys(packet)
+        for dataset_key in dataset_keys:
+            qid = str(packet.get("query_id", ""))
+            if qid:
+                packet_by_qid_dataset[(qid, dataset_key)] = packet
+
+    consensus_path, judgments_path = _neuro_judge_paths()
+    judgments = _read_jsonl(consensus_path) or _read_jsonl(judgments_path)
+    index: dict[tuple[str, str], dict[str, Any]] = {}
+    for judgment in judgments:
+        dataset_keys = _record_lookup_keys(judgment)
+        qid = str(judgment.get("query_id", ""))
+        for dataset_key in dataset_keys:
+            packet = packet_by_qid_dataset.get((qid, dataset_key))
+            qtext = _normalized_query(packet.get("query_text") if packet else "")
+            if not qtext:
+                continue
+            snapshot = dict(judgment)
+            if "judge_model" not in snapshot and snapshot.get("judge_models"):
+                snapshot["judge_model"] = snapshot["judge_models"][0]
+            snapshot.setdefault("watermark", NEURO_JUDGE_WATERMARK)
+            index[(qtext, dataset_key)] = {
+                "judgment": snapshot,
+                "packet": packet,
+            }
+    return index
+
+
+def _neuro_judge_for_result(
+    query: str,
+    dataset: dict[str, Any],
+    index: dict[tuple[str, str], dict[str, Any]],
+) -> dict[str, Any] | None:
+    qtext = _normalized_query(query)
+    for dataset_key in _dataset_lookup_keys(dataset):
+        match = index.get((qtext, dataset_key))
+        if match:
+            return match
+    return None
+
+
+def _load_feedback_for_pair(query: str, dataset: dict[str, Any]) -> list[dict[str, Any]]:
+    query_norm = _normalized_query(query)
+    dataset_keys = _dataset_lookup_keys(dataset)
+    feedback = []
+    for row in _read_jsonl(FRONTEND_ARTIFACT_DIR / "retrieval_feedback.jsonl"):
+        if _normalized_query(row.get("query_text")) != query_norm:
+            continue
+        row_dataset = str(row.get("dataset_id", "")).lower()
+        if row_dataset in dataset_keys:
+            feedback.append(row)
+    return feedback[-5:]
+
+
+def _compact_evidence_packet(packet: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not packet:
+        return None
+    linked = packet.get("linked_papers") or []
+    compact_linked = []
+    for paper in linked[:2]:
+        abstract = paper.get("abstract", "")
+        compact_linked.append({
+            **paper,
+            "abstract_snippet": abstract[:500] if isinstance(abstract, str) else "",
+        })
+    return {
+        **packet,
+        "linked_papers": compact_linked,
+        "raw_json": packet,
+    }
 
 
 def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str, Any] | None:
@@ -201,7 +344,8 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
 
     # Transform to frontend format
     frontend_results = []
-    for result in response.results:
+    neuro_index = _load_neuro_judge_index()
+    for rank, result in enumerate(response.results, start=1):
         # Find the dataset record
         dataset = None
         papers: list[dict[str, Any]] = []
@@ -213,11 +357,19 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 break
 
         if dataset:
+            neuro_match = _neuro_judge_for_result(request.query, dataset, neuro_index)
+            neuro_judge = neuro_match["judgment"] if neuro_match else None
+            evidence_packet = _compact_evidence_packet(
+                neuro_match["packet"] if neuro_match else None
+            )
+            warnings = list(result.warnings)
+            if neuro_judge and neuro_judge.get("hard_negative_detected"):
+                warnings.append("neuro-judge hard-negative warning")
             frontend_results.append(FrontendSearchResult(
                 dataset=dataset,
                 score=result.score / 100,  # Normalize to 0-1
                 why_matched=result.why_matched,
-                warnings=result.warnings,
+                warnings=warnings,
                 matched_terms=result.matched_terms,
                 inferred_concepts=result.inferred_concepts,
                 evidence_snippets=result.evidence_snippets,
@@ -226,6 +378,11 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 suggested_next_actions=result.dataset_card_preview.get("suggested_analyses", [])[:3],
                 readiness_score=result.dataset_card_preview.get("analysis_readiness_score"),
                 linked_papers=[_frontend_paper(paper) for paper in papers],
+                rank=rank,
+                score_breakdown=result.score_breakdown,
+                neuro_judge=neuro_judge,
+                evidence_packet=evidence_packet,
+                prior_feedback=_load_feedback_for_pair(request.query, dataset),
             ))
 
     if exact_record:
@@ -257,8 +414,14 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 suggested_next_actions=[],
                 readiness_score=None,
                 linked_papers=[_frontend_paper(p) for p in exact_papers],
+                rank=1,
+                score_breakdown={"exact_id_match": 1.0, "final_score": 1.0},
+                prior_feedback=_load_feedback_for_pair(request.query, exact_ds),
             )
-            frontend_results = [pin] + without_dup
+            frontend_results = [pin] + [
+                item.model_copy(update={"rank": idx})
+                for idx, item in enumerate(without_dup, start=2)
+            ]
 
     elapsed = (time.time() - start) * 1000
 
@@ -268,6 +431,157 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
         results=frontend_results,
         search_time_ms=elapsed,
     )
+
+
+# Frontend feedback endpoints
+class SearchSessionRequest(BaseModel):
+    query_text: str = ""
+    query_id: str | None = None
+    retrieval_method: str = "hybrid_search"
+    filters: dict[str, Any] = Field(default_factory=dict)
+    structured_query: dict[str, Any] | None = None
+
+
+class SearchSessionResponse(BaseModel):
+    session_id: str
+    timestamp: str
+    provenance: str = "user_feedback_downstream_signal"
+
+
+class FeedbackEventRequest(BaseModel):
+    session_id: str | None = None
+    query_id: str | None = None
+    query_text: str = ""
+    retrieval_method: str = "hybrid_search"
+    rank: int | None = None
+    dataset_id: str
+    dataset_title: str
+    usefulness: str
+    would_use_for_analysis: str | None = None
+    clicked: bool = False
+    opened_evidence: bool = False
+    saved: bool = False
+    exported: bool = False
+    reason_tags: list[str] = Field(default_factory=list)
+    free_text_note: str = ""
+    judge_snapshot: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("usefulness")
+    @classmethod
+    def valid_usefulness(cls, value: str) -> str:
+        allowed = {"useful", "partially_useful", "not_useful", "unsure"}
+        if value not in allowed:
+            raise ValueError(f"usefulness must be one of {sorted(allowed)}")
+        return value
+
+    @field_validator("would_use_for_analysis")
+    @classmethod
+    def valid_would_use(cls, value: str | None) -> str | None:
+        allowed = {None, "yes", "maybe", "no"}
+        if value not in allowed:
+            raise ValueError("would_use_for_analysis must be yes, maybe, no, or null")
+        return value
+
+
+class SavedDatasetRequest(BaseModel):
+    session_id: str | None = None
+    query_id: str | None = None
+    query_text: str = ""
+    dataset_id: str
+    dataset_title: str
+    rank: int | None = None
+    retrieval_method: str = "hybrid_search"
+    exported: bool = False
+    judge_snapshot: dict[str, Any] = Field(default_factory=dict)
+
+
+@app.post("/api/frontend/search-sessions", response_model=SearchSessionResponse)
+async def create_search_session(request: SearchSessionRequest) -> SearchSessionResponse:
+    """Create a lightweight frontend search session artifact."""
+    timestamp = datetime.now(timezone.utc).isoformat()
+    session = {
+        "session_id": f"session_{uuid4().hex}",
+        "timestamp": timestamp,
+        "query_id": request.query_id,
+        "query_text": request.query_text,
+        "retrieval_method": request.retrieval_method,
+        "filters": request.filters,
+        "structured_query": request.structured_query,
+        "provenance": "user_feedback_downstream_signal",
+    }
+    _append_jsonl(FRONTEND_ARTIFACT_DIR / "search_sessions.jsonl", session)
+    return SearchSessionResponse(
+        session_id=session["session_id"],
+        timestamp=timestamp,
+    )
+
+
+@app.post("/api/frontend/feedback")
+async def log_feedback_event(request: FeedbackEventRequest) -> dict[str, Any]:
+    """Log downstream retrieval feedback, not gold relevance labels."""
+    event = request.model_dump(mode="json")
+    event.update(
+        {
+            "feedback_id": f"feedback_{uuid4().hex}",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "provenance": "user_feedback_downstream_signal",
+        }
+    )
+    _append_jsonl(FRONTEND_ARTIFACT_DIR / "retrieval_feedback.jsonl", event)
+    return event
+
+
+@app.post("/api/frontend/saved-datasets")
+async def save_frontend_dataset(request: SavedDatasetRequest) -> dict[str, Any]:
+    """Persist a frontend save/export event for downstream success analysis."""
+    payload = request.model_dump(mode="json")
+    payload.update(
+        {
+            "saved_dataset_id": f"saved_{uuid4().hex}",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "saved": True,
+            "provenance": "user_feedback_downstream_signal",
+        }
+    )
+    _append_jsonl(FRONTEND_ARTIFACT_DIR / "saved_datasets.jsonl", payload)
+    return payload
+
+
+@app.get("/api/frontend/feedback/{dataset_id}")
+async def get_frontend_feedback(
+    dataset_id: str,
+    query_text: str | None = Query(default=None),
+) -> dict[str, Any]:
+    """Return prior downstream feedback for a dataset, optionally scoped by query."""
+    dataset_key = dataset_id.lower()
+    query_norm = _normalized_query(query_text)
+    rows = []
+    for row in _read_jsonl(FRONTEND_ARTIFACT_DIR / "retrieval_feedback.jsonl"):
+        if str(row.get("dataset_id", "")).lower() != dataset_key:
+            continue
+        if query_norm and _normalized_query(row.get("query_text")) != query_norm:
+            continue
+        rows.append(row)
+    return {"dataset_id": dataset_id, "feedback": rows}
+
+
+@app.get("/api/frontend/feedback-summary")
+async def get_frontend_feedback_summary() -> dict[str, Any]:
+    """Summarize local downstream retrieval feedback artifacts."""
+    feedback = _read_jsonl(FRONTEND_ARTIFACT_DIR / "retrieval_feedback.jsonl")
+    sessions = _read_jsonl(FRONTEND_ARTIFACT_DIR / "search_sessions.jsonl")
+    saved = _read_jsonl(FRONTEND_ARTIFACT_DIR / "saved_datasets.jsonl")
+    usefulness: dict[str, int] = {}
+    for row in feedback:
+        key = str(row.get("usefulness", "unknown"))
+        usefulness[key] = usefulness.get(key, 0) + 1
+    return {
+        "sessions": len(sessions),
+        "feedback_events": len(feedback),
+        "saved_datasets": len(saved),
+        "usefulness_distribution": usefulness,
+        "provenance": "user_feedback_downstream_signal",
+    }
 
 
 # Dataset endpoints

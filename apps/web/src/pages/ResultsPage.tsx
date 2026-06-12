@@ -1,13 +1,35 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getOntology, searchDatasets } from '../api/search'
+import { createSearchSession, getOntology, searchDatasets } from '../api/search'
 import { DatasetCard } from '../components/DatasetCard'
 import { ComparisonDrawer, ComparisonBar } from '../components/ComparisonDrawer'
-import type { DatasetQAStatus, ExperimentQuery } from '../types'
+import type { DatasetQAStatus, ExperimentQuery, SearchResultItem } from '../types'
 
 const MAX_COMPARISON_DATASETS = 5
 type QAFilter = 'all' | 'reviewed' | 'trusted'
+type SortKey =
+  | 'retrieval_score'
+  | 'neuro_label'
+  | 'confidence'
+  | 'evidence_completeness'
+  | 'source'
+  | 'modality'
+  | 'species'
+  | 'abstain'
+  | 'feedback'
+
+interface ResultFilters {
+  source: string
+  species: string
+  modality: string
+  brainRegion: string
+  neuroLabel: string
+  minEvidenceCompleteness: number
+  hideAbstain: boolean
+  rawDataSuitable: boolean
+  needsAudit: boolean
+}
 
 const emptyExperimentQuery: ExperimentQuery = {
   task: [], behavior: [], modality: [], species: [],
@@ -18,6 +40,17 @@ const emptyExperimentQuery: ExperimentQuery = {
 const speciesOptions = ['mouse', 'rat', 'human', 'macaque']
 const dataStandardOptions = ['NWB', 'BIDS']
 const sourceArchiveOptions = ['demo', 'dandi', 'openneuro']
+const defaultResultFilters: ResultFilters = {
+  source: '',
+  species: '',
+  modality: '',
+  brainRegion: '',
+  neuroLabel: '',
+  minEvidenceCompleteness: 0,
+  hideAbstain: false,
+  rawDataSuitable: false,
+  needsAudit: false,
+}
 
 const recoveryQueries = [
   'Find reversal learning datasets with reward omission and trial outcomes',
@@ -36,6 +69,9 @@ export function ResultsPage() {
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([])
   const [selectedTitles, setSelectedTitles] = useState<Record<string, string>>({})
   const [comparisonDrawerOpen, setComparisonDrawerOpen] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<SortKey>('retrieval_score')
+  const [resultFilters, setResultFilters] = useState<ResultFilters>(defaultResultFilters)
 
   const toggleDatasetSelection = useCallback((datasetId: string, title?: string) => {
     setSelectedForComparison((prev) => {
@@ -62,6 +98,36 @@ export function ResultsPage() {
     queryFn: () => searchDatasets(query, qaFilterToFilters(qaFilter), cleanStructuredQuery(submittedExperimentQuery)),
     enabled: Boolean(query || hasStructuredQuery(submittedExperimentQuery)),
   })
+
+  useEffect(() => {
+    let cancelled = false
+    if (!query && !hasStructuredQuery(submittedExperimentQuery)) return undefined
+
+    createSearchSession({
+      query_text: query,
+      retrieval_method: 'hybrid_search',
+      filters: qaFilterToFilters(qaFilter),
+      structured_query: cleanStructuredQuery(submittedExperimentQuery),
+    })
+      .then((session) => {
+        if (!cancelled) setSessionId(session.session_id)
+      })
+      .catch(() => {
+        if (!cancelled) setSessionId(null)
+      })
+
+    return () => { cancelled = true }
+  }, [query, qaFilter, submittedExperimentQuery])
+
+  const filteredResults = useMemo(
+    () => sortResults(filterResults(data?.results || [], resultFilters), sortBy),
+    [data?.results, resultFilters, sortBy],
+  )
+
+  const filterOptions = useMemo(
+    () => buildResultFilterOptions(data?.results || []),
+    [data?.results],
+  )
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -237,10 +303,22 @@ export function ResultsPage() {
 
           {data.results.length > 0 ? (
             <div>
-              {data.results.map((result) => (
+              <ResultControls
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                filters={resultFilters}
+                onFiltersChange={setResultFilters}
+                options={filterOptions}
+                resultCount={filteredResults.length}
+                totalCount={data.results.length}
+              />
+
+              {filteredResults.map((result) => (
                 <DatasetCard
                   key={result.dataset.id}
                   result={result}
+                  queryText={query}
+                  sessionId={sessionId}
                   isSelected={selectedForComparison.includes(result.dataset.id)}
                   onToggleSelect={(id) => toggleDatasetSelection(id, result.dataset.title)}
                   selectionDisabled={
@@ -325,6 +403,201 @@ function FilterSelect({
         ))}
       </select>
     </label>
+  )
+}
+
+function ResultControls({
+  sortBy,
+  onSortChange,
+  filters,
+  onFiltersChange,
+  options,
+  resultCount,
+  totalCount,
+}: {
+  sortBy: SortKey
+  onSortChange: (value: SortKey) => void
+  filters: ResultFilters
+  onFiltersChange: (filters: ResultFilters) => void
+  options: ReturnType<typeof buildResultFilterOptions>
+  resultCount: number
+  totalCount: number
+}) {
+  const setFilter = <K extends keyof ResultFilters>(key: K, value: ResultFilters[K]) => {
+    onFiltersChange({ ...filters, [key]: value })
+  }
+
+  return (
+    <div className="border border-neural-800/50 rounded-lg p-4 mb-3">
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="block">
+          <span className="block text-xs text-neural-500 mb-1 uppercase tracking-wide">Sort</span>
+          <select
+            value={sortBy}
+            onChange={(e) => onSortChange(e.target.value as SortKey)}
+            className="bg-neural-900 border border-neural-700 rounded px-3 py-1.5 text-sm text-neural-200"
+          >
+            <option value="retrieval_score">Retrieval score</option>
+            <option value="neuro_label">Neuro-judge label</option>
+            <option value="confidence">Judge confidence</option>
+            <option value="evidence_completeness">Evidence completeness</option>
+            <option value="source">Source/archive</option>
+            <option value="modality">Modality</option>
+            <option value="species">Species</option>
+            <option value="abstain">Abstain recommended</option>
+            <option value="feedback">Feedback score</option>
+          </select>
+        </label>
+
+        <CompactSelect label="Archive" value={filters.source} options={options.sources}
+          onChange={(value) => setFilter('source', value)} />
+        <CompactSelect label="Species" value={filters.species} options={options.species}
+          onChange={(value) => setFilter('species', value)} />
+        <CompactSelect label="Modality" value={filters.modality} options={options.modalities}
+          onChange={(value) => setFilter('modality', value)} />
+        <CompactSelect label="Region" value={filters.brainRegion} options={options.brainRegions}
+          onChange={(value) => setFilter('brainRegion', value)} />
+        <CompactSelect label="Judge" value={filters.neuroLabel} options={['0', '1', '2', '3']}
+          onChange={(value) => setFilter('neuroLabel', value)} />
+
+        <label className="block min-w-40">
+          <span className="block text-xs text-neural-500 mb-1 uppercase tracking-wide">
+            Min evidence {filters.minEvidenceCompleteness.toFixed(1)}
+          </span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={filters.minEvidenceCompleteness}
+            onChange={(e) => setFilter('minEvidenceCompleteness', Number(e.target.value))}
+            className="w-full"
+          />
+        </label>
+
+        <label className="flex items-center gap-2 text-xs text-neural-500">
+          <input type="checkbox" checked={filters.hideAbstain}
+            onChange={(e) => setFilter('hideAbstain', e.target.checked)}
+            className="rounded border-neural-700 bg-neural-900 text-accent-cyan" />
+          Hide abstain
+        </label>
+        <label className="flex items-center gap-2 text-xs text-neural-500">
+          <input type="checkbox" checked={filters.rawDataSuitable}
+            onChange={(e) => setFilter('rawDataSuitable', e.target.checked)}
+            className="rounded border-neural-700 bg-neural-900 text-accent-cyan" />
+          Raw data suitable
+        </label>
+        <label className="flex items-center gap-2 text-xs text-neural-500">
+          <input type="checkbox" checked={filters.needsAudit}
+            onChange={(e) => setFilter('needsAudit', e.target.checked)}
+            className="rounded border-neural-700 bg-neural-900 text-accent-cyan" />
+          Needs audit
+        </label>
+
+        <button
+          type="button"
+          onClick={() => onFiltersChange(defaultResultFilters)}
+          className="text-xs text-neural-500 hover:text-neural-200"
+        >
+          Clear
+        </button>
+      </div>
+      <p className="mt-3 text-xs text-neural-600">
+        Showing {resultCount} of {totalCount}. Neuro-judge labels are preliminary downstream inspection signals, not human gold.
+      </p>
+    </div>
+  )
+}
+
+function CompactSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: string[]
+  onChange: (value: string) => void
+}) {
+  return (
+    <label className="block">
+      <span className="block text-xs text-neural-500 mb-1 uppercase tracking-wide">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-neural-900 border border-neural-700 rounded px-3 py-1.5 text-sm text-neural-200 max-w-36"
+      >
+        <option value="">Any</option>
+        {options.map((option) => (
+          <option key={option} value={option}>{option}</option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
+function buildResultFilterOptions(results: SearchResultItem[]) {
+  const unique = (values: string[]) => Array.from(new Set(values.filter(Boolean))).sort()
+  return {
+    sources: unique(results.map((r) => r.dataset.source)),
+    species: unique(results.flatMap((r) => r.dataset.species || [])),
+    modalities: unique(results.flatMap((r) => r.dataset.modalities || [])),
+    brainRegions: unique(results.flatMap((r) => r.dataset.brain_regions || [])),
+  }
+}
+
+function filterResults(results: SearchResultItem[], filters: ResultFilters): SearchResultItem[] {
+  return results.filter((result) => {
+    const dataset = result.dataset
+    const judge = result.neuro_judge
+    const packet = result.evidence_packet
+    if (filters.source && dataset.source !== filters.source) return false
+    if (filters.species && !(dataset.species || []).includes(filters.species)) return false
+    if (filters.modality && !(dataset.modalities || []).includes(filters.modality)) return false
+    if (filters.brainRegion && !(dataset.brain_regions || []).includes(filters.brainRegion)) return false
+    if (filters.neuroLabel && String(judge?.label ?? '') !== filters.neuroLabel) return false
+    if ((judge?.evidence_completeness ?? 0) < filters.minEvidenceCompleteness) return false
+    if (filters.hideAbstain && judge?.abstain_recommended) return false
+    if (filters.rawDataSuitable && packet?.has_raw_data !== true) return false
+    if (filters.needsAudit && !needsAudit(result)) return false
+    return true
+  })
+}
+
+function sortResults(results: SearchResultItem[], sortBy: SortKey): SearchResultItem[] {
+  const sorted = [...results]
+  const first = (values?: string[]) => (values && values[0] ? values[0] : '')
+  sorted.sort((a, b) => {
+    if (sortBy === 'source') return first([a.dataset.source]).localeCompare(first([b.dataset.source]))
+    if (sortBy === 'modality') return first(a.dataset.modalities).localeCompare(first(b.dataset.modalities))
+    if (sortBy === 'species') return first(a.dataset.species).localeCompare(first(b.dataset.species))
+    if (sortBy === 'abstain') return Number(b.neuro_judge?.abstain_recommended ?? false) - Number(a.neuro_judge?.abstain_recommended ?? false)
+    if (sortBy === 'feedback') return feedbackScore(b) - feedbackScore(a)
+    if (sortBy === 'neuro_label') return (b.neuro_judge?.label ?? -1) - (a.neuro_judge?.label ?? -1)
+    if (sortBy === 'confidence') return (b.neuro_judge?.confidence ?? -1) - (a.neuro_judge?.confidence ?? -1)
+    if (sortBy === 'evidence_completeness') {
+      return (b.neuro_judge?.evidence_completeness ?? -1) - (a.neuro_judge?.evidence_completeness ?? -1)
+    }
+    return b.score - a.score
+  })
+  return sorted
+}
+
+function feedbackScore(result: SearchResultItem): number {
+  const weights: Record<string, number> = { useful: 3, partially_useful: 2, unsure: 1, not_useful: 0 }
+  const feedback = result.prior_feedback || []
+  if (!feedback.length) return -1
+  return feedback.reduce((sum, item) => sum + (weights[item.usefulness] ?? 0), 0) / feedback.length
+}
+
+function needsAudit(result: SearchResultItem): boolean {
+  const judge = result.neuro_judge
+  return Boolean(
+    judge?.abstain_recommended ||
+    judge?.hard_negative_detected ||
+    (judge?.required_dimensions_missing && judge.required_dimensions_missing.length > 0) ||
+    (judge?.label ?? 0) >= 2 && (judge?.evidence_completeness ?? 1) < 0.75,
   )
 }
 

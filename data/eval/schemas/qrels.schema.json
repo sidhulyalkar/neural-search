@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neural Search QREL",
+  "type": "object",
+  "required": ["query_id", "record_id", "label", "annotator_id"],
+  "properties": {
+    "query_id": {"type": "string"},
+    "record_id": {"type": "string"},
+    "label": {"type": "integer", "minimum": 0, "maximum": 3},
+    "label_name": {
+      "type": "string",
+      "enum": ["not_useful", "weakly_useful", "useful", "highly_useful"]
+    },
+    "annotator_id": {"type": "string"},
+    "rationale": {"type": "string"}
+  },
+  "additionalProperties": true
+}
