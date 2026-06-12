@@ -126,6 +126,86 @@ def _match_count(store: FieldStateGraphStore, dataset_node_id: str, edge_type: s
 # ---------------------------------------------------------------------------
 
 
+def compute_memory_graph_evidence(
+    store: FieldStateGraphStore,
+    result: Any,
+    parsed_query: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Return matched graph node labels for display alongside the score.
+
+    Returns a dict with keys:
+    - modality_matches: list[str]
+    - species_matches: list[str]
+    - region_matches: list[str]
+    - affordance_matches: list[str]
+    - has_raw_signal: bool
+    - lacks_evidence_count: int
+    - contraindicated: list[str]
+    """
+    dataset_id = str(getattr(result, "dataset_id", "") or "")
+    empty: dict[str, Any] = {
+        "modality_matches": [],
+        "species_matches": [],
+        "region_matches": [],
+        "affordance_matches": [],
+        "has_raw_signal": False,
+        "lacks_evidence_count": 0,
+        "contraindicated": [],
+    }
+    if not dataset_id:
+        return empty
+
+    dataset_node = store.query_by_dataset_id(dataset_id)
+    if dataset_node is None:
+        return empty
+
+    node_id = dataset_node.node_id
+
+    def _matched_labels(edge_type: str, query_vals: list[str]) -> list[str]:
+        q_terms = _query_terms(query_vals)
+        matched: list[str] = []
+        for _edge, neighbor in store.get_neighbors(node_id, edge_types=[edge_type]):
+            node_t = _node_terms(neighbor)
+            if node_t & q_terms:
+                label = getattr(neighbor, "label", None)
+                if label and label not in matched:
+                    matched.append(label)
+        return matched
+
+    modalities: list[str] = list(parsed_query.get("modalities", []))
+    species: list[str] = list(parsed_query.get("species", []))
+    regions: list[str] = list(parsed_query.get("brain_regions", []))
+    affordances: list[str] = list(parsed_query.get("affordances", []))
+
+    raw_indicators = {"raw"}
+    all_query_terms = _query_terms(modalities + list(parsed_query.get("tasks", [])))
+    query_text = str(parsed_query.get("_raw_query", "")).lower()
+    has_raw_signal = bool(
+        (raw_indicators & all_query_terms or "raw" in query_text)
+        and store.get_neighbors(node_id, edge_types=[_RAW_SIGNAL_EDGE])
+    )
+
+    lacks_edges = store.get_neighbors(node_id, edge_types=[_LACKS_EVIDENCE_EDGE])
+
+    all_q = _query_terms(modalities + species + regions + affordances)
+    contraindicated: list[str] = []
+    for _edge, contra_node in store.get_neighbors(node_id, edge_types=[_CONTRAINDICATED_EDGE]):
+        if _node_terms(contra_node) & all_q:
+            label = getattr(contra_node, "label", None)
+            if label and label not in contraindicated:
+                contraindicated.append(label)
+
+    return {
+        "modality_matches": _matched_labels(_MODALITY_EDGE, modalities),
+        "species_matches": _matched_labels(_SPECIES_EDGE, species),
+        "region_matches": _matched_labels(_REGION_EDGE, regions),
+        "affordance_matches": _matched_labels(_AFFORDANCE_EDGE, affordances),
+        "has_raw_signal": has_raw_signal,
+        "lacks_evidence_count": len(lacks_edges),
+        "contraindicated": contraindicated,
+    }
+
+
 def compute_memory_graph_score(
     store: FieldStateGraphStore,
     result: Any,
