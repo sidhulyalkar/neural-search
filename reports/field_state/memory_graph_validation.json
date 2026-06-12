@@ -4,58 +4,58 @@
   "metrics": {
     "average_degree_by_source": {
       "cellxgene": 26.0,
-      "dandi": 9.818181818181818,
+      "dandi": 3.2248322147651005,
       "microns": 30.0,
       "modeldb": 30.0,
-      "openneuro": 30.0,
+      "openneuro": 3.6877076411960132,
       "spark": 7.3
     },
-    "datasets_missing_description": 9,
-    "datasets_missing_modality": 7,
+    "datasets_missing_description": 596,
+    "datasets_missing_modality": 504,
     "datasets_missing_raw_or_processed_evidence": 0,
-    "datasets_missing_region": 17,
-    "datasets_missing_species": 6,
-    "datasets_missing_task": 15,
+    "datasets_missing_region": 542,
+    "datasets_missing_species": 485,
+    "datasets_missing_task": 526,
     "edge_counts_by_type": {
-      "dataset_from_source": 35,
-      "dataset_has_behavioral_event": 32,
+      "dataset_from_source": 622,
+      "dataset_has_behavioral_event": 129,
       "dataset_has_file_format": 11,
-      "dataset_has_modality": 39,
+      "dataset_has_modality": 136,
       "dataset_has_processed_signal": 11,
-      "dataset_has_raw_signal": 24,
-      "dataset_has_species": 34,
-      "dataset_has_task": 34,
+      "dataset_has_raw_signal": 611,
+      "dataset_has_species": 146,
+      "dataset_has_task": 119,
       "dataset_lacks_required_evidence": 65,
       "dataset_linked_to_paper": 1,
-      "dataset_records_region": 26,
+      "dataset_records_region": 92,
       "dataset_supports_analysis": 36,
-      "dataset_uses_standard": 22
+      "dataset_uses_standard": 324
     },
     "high_value_curation_targets": [
       "dataset:dandi:000785",
       "dataset:dandi:000045",
       "dataset:dandi:001550",
-      "dataset:dandi:001079",
-      "dataset:dandi:001371"
+      "dataset:dandi:000007",
+      "dataset:dandi:000009"
     ],
     "node_counts_by_type": {
       "analysis_affordance": 18,
-      "behavioral_event": 17,
-      "brain_region": 10,
+      "behavioral_event": 28,
+      "brain_region": 14,
       "data_standard": 8,
-      "dataset": 35,
-      "feedback_signal": 5,
+      "dataset": 622,
+      "feedback_signal": 11,
       "file_format": 9,
-      "modality": 15,
+      "modality": 20,
       "neuro_judge_evidence_packet": 675,
       "paper": 1,
       "processed_data_signal": 11,
-      "raw_data_signal": 24,
+      "raw_data_signal": 611,
       "source_archive": 6,
-      "species": 3,
-      "task": 23
+      "species": 5,
+      "task": 49
     },
-    "orphan_node_count": 680,
+    "orphan_node_count": 686,
     "orphan_node_ids": [
       "node:neuro_judge_evidence_packet:q_0001:neurovault_4778",
       "node:neuro_judge_evidence_packet:q_0001:neurovault_1323",
@@ -92,33 +92,37 @@
         5
       ],
       [
-        "dataset:dandi:001079",
-        4
+        "dataset:dandi:000007",
+        5
       ],
       [
-        "dataset:dandi:001371",
-        4
+        "dataset:dandi:000009",
+        5
       ],
       [
-        "dataset:dandi:000640",
-        3
+        "dataset:dandi:000011",
+        5
       ],
       [
-        "dataset:dandi:000678",
-        3
+        "dataset:dandi:000012",
+        5
       ],
       [
-        "dataset:spark:SPARK-GENO-001",
-        3
+        "dataset:dandi:000027",
+        5
       ],
       [
-        "dataset:spark:SPARK-GENO-002",
-        3
+        "dataset:dandi:000029",
+        5
+      ],
+      [
+        "dataset:dandi:000031",
+        5
       ]
     ],
-    "total_datasets": 35,
-    "total_edges": 370,
-    "total_nodes": 860
+    "total_datasets": 622,
+    "total_edges": 2303,
+    "total_nodes": 2088
   },
   "passed": true
 }
