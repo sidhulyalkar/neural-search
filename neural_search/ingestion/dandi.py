@@ -32,6 +32,148 @@ logger = logging.getLogger(__name__)
 
 DANDI_API_URL = "https://api.dandiarchive.org/api"
 
+# DANDI assetsSummary.variableMeasured → canonical modality IDs
+_DANDI_VARIABLE_MEASURED_MAP: dict[str, str] = {
+    # Extracellular ephys
+    "electricalseries": "extracellular_ephys",
+    "units": "extracellular_ephys",
+    "spikeeventeries": "extracellular_ephys",
+    "electrodes": "extracellular_ephys",
+    # LFP
+    "lfp": "lfp",
+    "decompositionseries": "lfp",
+    # Intracellular
+    "patchchlamperies": "patch_clamp",
+    "currenclampseries": "patch_clamp",
+    "voltageclampseries": "patch_clamp",
+    "intracellularelectrodeseries": "patch_clamp",
+    # Calcium imaging / two-photon
+    "twophotonseries": "calcium_imaging",
+    "roiresponseseries": "calcium_imaging",
+    "fluorescenceseries": "calcium_imaging",
+    "imagingplane": "calcium_imaging",
+    # One-photon / widefield
+    "onephotonseries": "calcium_imaging",
+    # EEG / iEEG
+    "eegseries": "eeg",
+    "ecog": "ecog",
+    "ieeg": "ieeg",
+    # Behavioral
+    "timeseries": "behavioral",
+    "spatialseries": "behavioral",
+    "processedseries": "behavioral",
+    "behavioraleras": "behavioral",
+    "behavioraltimeseries": "behavioral",
+    "eyetracking": "eye_tracking",
+    "pupiltracking": "eye_tracking",
+    "position": "behavioral",
+    "events": "behavioral",
+    # fMRI / BOLD
+    "bold": "fmri",
+}
+
+# DANDI approach names → canonical modality IDs
+_DANDI_APPROACH_MAP: dict[str, str] = {
+    "electrophysiological approach": "extracellular_ephys",
+    "imaging approach": "calcium_imaging",
+    "behavioral approach": "behavioral",
+    "calcium imaging": "calcium_imaging",
+    "two-photon microscopy": "calcium_imaging",
+    "two photon microscopy": "calcium_imaging",
+    "patch clamp": "patch_clamp",
+    "whole cell patch clamp": "patch_clamp",
+    "extracellular electrophysiology": "extracellular_ephys",
+    "intracellular electrophysiology": "patch_clamp",
+    "multi-unit recording": "extracellular_ephys",
+    "single-unit recording": "extracellular_ephys",
+    "eeg": "eeg",
+    "ecog": "ecog",
+    "functional magnetic resonance imaging": "fmri",
+    "fmri": "fmri",
+    "optogenetics": "optogenetics",
+}
+
+# DANDI species names → canonical IDs
+_DANDI_SPECIES_MAP: dict[str, str] = {
+    "house mouse": "mouse",
+    "mus musculus": "mouse",
+    "mouse": "mouse",
+    "norway rat": "rat",
+    "rattus norvegicus": "rat",
+    "rat": "rat",
+    "homo sapiens": "human",
+    "human": "human",
+    "rhesus macaque": "macaque",
+    "macaca mulatta": "macaque",
+    "macaque": "macaque",
+    "drosophila melanogaster": "drosophila",
+    "fruit fly": "drosophila",
+    "danio rerio": "zebrafish",
+    "zebrafish": "zebrafish",
+    "caenorhabditis elegans": "c_elegans",
+}
+
+
+def _map_dandi_variable_measured(variable_measured: list[str]) -> list[str]:
+    """Map DANDI variableMeasured NWB type names to canonical modality IDs."""
+    canonical: set[str] = set()
+    for vm in variable_measured:
+        key = vm.lower().strip()
+        if key in _DANDI_VARIABLE_MEASURED_MAP:
+            canonical.add(_DANDI_VARIABLE_MEASURED_MAP[key])
+    return sorted(canonical)
+
+
+def _map_dandi_approach(approach_list: list[dict[str, str]]) -> list[str]:
+    """Map DANDI approach objects to canonical modality IDs."""
+    canonical: set[str] = set()
+    for item in approach_list:
+        name = item.get("name", "").lower().strip()
+        if name in _DANDI_APPROACH_MAP:
+            canonical.add(_DANDI_APPROACH_MAP[name])
+    return sorted(canonical)
+
+
+def _map_dandi_species(species_list: list[dict[str, str]]) -> list[str]:
+    """Map DANDI species objects to canonical species IDs."""
+    canonical: list[str] = []
+    seen: set[str] = set()
+    for item in species_list:
+        name = item.get("name", "").lower().strip()
+        if name in _DANDI_SPECIES_MAP:
+            cid = _DANDI_SPECIES_MAP[name]
+            if cid not in seen:
+                seen.add(cid)
+                canonical.append(cid)
+    return canonical
+
+
+def fetch_dandiset_rich_metadata(source_id: str) -> dict[str, Any]:
+    """Fetch rich assetsSummary via the DANDI Python client.
+
+    Returns a dict with keys: variableMeasured, approach, measurementTechnique,
+    species, about, description. Returns empty dict on failure.
+    """
+    try:
+        from dandi.dandiapi import DandiAPIClient
+        with DandiAPIClient() as client:
+            ds = client.get_dandiset(source_id, "draft")
+            meta = ds.get_metadata()
+            d = meta.model_dump(mode="json", exclude_none=True)
+            assets = d.get("assetsSummary") or {}
+            return {
+                "variableMeasured": assets.get("variableMeasured") or [],
+                "approach": assets.get("approach") or [],
+                "measurementTechnique": assets.get("measurementTechnique") or [],
+                "species": assets.get("species") or [],
+                "about": d.get("about") or [],
+                "description": d.get("description") or "",
+                "keywords": d.get("keywords") or [],
+            }
+    except Exception as exc:
+        logger.debug("Could not fetch rich metadata for DANDI %s: %s", source_id, exc)
+        return {}
+
 
 def _as_list(value: Any) -> list[str]:
     if value is None:
@@ -48,7 +190,17 @@ def _asset_summary(dandiset: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-def normalize_dandiset(raw: dict[str, Any]) -> dict[str, Any]:
+def normalize_dandiset(
+    raw: dict[str, Any],
+    *,
+    rich_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Normalize a raw DANDI listing record.
+
+    ``rich_metadata`` can be pre-fetched via ``fetch_dandiset_rich_metadata``
+    to supply assetsSummary variableMeasured / approach / species that the
+    listing API omits.
+    """
     version = raw.get("most_recent_published_version") or raw.get("draft_version") or raw
     metadata = version.get("metadata") or raw.get("metadata") or {}
     assets = _asset_summary(raw) or _asset_summary(version)
@@ -59,7 +211,13 @@ def normalize_dandiset(raw: dict[str, Any]) -> dict[str, Any]:
         or raw.get("name")
         or f"DANDI {source_id}"
     )
-    description = metadata.get("description") or version.get("description") or raw.get("description")
+    rich = rich_metadata or {}
+    description = (
+        metadata.get("description")
+        or version.get("description")
+        or raw.get("description")
+        or rich.get("description")
+    )
     text = " ".join(str(part) for part in [title, description, metadata, assets])
     extraction = extract_dataset_labels(
         title=title,
@@ -68,6 +226,14 @@ def normalize_dandiset(raw: dict[str, Any]) -> dict[str, Any]:
         source_metadata={**metadata, "assets": assets},
         linked_paper_abstracts=[],
     )
+
+    # Supplement with DANDI-client-derived modalities and species when available
+    rich_modalities: list[str] = (
+        _map_dandi_variable_measured(rich.get("variableMeasured") or []) +
+        _map_dandi_approach(rich.get("approach") or [])
+    )
+    rich_species = _map_dandi_species(rich.get("species") or [])
+
     return {
         "source": "dandi",
         "source_id": source_id,
@@ -75,8 +241,8 @@ def normalize_dandiset(raw: dict[str, Any]) -> dict[str, Any]:
         "description": description,
         "url": raw.get("url") or f"https://dandiarchive.org/dandiset/{source_id}",
         "license": metadata.get("license") or raw.get("license"),
-        "species": [item.id for item in extraction.species],
-        "modalities": sorted({item.id for item in extraction.modalities}),
+        "species": list(dict.fromkeys(rich_species + [item.id for item in extraction.species])),
+        "modalities": sorted({*rich_modalities, *(item.id for item in extraction.modalities)}),
         "brain_regions": [item.id for item in extraction.brain_regions],
         "tasks": [item.id for item in extraction.tasks],
         "behaviors": [item.id for item in extraction.behaviors],
