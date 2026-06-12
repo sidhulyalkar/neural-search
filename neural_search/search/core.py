@@ -14,6 +14,7 @@ import yaml
 from neural_search.cards import generate_dataset_card_json
 from neural_search.embeddings import HashingEmbeddingProvider, cosine_similarity
 from neural_search.field_state.retrieval_bridge import (
+    compute_memory_graph_evidence,
     compute_memory_graph_score,
     load_memory_graph_store,
 )
@@ -1005,6 +1006,9 @@ def _augment_result_with_optional_scores(
             if mg_score != 0:
                 result.why_matched.append(f"Memory graph score: {mg_score:.3f}")
             extra_score += float(memory_graph_config.get("weight", 0.06)) * mg_score
+            result.memory_graph_evidence = compute_memory_graph_evidence(
+                memory_graph_store, result, parsed_query
+            )
         except Exception:
             # Memory graph scoring is optional; never fail retrieval
             result.score_breakdown["memory_graph_score"] = 0.0

@@ -10,6 +10,7 @@ import pytest
 
 from neural_search.field_state.graph_store import FieldStateGraphStore
 from neural_search.field_state.retrieval_bridge import (
+    compute_memory_graph_evidence,
     compute_memory_graph_score,
     load_memory_graph_store,
 )
@@ -312,3 +313,76 @@ class TestLoadMemoryGraphStore:
         assert loaded.node_count == src_store.node_count
         assert loaded.edge_count == src_store.edge_count
         load_memory_graph_store.cache_clear()
+
+
+# ---------------------------------------------------------------------------
+# compute_memory_graph_evidence
+# ---------------------------------------------------------------------------
+
+class TestMemoryGraphEvidence:
+    def test_returns_empty_for_unknown_dataset(self) -> None:
+        store, _ = _build_store_with_dataset(dataset_id="dandi:000001")
+        result = _result("dandi:999999")
+        ev = compute_memory_graph_evidence(store, result, {"modalities": ["neuropixels"]})
+        assert ev["modality_matches"] == []
+        assert ev["species_matches"] == []
+        assert ev["has_raw_signal"] is False
+        assert ev["lacks_evidence_count"] == 0
+        assert ev["contraindicated"] == []
+
+    def test_modality_match_returned_in_evidence(self) -> None:
+        store, did = _build_store_with_dataset(modalities=["neuropixels"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"modalities": ["neuropixels"]})
+        assert "neuropixels" in ev["modality_matches"]
+
+    def test_species_match_returned_in_evidence(self) -> None:
+        store, did = _build_store_with_dataset(species=["mouse"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"species": ["mouse"]})
+        assert "mouse" in ev["species_matches"]
+
+    def test_region_match_returned_in_evidence(self) -> None:
+        store, did = _build_store_with_dataset(regions=["hippocampus"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"brain_regions": ["hippocampus"]})
+        assert "hippocampus" in ev["region_matches"]
+
+    def test_affordance_match_returned_in_evidence(self) -> None:
+        store, did = _build_store_with_dataset(affordances=["q_learning_modeling"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"affordances": ["q_learning_modeling"]})
+        assert "q_learning_modeling" in ev["affordance_matches"]
+
+    def test_raw_signal_flag_set(self) -> None:
+        store, did = _build_store_with_dataset(has_raw_signal=True)
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"_raw_query": "I need raw spike data"})
+        assert ev["has_raw_signal"] is True
+
+    def test_lacks_evidence_count_returned(self) -> None:
+        store, did = _build_store_with_dataset(lacks_evidence_count=3)
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {})
+        assert ev["lacks_evidence_count"] == 3
+
+    def test_contraindicated_label_returned(self) -> None:
+        store, did = _build_store_with_dataset(contraindicated_labels=["spike_sorting"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"affordances": ["spike_sorting"]})
+        assert "spike_sorting" in ev["contraindicated"]
+
+    def test_no_contraindicated_when_not_in_query(self) -> None:
+        store, did = _build_store_with_dataset(contraindicated_labels=["spike_sorting"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {"affordances": ["calcium_imaging"]})
+        assert ev["contraindicated"] == []
+
+    def test_empty_query_returns_all_defaults(self) -> None:
+        store, did = _build_store_with_dataset(modalities=["fmri"], species=["human"])
+        result = _result(did)
+        ev = compute_memory_graph_evidence(store, result, {})
+        assert ev["modality_matches"] == []  # no query modalities
+        assert ev["species_matches"] == []   # no query species
+        assert ev["has_raw_signal"] is False
+        assert ev["lacks_evidence_count"] == 0

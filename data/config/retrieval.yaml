@@ -132,6 +132,12 @@ graph:
   use_edge_confidence: true
   max_transitive_hops: 2
 
+memory_graph:
+  enabled: true
+  nodes_path: artifacts/field_state/memory_graph_nodes.jsonl
+  edges_path: artifacts/field_state/memory_graph_edges.jsonl
+  weight: 0.06
+
 field_embeddings:
   enabled: true
   path: data/embeddings/real_all.dense.field_embeddings.jsonl
