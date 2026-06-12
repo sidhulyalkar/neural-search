@@ -1,5 +1,5 @@
 {
-  "build_id": "update_20260612T060102Z",
+  "build_id": "update_20260612T152359Z",
   "graph": {
     "total_edges": 1,
     "total_nodes": 682
@@ -7,6 +7,6 @@
   "record_hashes": {
     "dataset:dandi:000001": "798b82931952d8df"
   },
-  "snapshot_dir": "/tmp/pytest-of-sid21/pytest-69/test_full_run_writes_artifacts0/snaps/20260612T060102Z",
-  "timestamp": "20260612T060102Z"
+  "snapshot_dir": "/tmp/pytest-of-sid21/pytest-74/test_full_run_writes_artifacts0/snaps/20260612T152359Z",
+  "timestamp": "20260612T152359Z"
 }
