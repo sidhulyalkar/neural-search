@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Mapping
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +36,21 @@ SUPPORTED_NODE_TYPES = {
     "analysis_method",
     "institution",
     "author",
+    # Field-state memory graph node types
+    "source_archive",
+    "concept",
+    "pipeline",
+    "file_artifact",
+    "raw_data_signal",
+    "processed_data_signal",
+    "query",
+    "query_intent",
+    "retrieval_run",
+    "neuro_judge_evidence_packet",
+    "neuro_judge_judgment",
+    "feedback_signal",
+    "curation_issue",
+    "snapshot_manifest",
 }
 
 SUPPORTED_EDGE_TYPES = {
@@ -77,13 +92,38 @@ SUPPORTED_EDGE_TYPES = {
     "experimental_design_requires_modality",
     "experimental_design_requires_behavior",
     "experimental_design_can_use_dataset",
+    # Field-state memory graph edge types
+    "dataset_from_source",
+    "dataset_has_file_artifact",
+    "dataset_has_raw_signal",
+    "dataset_has_processed_signal",
+    "dataset_lacks_required_evidence",
+    "dataset_contraindicated_for",
+    "dataset_linked_to_paper",
+    "paper_supports_method",
+    "method_requires_modality",
+    "method_requires_raw_data",
+    "method_requires_region",
+    "concept_related_to_concept",
+    "concept_requires_affordance",
+    "query_requires_modality",
+    "query_requires_species",
+    "query_requires_region",
+    "query_requires_task",
+    "query_requires_affordance",
+    "query_has_hard_negative",
+    "retrieval_returned_dataset",
+    "judgment_labels_query_dataset",
+    "feedback_marks_result",
+    "snapshot_contains_node",
+    "snapshot_contains_edge",
 }
 
 TOKEN_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _require_text(value: str, field_name: str) -> str:
