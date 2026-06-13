@@ -4,7 +4,7 @@ import json
 import os
 import re
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -49,7 +49,10 @@ from neural_search.qa import (
     update_dataset_status,
 )
 from neural_search.recipes import get_recipe
-from neural_search.reports.dataset_compilation import compile_dataset_report, compute_corpus_completeness
+from neural_search.reports.dataset_compilation import (
+    compile_dataset_report,
+    compute_corpus_completeness,
+)
 from neural_search.reports.scientific_readiness import build_scientific_readiness_report
 from neural_search.schemas import (
     ComparisonResultRead,
@@ -131,6 +134,7 @@ class FrontendSearchResult(BaseModel):
     neuro_judge: dict[str, Any] | None = None
     evidence_packet: dict[str, Any] | None = None
     prior_feedback: list[dict[str, Any]] = Field(default_factory=list)
+    memory_graph_evidence: dict[str, Any] | None = None
 
 
 class FrontendSearchResponse(BaseModel):
@@ -383,6 +387,7 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 neuro_judge=neuro_judge,
                 evidence_packet=evidence_packet,
                 prior_feedback=_load_feedback_for_pair(request.query, dataset),
+                memory_graph_evidence=result.memory_graph_evidence,
             ))
 
     if exact_record:
@@ -498,7 +503,7 @@ class SavedDatasetRequest(BaseModel):
 @app.post("/api/frontend/search-sessions", response_model=SearchSessionResponse)
 async def create_search_session(request: SearchSessionRequest) -> SearchSessionResponse:
     """Create a lightweight frontend search session artifact."""
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
     session = {
         "session_id": f"session_{uuid4().hex}",
         "timestamp": timestamp,
@@ -523,7 +528,7 @@ async def log_feedback_event(request: FeedbackEventRequest) -> dict[str, Any]:
     event.update(
         {
             "feedback_id": f"feedback_{uuid4().hex}",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "provenance": "user_feedback_downstream_signal",
         }
     )
@@ -538,7 +543,7 @@ async def save_frontend_dataset(request: SavedDatasetRequest) -> dict[str, Any]:
     payload.update(
         {
             "saved_dataset_id": f"saved_{uuid4().hex}",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "saved": True,
             "provenance": "user_feedback_downstream_signal",
         }

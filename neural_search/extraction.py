@@ -10,6 +10,7 @@ from typing import Any
 from neural_search.ontology import (
     LabelMatch,
     match_behavior_labels,
+    match_brain_regions,
     match_tasks,
     normalize_text,
 )
@@ -24,7 +25,8 @@ MODALITY_SYNONYMS: dict[str, list[str]] = {
     "extracellular_ephys": ["extracellular", "spike sorting", "electrophysiology", "ephys",
                            "single unit", "single-unit", "single neuron", "multi-unit",
                            "multiunit", "spike train", "action potential recording",
-                           "tetrode", "silicon probe", "electrode array", "neural probe"],
+                           "spike trains", "spikes", "spiking activity", "tetrode",
+                           "silicon probe", "electrode array", "neural probe"],
     "neuropixels": ["neuropixels", "neuropixel"],
     "eeg": ["eeg", "electroencephalography"],
     "ecog": ["ecog", "electrocorticography"],
@@ -186,7 +188,7 @@ def extract_dataset_labels(
         tasks=[_to_label(match) for match in match_tasks(combined)],
         behaviors=[_to_label(match) for match in match_behavior_labels(combined)],
         modalities=_match_dictionary(combined, MODALITY_SYNONYMS, "modality"),
-        brain_regions=_match_dictionary(combined, BRAIN_REGION_SYNONYMS, "brain_region"),
+        brain_regions=[_to_label(match) for match in match_brain_regions(combined)],
         species=_match_dictionary(combined, SPECIES_SYNONYMS, "species"),
         data_standards=_match_dictionary(combined, DATA_STANDARD_SYNONYMS, "data_standard"),
     )

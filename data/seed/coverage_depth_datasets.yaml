@@ -1,0 +1,342 @@
+datasets:
+  - source: dandi
+    source_id: "000347"
+    title: Multiphoton imaging in macaque visual cortex
+    description: Two- and three-photon imaging from macaque V1 and V2 labeled with GCaMP6s during grating stimuli with spatial-frequency and direction conditions.
+    url: https://dandiarchive.org/dandiset/000347
+    species:
+      - macaque
+    modalities:
+      - calcium_imaging
+      - two_photon
+    brain_regions:
+      - v1
+      - v2
+      - visual_cortex
+    tasks:
+      - visual_stimulation
+    behaviors:
+      - stimulus_onset
+      - fixation
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - macaque_visual
+      - visual_motion_control
+
+  - source: dandi
+    source_id: "000130"
+    title: DMFC_RSG macaque dorsomedial frontal cortex spiking activity
+    description: Sorted spike times from macaque dorsomedial frontal cortex during a time interval reproduction task with stimulus timing and response timing.
+    url: https://dandiarchive.org/dandiset/000130
+    species:
+      - macaque
+    modalities:
+      - extracellular_ephys
+      - spikes
+    brain_regions:
+      - dmFC
+      - prefrontal_cortex
+    tasks:
+      - timing_task
+      - interval_timing
+    behaviors:
+      - stimulus_onset
+      - response
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - macaque_frontal
+      - spike_trains
+
+  - source: dandi
+    source_id: "000127"
+    title: Area2_Bump macaque somatosensory area 2 spiking activity
+    description: Sorted unit spiking times and behavioral kinematics from macaque somatosensory area 2 during delayed center-out reaches with perturbation bumps.
+    url: https://dandiarchive.org/dandiset/000127
+    species:
+      - macaque
+    modalities:
+      - extracellular_ephys
+      - spikes
+      - pose_tracking
+    brain_regions:
+      - somatosensory_area_2
+      - somatosensory_cortex
+    tasks:
+      - center_out_reaching
+      - reaching
+    behaviors:
+      - movement_onset
+      - target_onset
+      - kinematics
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - macaque_somatosensory_control
+      - spike_trains
+
+  - source: dandi
+    source_id: "000128"
+    title: MC_Maze macaque M1 and PMd spiking activity during delayed reaching
+    description: Macaque primary motor and dorsal premotor cortex spiking activity during delayed center-out reaching through maze-like barriers with hand, cursor, and eye position.
+    url: https://dandiarchive.org/dandiset/000128
+    species:
+      - macaque
+    modalities:
+      - extracellular_ephys
+      - spikes
+      - pose_tracking
+    brain_regions:
+      - motor_cortex
+      - M1
+      - PMd
+      - premotor_cortex
+    tasks:
+      - center_out_reaching
+      - reaching
+    behaviors:
+      - movement_onset
+      - target_onset
+      - kinematics
+      - fixation
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - macaque_motor_control
+      - spike_trains
+
+  - source: dandi
+    source_id: "000067"
+    title: Behavior-dependent short-term assembly dynamics in rat medial prefrontal cortex
+    description: Rat medial prefrontal cortex extracellular electrophysiology and LFP during working-memory maze behavior with trajectory-dependent firing patterns.
+    url: https://dandiarchive.org/dandiset/000067
+    species:
+      - rat
+    modalities:
+      - extracellular_ephys
+      - spikes
+      - lfp
+    brain_regions:
+      - mPFC
+      - prefrontal_cortex
+    tasks:
+      - working_memory
+      - spatial_navigation
+    behaviors:
+      - choice
+      - memory
+      - trajectory
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - rat_pfc_lfp
+      - theta_candidate
+
+  - source: dandi
+    source_id: "000065"
+    title: Polymer probe LFP from hippocampus OFC NAc and mPFC
+    description: Local field potential recordings from rat or rodent hippocampus, orbitofrontal cortex, nucleus accumbens, and medial prefrontal cortex.
+    url: https://dandiarchive.org/dandiset/000065
+    species:
+      - rat
+    modalities:
+      - lfp
+    brain_regions:
+      - mPFC
+      - OFC
+      - nucleus_accumbens
+      - ventral_striatum
+      - hippocampus
+      - prefrontal_cortex
+    tasks:
+      - free_behavior
+    behaviors:
+      - neural_oscillation
+    data_standards:
+      - NWB
+    has_behavior: false
+    has_trials: false
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - rat_pfc_lfp
+      - pfc_striatum
+
+  - source: dandi
+    source_id: "000559"
+    title: Spontaneous behaviour structured by dorsolateral striatum dopamine
+    description: Mouse dorsolateral striatum dopamine fiber photometry and behavioral pose during spontaneous open-field behavior and closed-loop reinforcement.
+    url: https://dandiarchive.org/dandiset/000559
+    species:
+      - mouse
+    modalities:
+      - fiber_photometry
+      - pose_tracking
+      - behavior_video
+    brain_regions:
+      - dorsolateral_striatum
+      - dorsal_striatum
+      - striatum
+    tasks:
+      - open_field
+      - free_behavior
+      - closed_loop_control
+    behaviors:
+      - dopamine
+      - exploration
+      - kinematics
+      - reward
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - mouse_dorsal_striatum
+      - dorsal_striatum_control
+
+  - source: dandi
+    source_id: "000476"
+    title: Rat ventral striatum and pallidum in probabilistic reward task
+    description: Behavioral and neural recording data from rat ventral striatum and pallidum during a probabilistic reward decision-making task.
+    url: https://dandiarchive.org/dandiset/000476
+    species:
+      - rat
+    modalities:
+      - extracellular_ephys
+      - spikes
+    brain_regions:
+      - ventral_striatum
+      - striatum
+    tasks:
+      - reward_learning
+      - decision_making
+    behaviors:
+      - reward
+      - choice
+      - trial_outcome
+    data_standards:
+      - NWB
+    has_behavior: true
+    has_trials: true
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - ventral_striatum_control
+
+  - source: openneuro
+    source_id: ds001875
+    title: TheVirtualBrain Macaque MRI
+    description: OpenNeuro BIDS macaque MRI/fMRI dataset for The Virtual Brain with macaque neuroimaging data in BIDS format.
+    url: https://openneuro.org/datasets/ds001875
+    species:
+      - macaque
+    modalities:
+      - fmri
+      - structural_mri
+    brain_regions:
+      - visual_cortex
+      - prefrontal_cortex
+    tasks:
+      - resting_state
+    behaviors: []
+    data_standards:
+      - BIDS
+    has_behavior: false
+    has_trials: false
+    has_raw_data: true
+    has_processed_data: false
+    license: unknown
+    linked_paper_ids: []
+    coverage_tags:
+      - macaque_mri_control
+
+  - source: spark
+    source_id: SPARK-FMRI-002
+    title: SPARK fMRI executive function and cognitive control in ASD
+    description: Human task fMRI during go/no-go, stop-signal, and n-back paradigms with BOLD runs, condition labels, first-level GLM design matrix notes, and contrast metadata.
+    url: https://base.sfari.org/datasets/SPARK-FMRI-002
+    species:
+      - human
+    modalities:
+      - fmri
+      - bold
+    brain_regions:
+      - prefrontal_cortex
+      - striatum
+    tasks:
+      - n_back
+      - go_nogo
+    behaviors:
+      - stimulus_onset
+      - response
+      - trial_outcome
+    data_standards:
+      - BIDS
+    has_behavior: true
+    has_trials: true
+    has_raw_data: false
+    has_processed_data: true
+    license: CC0
+    linked_paper_ids: []
+    coverage_tags:
+      - fmri_glm_ready
+
+source_targets:
+  - id: macaque_mt_single_unit
+    priority: critical
+    rationale: Exact macaque area MT/MST single-unit visual-motion datasets are not represented in the local normalized corpus yet.
+    desired_labels:
+      species:
+        - macaque
+      modalities:
+        - extracellular_ephys
+        - spikes
+      brain_regions:
+        - area_mt
+        - mst
+        - visual_cortex
+      tasks:
+        - visual_motion
+    candidate_sources:
+      - CRCNS visual cortex / motion datasets
+      - DANDI search for macaque MT single-unit
+      - Neurodata Without Borders examples from visual motion physiology papers

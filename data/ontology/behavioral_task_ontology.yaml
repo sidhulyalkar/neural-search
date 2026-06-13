@@ -3018,6 +3018,30 @@ behavior_labels:
 
 # Analysis affordances - capabilities supported by normalized datasets
 analysis_affordances:
+  - id: fmri_glm_analysis
+    label: fMRI GLM Analysis
+    definition: >
+      First-level or task-contrast general linear model analysis over
+      BIDS-formatted fMRI/BOLD datasets with event or condition metadata.
+    required_signals:
+      - fmri_bold
+      - bids_events
+      - task_conditions
+    helpful_signals:
+      - contrast_metadata
+      - design_matrix
+      - derivative_maps
+    typical_outputs:
+      - beta_maps
+      - contrast_maps
+      - statistical_maps
+      - design_matrix
+    relevant_tasks:
+      - n_back
+      - go_nogo
+      - stop_signal_task
+      - visual_decision_making
+
   - id: q_learning_model_fitting
     label: Q-Learning Model Fitting
     definition: >

@@ -120,6 +120,16 @@ export interface EvidencePacketSummary {
   raw_json?: Record<string, unknown>
 }
 
+export interface MemoryGraphEvidence {
+  modality_matches: string[]
+  species_matches: string[]
+  region_matches: string[]
+  affordance_matches: string[]
+  has_raw_signal: boolean
+  lacks_evidence_count: number
+  contraindicated: string[]
+}
+
 export type FeedbackUsefulness = 'useful' | 'partially_useful' | 'not_useful' | 'unsure'
 export type WouldUseForAnalysis = 'yes' | 'maybe' | 'no'
 
@@ -164,6 +174,7 @@ export interface SearchResultItem {
   neuro_judge?: NeuroJudgeSnapshot | null
   evidence_packet?: EvidencePacketSummary | null
   prior_feedback?: RetrievalFeedbackEvent[]
+  memory_graph_evidence?: MemoryGraphEvidence | null
 }
 
 export interface SearchResult {

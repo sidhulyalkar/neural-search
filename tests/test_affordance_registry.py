@@ -1,11 +1,8 @@
 """Tests for the affordance registry and validation."""
 
-import pytest
-
 from neural_search.affordances import (
-    AFFORDANCE_REGISTRY,
+    DataFormat,
     DatasetFeatures,
-    SupportLevel,
     detect_features_from_metadata,
     get_affordance,
     get_all_affordances,
@@ -26,6 +23,7 @@ class TestAffordanceRegistry:
         assert "choice_decoding" in affordances
         assert "q_learning" in affordances
         assert "dimensionality_reduction" in affordances
+        assert "fmri_glm_analysis" in affordances
         assert len(affordances) >= 10
 
     def test_get_affordance_returns_requirement(self):
@@ -319,6 +317,29 @@ class TestFalsePositivePrevention:
 
         # Should identify missing stimulus info
         assert not result.supported or "stimulus" in str(result.missing_required_features)
+
+    def test_fmri_glm_requires_bids_and_task_events(self):
+        """Test: GLM support requires fMRI, BIDS, and task/event structure."""
+        supported = DatasetFeatures(
+            dataset_id="fmri:glm:good",
+            has_neural_data=True,
+            has_fmri=True,
+            has_event_timestamps=True,
+            data_format=DataFormat.BIDS,
+            data_standards=["bids"],
+        )
+        missing_events = DatasetFeatures(
+            dataset_id="fmri:glm:rest",
+            has_neural_data=True,
+            has_fmri=True,
+            data_format=DataFormat.BIDS,
+            data_standards=["bids"],
+        )
+
+        assert validate_affordance("fmri_glm_analysis", supported).supported is True
+        result = validate_affordance("fmri_glm_analysis", missing_events)
+        assert result.supported is False
+        assert "task_events_or_conditions" in result.missing_required_features
 
     def test_calcium_imaging_no_roi_traces(self):
         """Test: Calcium imaging mentioned but no ROI traces."""

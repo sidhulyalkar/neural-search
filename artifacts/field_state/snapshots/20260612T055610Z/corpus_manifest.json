@@ -1,0 +1,18 @@
+{
+  "build_id": "update_20260612T055610Z",
+  "changed_count": 0,
+  "corpus_path": "data/corpus/normalized/combined_corpus.jsonl/real_v07.datasets.jsonl",
+  "new_count": 6,
+  "record_count": 6,
+  "record_hashes": {
+    "dataset:cellxgene:allen_mouse_motor_cortex_cells": "aa1666c92877eabf",
+    "dataset:dandi:000020": "abefebae293a6759",
+    "dataset:dandi:000026": "57616e5adfef77b2",
+    "dataset:microns:minnie65_public": "d66eb7d29d4c2bd8",
+    "dataset:modeldb:modeldb_87284": "55e6b24eac3f4d65",
+    "dataset:openneuro:ds003505": "3539c2cb62846160"
+  },
+  "removed_count": 0,
+  "removed_ids": [],
+  "timestamp": "20260612T055610Z"
+}

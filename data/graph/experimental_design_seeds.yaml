@@ -1,0 +1,365 @@
+# Experimental Design Seeds for Neural Search Knowledge Graph
+#
+# These seeds represent common neuroscience experimental paradigms
+# and the data requirements for each. They enable dataset matching
+# for experimental design planning.
+#
+# Version: 0.5.0
+
+experimental_designs:
+
+  # ============================================================
+  # REINFORCEMENT LEARNING & DECISION-MAKING
+  # ============================================================
+
+  - id: reversal_learning_ephys_experiment
+    name: "Reversal Learning with Neural Recordings"
+    description: |
+      Experiment studying neural representations of value updating and
+      flexible decision-making during probabilistic reversal learning.
+    requires:
+      tasks:
+        - reversal_learning
+        - reward_learning
+      behavioral_events:
+        - choice
+        - reward
+        - trial_outcome
+      modalities:
+        - electrophysiology
+        - calcium_imaging
+        - neuropixels
+      analysis_affordances:
+        - q_learning_modeling
+        - event_aligned_activity
+    helpful:
+      brain_regions:
+        - orbitofrontal_cortex
+        - striatum
+        - prefrontal_cortex
+      species:
+        - mouse
+        - nonhuman_primate
+    caveats:
+      - reward alone is insufficient for Q-learning modeling
+      - reversal learning without explicit choices cannot support value inference
+      - OFC recordings alone do NOT imply reversal learning task
+    minimum_requirements:
+      - has_trials: true
+      - has_behavior: true
+      - has_neural_data: true
+
+  - id: q_learning_behavior_neural_experiment
+    name: "Q-Learning Model Fitting with Neural Data"
+    description: |
+      Experiment designed for fitting reinforcement learning models
+      to behavioral data and correlating value signals with neural activity.
+    requires:
+      behavioral_events:
+        - choice
+        - reward
+        - trial_outcome
+      analysis_affordances:
+        - q_learning_modeling
+        - event_aligned_activity
+    helpful:
+      tasks:
+        - reversal_learning
+        - reward_learning
+        - foraging
+      modalities:
+        - electrophysiology
+        - calcium_imaging
+        - fiber_photometry
+    caveats:
+      - reward alone cannot support Q-learning without choice information
+      - neural data without trial structure cannot support neural value analysis
+    minimum_requirements:
+      - has_trials: true
+      - has_behavior: true
+
+  # ============================================================
+  # MOTOR CONTROL & BCI
+  # ============================================================
+
+  - id: motor_decoding_bci_experiment
+    name: "Motor BCI Decoding Experiment"
+    description: |
+      Brain-computer interface experiment decoding motor intentions
+      from neural activity to control external devices.
+    requires:
+      tasks:
+        - reaching
+        - motor_imagery
+      modalities:
+        - ecog
+        - neuropixels
+        - electrophysiology
+      behavioral_events:
+        - movement_onset
+        - reach_onset
+        - response
+      analysis_affordances:
+        - motor_decoding
+        - bci_decoding
+    helpful:
+      brain_regions:
+        - motor_cortex
+        - premotor_cortex
+      species:
+        - human
+        - nonhuman_primate
+    caveats:
+      - motor cortex recordings alone do NOT imply motor decoding capability
+      - EEG alone typically insufficient for fine motor decoding
+      - requires continuous kinematics or movement events
+    minimum_requirements:
+      - has_neural_data: true
+      - has_behavior: true
+      - has_continuous_behavior: true
+
+  - id: reaching_kinematics_experiment
+    name: "Reaching Task with Kinematics Tracking"
+    description: |
+      Experiment studying neural control of reaching movements
+      with detailed kinematic tracking of arm/hand trajectories.
+    requires:
+      tasks:
+        - reaching
+      modalities:
+        - behavior_tracking
+        - electrophysiology
+      behavioral_events:
+        - reach_onset
+        - movement_onset
+    helpful:
+      brain_regions:
+        - motor_cortex
+        - premotor_cortex
+      analysis_affordances:
+        - motor_decoding
+        - state_space_modeling
+    minimum_requirements:
+      - has_continuous_behavior: true
+
+  # ============================================================
+  # SPEECH & LANGUAGE
+  # ============================================================
+
+  - id: speech_decoding_ecog_experiment
+    name: "Speech Decoding from ECoG"
+    description: |
+      Experiment decoding speech production or perception
+      from high-density ECoG recordings.
+    requires:
+      tasks:
+        - speech_production
+      modalities:
+        - ecog
+        - ieeg
+      behavioral_events:
+        - speech_onset
+      species:
+        - human
+      analysis_affordances:
+        - speech_decoding
+    helpful:
+      brain_regions:
+        - motor_cortex
+        - auditory_cortex
+        - prefrontal_cortex
+    caveats:
+      - auditory cortex alone does NOT imply speech task
+      - requires explicit speech events, not just auditory stimuli
+    minimum_requirements:
+      - has_neural_data: true
+      - has_event_timestamps: true
+
+  # ============================================================
+  # VISUAL PROCESSING
+  # ============================================================
+
+  - id: visual_decision_neuropixels_experiment
+    name: "Visual Decision-Making with Neuropixels"
+    description: |
+      Large-scale neural recording during visual discrimination
+      or perceptual decision-making tasks.
+    requires:
+      tasks:
+        - visual_decision_making
+      modalities:
+        - neuropixels
+      brain_regions:
+        - visual_cortex
+      stimulus_types:
+        - visual_stimulus
+      analysis_affordances:
+        - encoding_modeling
+        - choice_decoding
+    helpful:
+      behavioral_events:
+        - stimulus_onset
+        - choice
+        - response
+      species:
+        - mouse
+    minimum_requirements:
+      - has_neural_data: true
+      - has_trials: true
+
+  - id: visual_encoding_rsa_experiment
+    name: "Visual Encoding and RSA Analysis"
+    description: |
+      Experiment studying how visual stimuli are represented
+      in neural populations using encoding models and RSA.
+    requires:
+      modalities:
+        - calcium_imaging
+        - neuropixels
+        - electrophysiology
+      brain_regions:
+        - visual_cortex
+      stimulus_types:
+        - visual_stimulus
+      analysis_affordances:
+        - encoding_modeling
+        - representational_similarity_analysis
+    helpful:
+      tasks:
+        - visual_decision_making
+      species:
+        - mouse
+        - nonhuman_primate
+    minimum_requirements:
+      - has_neural_data: true
+
+  # ============================================================
+  # EVENT-ALIGNED ANALYSIS
+  # ============================================================
+
+  - id: calcium_event_aligned_behavior_experiment
+    name: "Calcium Imaging Event-Aligned Analysis"
+    description: |
+      Two-photon or one-photon calcium imaging experiment
+      with trial structure and behavioral events.
+    requires:
+      modalities:
+        - calcium_imaging
+      analysis_affordances:
+        - event_aligned_activity
+        - trial_averaged_response
+    helpful:
+      behavioral_events:
+        - stimulus_onset
+        - reward
+        - lick
+      tasks:
+        - go_nogo
+    caveats:
+      - requires explicit event timestamps, not just video
+    minimum_requirements:
+      - has_neural_data: true
+      - has_event_timestamps: true
+      - has_trials: true
+
+  # ============================================================
+  # CLINICAL / TRANSLATIONAL
+  # ============================================================
+
+  - id: sleep_stage_eeg_experiment
+    name: "Sleep Stage Classification from EEG"
+    description: |
+      Experiment for classifying sleep stages from
+      EEG or polysomnography recordings.
+    requires:
+      tasks:
+        - sleep_staging
+      modalities:
+        - eeg
+      subject_states:
+        - sleep
+      analysis_affordances:
+        - sleep_stage_classification
+    helpful:
+      behavioral_events:
+        - sleep_stage
+    caveats:
+      - resting state is NOT the same as sleep staging
+      - requires explicit sleep stage annotations
+    minimum_requirements:
+      - has_neural_data: true
+
+  - id: seizure_detection_ieeg_experiment
+    name: "Seizure Detection from iEEG"
+    description: |
+      Clinical experiment for detecting seizures
+      from intracranial EEG recordings.
+    requires:
+      tasks:
+        - seizure_monitoring
+      modalities:
+        - ieeg
+        - ecog
+        - eeg
+      disease_states:
+        - epilepsy
+      analysis_affordances:
+        - seizure_detection
+    helpful:
+      behavioral_events:
+        - seizure_onset
+      species:
+        - human
+    caveats:
+      - epilepsy paper alone without neural data cannot support detection
+    minimum_requirements:
+      - has_neural_data: true
+
+  # ============================================================
+  # CONNECTIVITY & DYNAMICS
+  # ============================================================
+
+  - id: functional_connectivity_fmri_experiment
+    name: "Functional Connectivity from fMRI"
+    description: |
+      Experiment analyzing functional connectivity patterns
+      from resting-state or task-based fMRI.
+    requires:
+      modalities:
+        - fmri
+      analysis_affordances:
+        - functional_connectivity
+    helpful:
+      subject_states:
+        - resting_state
+      brain_regions:
+        - prefrontal_cortex
+        - hippocampus
+    caveats:
+      - resting state does NOT imply sleep staging
+    minimum_requirements:
+      - has_neural_data: true
+
+  - id: state_space_dynamics_experiment
+    name: "Latent State-Space Dynamics Analysis"
+    description: |
+      Experiment studying population neural dynamics
+      using state-space or latent variable models.
+    requires:
+      modalities:
+        - electrophysiology
+        - calcium_imaging
+        - neuropixels
+      analysis_affordances:
+        - state_space_modeling
+        - latent_dynamics_modeling
+    helpful:
+      tasks:
+        - reaching
+        - visual_decision_making
+      behavioral_events:
+        - trial_start
+        - stimulus_onset
+    minimum_requirements:
+      - has_neural_data: true
+      - has_trials: true

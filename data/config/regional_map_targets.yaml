@@ -1,0 +1,283 @@
+# Atlas-style target list for corpus regional coverage reporting.
+#
+# This is not the extraction ontology. It is a reporting target map used to
+# quantify which regions are verified, candidate-only, or uncovered as the
+# ingestion pipeline improves.
+
+regional_targets:
+  - id: whole_brain
+    label: Whole brain
+    system: whole_brain
+    aliases: [whole brain, brain-wide, brainwide]
+  - id: cortex
+    label: Cortex
+    system: cortical
+    aliases: [cortex, cortical]
+  - id: visual_cortex
+    label: Visual cortex
+    system: cortical
+    aliases: [visual cortex, visual cortical, visual areas]
+  - id: v1
+    label: Primary visual cortex
+    system: cortical
+    aliases: [v1, primary visual cortex, striate cortex, visp]
+  - id: v2
+    label: Visual area V2
+    system: cortical
+    aliases: [v2, visual area 2]
+  - id: v4
+    label: Visual area V4
+    system: cortical
+    aliases: [v4, visual area 4]
+  - id: area_mt
+    label: Area MT
+    system: cortical
+    aliases: [area mt, visual area mt, middle temporal area, middle temporal visual area, v5]
+  - id: mst
+    label: Medial superior temporal area
+    system: cortical
+    aliases: [mst, medial superior temporal, medial superior temporal area]
+  - id: auditory_cortex
+    label: Auditory cortex
+    system: cortical
+    aliases: [auditory cortex, auditory cortical]
+  - id: somatosensory_cortex
+    label: Somatosensory cortex
+    system: cortical
+    aliases: [somatosensory cortex, somatosensory cortical, s1]
+  - id: barrel_cortex
+    label: Barrel cortex
+    system: cortical
+    aliases: [barrel cortex, barrel field, whisker barrel]
+  - id: motor_cortex
+    label: Motor cortex
+    system: cortical
+    aliases: [motor cortex, primary motor cortex, m1]
+  - id: premotor_cortex
+    label: Premotor cortex
+    system: cortical
+    aliases: [premotor cortex, premotor, pmc]
+  - id: prefrontal_cortex
+    label: Prefrontal cortex
+    system: cortical
+    aliases: [prefrontal cortex, pfc]
+  - id: mPFC
+    label: Medial prefrontal cortex
+    system: cortical
+    aliases: [mpfc, medial prefrontal cortex, prelimbic, infralimbic]
+  - id: OFC
+    label: Orbitofrontal cortex
+    system: cortical
+    aliases: [ofc, orbitofrontal cortex]
+  - id: ACC
+    label: Anterior cingulate cortex
+    system: cortical
+    aliases: [acc, anterior cingulate cortex, cingulate cortex]
+  - id: dlPFC
+    label: Dorsolateral prefrontal cortex
+    system: cortical
+    aliases: [dlpfc, dorsolateral prefrontal cortex]
+  - id: parietal_cortex
+    label: Parietal cortex
+    system: cortical
+    aliases: [parietal cortex, posterior parietal cortex, ppc]
+  - id: temporal_cortex
+    label: Temporal cortex
+    system: cortical
+    aliases: [temporal cortex, temporal cortical]
+  - id: entorhinal_cortex
+    label: Entorhinal cortex
+    system: cortical
+    aliases: [entorhinal cortex, mec, lec]
+  - id: retrosplenial_cortex
+    label: Retrosplenial cortex
+    system: cortical
+    aliases: [retrosplenial cortex, rsp]
+  - id: insular_cortex
+    label: Insular cortex
+    system: cortical
+    aliases: [insular cortex, insula]
+  - id: piriform_cortex
+    label: Piriform cortex
+    system: cortical
+    aliases: [piriform cortex]
+  - id: hippocampus
+    label: Hippocampus
+    system: hippocampal_formation
+    aliases: [hippocampus, hippocampal]
+  - id: ca1
+    label: Hippocampal CA1
+    system: hippocampal_formation
+    aliases: [ca1, hippocampal ca1]
+  - id: ca2
+    label: Hippocampal CA2
+    system: hippocampal_formation
+    aliases: [ca2, hippocampal ca2]
+  - id: ca3
+    label: Hippocampal CA3
+    system: hippocampal_formation
+    aliases: [ca3, hippocampal ca3]
+  - id: dentate_gyrus
+    label: Dentate gyrus
+    system: hippocampal_formation
+    aliases: [dentate gyrus, dg]
+  - id: subiculum
+    label: Subiculum
+    system: hippocampal_formation
+    aliases: [subiculum]
+  - id: medial_temporal_lobe
+    label: Medial temporal lobe
+    system: hippocampal_formation
+    aliases: [medial temporal lobe, mtl]
+  - id: amygdala
+    label: Amygdala
+    system: amygdala
+    aliases: [amygdala, amygdalar]
+  - id: basolateral_amygdala
+    label: Basolateral amygdala
+    system: amygdala
+    aliases: [basolateral amygdala, bla]
+  - id: central_amygdala
+    label: Central amygdala
+    system: amygdala
+    aliases: [central amygdala, cea]
+  - id: thalamus
+    label: Thalamus
+    system: thalamus
+    aliases: [thalamus, thalamic]
+  - id: lateral_geniculate_nucleus
+    label: Lateral geniculate nucleus
+    system: thalamus
+    aliases: [lateral geniculate nucleus, lgn]
+  - id: medial_geniculate_body
+    label: Medial geniculate body
+    system: thalamus
+    aliases: [medial geniculate body, medial geniculate nucleus, mgn]
+  - id: mediodorsal_thalamus
+    label: Mediodorsal thalamus
+    system: thalamus
+    aliases: [mediodorsal thalamus, md thalamus]
+  - id: vpm
+    label: Ventral posteromedial nucleus
+    system: thalamus
+    aliases: [vpm, ventral posteromedial nucleus]
+  - id: striatum
+    label: Striatum
+    system: basal_ganglia
+    aliases: [striatum, striatal]
+  - id: dorsal_striatum
+    label: Dorsal striatum
+    system: basal_ganglia
+    aliases: [dorsal striatum, dorsal striatal]
+  - id: dorsolateral_striatum
+    label: Dorsolateral striatum
+    system: basal_ganglia
+    aliases: [dorsolateral striatum, dls]
+  - id: dorsomedial_striatum
+    label: Dorsomedial striatum
+    system: basal_ganglia
+    aliases: [dorsomedial striatum, dms]
+  - id: ventral_striatum
+    label: Ventral striatum
+    system: basal_ganglia
+    aliases: [ventral striatum, ventral striatal]
+  - id: nucleus_accumbens
+    label: Nucleus accumbens
+    system: basal_ganglia
+    aliases: [nucleus accumbens, accumbens, nac, nacc]
+  - id: caudate
+    label: Caudate
+    system: basal_ganglia
+    aliases: [caudate, caudate nucleus]
+  - id: putamen
+    label: Putamen
+    system: basal_ganglia
+    aliases: [putamen]
+  - id: globus_pallidus
+    label: Globus pallidus
+    system: basal_ganglia
+    aliases: [globus pallidus, pallidum]
+  - id: basal_forebrain
+    label: Basal forebrain
+    system: basal_forebrain
+    aliases: [basal forebrain, bf]
+  - id: substantia_nigra
+    label: Substantia nigra
+    system: basal_ganglia
+    aliases: [substantia nigra, snc, snr]
+  - id: subthalamic_nucleus
+    label: Subthalamic nucleus
+    system: basal_ganglia
+    aliases: [subthalamic nucleus, stn]
+  - id: cerebellum
+    label: Cerebellum
+    system: cerebellum
+    aliases: [cerebellum, cerebellar]
+  - id: cerebellar_cortex
+    label: Cerebellar cortex
+    system: cerebellum
+    aliases: [cerebellar cortex]
+  - id: cerebellar_vermis
+    label: Cerebellar vermis
+    system: cerebellum
+    aliases: [cerebellar vermis, vermis]
+  - id: deep_cerebellar_nuclei
+    label: Deep cerebellar nuclei
+    system: cerebellum
+    aliases: [deep cerebellar nuclei, dcn]
+  - id: brainstem
+    label: Brainstem
+    system: brainstem
+    aliases: [brainstem, brain stem]
+  - id: midbrain
+    label: Midbrain
+    system: brainstem
+    aliases: [midbrain]
+  - id: pons
+    label: Pons
+    system: brainstem
+    aliases: [pons, pontine]
+  - id: medulla
+    label: Medulla
+    system: brainstem
+    aliases: [medulla, medullary]
+  - id: superior_colliculus
+    label: Superior colliculus
+    system: brainstem
+    aliases: [superior colliculus, sc]
+  - id: inferior_colliculus
+    label: Inferior colliculus
+    system: brainstem
+    aliases: [inferior colliculus, ic]
+  - id: ventral_tegmental_area
+    label: Ventral tegmental area
+    system: brainstem
+    aliases: [ventral tegmental area, vta]
+  - id: dorsal_raphe
+    label: Dorsal raphe
+    system: brainstem
+    aliases: [dorsal raphe, drn]
+  - id: locus_coeruleus
+    label: Locus coeruleus
+    system: brainstem
+    aliases: [locus coeruleus, lc]
+  - id: hypothalamus
+    label: Hypothalamus
+    system: hypothalamus
+    aliases: [hypothalamus, hypothalamic]
+  - id: lateral_hypothalamus
+    label: Lateral hypothalamus
+    system: hypothalamus
+    aliases: [lateral hypothalamus]
+  - id: olfactory_bulb
+    label: Olfactory bulb
+    system: olfactory
+    aliases: [olfactory bulb]
+  - id: retina
+    label: Retina
+    system: visual_periphery
+    aliases: [retina, retinal]
+  - id: spinal_cord
+    label: Spinal cord
+    system: spinal_cord
+    aliases: [spinal cord]

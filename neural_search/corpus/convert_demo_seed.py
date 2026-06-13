@@ -205,6 +205,7 @@ def convert_dataset_fixture(
     *,
     paper_lookup: Mapping[str, Mapping[str, Any]] | None = None,
     created_at: str = DEFAULT_CREATED_AT,
+    raw_payload_path: str = "data/seed/demo_datasets.yaml",
 ) -> NormalizedDatasetRecord:
     """Convert one demo dataset fixture into a normalized dataset record."""
 
@@ -235,7 +236,7 @@ def convert_dataset_fixture(
         title=str(fixture["title"]),
         description=fixture.get("description"),
         url=fixture.get("url"),
-        raw_payload_path="data/seed/demo_datasets.yaml",
+        raw_payload_path=raw_payload_path,
         species=_labels_for_field(fixture, "species"),
         modalities=_labels_for_field(fixture, "modalities"),
         brain_regions=_labels_for_field(fixture, "brain_regions"),
