@@ -170,7 +170,7 @@ def main(argv: list[str] | None = None) -> int:
 
         expected_ids = set(q.get("expected_dataset_ids", []))
         gains_with, gains_without = [], []
-        for r_with, r_without in zip(resp_with.results, resp_without.results, strict=False):
+        for r_with, r_without in zip(resp_with.results, resp_without.results, strict=True):
             # Use graph_score from score_breakdown — directly reflects graph_context_score
             # which IS affected by the T1-2 node-ID lookup fix (adds node: prefix).
             gs_with = r_with.score_breakdown.get("graph_score", 0.0)
