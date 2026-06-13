@@ -7,8 +7,8 @@ from collections.abc import Iterable
 from difflib import SequenceMatcher
 from typing import TYPE_CHECKING
 
-from neural_search.ontology.loader import get_ontology
-from neural_search.ontology.models import LabelMatch, Ontology
+from neural_search.ontology.loader import get_brain_regions, get_ontology
+from neural_search.ontology.models import BrainRegion, LabelMatch, Ontology
 
 if TYPE_CHECKING:
     from neural_search.graph.schema import KnowledgeGraph
@@ -44,18 +44,18 @@ ALIASES: dict[str, list[str]] = {
     "force_sensor": ["force sensor", "force tracking", "grip force", "force transducer"],
     # Brain regions - core
     "motor_cortex": ["motor cortex", "m1", "primary motor cortex", "motor control", "primary motor"],
-    "visual_cortex": ["visual cortex", "v1", "v2", "v4", "primary visual cortex", "visual areas", "striate cortex"],
+    "visual_cortex": ["visual cortex", "visual areas", "visual cortical areas"],
     "somatosensory_cortex": ["somatosensory cortex", "s1", "primary somatosensory", "barrel cortex"],
     "parietal_cortex": ["parietal cortex", "ppc", "posterior parietal", "posterior parietal cortex"],
     "OFC": ["ofc", "orbitofrontal", "orbitofrontal cortex"],
     "mPFC": ["mpfc", "medial prefrontal", "medial prefrontal cortex", "prelimbic", "infralimbic"],
     "ACC": ["acc", "anterior cingulate", "anterior cingulate cortex", "cingulate cortex"],
     "hippocampus": ["hippocampus", "hpc", "ca1", "ca3", "dentate gyrus", "hipp", "hippocampal", "subiculum"],
-    "striatum": ["striatum", "dorsal striatum", "ventral striatum", "caudate", "putamen", "nucleus accumbens", "nac", "basal ganglia"],
+    "striatum": ["striatum", "striatal", "basal ganglia"],
     "VTA": ["vta", "ventral tegmental area", "midbrain", "dopamine midbrain"],
     "SNc": ["snc", "substantia nigra", "substantia nigra pars compacta", "nigra"],
     "auditory_cortex": ["auditory cortex", "a1", "primary auditory cortex", "auditory areas", "temporal cortex"],
-    "prefrontal_cortex": ["prefrontal cortex", "pfc", "frontal cortex", "frontal lobe", "dlpfc", "lateral prefrontal"],
+    "prefrontal_cortex": ["prefrontal cortex", "pfc", "frontal cortex", "frontal lobe"],
     "temporal_lobe": ["temporal lobe", "temporal cortex", "mtl", "medial temporal lobe"],
     "amygdala": ["amygdala", "amygdalar", "basolateral amygdala", "bla", "central amygdala", "cea"],
     "entorhinal_cortex": ["entorhinal cortex", "ec", "medial entorhinal", "lateral entorhinal"],
@@ -136,6 +136,8 @@ def _best_phrase_match(
     label: str,
     category: str,
     phrases: list[tuple[str, float, str]],
+    *,
+    allow_fuzzy: bool = True,
 ) -> LabelMatch | None:
     normalized = normalize_text(text)
     best: LabelMatch | None = None
@@ -152,7 +154,7 @@ def _best_phrase_match(
             best = _choose_better_match(best, candidate)
     if best is not None:
         return best
-    if len(normalized.split()) > 32:
+    if not allow_fuzzy or len(normalized.split()) > 32:
         return None
 
     for phrase, _, _ in phrases:
@@ -188,6 +190,41 @@ def _aliases_for(value: str) -> list[str]:
     normalized_value = normalize_text(value)
     values = {value, normalized_value, normalized_value.replace(" ", "_"), *aliases}
     return [item for item in values if item]
+
+
+def _brain_region_entries(ontology: Ontology) -> dict[str, BrainRegion]:
+    entries = {region.id: region for region in get_brain_regions()}
+    generic_region_names = {
+        "brain",
+        "cortex",
+        "cerebral_cortex",
+        "frontal_cortex",
+    }
+    yaml_aliases = {
+        normalize_text(alias)
+        for region in entries.values()
+        for alias in [region.id, region.label, *region.aliases]
+    }
+    for region_name in ontology.region_names:
+        if region_name in generic_region_names:
+            continue
+        if normalize_text(region_name) in yaml_aliases:
+            continue
+        entries.setdefault(
+            region_name,
+            BrainRegion(
+                id=region_name,
+                label=region_name,
+                aliases=ALIASES.get(region_name, []),
+            ),
+        )
+    for region_name, aliases in ALIASES.items():
+        if region_name in entries or any(region_name == item for item in ontology.region_names):
+            entries.setdefault(
+                region_name,
+                BrainRegion(id=region_name, label=region_name, aliases=aliases),
+            )
+    return entries
 
 
 def match_tasks(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
@@ -231,12 +268,44 @@ def match_modalities(text: str, ontology: Ontology | None = None) -> list[LabelM
 def match_brain_regions(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
     ontology = ontology or get_ontology()
     matches: list[LabelMatch] = []
-    for region in ontology.region_names:
-        phrases = [(alias, 0.94 if alias != region else 0.96, "region") for alias in _aliases_for(region)]
-        match = _best_phrase_match(text, region, region, "brain_region", phrases)
+    entries = _brain_region_entries(ontology)
+    for region_id, region in entries.items():
+        phrases = [
+            (region.label, 0.97, "label"),
+            (region_id, 0.96, "id"),
+        ]
+        phrases.extend((alias, 0.94, "region_alias") for alias in region.aliases)
+        for alias in _aliases_for(region_id):
+            phrases.append((alias, 0.92 if alias != region_id else 0.96, "legacy_alias"))
+        match = _best_phrase_match(
+            text,
+            region_id,
+            region.label,
+            "brain_region",
+            phrases,
+            allow_fuzzy=False,
+        )
         if match:
             matches.append(match)
-    return sorted(matches, key=lambda item: item.confidence, reverse=True)
+
+    by_id = {match.id: match for match in matches}
+    for match in list(matches):
+        region = entries.get(match.id)
+        if region is None:
+            continue
+        for parent_id in region.parents:
+            if parent_id in by_id:
+                continue
+            parent = entries.get(parent_id)
+            by_id[parent_id] = LabelMatch(
+                id=parent_id,
+                label=parent.label if parent else parent_id,
+                confidence=max(match.confidence - 0.08, 0.1),
+                evidence=f"parent:{match.id}",
+                category="brain_region",
+                match_type="parent",
+            )
+    return sorted(by_id.values(), key=lambda item: item.confidence, reverse=True)
 
 
 def match_affordances(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:

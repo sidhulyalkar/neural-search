@@ -7,7 +7,7 @@ import {
   logRetrievalFeedback,
   saveFrontendDataset,
 } from '../api/search'
-import type { FeedbackUsefulness, SearchResultItem, WouldUseForAnalysis } from '../types'
+import type { FeedbackUsefulness, MemoryGraphEvidence, SearchResultItem, WouldUseForAnalysis } from '../types'
 
 interface DatasetCardProps {
   result: SearchResultItem
@@ -78,6 +78,62 @@ function ListBlock({ title, items }: { title: string; items?: string[] }) {
           <li key={item} className="text-xs text-neural-400 leading-relaxed">{item}</li>
         ))}
       </ul>
+    </div>
+  )
+}
+
+function MemoryGraphEvidencePanel({ evidence }: { evidence: MemoryGraphEvidence }) {
+  const hasAny =
+    evidence.modality_matches.length > 0 ||
+    evidence.species_matches.length > 0 ||
+    evidence.region_matches.length > 0 ||
+    evidence.affordance_matches.length > 0 ||
+    evidence.has_raw_signal ||
+    evidence.contraindicated.length > 0 ||
+    evidence.lacks_evidence_count > 0
+
+  if (!hasAny) return null
+
+  return (
+    <div className="mt-4 border-t border-neural-800/60 pt-4">
+      <p className="text-xs uppercase tracking-wide text-neural-600 mb-2">Field-State Graph Evidence</p>
+      <div className="flex flex-wrap gap-1.5">
+        {evidence.modality_matches.map((m) => (
+          <span key={m} className="text-xs border rounded px-2 py-0.5 text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5">
+            modality: {m.replace(/_/g, ' ')}
+          </span>
+        ))}
+        {evidence.species_matches.map((s) => (
+          <span key={s} className="text-xs border rounded px-2 py-0.5 text-accent-emerald border-accent-emerald/30 bg-accent-emerald/5">
+            species: {s.replace(/_/g, ' ')}
+          </span>
+        ))}
+        {evidence.region_matches.map((r) => (
+          <span key={r} className="text-xs border rounded px-2 py-0.5 text-accent-violet border-accent-violet/30 bg-accent-violet/5">
+            region: {r.replace(/_/g, ' ')}
+          </span>
+        ))}
+        {evidence.affordance_matches.map((a) => (
+          <span key={a} className="text-xs border rounded px-2 py-0.5 text-neural-300 border-neural-600/30 bg-neural-800/40">
+            affordance: {a.replace(/_/g, ' ')}
+          </span>
+        ))}
+        {evidence.has_raw_signal && (
+          <span className="text-xs border rounded px-2 py-0.5 text-accent-emerald border-accent-emerald/30 bg-accent-emerald/5">
+            raw signal confirmed
+          </span>
+        )}
+        {evidence.lacks_evidence_count > 0 && (
+          <span className="text-xs border rounded px-2 py-0.5 text-amber-300 border-amber-500/30 bg-amber-500/5">
+            ⚠ {evidence.lacks_evidence_count} evidence gap{evidence.lacks_evidence_count > 1 ? 's' : ''}
+          </span>
+        )}
+        {evidence.contraindicated.map((c) => (
+          <span key={c} className="text-xs border rounded px-2 py-0.5 text-red-300 border-red-500/30 bg-red-500/5">
+            ✗ contraindicated: {c.replace(/_/g, ' ')}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
@@ -181,6 +237,10 @@ function EvidencePanel({
             </div>
           ))}
         </div>
+      )}
+
+      {result.memory_graph_evidence && (
+        <MemoryGraphEvidencePanel evidence={result.memory_graph_evidence} />
       )}
 
       <div className="mt-4 border-t border-neural-800/60 pt-4">
@@ -437,6 +497,11 @@ export function DatasetCard({
             )}
             {result.prior_feedback && result.prior_feedback.length > 0 && (
               <Badge tone="green">{result.prior_feedback.length} feedback event{result.prior_feedback.length > 1 ? 's' : ''}</Badge>
+            )}
+            {typeof score_breakdown?.memory_graph_score === 'number' && score_breakdown.memory_graph_score !== 0 && (
+              <Badge tone={score_breakdown.memory_graph_score > 0 ? 'cyan' : 'amber'}>
+                graph {score_breakdown.memory_graph_score > 0 ? '+' : ''}{score_breakdown.memory_graph_score.toFixed(2)}
+              </Badge>
             )}
           </div>
 

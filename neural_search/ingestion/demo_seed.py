@@ -329,6 +329,15 @@ def _merge_records(session: Session, records: list[dict]) -> None:
 NORMALIZED_CORPUS_DIR = Path(__file__).resolve().parents[2] / "data" / "corpus" / "normalized"
 
 
+def _iter_normalized_jsonl_files(corpus_path: Path) -> list[Path]:
+    """Return normalized JSONL files, tolerating nested artifact directories."""
+    if corpus_path.is_file():
+        return [corpus_path]
+    if not corpus_path.is_dir():
+        return []
+    return sorted(path for path in corpus_path.rglob("*.jsonl") if path.is_file())
+
+
 def build_combined_corpus(
     include_demo: bool = True,
     include_real: bool = True,
@@ -362,8 +371,8 @@ def build_combined_corpus(
     # Add real normalized corpus (only non-demo, non-duplicate records)
     if include_real:
         corpus_path = Path(corpus_dir)
-        if corpus_path.exists() and corpus_path.is_dir():
-            for jsonl_file in corpus_path.glob("*.jsonl"):
+        if corpus_path.exists():
+            for jsonl_file in _iter_normalized_jsonl_files(corpus_path):
                 # Skip demo-derived normalized files
                 if "demo" in jsonl_file.name.lower():
                     continue

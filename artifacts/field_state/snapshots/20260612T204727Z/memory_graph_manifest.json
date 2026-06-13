@@ -1,0 +1,43 @@
+{
+  "build_id": "update_20260612T204727Z",
+  "created_at": "2026-06-12T20:47:27.901242+00:00",
+  "edge_counts_by_type": {
+    "dataset_from_source": 622,
+    "dataset_has_behavioral_event": 129,
+    "dataset_has_file_format": 11,
+    "dataset_has_modality": 136,
+    "dataset_has_processed_signal": 11,
+    "dataset_has_raw_signal": 611,
+    "dataset_has_species": 146,
+    "dataset_has_task": 119,
+    "dataset_lacks_required_evidence": 65,
+    "dataset_linked_to_paper": 1,
+    "dataset_records_region": 92,
+    "dataset_supports_analysis": 36,
+    "dataset_uses_standard": 324
+  },
+  "metadata": {
+    "created_at": "2026-06-12T20:47:27.515379+00:00",
+    "store_version": "v0.9.0"
+  },
+  "node_counts_by_type": {
+    "analysis_affordance": 18,
+    "behavioral_event": 28,
+    "brain_region": 14,
+    "data_standard": 8,
+    "dataset": 622,
+    "feedback_signal": 11,
+    "file_format": 9,
+    "modality": 20,
+    "neuro_judge_evidence_packet": 675,
+    "paper": 1,
+    "processed_data_signal": 11,
+    "raw_data_signal": 611,
+    "source_archive": 6,
+    "species": 5,
+    "task": 49
+  },
+  "store_version": "v0.9.0",
+  "total_edges": 2303,
+  "total_nodes": 2088
+}

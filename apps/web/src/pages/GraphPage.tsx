@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { getCompilationReport } from '../api/search'
+import { DownloadIcon } from '../components/Icons'
 import type { CompilationReport } from '../types'
 
 // ---- Layout helpers --------------------------------------------------------
@@ -78,6 +79,143 @@ const RING_LABELS: Record<GraphNode['ring'], string> = {
   task: 'Task',
 }
 
+function slug(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'item'
+}
+
+function mermaidId(value: string) {
+  return slug(value).replace(/-/g, '_')
+}
+
+function escapeMarkdownCell(value: string) {
+  return value.replace(/\|/g, '\\|').replace(/\n/g, ' ')
+}
+
+function escapeMermaidLabel(value: string) {
+  return value.replace(/"/g, '\\"')
+}
+
+function graphSearchUrl(query: string) {
+  if (typeof window === 'undefined') return `/search?q=${encodeURIComponent(query)}`
+  return `${window.location.origin}/search?q=${encodeURIComponent(query)}`
+}
+
+function downloadTextFile(text: string, filename: string, mimeType = 'text/markdown;charset=utf-8') {
+  const blob = new Blob([text], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+function renderGraphTable(nodes: GraphNode[]) {
+  const rows = nodes
+    .slice()
+    .sort((a, b) => a.ring.localeCompare(b.ring) || b.count - a.count || a.label.localeCompare(b.label))
+    .map((node) => {
+      const label = escapeMarkdownCell(node.label)
+      const ring = RING_LABELS[node.ring]
+      const search = graphSearchUrl(node.label)
+      return `| ${label} | ${ring} | ${node.count} | [Search](${search}) |`
+    })
+
+  return [
+    '| Concept | Dimension | Dataset count | Neural Search |',
+    '| --- | --- | ---: | --- |',
+    ...rows,
+  ].join('\n')
+}
+
+function renderMermaidGraph(nodes: GraphNode[]) {
+  const lines = [
+    '```mermaid',
+    'graph TD',
+    '  corpus["Neural Search Corpus"]',
+    ...Object.entries(RING_LABELS).map(([ring, label]) => `  ${ring}["${label}"]`),
+    ...Object.keys(RING_LABELS).map((ring) => `  corpus --> ${ring}`),
+  ]
+
+  const seen = new Set<string>()
+  nodes.forEach((node) => {
+    let nodeId = `${node.ring}_${mermaidId(node.label)}`
+    let suffix = 2
+    while (seen.has(nodeId)) {
+      nodeId = `${node.ring}_${mermaidId(node.label)}_${suffix}`
+      suffix += 1
+    }
+    seen.add(nodeId)
+    lines.push(`  ${nodeId}["${escapeMermaidLabel(node.label)} (${node.count})"]`)
+    lines.push(`  ${node.ring} --> ${nodeId}`)
+  })
+
+  lines.push('```')
+  return lines.join('\n')
+}
+
+function renderTopList(title: string, data: Record<string, number> | undefined) {
+  if (!data) return ''
+  const rows = Object.entries(data)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([key, count]) => `| ${escapeMarkdownCell(key.replace(/_/g, ' '))} | ${count} |`)
+
+  return [`## ${title}`, '', '| Value | Datasets |', '| --- | ---: |', ...rows].join('\n')
+}
+
+function renderObsidianGraphNote(report: CompilationReport, nodes: GraphNode[]) {
+  const generatedAt = new Date().toISOString()
+  const sections = [
+    '---',
+    'type: neural_search_corpus_graph',
+    `generated_at: ${generatedAt}`,
+    `source_report_generated_at: ${report.generated_at}`,
+    `total_datasets: ${report.total_datasets}`,
+    'tags:',
+    '  - neural-search',
+    '  - knowledge-graph',
+    '  - obsidian-import',
+    '---',
+    '',
+    '# Neural Search Corpus Knowledge Graph',
+    '',
+    `Generated from Neural Search on ${generatedAt}.`,
+    '',
+    `Total datasets: ${report.total_datasets}`,
+    '',
+    '## Obsidian Graph View',
+    '',
+    renderMermaidGraph(nodes),
+    '',
+    '## Searchable Concepts',
+    '',
+    renderGraphTable(nodes),
+    '',
+    renderTopList('Top Modalities', report.datasets_by_modality),
+    '',
+    renderTopList('Top Brain Regions', report.datasets_by_brain_region),
+    '',
+    renderTopList('Top Species', report.datasets_by_species),
+    '',
+    renderTopList('Top Tasks', report.datasets_by_task),
+    '',
+    '## Archive Breakdown',
+    '',
+    renderTopList('Sources', report.datasets_by_source),
+    '',
+    '## Notes',
+    '',
+    '- Drop this Markdown file into an Obsidian vault to render the Mermaid graph and tables.',
+    '- Search links open the same concept in the Neural Search frontend when the app is running.',
+  ]
+
+  return sections.join('\n')
+}
+
 // ---- Component -------------------------------------------------------------
 
 export function GraphPage() {
@@ -85,6 +223,7 @@ export function GraphPage() {
   const svgRef = useRef<SVGSVGElement>(null)
   const [hovered, setHovered] = useState<GraphNode | null>(null)
   const [svgSize, setSvgSize] = useState({ w: 800, h: 800 })
+  const [exportStatus, setExportStatus] = useState<string | null>(null)
 
   const { data: report, isLoading, error } = useQuery<CompilationReport>({
     queryKey: ['compilation-report'],
@@ -108,22 +247,47 @@ export function GraphPage() {
   const cy = svgSize.h / 2
   const nodes = report ? buildNodes(report, cx, cy) : []
 
+  const exportObsidianNote = () => {
+    if (!report || nodes.length === 0) return
+    const markdown = renderObsidianGraphNote(report, nodes)
+    downloadTextFile(markdown, 'neural-search-corpus-knowledge-graph.md')
+    setExportStatus('Obsidian Markdown exported.')
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-6 lg:px-8 py-16">
       {/* Header */}
-      <div className="mb-16">
-        <div className="mb-3">
-          <span className="font-mono text-xs text-neural-600 tracking-widest uppercase">
-            Corpus Map · {report?.total_datasets ?? '…'} datasets
-          </span>
+      <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="mb-3">
+            <span className="font-mono text-xs text-neural-600 tracking-widest uppercase">
+              Corpus Map · {report?.total_datasets ?? '…'} datasets
+            </span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extralight tracking-tight text-neural-100 mb-4">
+            Corpus Visualization
+          </h1>
+          <p className="text-neural-500 text-sm max-w-xl leading-relaxed">
+            Neural Search indexes datasets across DANDI and OpenNeuro. Each ring represents a
+            concept dimension — click any node to search the corpus for datasets in that category.
+          </p>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extralight tracking-tight text-neural-100 mb-4">
-          Corpus Visualization
-        </h1>
-        <p className="text-neural-500 text-sm max-w-xl leading-relaxed">
-          Neural Search indexes datasets across DANDI and OpenNeuro. Each ring represents a
-          concept dimension — click any node to search the corpus for datasets in that category.
-        </p>
+        <div className="flex flex-col items-start sm:items-end gap-2">
+          <button
+            type="button"
+            onClick={exportObsidianNote}
+            disabled={!report || nodes.length === 0}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded border border-neural-700/70 text-sm text-neural-200 hover:border-accent-cyan/70 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 transition-colors"
+          >
+            <DownloadIcon className="w-4 h-4" />
+            Obsidian Markdown
+          </button>
+          {exportStatus && (
+            <span className="text-xs text-accent-emerald" role="status">
+              {exportStatus}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Stats row */}

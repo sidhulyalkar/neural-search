@@ -112,6 +112,41 @@ def test_bci_decoding_not_inferred_from_eeg_alone():
     assert "bci_context" in result.missing_fields
 
 
+def test_fmri_glm_high_for_bids_task_events():
+    record = _record(
+        title="BIDS task fMRI first-level GLM dataset",
+        description="BOLD task fMRI with events.tsv condition labels and contrast metadata.",
+        modalities=[_label("modality", "fmri")],
+        data_standards=[_label("data_standard", "bids")],
+        tasks=[_label("task", "n_back")],
+        behavioral_events=[_label("behavioral_event", "stimulus_onset")],
+        usability_flags=UsabilityFlags(has_neural_data=True, has_event_timestamps=True),
+    )
+
+    result = _affordance(record, "fmri_glm_analysis")
+
+    assert result.support_level == "high"
+    assert result.confidence >= 0.85
+    assert {"fmri", "bids", "task_or_conditions"} <= set(result.required_fields_present)
+
+
+def test_fmri_glm_not_high_for_resting_state_fmri():
+    record = _record(
+        title="BIDS resting-state fMRI dataset",
+        description="Resting-state BOLD data in BIDS format.",
+        modalities=[_label("modality", "fmri")],
+        data_standards=[_label("data_standard", "bids")],
+        tasks=[_label("task", "resting_state")],
+        usability_flags=UsabilityFlags(has_neural_data=True, has_trials=True),
+    )
+
+    result = _affordance(record, "fmri_glm_analysis")
+
+    assert result.support_level == "low"
+    assert result.confidence < 0.35
+    assert "task_events_or_contrasts" in result.missing_fields
+
+
 def test_missing_fields_are_reported_for_event_alignment_without_events():
     record = _record(
         modalities=[_label("modality", "lfp")],

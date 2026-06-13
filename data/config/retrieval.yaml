@@ -118,6 +118,16 @@ analysis_intents:
     - trial outcome prediction
     - predict trial outcome
     - outcome classification
+  fmri_glm_analysis:
+    - glm
+    - general linear model
+    - first level model
+    - first-level model
+    - design matrix
+    - contrast
+    - beta maps
+    - bold events
+    - task fmri
 
 graph:
   enabled: true
@@ -131,6 +141,12 @@ graph:
     degree: 0.01
   use_edge_confidence: true
   max_transitive_hops: 2
+
+memory_graph:
+  enabled: true
+  nodes_path: artifacts/field_state/memory_graph_nodes.jsonl
+  edges_path: artifacts/field_state/memory_graph_edges.jsonl
+  weight: 0.06
 
 field_embeddings:
   enabled: true

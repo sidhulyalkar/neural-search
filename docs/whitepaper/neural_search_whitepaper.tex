@@ -98,7 +98,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current implementation indexes 10,404 unique normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, and smaller sources. The corpus is represented by 60,175 BGE-large-en-v1.5 field embeddings and a 10,404-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a lightweight Field-State and evaluation-memory layer for tracking scientific claims, benchmark gaps, human qrels review, adjudication status, agreement summaries, and claim-evidence updates. This memory layer includes a local Obsidian-compatible review spine that preserves human notes separately from generated artifacts; it is infrastructure for reviewability, not a database and not a replacement for human relevance labels. Current validation artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, preliminary usefulness-score separation between relevant and irrelevant results, and graph-rank perturbation for 39\% of ranked pairs. The qrels review workflow has been smoke-tested by exporting 10 qrels review notes and validating the memory roundtrip, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation step is a 10K-snapshot retrieval benchmark with deterministic exact lookup, independent and adjudicated relevance labels, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
+Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current implementation indexes 10,404 unique normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, and smaller sources. The corpus is represented by 60,175 BGE-large-en-v1.5 field embeddings and a 10,404-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores every dataset, paper, concept, modality, species, brain region, task, affordance, neuro-judge evidence packet, user feedback signal, and versioned snapshot in a single queryable, exportable, incrementally-updatable graph. The memory graph currently contains 770 nodes (675 neuro-judge evidence packets, 6 dataset records, 18 analysis affordances, 11 modalities, 9 file formats, 9 behavioral events, 8 data standards, 7 brain regions, 6 raw-data signals, 5 feedback signals, 5 source archives, 3 species, 1 paper) and 180 typed edges, with full provenance separation between neuro-judge silver labels and human gold labels. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, and generates provisional learning signals (false-high candidates, hard negatives, metadata gaps, dataset reuse successes) without overwriting canonical labels. Current validation artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, preliminary usefulness-score separation between relevant and irrelevant results, and graph-rank perturbation for 39\% of ranked pairs. The qrels review workflow has been smoke-tested by exporting 10 qrels review notes and validating the memory roundtrip, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation step is a 10K-snapshot retrieval benchmark with deterministic exact lookup, independent and adjudicated relevance labels, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
 \end{abstract}
 
 \tableofcontents
@@ -844,6 +844,56 @@ $\rightarrow$ \texttt{whitepaper validation report}.
 
 As of the current artifact snapshot, this loop has been smoke-tested by exporting 10 qrels review notes and validating the memory roundtrip. This demonstrates artifact integrity and review-loop feasibility. It does not constitute final human relevance validation or publication-grade retrieval performance evidence.
 
+\subsection{Field-State Memory Graph (v0.9)}
+\label{sec:field-state-memory-graph}
+
+The v0.9 sprint replaces the flat JSONL field-state layer with a \textbf{Field-State Memory Graph}: a typed, directed, incrementally-updatable relational graph that stores every first-class artifact as a node and every relationship as a named, provenance-carrying edge.
+
+\subsubsection{Graph Schema}
+
+The graph is defined in \texttt{neural\_search/graph/schema.py} and implemented in \texttt{neural\_search/field\_state/}. Nodes are instances of \texttt{KnowledgeGraphNode}; edges are instances of \texttt{KnowledgeGraphEdge}. Every node carries a stable deterministic ID (\texttt{node:<type>:<slug>}), label, aliases, source IDs, properties, evidence list, confidence float, and created/updated timestamps. Every edge carries a stable ID (\texttt{edge:<type>:<source>:<target>}), evidence, confidence, and properties.
+
+Node types include: \texttt{dataset}, \texttt{source\_archive}, \texttt{paper}, \texttt{modality}, \texttt{species}, \texttt{brain\_region}, \texttt{task}, \texttt{behavioral\_event}, \texttt{data\_standard}, \texttt{file\_format}, \texttt{analysis\_affordance}, \texttt{raw\_data\_signal}, \texttt{processed\_data\_signal}, \texttt{concept}, \texttt{pipeline}, \texttt{query}, \texttt{retrieval\_run}, \texttt{neuro\_judge\_evidence\_packet}, \texttt{neuro\_judge\_judgment}, \texttt{feedback\_signal}, \texttt{curation\_issue}, and \texttt{snapshot\_manifest}.
+
+\subsubsection{Provenance Invariants}
+
+The graph enforces strict provenance separation at the field level. Neuro-judge outputs are stored with \texttt{provenance: "neuro\_judge\_silver\_not\_human\_gold"} and are rejected at ingestion time if submitted with \texttt{provenance: "human\_gold"}. User feedback events are stored with \texttt{provenance: "user\_feedback\_downstream\_signal"}. No LLM label or feedback event can be promoted to gold label status through any pipeline path.
+
+\subsubsection{Conservative Normalizers}
+
+The \texttt{neural\_search/field\_state/normalizers.py} module extracts species, modality, brain region, and raw/processed data evidence with explicit disambiguation guardrails:
+
+\begin{itemize}
+    \item Calcium imaging does \emph{not} satisfy extracellular spike sorting affordances.
+    \item fMRI does \emph{not} satisfy LFP or spike affordances.
+    \item MT/V5 is \emph{not} interchangeable with lateral intraparietal cortex.
+    \item Entorhinal cortex is \emph{not} equivalent to hippocampus unless marked as related (not equivalent).
+    \item Human imaging is \emph{not} interchangeable with rodent electrophysiology.
+    \item Raw data availability is \emph{not} inferred from archive membership or standard alone; it requires positive keyword evidence (e.g., raw AP bin files, continuous voltage traces).
+\end{itemize}
+
+Text-inferred labels receive confidence $\leq 0.6$; structured metadata labels receive confidence $\geq 0.7$.
+
+\subsubsection{Incremental Update Pipeline}
+
+The \texttt{update\_field\_state.py} script detects corpus record changes by SHA-256 content hash over $\{\text{title}, \text{description}, \text{source\_id}, \text{source}\}$. Each run writes a versioned snapshot directory under \texttt{artifacts/field\_state/snapshots/<timestamp>/} containing:
+\begin{itemize}
+    \item \texttt{corpus\_manifest.json} --- record hashes and change counts
+    \item \texttt{memory\_graph\_manifest.json} --- node/edge counts by type
+    \item \texttt{index\_manifest.json} --- which stages were skipped
+    \item \texttt{update\_report.md} --- human-readable summary
+\end{itemize}
+
+The \texttt{compare\_snapshots.py} script computes node/edge count deltas by type between any two snapshots and warns on $>10\%$ unexpected removals.
+
+\subsubsection{Learning Signals}
+
+The \texttt{LearningSignalGenerator} in \texttt{neural\_search/field\_state/learning\_signals.py} derives provisional signals from feedback aggregation and neuro-judge disagreements. Signal types include: \texttt{false\_high\_candidate}, \texttt{false\_low\_candidate}, \texttt{missing\_metadata\_candidate}, \texttt{hard\_negative\_candidate}, \texttt{concept\_link\_candidate}, \texttt{affordance\_link\_candidate}, \texttt{source\_quality\_warning}, \texttt{query\_failure\_mode}, and \texttt{dataset\_reuse\_success\_signal}. All signals are provisional---they update priority queues and priors for review, but do not overwrite canonical labels or generate new qrels entries.
+
+\subsubsection{Current Artifact State}
+
+The current field-state memory graph (built from the v0.7 real corpus slice + existing neuro-judge evidence packets + feedback) contains 770 nodes and 180 edges, with 0 invariant errors and 0 guardrail violations in the validation pass. All 179 field-state tests pass.
+
 % ============================================================================
 % SECTION 8: EVALUATION METHODOLOGY
 % ============================================================================
@@ -1574,6 +1624,38 @@ python -m neural_search.field_state.cli claim-evidence-update
 python -m neural_search.field_state.cli whitepaper-validation-report
 \end{lstlisting}
 
+\subsection{Field-State Memory Graph Commands (v0.9)}
+
+The field-state memory graph is built, validated, and updated with:
+
+\begin{lstlisting}[language=sh]
+# Build graph from corpus + evidence + feedback
+python scripts/field_state/build_memory_graph.py \
+  --corpus data/corpus/normalized/combined_corpus.jsonl
+
+# Validate graph invariants and guardrails
+python scripts/field_state/validate_memory_graph.py
+
+# Incremental update (detects changed records by hash)
+python scripts/field_state/update_field_state.py \
+  --corpus data/corpus/normalized/combined_corpus.jsonl
+
+# Force full rebuild
+python scripts/field_state/update_field_state.py \
+  --corpus data/corpus/normalized/combined_corpus.jsonl --force
+
+# Compare two snapshots
+python scripts/field_state/compare_snapshots.py \
+  --old artifacts/field_state/snapshots/<old_ts> \
+  --new artifacts/field_state/snapshots/<new_ts>
+
+# Update learning signals
+python scripts/field_state/update_learning_signals.py
+
+# Retrieval loading diagnostics
+python scripts/eval/diagnose_retrieval_loading.py
+\end{lstlisting}
+
 These commands produce local JSONL and Markdown artifacts for reviewability. Their existence should be cited as workflow reproducibility, not as evidence of ranking quality unless paired with completed human labels and metric reports.
 
 % ============================================================================
@@ -1629,9 +1711,11 @@ The $s_9$ graph proximity dimension computes PathSim when a \texttt{KnowledgeGra
 
 The current expanded corpus has 60,175 BGE-large-en-v1.5 dense field embeddings and a 10,404-record turbovec index with 4-bit metadata. The current recall report gives recall@50 = 1.0 with p50 latency of 7.24 ms and p95 latency of 24.47 ms. This is vector-index validation against exact nearest-neighbor retrieval, not end-to-end scientific relevance validation. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
 
-\subsection{Corpus Expansion}
+\subsection{Corpus Expansion and Graph-Linked Memory Growth}
 
-The current corpus expansion achieves the 10K target with 10,404 unique normalized records. Major sources include Zenodo (3,000), OpenNeuro (1,749), NeuroMorpho (1,000), DANDI (842), NeuroVault (819), Figshare (800), Allen (500), GIN (380), Brain Image Library (300), BlueBrain (300), IBL (198), CRCNS (153), OSF (321), and 42 records from smaller sources. The Tier-2 ingestion pipeline uses a 4-gate inclusion classifier (raw/processed data, neuroscience signal, open license, persistent identifier), deduplication, and rejection logging. The current quality report passes all checks and records 24,160 Tier-2 rejections.
+The current corpus achieves the 10K target with 10,404 unique normalized records. Major sources include Zenodo (3,000), OpenNeuro (1,749), NeuroMorpho (1,000), DANDI (842), NeuroVault (819), Figshare (800), Allen (500), GIN (380), Brain Image Library (300), BlueBrain (300), IBL (198), CRCNS (153), OSF (321), and 42 records from smaller sources. The Tier-2 ingestion pipeline uses a 4-gate inclusion classifier (raw/processed data, neuroscience signal, open license, persistent identifier), deduplication, and rejection logging. The current quality report passes all checks and records 24,160 Tier-2 rejections.
+
+Corpus expansion and memory graph growth are now coupled: adding new records triggers incremental hash-based update detection, inserts new dataset/modality/species/region/affordance nodes, and connects them into the existing graph without rebuilding from scratch. The expansion plan targets 50K+ records through deeper DANDI and OpenNeuro coverage, EBRAINS, SPARK, UK Biobank (neuroscience subset), and data paper mining from \textit{Scientific Data} and \textit{eLife}. Each new source should be accompanied by a normalizer extension for any new modalities, species, or brain regions it introduces, and validated against the conservative normalizer guardrails before ingestion.
 
 \subsection{Neural Signature Similarity}
 
@@ -1657,11 +1741,11 @@ The current repository has preliminary usefulness labels and qrels review infras
 
 Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system is designed to help researchers find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current implementation indexes 10,404 unique normalized records, stores 60,175 BGE-large field embeddings, and exposes a 10,404-record 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. That result validates approximate vector-index behavior against exact nearest neighbors under the current configuration; it does not validate end-to-end scientific relevance. Current repository artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, a usefulness-score Spearman correlation of 0.3999 over 270 labeled pairs, graph proximity changing 39\% of ranked pairs in the current ablation artifact, and a Field-State/evaluation-memory layer that makes claim status, qrels review state, and missing validation work explicit.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current implementation indexes 10,404 unique normalized records, stores 60,175 BGE-large field embeddings, and exposes a 10,404-record 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. That result validates approximate vector-index behavior against exact nearest neighbors under the current configuration; it does not validate end-to-end scientific relevance. Current repository artifacts show corpus quality gates passing, 24,160 Tier-2 rejections logged, a usefulness-score Spearman correlation of 0.3999 over 270 labeled pairs, graph proximity changing 39\% of ranked pairs in the current ablation artifact, a Field-State/evaluation-memory layer that makes claim status, qrels review state, and missing validation work explicit, and a v0.9 Field-State Memory Graph with 770 nodes and 180 typed edges providing a queryable relational substrate that grows incrementally with every corpus update.
 
-The next scientific milestone is not more horizontal expansion. It is rigorous validation: deterministic exact identifier lookup, 10K-snapshot benchmark reruns, multi-annotator relevance labels, source-specific extraction QA, graph rebuilds aligned to the current corpus, hard-negative violation tracking, calibration, source-skew diagnostics, and content-validated analysis affordances. These steps will determine whether latent usefulness retrieval can be defended as an empirically validated scientific search signal rather than an architectural promise.
+The next scientific milestone is not more horizontal expansion. It is rigorous validation: deterministic exact identifier lookup, 10K-snapshot benchmark reruns, multi-annotator relevance labels, source-specific extraction QA, graph rebuilds aligned to the full corpus, hard-negative violation tracking, calibration, source-skew diagnostics, and content-validated analysis affordances. These steps will determine whether latent usefulness retrieval can be defended as an empirically validated scientific search signal rather than an architectural promise.
 
-The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search now has the retrieval architecture and validation memory needed to test that principle honestly.
+The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search now has the retrieval architecture, field-state memory graph, and validation infrastructure needed to test that principle honestly.
 
 \appendix
 \section{Field-State Validation Artifacts}
@@ -1681,7 +1765,18 @@ The Field-State layer writes compact, reviewable artifacts rather than a large r
     \item \texttt{artifacts/field\_state/claim\_evidence\_suggestions.jsonl}
 \end{itemize}
 
-Generated Markdown reports include weak claims, benchmark gaps, ranked opportunities, latest snapshots, qrels agreement summaries, evaluation snapshots, claim-evidence updates, and whitepaper validation reports under \texttt{reports/field\_state/}.
+Memory graph artifacts (v0.9):
+
+\begin{itemize}
+    \item \texttt{artifacts/field\_state/memory\_graph\_nodes.jsonl} --- 770 typed nodes
+    \item \texttt{artifacts/field\_state/memory\_graph\_edges.jsonl} --- 180 typed edges
+    \item \texttt{artifacts/field\_state/memory\_graph\_manifest.json} --- build summary
+    \item \texttt{artifacts/field\_state/current\_manifest.json} --- latest snapshot pointer
+    \item \texttt{artifacts/field\_state/snapshots/<timestamp>/} --- versioned snapshot directories
+    \item \texttt{artifacts/field\_state/learning\_signals.jsonl} --- provisional learning signals
+\end{itemize}
+
+Generated Markdown reports include weak claims, benchmark gaps, ranked opportunities, latest snapshots, qrels agreement summaries, evaluation snapshots, claim-evidence updates, whitepaper validation reports, memory graph validation, and learning signal summaries under \texttt{reports/field\_state/}.
 
 \subsection{Qrels and Adjudication Format}
 
