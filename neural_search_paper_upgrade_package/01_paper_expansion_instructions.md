@@ -2,7 +2,7 @@
 
 ## Recommended paper structure
 
-Use `neural_search_iclr_whitepaper.tex` as the main manuscript. Treat `neural_search_whitepaper.tex` as a technical and mathematical appendix source.
+Use `neural_search_whitepaper.tex` as the main manuscript. Treat `neural_search_whitepaper.tex` as a technical and mathematical appendix source.
 
 The current paper is strongest when framed as a systems and retrieval paper, not only a vision document. The central upgrade is to build an evidence spine: claims, baselines, ablations, benchmark protocol, failure modes, and explicit separation between implementation and future work.
 

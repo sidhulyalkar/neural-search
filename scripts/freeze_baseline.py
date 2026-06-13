@@ -31,17 +31,27 @@ def main(argv: list[str] | None = None) -> int:
     # Count corpus records
     corpus_sizes: dict[str, int] = {}
     normalized_dir = Path("data/corpus/normalized")
-    for f in sorted(normalized_dir.glob("real_*.jsonl")):
-        count = sum(1 for _ in f.open())
-        corpus_sizes[f.stem] = count
+    if normalized_dir.exists():
+        for f in sorted(normalized_dir.glob("real_*.jsonl")):
+            with f.open() as fh:
+                count = sum(1 for _ in fh)
+            corpus_sizes[f.stem] = count
 
     # Count seed pairs
     seed_path = Path("data/eval/usefulness_seed_pairs.jsonl")
-    n_pairs = sum(1 for _ in seed_path.open()) if seed_path.exists() else 0
+    if seed_path.exists():
+        with seed_path.open() as fh:
+            n_pairs = sum(1 for _ in fh)
+    else:
+        n_pairs = 0
 
     # Count embedding vectors
     embed_path = Path("data/embeddings/real_all.field_embeddings.jsonl")
-    n_embeddings = sum(1 for _ in embed_path.open()) if embed_path.exists() else 0
+    if embed_path.exists():
+        with embed_path.open() as fh:
+            n_embeddings = sum(1 for _ in fh)
+    else:
+        n_embeddings = 0
 
     # Read last correlation report if exists
     corr_path = Path("reports/usefulness_correlation_v09.json")

@@ -4,7 +4,7 @@
 
 **Generated:** 2026-05-27
 **Repository Version:** v0.7.3
-**Whitepaper:** `docs/whitepaper/neural_search_iclr_whitepaper.tex`
+**Whitepaper:** `docs/whitepaper/neural_search_whitepaper.tex`
 
 ---
 

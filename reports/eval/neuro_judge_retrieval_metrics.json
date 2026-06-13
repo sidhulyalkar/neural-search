@@ -1,0 +1,520 @@
+{
+  "status": "computed",
+  "runs": [
+    {
+      "run_file": "reports/eval/runs/bm25.jsonl",
+      "variant": "bm25",
+      "status": "computed",
+      "query_count": 15,
+      "qrels_query_count": 15,
+      "metrics": {
+        "ndcg_at_10": 0.5005,
+        "ndcg_at_10_ci95": [
+          0.3953,
+          0.6065
+        ],
+        "ndcg_at_20": 0.4749,
+        "ndcg_at_20_ci95": [
+          0.3904,
+          0.5526
+        ],
+        "mrr": 0.6361,
+        "mrr_ci95": [
+          0.425,
+          0.8389
+        ],
+        "precision_at_10": 0.3667,
+        "precision_at_10_ci95": [
+          0.2467,
+          0.48
+        ],
+        "recall_at_50": 0.4402,
+        "recall_at_50_ci95": [
+          0.3287,
+          0.5419
+        ],
+        "hard_negative_violation_rate": 0.0333,
+        "hard_negative_violation_rate_ci95": [
+          0.0,
+          0.1
+        ]
+      },
+      "per_query": [
+        {
+          "query_id": "q_0001",
+          "ndcg_at_10": 0.01321202464718796,
+          "ndcg_at_20": 0.058032346393926966,
+          "mrr": 0.08333333333333333,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.6190476190476191,
+          "hard_negative_violation_rate": 0.5,
+          "source_skew_at_10": {
+            "zenodo": 0.7,
+            "openneuro": 0.3
+          }
+        },
+        {
+          "query_id": "q_0002",
+          "ndcg_at_10": 0.5388334650077264,
+          "ndcg_at_20": 0.46178982312998573,
+          "mrr": 1.0,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.38461538461538464,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.3,
+            "allen": 0.2,
+            "dandi": 0.2,
+            "zenodo": 0.2,
+            "gin": 0.1
+          }
+        },
+        {
+          "query_id": "q_0003",
+          "ndcg_at_10": 0.6749359875559982,
+          "ndcg_at_20": 0.5442264694418729,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.4444444444444444,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.8,
+            "zenodo": 0.1,
+            "ibl": 0.1
+          }
+        },
+        {
+          "query_id": "q_0004",
+          "ndcg_at_10": 0.5220424671074536,
+          "ndcg_at_20": 0.4847866736177031,
+          "mrr": 1.0,
+          "precision_at_10": 0.4,
+          "recall_at_50": 0.4827586206896552,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.4,
+            "zenodo": 0.2,
+            "gin": 0.1,
+            "osf": 0.1,
+            "openneuro": 0.1,
+            "dandi": 0.1
+          }
+        },
+        {
+          "query_id": "q_0005",
+          "ndcg_at_10": 0.7084409501232899,
+          "ndcg_at_20": 0.6709426588138432,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.4418604651162791,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.5,
+            "osf": 0.2,
+            "openneuro": 0.2,
+            "neurovault": 0.1
+          }
+        },
+        {
+          "query_id": "q_0006",
+          "ndcg_at_10": 0.13886244387355454,
+          "ndcg_at_20": 0.2997894386196156,
+          "mrr": 0.5,
+          "precision_at_10": 0.1,
+          "recall_at_50": 0.4,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "gin": 0.5,
+            "zenodo": 0.3,
+            "ibl": 0.1,
+            "osf": 0.1
+          }
+        },
+        {
+          "query_id": "q_0007",
+          "ndcg_at_10": 0.2934556883974402,
+          "ndcg_at_20": 0.2971954506509407,
+          "mrr": 0.0,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.0,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.3,
+            "osf": 0.3,
+            "gin": 0.2,
+            "neurovault": 0.1,
+            "openneuro": 0.1
+          }
+        },
+        {
+          "query_id": "q_0008",
+          "ndcg_at_10": 0.27589428518910025,
+          "ndcg_at_20": 0.42617608691888825,
+          "mrr": 0.125,
+          "precision_at_10": 0.2,
+          "recall_at_50": 0.5,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "osf": 0.5,
+            "zenodo": 0.2,
+            "openneuro": 0.1,
+            "crcns": 0.1,
+            "dandi": 0.1
+          }
+        },
+        {
+          "query_id": "q_0009",
+          "ndcg_at_10": 0.6070801282413392,
+          "ndcg_at_20": 0.4423459405245621,
+          "mrr": 1.0,
+          "precision_at_10": 0.4,
+          "recall_at_50": 0.4782608695652174,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.4,
+            "neurovault": 0.3,
+            "figshare": 0.2,
+            "zenodo": 0.1
+          }
+        },
+        {
+          "query_id": "q_0010",
+          "ndcg_at_10": 0.727329844310522,
+          "ndcg_at_20": 0.4693949330784642,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.4594594594594595,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "allen": 0.8,
+            "crcns": 0.2
+          }
+        },
+        {
+          "query_id": "q_0011",
+          "ndcg_at_10": 0.529520734425464,
+          "ndcg_at_20": 0.47047050601682266,
+          "mrr": 0.3333333333333333,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.7222222222222222,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.9,
+            "openneuro": 0.1
+          }
+        },
+        {
+          "query_id": "q_0012",
+          "ndcg_at_10": 0.7172986351638664,
+          "ndcg_at_20": 0.7163020436881979,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.5714285714285714,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.7,
+            "zenodo": 0.2,
+            "neurovault": 0.1
+          }
+        },
+        {
+          "query_id": "q_0013",
+          "ndcg_at_10": 0.5391870169376467,
+          "ndcg_at_20": 0.6318621052339746,
+          "mrr": 1.0,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.7272727272727273,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.3,
+            "openneuro": 0.3,
+            "neurovault": 0.2,
+            "osf": 0.1,
+            "gin": 0.1
+          }
+        },
+        {
+          "query_id": "q_0014",
+          "ndcg_at_10": 0.4924605972327182,
+          "ndcg_at_20": 0.4634403864161978,
+          "mrr": 0.5,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.37209302325581395,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.6,
+            "osf": 0.2,
+            "zenodo": 0.2
+          }
+        },
+        {
+          "query_id": "q_0015",
+          "ndcg_at_10": 0.72891152902702,
+          "ndcg_at_20": 0.6870283302993522,
+          "mrr": 0.0,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.0,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.3,
+            "neurovault": 0.3,
+            "openneuro": 0.2,
+            "osf": 0.1,
+            "figshare": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "run_file": "reports/eval/runs/usefulness.jsonl",
+      "variant": "usefulness",
+      "status": "computed",
+      "query_count": 15,
+      "qrels_query_count": 15,
+      "metrics": {
+        "ndcg_at_10": 0.543,
+        "ndcg_at_10_ci95": [
+          0.4128,
+          0.6695
+        ],
+        "ndcg_at_20": 0.4939,
+        "ndcg_at_20_ci95": [
+          0.3934,
+          0.584
+        ],
+        "mrr": 0.6029,
+        "mrr_ci95": [
+          0.3933,
+          0.8022
+        ],
+        "precision_at_10": 0.46,
+        "precision_at_10_ci95": [
+          0.3133,
+          0.5933
+        ],
+        "recall_at_50": 0.432,
+        "recall_at_50_ci95": [
+          0.3057,
+          0.5604
+        ],
+        "hard_negative_violation_rate": 0.0,
+        "hard_negative_violation_rate_ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "per_query": [
+        {
+          "query_id": "q_0001",
+          "ndcg_at_10": 0.4893509592124042,
+          "ndcg_at_20": 0.49182282897166757,
+          "mrr": 1.0,
+          "precision_at_10": 0.8,
+          "recall_at_50": 0.8571428571428571,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "neurovault": 0.8,
+            "zenodo": 0.1,
+            "osf": 0.1
+          }
+        },
+        {
+          "query_id": "q_0002",
+          "ndcg_at_10": 0.0,
+          "ndcg_at_20": 0.0,
+          "mrr": 0.010869565217391304,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.0,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "allen": 1.0
+          }
+        },
+        {
+          "query_id": "q_0003",
+          "ndcg_at_10": 0.5572998242663684,
+          "ndcg_at_20": 0.5113318534601599,
+          "mrr": 1.0,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.46296296296296297,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 1.0
+          }
+        },
+        {
+          "query_id": "q_0004",
+          "ndcg_at_10": 0.425560568895128,
+          "ndcg_at_20": 0.4510552380388084,
+          "mrr": 1.0,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.5172413793103449,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 1.0
+          }
+        },
+        {
+          "query_id": "q_0005",
+          "ndcg_at_10": 0.43780685607566444,
+          "ndcg_at_20": 0.5269279653208568,
+          "mrr": 0.3333333333333333,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.4418604651162791,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.4,
+            "ibl": 0.2,
+            "openneuro": 0.2,
+            "osf": 0.1,
+            "neurovault": 0.1
+          }
+        },
+        {
+          "query_id": "q_0006",
+          "ndcg_at_10": 0.22793826167775832,
+          "ndcg_at_20": 0.22406921883717051,
+          "mrr": 0.2,
+          "precision_at_10": 0.3,
+          "recall_at_50": 0.3,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.5,
+            "gin": 0.4,
+            "zenodo": 0.1
+          }
+        },
+        {
+          "query_id": "q_0007",
+          "ndcg_at_10": 0.9216017310213246,
+          "ndcg_at_20": 0.7424224122212882,
+          "mrr": 0.0,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.0,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "neurovault": 0.5,
+            "openneuro": 0.3,
+            "zenodo": 0.2
+          }
+        },
+        {
+          "query_id": "q_0008",
+          "ndcg_at_10": 0.26253786659754863,
+          "ndcg_at_20": 0.27600161330336703,
+          "mrr": 0.16666666666666666,
+          "precision_at_10": 0.2,
+          "recall_at_50": 0.4,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "osf": 0.4,
+            "zenodo": 0.4,
+            "crcns": 0.1,
+            "dandi": 0.1
+          }
+        },
+        {
+          "query_id": "q_0009",
+          "ndcg_at_10": 0.9216017310213247,
+          "ndcg_at_20": 0.6987583772062694,
+          "mrr": 1.0,
+          "precision_at_10": 0.9,
+          "recall_at_50": 0.4782608695652174,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "neurovault": 0.7,
+            "zenodo": 0.2,
+            "figshare": 0.1
+          }
+        },
+        {
+          "query_id": "q_0010",
+          "ndcg_at_10": 0.727329844310522,
+          "ndcg_at_20": 0.4693949330784642,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.4594594594594595,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "allen": 0.8,
+            "crcns": 0.2
+          }
+        },
+        {
+          "query_id": "q_0011",
+          "ndcg_at_10": 0.529520734425464,
+          "ndcg_at_20": 0.47047050601682266,
+          "mrr": 0.3333333333333333,
+          "precision_at_10": 0.5,
+          "recall_at_50": 0.7222222222222222,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "zenodo": 0.9,
+            "openneuro": 0.1
+          }
+        },
+        {
+          "query_id": "q_0012",
+          "ndcg_at_10": 0.7172986351638664,
+          "ndcg_at_20": 0.7163020436881979,
+          "mrr": 1.0,
+          "precision_at_10": 0.6,
+          "recall_at_50": 0.5714285714285714,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.7,
+            "zenodo": 0.2,
+            "neurovault": 0.1
+          }
+        },
+        {
+          "query_id": "q_0013",
+          "ndcg_at_10": 0.741670249010153,
+          "ndcg_at_20": 0.678307387616338,
+          "mrr": 1.0,
+          "precision_at_10": 0.7,
+          "recall_at_50": 0.7575757575757576,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.8,
+            "zenodo": 0.1,
+            "osf": 0.1
+          }
+        },
+        {
+          "query_id": "q_0014",
+          "ndcg_at_10": 0.8603818544462509,
+          "ndcg_at_20": 0.6886532818665039,
+          "mrr": 1.0,
+          "precision_at_10": 0.8,
+          "recall_at_50": 0.5116279069767442,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "openneuro": 0.3,
+            "neurovault": 0.3,
+            "osf": 0.2,
+            "zenodo": 0.1,
+            "figshare": 0.1
+          }
+        },
+        {
+          "query_id": "q_0015",
+          "ndcg_at_10": 0.3254288624260272,
+          "ndcg_at_20": 0.462521743074706,
+          "mrr": 0.0,
+          "precision_at_10": 0.0,
+          "recall_at_50": 0.0,
+          "hard_negative_violation_rate": 0.0,
+          "source_skew_at_10": {
+            "crcns": 0.3,
+            "zenodo": 0.3,
+            "ibl": 0.2,
+            "neurovault": 0.1,
+            "osf": 0.1
+          }
+        }
+      ]
+    }
+  ],
+  "neuro_judge_warning": "NEURO-JUDGE DIAGNOSTIC \u2014 RAG-GROUNDED LLM LABELS, NOT HUMAN GOLD. Use for development triage and report separately from expert validation."
+}

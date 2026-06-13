@@ -209,7 +209,7 @@ When messages return, Codex should:
 ## File Locations Summary
 
 ### Paper Files
-- Main manuscript: `docs/whitepaper/neural_search_iclr_whitepaper.tex`
+- Main manuscript: `docs/whitepaper/neural_search_whitepaper.tex`
 - Technical appendix: `docs/whitepaper/neural_search_whitepaper.tex`
 - Paper support docs: `docs/paper/*.md`
 

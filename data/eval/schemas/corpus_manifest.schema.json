@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neural Search Corpus Manifest",
+  "type": "object",
+  "required": ["corpus_size", "unique_record_ids", "record_ids", "source_distribution"],
+  "properties": {
+    "created_at": {"type": "string"},
+    "corpus_size": {"type": "integer", "minimum": 0},
+    "unique_record_ids": {"type": "integer", "minimum": 0},
+    "record_ids": {"type": "array", "items": {"type": "string"}},
+    "source_distribution": {"type": "object", "additionalProperties": {"type": "integer"}},
+    "ingestion_commit": {"type": ["string", "null"]},
+    "embedding_model": {"type": ["string", "null"]},
+    "embedding_dimension": {"type": ["integer", "null"]},
+    "tokenizer_config": {"type": ["object", "null"]},
+    "graph_build_hash": {"type": ["string", "null"]},
+    "rejection_log_hash": {"type": ["string", "null"]}
+  },
+  "additionalProperties": true
+}

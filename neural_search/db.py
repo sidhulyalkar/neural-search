@@ -23,7 +23,9 @@ def vector_type(dimensions: int | None = None) -> Any:
         from pgvector.sqlalchemy import Vector
     except Exception:
         return JSONType
-    return JSONType.with_variant(Vector(dimensions), "postgresql")
+    # Start from a fresh JSON() so we don't hit "dialect already present"
+    # on the module-level JSONType that already carries JSONB for postgresql.
+    return JSON().with_variant(Vector(dimensions), "postgresql")
 
 
 class Base(DeclarativeBase):

@@ -1,0 +1,276 @@
+"""Generate ConceptBasis records for every concept in the graph."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from neural_search.field_state.concept_memory.evidence import (
+    EvidenceSummary,
+    summarize_evidence,
+)
+from neural_search.field_state.concept_memory.schema import (
+    ConceptBasis,
+    ConceptNode,
+    EvidenceLink,
+)
+
+# ---------------------------------------------------------------------------
+# Repo root + artifact path
+# ---------------------------------------------------------------------------
+
+_HERE = Path(__file__).resolve()
+_REPO_ROOT = _HERE.parents[3]
+
+_BASIS_JSONL = Path("artifacts/field_state/concept_memory/concept_basis.jsonl")
+
+
+def _repo_root() -> Path:
+    return _REPO_ROOT
+
+
+def _atomic_write(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f".{path.name}.tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
+
+
+# ---------------------------------------------------------------------------
+# Linked concept type helpers
+# ---------------------------------------------------------------------------
+
+_BENCHMARK_GAP_TYPE = "benchmark_gap"
+_OPPORTUNITY_TYPE = "opportunity"
+_SUPPORTING_RELATIONS = frozenset({"supports"})
+_CONTRADICTING_RELATIONS = frozenset({"contradicts"})
+
+
+def _concept_ids_by_type(
+    evidence_summary: EvidenceSummary,
+    concepts_by_id: dict[str, ConceptNode],
+    concept_type: str,
+) -> list[str]:
+    """Return concept IDs from outgoing links that match the given type."""
+    # For claim/dataset/paper/opportunity we already have them in the summary;
+    # benchmark_gap is not pre-collected so we look it up via concepts_by_id.
+    if concept_type == "claim":
+        return evidence_summary["linked_claims"]
+    if concept_type == "dataset":
+        return evidence_summary["linked_datasets"]
+    if concept_type == "paper":
+        return evidence_summary["linked_papers"]
+    if concept_type == "opportunity":
+        return evidence_summary["linked_opportunities"]
+    # fallback for benchmark_gap or any other type
+    return []
+
+
+def _collect_benchmark_gap_ids(
+    concept: ConceptNode,
+    evidence_links: list[EvidenceLink],
+    concepts_by_id: dict[str, ConceptNode],
+) -> list[str]:
+    """Return concept IDs of outgoing-linked benchmark_gap concepts."""
+    results: list[str] = []
+    for lnk in evidence_links:
+        if lnk.source_concept_id != concept.concept_id:
+            continue
+        tgt_id = lnk.target_concept_id
+        if tgt_id is None:
+            continue
+        node = concepts_by_id.get(tgt_id)
+        if node is not None and node.concept_type == _BENCHMARK_GAP_TYPE:
+            results.append(tgt_id)
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Core logic
+# ---------------------------------------------------------------------------
+
+
+def generate_concept_basis(
+    concept: ConceptNode,
+    evidence_links: list[EvidenceLink],
+    concepts_by_id: dict[str, ConceptNode],
+) -> ConceptBasis:
+    """Build a ConceptBasis for a single concept."""
+    ev_summary = summarize_evidence(concept, evidence_links, concepts_by_id)
+
+    # Summary — no hallucination; use only existing fields
+    if concept.description:
+        summary = f"Concept: {concept.canonical_name}. {concept.description}"
+    else:
+        summary = f"Concept: {concept.canonical_name} (type: {concept.concept_type})"
+
+    if concept.source_artifacts:
+        summary += f" Evidence from: {concept.source_artifacts[0]}"
+
+    # Collect all evidence_ids from outgoing + incoming links (up to 20)
+    all_links_for_concept = [
+        lnk for lnk in evidence_links
+        if lnk.source_concept_id == concept.concept_id
+        or lnk.target_concept_id == concept.concept_id
+    ]
+    evidence_link_ids = [lnk.evidence_id for lnk in all_links_for_concept[:20]]
+    supporting_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type in _SUPPORTING_RELATIONS
+    ]
+    contradicting_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type in _CONTRADICTING_RELATIONS
+    ]
+    neutral_or_metadata_links = [
+        lnk for lnk in all_links_for_concept
+        if lnk.relation_type not in _SUPPORTING_RELATIONS
+        and lnk.relation_type not in _CONTRADICTING_RELATIONS
+    ]
+    reviewed_supporting_count = sum(
+        1 for lnk in supporting_links if lnk.review_status != "unreviewed"
+    )
+    reviewed_contradicting_count = sum(
+        1 for lnk in contradicting_links if lnk.review_status != "unreviewed"
+    )
+    reviewed_neutral_or_metadata_count = sum(
+        1 for lnk in neutral_or_metadata_links if lnk.review_status != "unreviewed"
+    )
+    missing_count = 1 if not all_links_for_concept else 0
+
+    if supporting_links:
+        if reviewed_supporting_count >= 3 and len(supporting_links) >= 5:
+            evidence_strength = "strong"
+        elif reviewed_supporting_count >= 1 and len(supporting_links) >= 2:
+            evidence_strength = "moderate"
+        elif reviewed_supporting_count >= 1:
+            evidence_strength = "weak"
+        else:
+            evidence_strength = "weak"
+    elif neutral_or_metadata_links:
+        evidence_strength = "weak"
+    else:
+        evidence_strength = "none"
+
+    # Uncertainty notes
+    uncertainty_notes: list[str] = []
+    if concept.evidence_count == 0:
+        uncertainty_notes.append(
+            "No evidence links found — purely derived from artifact names."
+        )
+    if neutral_or_metadata_links and not supporting_links:
+        uncertainty_notes.append(
+            "Only metadata or neutral links found — not reviewed scientific support."
+        )
+    if contradicting_links:
+        uncertainty_notes.append(
+            "Contradictory evidence is present — inspect before using this concept as support."
+        )
+    if concept.review_status == "unreviewed":
+        uncertainty_notes.append(
+            "Not yet reviewed by a human — treat as speculative."
+        )
+    if evidence_strength in ("none", "weak"):
+        uncertainty_notes.append(
+            "Weak or no supporting evidence — verify before citing."
+        )
+
+    # Next validation actions
+    ctype = concept.concept_type
+    if ctype == "claim":
+        next_validation_actions = ["Validate claim against dataset corpus benchmarks."]
+    elif ctype == "benchmark_gap":
+        next_validation_actions = [
+            "Identify or create artifacts that address this gap."
+        ]
+    elif ctype == "dataset":
+        next_validation_actions = [
+            "Check dataset availability and access policy."
+        ]
+    elif ctype == "method":
+        next_validation_actions = [
+            "Confirm method is applicable to available datasets."
+        ]
+    else:
+        next_validation_actions = ["Review linked evidence before use."]
+
+    return ConceptBasis(
+        concept_id=concept.concept_id,
+        canonical_name=concept.canonical_name,
+        concept_type=concept.concept_type,
+        summary=summary,
+        supporting_claim_ids=_concept_ids_by_type(ev_summary, concepts_by_id, "claim"),
+        supporting_dataset_ids=_concept_ids_by_type(ev_summary, concepts_by_id, "dataset"),
+        supporting_paper_ids=_concept_ids_by_type(ev_summary, concepts_by_id, "paper"),
+        supporting_note_paths=concept.source_note_paths,
+        related_opportunity_ids=_concept_ids_by_type(
+            ev_summary, concepts_by_id, "opportunity"
+        ),
+        related_benchmark_gap_ids=_collect_benchmark_gap_ids(
+            concept, evidence_links, concepts_by_id
+        ),
+        evidence_links=evidence_link_ids,
+        supporting_count=len(supporting_links),
+        contradicting_count=len(contradicting_links),
+        neutral_or_metadata_count=len(neutral_or_metadata_links),
+        missing_count=missing_count,
+        reviewed_supporting_count=reviewed_supporting_count,
+        reviewed_contradicting_count=reviewed_contradicting_count,
+        reviewed_neutral_or_metadata_count=reviewed_neutral_or_metadata_count,
+        contradicting_evidence_links=[
+            lnk.evidence_id for lnk in contradicting_links[:20]
+        ],
+        metadata_evidence_links=[
+            lnk.evidence_id for lnk in neutral_or_metadata_links[:20]
+        ],
+        evidence_strength=evidence_strength,
+        uncertainty_notes=uncertainty_notes,
+        next_validation_actions=next_validation_actions,
+    )
+
+
+def generate_all_bases(
+    concepts: list[ConceptNode],
+    evidence_links: list[EvidenceLink],
+) -> list[ConceptBasis]:
+    """Generate ConceptBasis for every concept."""
+    concepts_by_id: dict[str, ConceptNode] = {c.concept_id: c for c in concepts}
+    return [
+        generate_concept_basis(concept, evidence_links, concepts_by_id)
+        for concept in concepts
+    ]
+
+
+# ---------------------------------------------------------------------------
+# I/O
+# ---------------------------------------------------------------------------
+
+
+def write_concept_basis(
+    bases: list[ConceptBasis],
+    root: Path | None = None,
+) -> Path:
+    """Write concept_basis.jsonl. Returns the absolute path written."""
+    base = root if root is not None else _repo_root()
+    path = base / _BASIS_JSONL
+    _atomic_write(path, "\n".join(b.to_jsonl() for b in bases))
+    return path
+
+
+def read_concept_basis(
+    root: Path | None = None,
+) -> list[ConceptBasis]:
+    """Read concept_basis.jsonl. Returns list[ConceptBasis]."""
+    base = root if root is not None else _repo_root()
+    path = base / _BASIS_JSONL
+    if not path.exists():
+        return []
+    results: list[ConceptBasis] = []
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if line:
+                try:
+                    results.append(ConceptBasis.from_jsonl(line))
+                except Exception:
+                    pass
+    return results
