@@ -184,7 +184,7 @@ class NeuralSignatureV1(BaseModel):
             return 0.0
 
         # Cosine similarity
-        dot = sum(a * b for a, b in zip(self.feature_vector, other.feature_vector, strict=False))
+        dot = sum(a * b for a, b in zip(self.feature_vector, other.feature_vector, strict=True))
         norm_a = sum(a * a for a in self.feature_vector) ** 0.5
         norm_b = sum(b * b for b in other.feature_vector) ** 0.5
 
