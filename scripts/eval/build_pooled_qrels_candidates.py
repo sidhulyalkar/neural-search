@@ -167,7 +167,7 @@ def bm25_retrieve(
 # ---------------------------------------------------------------------------
 
 def _dot(a: list[float], b: list[float]) -> float:
-    return sum(x * y for x, y in zip(a, b, strict=False))
+    return sum(x * y for x, y in zip(a, b, strict=True))
 
 
 def _normalize(vec: list[float]) -> list[float]:
