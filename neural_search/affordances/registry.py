@@ -35,11 +35,8 @@ Each affordance specifies:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from enum import StrEnum
-from typing import Any, Literal
-
-from pydantic import BaseModel, Field
+from typing import Any
 
 from neural_search.core.dataset_card import (
     AffordanceRequirement,
@@ -296,6 +293,33 @@ FUNCTIONAL_CONNECTIVITY = AffordanceRequirement(
     ],
 )
 
+FMRI_GLM_ANALYSIS = AffordanceRequirement(
+    affordance_id="fmri_glm_analysis",
+    label="fMRI GLM analysis",
+    description="Fit first-level or task-contrast GLMs to BIDS fMRI/BOLD datasets",
+    required_features=[
+        "fmri_bold_data",
+        "bids_standard",
+        "task_events_or_conditions",
+    ],
+    optional_features=[
+        "derivatives_or_contrasts",
+        "multiple_subjects",
+        "multiple_sessions",
+    ],
+    negative_conditions=[
+        "non_fmri",
+        "no_task_events",
+    ],
+    validation_methods=["bids_events_check", "bids_bold_check", "bids_derivatives_check"],
+    min_subjects=1,
+    example_use_cases=[
+        "Fit a first-level BOLD GLM",
+        "Estimate task contrasts from events.tsv files",
+        "Reuse design matrices or derivative contrast maps",
+    ],
+)
+
 TRIAL_ALIGNED_CALCIUM = AffordanceRequirement(
     affordance_id="trial_aligned_calcium_analysis",
     label="Trial-aligned calcium imaging analysis",
@@ -508,6 +532,7 @@ AFFORDANCE_REGISTRY: dict[str, AffordanceRequirement] = {
     "cross_area_interaction": CROSS_AREA_INTERACTION,
     "dimensionality_reduction": DIMENSIONALITY_REDUCTION,
     "functional_connectivity": FUNCTIONAL_CONNECTIVITY,
+    "fmri_glm_analysis": FMRI_GLM_ANALYSIS,
     "trial_aligned_calcium_analysis": TRIAL_ALIGNED_CALCIUM,
     "pose_neural_correlation": POSE_NEURAL_CORRELATION,
     # Extended affordances (reusability-focused)
@@ -854,12 +879,19 @@ def _get_feature_checks() -> dict[str, Any]:
         "neural_population_data": lambda f: f.has_neural_data and f.unit_count > 1,
         "multiple_units_or_voxels": lambda f: f.unit_count > 1 or f.channel_count > 1 or f.has_fmri,
         "multi_channel_neural_data": lambda f: f.channel_count > 1 or f.has_fmri,
+        "fmri_bold_data": lambda f: f.has_fmri,
         "calcium_imaging_data": lambda f: f.has_calcium_imaging,
         "roi_traces": lambda f: f.has_roi_traces or f.has_calcium_imaging,
 
         # Trial/event
         "trial_structure": lambda f: f.has_trial_structure,
         "event_timestamps": lambda f: f.has_event_timestamps,
+        "task_events_or_conditions": lambda f: (
+            f.has_event_timestamps
+            or f.has_trial_structure
+            or f.has_stimulus_info
+            or bool(f.event_types)
+        ),
         "ordered_trials": lambda f: f.has_trial_structure,
         "continuous_or_trial_data": lambda f: f.has_trial_structure or f.has_continuous_behavior,
 
@@ -916,6 +948,12 @@ def _get_feature_checks() -> dict[str, Any]:
         "session_timestamps": lambda f: f.has_session_labels,
         "behavioral_performance": lambda f: f.has_behavior,
         "reward_timestamps": lambda f: f.has_reward_signal and f.has_event_timestamps,
+        "bids_standard": lambda f: f.data_format == DataFormat.BIDS or "bids" in f.data_standards,
+        "derivatives_or_contrasts": lambda f: any(
+            value in {"contrast", "contrasts", "derivative", "derivatives", "glm", "beta"}
+            for value in f.event_types
+        ),
+        "multiple_subjects": lambda _: True,
     }
 
 
@@ -941,6 +979,13 @@ def _get_negative_checks() -> dict[str, Any]:
         "raw_video_only": lambda f: not f.has_roi_traces and not f.has_calcium_imaging,
         "no_pose_data": lambda f: not f.has_pose_tracking,
         "unaligned_data": lambda f: not f.has_event_timestamps,
+        "non_fmri": lambda f: not f.has_fmri,
+        "no_task_events": lambda f: (
+            not f.has_event_timestamps
+            and not f.has_trial_structure
+            and not f.has_stimulus_info
+            and not f.event_types
+        ),
 
         # Delay discounting specific negatives
         "no_delay_variable": lambda f: not f.has_delay_duration and not f.has_intertemporal_choice,

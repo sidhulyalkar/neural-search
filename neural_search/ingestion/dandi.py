@@ -114,6 +114,210 @@ _DANDI_SPECIES_MAP: dict[str, str] = {
 }
 
 
+# DANDI about[].name UBERON anatomy strings → canonical brain region IDs
+_DANDI_ABOUT_REGION_MAP: dict[str, str] = {
+    # Broad neocortex
+    "cortex": "neocortex",
+    "neocortical": "neocortex",
+    # Motor cortex
+    "premotor cortex": "premotor_cortex",
+    "primary motor cortex": "motor_cortex",
+    "motor cortex": "motor_cortex",
+    # Prefrontal / frontal
+    "temporal lobe": "temporal_cortex",
+    "frontal lobe": "prefrontal_cortex",
+    "frontal cortex": "prefrontal_cortex",
+    "prefrontal cortex": "prefrontal_cortex",
+    "medial prefrontal cortex": "mPFC",
+    "orbitofrontal cortex": "OFC",
+    "anterior cingulate cortex": "ACC",
+    "cingulate cortex": "ACC",
+    "posterior cingulate cortex": "posterior_cingulate_cortex",
+    # Visual
+    "visual cortex": "visual_cortex",
+    "primary visual cortex": "v1",
+    "anterolateral visual area": "visual_cortex",
+    "anteromedial visual area": "visual_cortex",
+    "posteromedial visual area": "visual_cortex",
+    # Somatosensory
+    "barrel cortex": "somatosensory_cortex",
+    "somatosensory cortex": "somatosensory_cortex",
+    "primary somatosensory cortex": "somatosensory_cortex",
+    "vibrissa unit": "somatosensory_cortex",
+    # Parietal
+    "posterior parietal cortex": "posterior_parietal_cortex",
+    "parietal cortex": "parietal_cortex",
+    # Temporal / auditory
+    "temporal cortex": "temporal_cortex",
+    "auditory cortex": "auditory_cortex",
+    "primary auditory cortex": "auditory_cortex",
+    # Retrosplenial
+    "retrosplenial cortex": "retrosplenial_cortex",
+    # Insula
+    "insula": "insula",
+    "insular cortex": "insula",
+    # Broad neocortex
+    "neocortex": "neocortex",
+    "cerebral cortex": "neocortex",
+    # Hippocampal formation
+    "hippocampus": "hippocampus",
+    "hippocampal formation": "hippocampus",
+    "ammon's horn": "hippocampus",
+    "cornu ammonis": "hippocampus",
+    "ca1 field of hippocampus": "ca1",
+    "ca1 field": "ca1",
+    "ca2 field of hippocampus": "ca2",
+    "ca3 field of hippocampus": "ca3",
+    "ca3 field": "ca3",
+    "dentate gyrus": "dentate_gyrus",
+    "subiculum": "subiculum",
+    # Entorhinal
+    "medial entorhinal cortex": "medial_entorhinal_cortex",
+    "lateral entorhinal cortex": "lateral_entorhinal_cortex",
+    "entorhinal cortex": "entorhinal_cortex",
+    # Amygdala
+    "amygdala": "amygdala",
+    "basolateral amygdala": "basolateral_amygdala",
+    "basolateral amygdaloid complex": "basolateral_amygdala",
+    "central amygdala": "central_amygdala",
+    "central amygdaloid nucleus": "central_amygdala",
+    # Thalamus
+    "thalamus": "thalamus",
+    "dorsal plus ventral thalamus": "thalamus",
+    "lateral geniculate nucleus": "lateral_geniculate_nucleus",
+    "medial geniculate nucleus": "medial_geniculate_nucleus",
+    "mediodorsal nucleus": "mediodorsal_thalamus",
+    "mediodorsal thalamus": "mediodorsal_thalamus",
+    "ventral posterolateral nucleus": "thalamus",
+    "pulvinar": "pulvinar",
+    # Striatum / basal ganglia
+    "striatum": "striatum",
+    "caudate nucleus": "caudate",
+    "caudate putamen": "caudate",
+    "putamen": "putamen",
+    "nucleus accumbens": "nucleus_accumbens",
+    "globus pallidus": "globus_pallidus",
+    "subthalamic nucleus": "subthalamic_nucleus",
+    # Substantia nigra / VTA
+    "substantia nigra": "substantia_nigra",
+    "substantia nigra pars compacta": "substantia_nigra",
+    "substantia nigra pars reticulata": "substantia_nigra",
+    "ventral tegmental area": "vta",
+    # Midbrain
+    "superior colliculus": "superior_colliculus",
+    "inferior colliculus": "inferior_colliculus",
+    "periaqueductal gray": "periaqueductal_gray",
+    # Brainstem
+    "brainstem": "brainstem",
+    "pons": "brainstem",
+    "medulla oblongata": "brainstem",
+    # LC
+    "locus coeruleus": "locus_coeruleus",
+    # Cerebellum
+    "cerebellum": "cerebellum",
+    # Hypothalamus
+    "hypothalamus": "hypothalamus",
+    # Septum
+    "lateral septum": "septum",
+    "medial septum": "septum",
+    "lateral septum complex": "septum",
+    "septal nuclei": "septum",
+    # Olfactory
+    "olfactory bulb": "olfactory_bulb",
+    "piriform cortex": "piriform_cortex",
+    # Language
+    "broca's area": "broca_area",
+    "broca area": "broca_area",
+    # Retina
+    "retina": "retina",
+    # Spinal cord
+    "spinal cord": "spinal_cord",
+    # Broad catch-alls
+    "temporal lobe": "temporal_cortex",
+    "frontal lobe": "prefrontal_cortex",
+    "parietal lobe": "parietal_cortex",
+    "occipital lobe": "visual_cortex",
+    "cortex": "neocortex",
+    "neocortical": "neocortex",
+    "cerebral cortex": "neocortex",
+}
+
+# DANDI keywords → canonical brain region IDs (plain string match)
+_DANDI_KEYWORD_REGION_MAP: dict[str, str] = {
+    "hippocampus": "hippocampus",
+    "hippocampal": "hippocampus",
+    "neocortical": "neocortex",
+    "cortex": "neocortex",
+    "ca1": "ca1",
+    "ca3": "ca3",
+    "dentate gyrus": "dentate_gyrus",
+    "entorhinal cortex": "entorhinal_cortex",
+    "medial entorhinal cortex": "medial_entorhinal_cortex",
+    "thalamus": "thalamus",
+    "cerebellum": "cerebellum",
+    "neocortex": "neocortex",
+    "motor cortex": "motor_cortex",
+    "primary motor cortex": "motor_cortex",
+    "premotor cortex": "premotor_cortex",
+    "barrel cortex": "somatosensory_cortex",
+    "somatosensory cortex": "somatosensory_cortex",
+    "visual cortex": "visual_cortex",
+    "prefrontal cortex": "prefrontal_cortex",
+    "medial prefrontal cortex": "mPFC",
+    "anterior cingulate cortex": "ACC",
+    "striatum": "striatum",
+    "nucleus accumbens": "nucleus_accumbens",
+    "amygdala": "amygdala",
+    "substantia nigra": "substantia_nigra",
+    "vta": "vta",
+    "ventral tegmental area": "vta",
+    "superior colliculus": "superior_colliculus",
+    "brainstem": "brainstem",
+    "olfactory bulb": "olfactory_bulb",
+    "piriform cortex": "piriform_cortex",
+    "insula": "insula",
+    "retrosplenial cortex": "retrosplenial_cortex",
+    "auditory cortex": "auditory_cortex",
+    "posterior parietal cortex": "posterior_parietal_cortex",
+    "parietal cortex": "parietal_cortex",
+    "temporal cortex": "temporal_cortex",
+    "hypothalamus": "hypothalamus",
+    "septum": "septum",
+    "lateral septum": "septum",
+    "locus coeruleus": "locus_coeruleus",
+    "subiculum": "subiculum",
+    "v1": "v1",
+}
+
+
+def _map_dandi_about_to_regions(about_list: list[dict]) -> list[str]:
+    """Map DANDI about[] UBERON anatomy names to canonical brain region IDs."""
+    canonical: set[str] = set()
+    for item in about_list:
+        name = item.get("name", "").lower().strip() if isinstance(item, dict) else ""
+        if name in _DANDI_ABOUT_REGION_MAP:
+            canonical.add(_DANDI_ABOUT_REGION_MAP[name])
+    return sorted(canonical)
+
+
+def _map_dandi_keywords_to_regions(keywords: list[str]) -> list[str]:
+    """Map DANDI keywords list to canonical brain region IDs.
+
+    Handles both simple keywords and comma/semicolon-separated keyword strings
+    (DANDI sometimes stores comma-lists as a single keyword entry).
+    """
+    import re as _re
+    canonical: set[str] = set()
+    for kw in keywords:
+        # Some DANDI records store comma-separated lists as one keyword entry
+        parts = _re.split(r"[,;]+", str(kw))
+        for part in parts:
+            key = part.lower().strip()
+            if key in _DANDI_KEYWORD_REGION_MAP:
+                canonical.add(_DANDI_KEYWORD_REGION_MAP[key])
+    return sorted(canonical)
+
+
 def _map_dandi_variable_measured(variable_measured: list[str]) -> list[str]:
     """Map DANDI variableMeasured NWB type names to canonical modality IDs."""
     canonical: set[str] = set()
@@ -152,7 +356,7 @@ def fetch_dandiset_rich_metadata(source_id: str) -> dict[str, Any]:
     """Fetch rich assetsSummary via the DANDI Python client.
 
     Returns a dict with keys: variableMeasured, approach, measurementTechnique,
-    species, about, description. Returns empty dict on failure.
+    species, about, description, keywords, studyTarget. Returns empty dict on failure.
     """
     try:
         from dandi.dandiapi import DandiAPIClient
@@ -161,6 +365,12 @@ def fetch_dandiset_rich_metadata(source_id: str) -> dict[str, Any]:
             meta = ds.get_metadata()
             d = meta.model_dump(mode="json", exclude_none=True)
             assets = d.get("assetsSummary") or {}
+            study_targets = d.get("studyTarget") or []
+            # studyTarget can be list of strings or list of dicts with 'name'
+            study_target_strs = [
+                (t.get("name") if isinstance(t, dict) else str(t))
+                for t in study_targets if t
+            ]
             return {
                 "variableMeasured": assets.get("variableMeasured") or [],
                 "approach": assets.get("approach") or [],
@@ -169,6 +379,7 @@ def fetch_dandiset_rich_metadata(source_id: str) -> dict[str, Any]:
                 "about": d.get("about") or [],
                 "description": d.get("description") or "",
                 "keywords": d.get("keywords") or [],
+                "studyTarget": study_target_strs,
             }
     except Exception as exc:
         logger.debug("Could not fetch rich metadata for DANDI %s: %s", source_id, exc)
@@ -219,20 +430,25 @@ def normalize_dandiset(
         or rich.get("description")
     )
     text = " ".join(str(part) for part in [title, description, metadata, assets])
+    study_targets = rich.get("studyTarget") or []
     extraction = extract_dataset_labels(
         title=title,
         description=description,
         file_paths=[],
         source_metadata={**metadata, "assets": assets},
-        linked_paper_abstracts=[],
+        linked_paper_abstracts=study_targets,
     )
 
-    # Supplement with DANDI-client-derived modalities and species when available
+    # Supplement with DANDI-client-derived modalities, species, and brain regions
     rich_modalities: list[str] = (
         _map_dandi_variable_measured(rich.get("variableMeasured") or []) +
         _map_dandi_approach(rich.get("approach") or [])
     )
     rich_species = _map_dandi_species(rich.get("species") or [])
+    rich_brain_regions: list[str] = (
+        _map_dandi_about_to_regions(rich.get("about") or []) +
+        _map_dandi_keywords_to_regions(rich.get("keywords") or [])
+    )
 
     return {
         "source": "dandi",
@@ -243,7 +459,7 @@ def normalize_dandiset(
         "license": metadata.get("license") or raw.get("license"),
         "species": list(dict.fromkeys(rich_species + [item.id for item in extraction.species])),
         "modalities": sorted({*rich_modalities, *(item.id for item in extraction.modalities)}),
-        "brain_regions": [item.id for item in extraction.brain_regions],
+        "brain_regions": list(dict.fromkeys(rich_brain_regions + [item.id for item in extraction.brain_regions])),
         "tasks": [item.id for item in extraction.tasks],
         "behaviors": [item.id for item in extraction.behaviors],
         "data_standards": sorted({item.id for item in extraction.data_standards} | {"NWB"}),

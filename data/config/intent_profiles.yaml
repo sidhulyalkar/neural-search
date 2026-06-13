@@ -225,6 +225,7 @@ detection_signals:
 
   analysis_affordance:
     - keywords: ["ready for", "suitable for", "supports", "can do"]
+    - keywords: ["glm", "general linear model", "first-level", "first level", "contrast", "design matrix", "beta maps"]
     - affordance_match: true
 
   hard_negative:

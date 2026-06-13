@@ -118,6 +118,16 @@ analysis_intents:
     - trial outcome prediction
     - predict trial outcome
     - outcome classification
+  fmri_glm_analysis:
+    - glm
+    - general linear model
+    - first level model
+    - first-level model
+    - design matrix
+    - contrast
+    - beta maps
+    - bold events
+    - task fmri
 
 graph:
   enabled: true

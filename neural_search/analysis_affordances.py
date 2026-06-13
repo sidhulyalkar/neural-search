@@ -26,6 +26,7 @@ AFFORDANCE_IDS = (
     "brain_behavior_alignment",
     "seizure_detection",
     "sleep_stage_classification",
+    "fmri_glm_analysis",
     "functional_connectivity",
     "representational_similarity_analysis",
     "encoding_modeling",
@@ -284,6 +285,39 @@ def detect_analysis_affordances(record: NormalizedDatasetRecord) -> list[Analysi
         results.append(_affordance("sleep_stage_classification", "low", 0.12, helpful=["resting_state"], missing=["sleep_stage_labels"], evidence=["resting_state"]))
     else:
         results.append(_affordance("sleep_stage_classification", "unsupported", 0.05, missing=["sleep_stage_labels", "neural_data"]))
+
+    standards = _by_type(record, "data_standard")
+    file_formats = _by_type(record, "file_format")
+    has_bids = "bids" in standards
+    normalized_tasks = {
+        task.removeprefix("label:").split(":")[-1].replace(" ", "_").casefold()
+        for task in tasks
+    }
+    has_task_fmri = "fmri" in modalities and bool(normalized_tasks - {"resting_state"})
+    has_glm_events = has_events or "events.tsv" in text or "events_tsv" in file_formats
+    has_glm_derivatives = any(
+        term in text
+        for term in (
+            "glm",
+            "general linear model",
+            "first level",
+            "first-level",
+            "contrast",
+            "design matrix",
+            "beta map",
+            "statistical map",
+            "derivative",
+            "derivatives",
+        )
+    )
+    if "fmri" in modalities and has_bids and has_task_fmri and (has_glm_events or has_glm_derivatives):
+        results.append(_affordance("fmri_glm_analysis", "high", 0.88, present=["fmri", "bids", "task_or_conditions"], helpful=["events_or_derivatives"], evidence=["fmri", "bids"] + sorted(tasks)))
+    elif "fmri" in modalities and has_bids and has_task_fmri:
+        results.append(_affordance("fmri_glm_analysis", "medium", 0.68, present=["fmri", "bids"], helpful=sorted(tasks), missing=["events_or_contrast_metadata"], evidence=["fmri", "bids"] + sorted(tasks)))
+    elif "fmri" in modalities:
+        results.append(_affordance("fmri_glm_analysis", "low", 0.28, present=["fmri"], missing=["bids", "task_events_or_contrasts"], evidence=["fmri"]))
+    else:
+        results.append(_affordance("fmri_glm_analysis", "unsupported", 0.05, missing=["fmri", "bids", "task_events_or_contrasts"]))
 
     if (modalities & {"fmri", "eeg", "ecog", "lfp", "electrophysiology"}) and ("functional_connectivity" in analyses or multiple_regions):
         results.append(_affordance("functional_connectivity", "high", 0.82, present=["connectivity_suitable_modality"], helpful=sorted(analyses & {"functional_connectivity"} | regions), evidence=sorted(modalities & {"fmri", "eeg", "ecog", "lfp", "electrophysiology"})))
