@@ -14,6 +14,7 @@ from typing import Any
 import httpx
 
 from neural_search.extraction import extract_dataset_labels
+from neural_search.ingestion.dataset_classifier import is_valid_dataset
 from neural_search.ingestion.registry import register
 
 logger = logging.getLogger(__name__)
@@ -86,47 +87,49 @@ def normalize_ebrains_dataset(raw: dict[str, Any]) -> dict[str, Any]:
 
 
 @register("ebrains")
-def fetch_ebrains(limit: int = 100) -> list[dict[str, Any]]:
-    """Fetch public EBRAINS datasets."""
-    records: list[dict[str, Any]] = []
-    start = 0
-    page_size = 20
+def fetch_ebrains(limit: int = 300) -> list[dict[str, Any]]:
+    """Fetch public EBRAINS datasets with offset pagination."""
+    accepted: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    page_size = 50
+    from_offset = 0
+    headers = _auth_headers()
 
-    while len(records) < limit:
-        try:
-            resp = httpx.get(
-                EBRAINS_SEARCH_URL,
-                params={"from": start, "size": page_size},
-                headers=_auth_headers(),
-                timeout=30,
-            )
-            if resp.status_code == 401:
-                logger.warning(
-                    "EBRAINS API returned 401 — set EBRAINS_TOKEN env var. "
-                    "Register at https://ebrains.eu/register"
-                )
-                break
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as exc:
-            logger.warning("EBRAINS fetch error: %s", exc)
-            break
-
-        hits = data.get("data", data.get("hits", []))
-        if not hits:
-            break
-
-        for item in hits:
-            if len(records) >= limit:
-                break
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        while len(accepted) < limit:
             try:
-                records.append(normalize_ebrains_dataset(item))
+                resp = client.get(
+                    EBRAINS_SEARCH_URL,
+                    params={"from": from_offset, "size": page_size},
+                    headers=headers,
+                )
+                resp.raise_for_status()
+                data = resp.json()
             except Exception as exc:
-                logger.debug("EBRAINS normalize error: %s", exc)
+                logger.warning("EBRAINS fetch error at offset %d: %s", from_offset, exc)
+                break
 
-        start += page_size
-        if start >= data.get("total", start + 1):
-            break
+            items = data.get("data", data) if isinstance(data, dict) else data
+            if not items:
+                break
 
-    logger.info("EBRAINS: fetched %d datasets", len(records))
-    return records
+            for raw in items:
+                sid = str(raw.get("id") or raw.get("@id") or "")
+                if "/" in sid:
+                    sid = sid.rstrip("/").split("/")[-1]
+                if not sid or sid in seen_ids:
+                    continue
+                seen_ids.add(sid)
+                rec = normalize_ebrains_dataset(raw)
+                result = is_valid_dataset(rec)
+                if result.accepted:
+                    accepted.append(rec)
+                if len(accepted) >= limit:
+                    break
+
+            if len(items) < page_size:
+                break
+            from_offset += page_size
+
+    logger.info("ebrains: accepted %d datasets", len(accepted))
+    return accepted

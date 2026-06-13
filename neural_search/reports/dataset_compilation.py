@@ -20,7 +20,7 @@ from neural_search.cards import generate_dataset_card_json
 from neural_search.ingestion.curated import (
     summarize_curated_sources,
 )
-from neural_search.ingestion.demo_seed import build_demo_seed
+from neural_search.ingestion.demo_seed import build_combined_corpus
 from neural_search.qa import qa_counts, top_demo_ready
 
 REPORTS_DIR = Path(__file__).resolve().parents[2] / "data" / "reports"
@@ -35,6 +35,69 @@ METADATA_FIELDS = [
     "url",
     "description",
 ]
+
+COMPLETENESS_FIELDS = [
+    "title",
+    "description",
+    "species",
+    "modalities",
+    "brain_regions",
+    "tasks",
+    "behaviors",
+    "data_standards",
+    "license",
+    "url",
+    "analysis_goals",
+]
+
+
+def _field_is_filled(value: Any) -> bool:
+    """Return True if a field value is considered populated."""
+    if value is None:
+        return False
+    if isinstance(value, (list, dict)):
+        return len(value) > 0
+    return str(value).strip() != ""
+
+
+def compute_corpus_completeness() -> dict[str, Any]:
+    """Compute field fill rates per source and overall.
+
+    Returns a dict with keys: generated_at, total_datasets, fields,
+    overall (fill_rates), by_source (per-source counts + fill_rates).
+    """
+    records = build_combined_corpus()
+
+    by_source: dict[str, list[dict]] = {}
+    for record in records:
+        src = record.get("dataset", record).get("source", "unknown")
+        by_source.setdefault(src, []).append(record)
+
+    def _fill_rates(recs: list[dict]) -> dict[str, float]:
+        n = len(recs)
+        if n == 0:
+            return {f: 0.0 for f in COMPLETENESS_FIELDS}
+        rates = {}
+        for field in COMPLETENESS_FIELDS:
+            filled = sum(
+                1 for rec in recs
+                if _field_is_filled(rec.get("dataset", rec).get(field))
+            )
+            rates[field] = round(filled / n, 4)
+        return rates
+
+    source_stats = {
+        src: {"count": len(recs), "fill_rates": _fill_rates(recs)}
+        for src, recs in sorted(by_source.items())
+    }
+
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "total_datasets": len(records),
+        "fields": COMPLETENESS_FIELDS,
+        "overall": {"count": len(records), "fill_rates": _fill_rates(records)},
+        "by_source": source_stats,
+    }
 
 
 def _count_by_field(records: list[dict], field: str) -> dict[str, int]:
@@ -137,7 +200,7 @@ def compile_dataset_report() -> dict[str, Any]:
     Returns:
         Dict containing all report sections and statistics.
     """
-    records = build_demo_seed()
+    records = build_combined_corpus()
     curated_summary = summarize_curated_sources()
 
     by_source = _count_by_field(records, "source")

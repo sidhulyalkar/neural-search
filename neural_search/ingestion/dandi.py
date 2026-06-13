@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 import httpx
 
@@ -16,6 +19,7 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.ingestion.registry import register
 from neural_search.normalized import (
     evidence_label_from_extraction,
     stable_normalized_id,
@@ -160,6 +164,38 @@ def normalize_dandiset_record(
     )
 
 
+def fetch_all_dandisets(
+    *,
+    start_url: str | None = None,
+    page_size: int = 100,
+    max_records: int | None = None,
+) -> list[dict[str, Any]]:
+    """Page through all DANDI dandisets and return normalized records."""
+    url: str | None = start_url or f"{DANDI_API_URL}/dandisets/?page=1&page_size={page_size}"
+    all_records: list[dict[str, Any]] = []
+
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        while url:
+            try:
+                resp = client.get(url)
+                resp.raise_for_status()
+            except httpx.HTTPError as exc:
+                logger.warning("DANDI page fetch failed: %s - %s", url, exc)
+                logger.warning("Harvest terminated early; %d records collected before failure", len(all_records))
+                break
+
+            data = resp.json()
+            for raw in data.get("results", []):
+                all_records.append(normalize_dandiset(raw))
+                if max_records is not None and len(all_records) >= max_records:
+                    return all_records
+
+            url = data.get("next")
+            logger.info("DANDI harvest: %d records so far, next=%s", len(all_records), url)
+
+    return all_records
+
+
 def fetch_dandi(query: str, limit: int) -> dict[str, Any]:
     params = {"search": query, "page_size": limit}
     with httpx.Client(timeout=30.0, follow_redirects=True) as client:
@@ -171,6 +207,12 @@ def fetch_dandi(query: str, limit: int) -> dict[str, Any]:
 def records_from_response(payload: dict[str, Any], limit: int) -> list[dict[str, Any]]:
     results = payload.get("results", payload if isinstance(payload, list) else [])
     return [normalize_dandiset(item) for item in results[:limit]]
+
+
+@register("dandi")
+def fetch_dandi_records(limit: int = 1000) -> list[dict[str, Any]]:
+    """Registry adapter for full DANDI pagination."""
+    return fetch_all_dandisets(max_records=limit)
 
 
 def main(argv: list[str] | None = None) -> int:

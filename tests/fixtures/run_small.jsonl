@@ -1,0 +1,8 @@
+{"query_id": "q_smoke_001", "record_id": "openneuro:ds000001", "rank": 1, "score": 0.92}
+{"query_id": "q_smoke_001", "record_id": "openneuro:ds000003", "rank": 2, "score": 0.88}
+{"query_id": "q_smoke_001", "record_id": "openneuro:ds000002", "rank": 3, "score": 0.75}
+{"query_id": "q_smoke_001", "record_id": "dandi:000010", "rank": 4, "score": 0.60}
+{"query_id": "q_smoke_002", "record_id": "openneuro:ds000099", "rank": 1, "score": 0.85}
+{"query_id": "q_smoke_002", "record_id": "dandi:000010", "rank": 2, "score": 0.80}
+{"query_id": "q_smoke_003", "record_id": "crcns:pfc-6", "rank": 1, "score": 0.91}
+{"query_id": "q_smoke_003", "record_id": "openneuro:ds000050", "rank": 2, "score": 0.55}

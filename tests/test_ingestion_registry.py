@@ -26,3 +26,15 @@ def test_unknown_adapter_raises():
         assert False, "should have raised ValueError"
     except ValueError as e:
         assert "definitely_not_registered_xyz123" in str(e)
+
+
+def test_curated_source_adapters_registered():
+    import neural_search.ingestion.allen_brain  # noqa: F401
+    import neural_search.ingestion.nemo_archive  # noqa: F401
+    from neural_search.ingestion.registry import run_adapter
+
+    allen = run_adapter("allen", limit=1)
+    nemo = run_adapter("nemo", limit=1)
+
+    assert allen[0]["source"] == "allen"
+    assert nemo[0]["source"] == "nemo"

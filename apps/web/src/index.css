@@ -4,38 +4,42 @@
 
 @layer base {
   body {
-    @apply antialiased;
+    @apply antialiased bg-neural-950 text-neural-100;
   }
 
-  /* Custom scrollbar for neural aesthetic */
   ::-webkit-scrollbar {
-    @apply w-2;
+    @apply w-1.5;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-neural-900;
+    @apply bg-neural-950;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-neural-600 rounded-full;
+    @apply bg-neural-800 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-neural-500;
+    @apply bg-neural-700;
+  }
+
+  ::selection {
+    @apply bg-accent-cyan/20 text-white;
   }
 }
 
 @layer components {
+  /* Legacy card classes — kept for DatasetPage, OntologyPage etc. */
   .card {
-    @apply bg-neural-900 border border-neural-700 rounded-lg p-4;
+    @apply bg-neural-900 border border-neural-800 rounded-lg p-5;
   }
 
   .card-hover {
-    @apply card transition-all duration-200 hover:border-neural-500 hover:shadow-lg hover:shadow-neural-900/50;
+    @apply card transition-all duration-200 hover:border-neural-700;
   }
 
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm;
   }
 
   .btn-primary {
@@ -43,11 +47,13 @@
   }
 
   .btn-secondary {
-    @apply btn bg-neural-700 text-neural-100 hover:bg-neural-600;
+    @apply btn bg-neural-800 text-neural-200 hover:bg-neural-700;
   }
 
   .input {
-    @apply w-full bg-neural-800 border border-neural-600 rounded-lg px-4 py-2 text-neural-100 placeholder-neural-400 focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan;
+    @apply w-full bg-neural-900 border border-neural-700 rounded-lg px-4 py-2.5 text-neural-100
+           placeholder-neural-600 focus:outline-none focus:border-neural-500 focus:ring-1
+           focus:ring-neural-500 transition-colors;
   }
 
   .badge {
@@ -55,18 +61,23 @@
   }
 
   .badge-cyan {
-    @apply badge bg-accent-cyan/20 text-accent-cyan;
+    @apply badge bg-accent-cyan/15 text-accent-cyan;
   }
 
   .badge-violet {
-    @apply badge bg-accent-violet/20 text-accent-violet;
+    @apply badge bg-accent-violet/15 text-accent-violet;
   }
 
   .badge-emerald {
-    @apply badge bg-accent-emerald/20 text-accent-emerald;
+    @apply badge bg-accent-emerald/15 text-accent-emerald;
   }
 
   .badge-amber {
-    @apply badge bg-accent-amber/20 text-accent-amber;
+    @apply badge bg-amber-500/15 text-amber-400;
+  }
+
+  /* Section label */
+  .section-label {
+    @apply text-xs text-neural-600 uppercase tracking-widest;
   }
 }

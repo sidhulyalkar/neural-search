@@ -1,0 +1,10 @@
+{
+  "reviewed_candidates": 0,
+  "review_records": 0,
+  "multiple_review_candidates": 0,
+  "exact_agreement_rate": null,
+  "disagreement_count": 0,
+  "relevance_distribution": {},
+  "hard_negative_distribution": {},
+  "schema_version": "0.3"
+}

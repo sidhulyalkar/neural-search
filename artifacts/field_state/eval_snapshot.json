@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.3",
+  "qrels_status": {
+    "candidates_exported": 10,
+    "candidates_reviewed": 0,
+    "candidates_adjudicated": 0,
+    "candidates_needing_adjudication": 0
+  },
+  "label_distribution": {
+    "relevance": {},
+    "usefulness": {},
+    "hard_negative_violations": 0
+  },
+  "agreement": {
+    "reviewed_candidates": 0,
+    "review_records": 0,
+    "multiple_review_candidates": 0,
+    "exact_agreement_rate": null,
+    "disagreement_count": 0,
+    "relevance_distribution": {},
+    "hard_negative_distribution": {},
+    "schema_version": "0.3"
+  },
+  "available_eval_artifacts": [
+    "artifacts/field_state/adjudicated_qrels.jsonl",
+    "artifacts/field_state/qrels_agreement.json",
+    "reports/eval/corpus_manifest.json",
+    "reports/eval/retrieval_baselines_status.json"
+  ],
+  "claim_evidence_update_suggestions": [
+    "Strengthen qrels-related claims only after adjudicated labels and metric reports exist.",
+    "Keep dense retrieval, hard-negative, and affordance claims caveated until qrels-backed metrics are generated."
+  ],
+  "recommended_next_actions": [
+    "Review unreviewed qrels candidates.",
+    "Adjudicate disagreements.",
+    "Run retrieval metrics against adjudicated qrels.",
+    "Add source-skew and calibration reports before publication-grade claims."
+  ]
+}

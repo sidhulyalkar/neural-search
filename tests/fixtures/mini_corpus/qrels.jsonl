@@ -1,0 +1,18 @@
+{"query_id": "q_0001", "record_id": "mini:openneuro:ds000001", "label": 3, "rationale": "Matches human fMRI, reward prediction error task, reinforcement learning, BIDS standard, CC0 license, reuse feasible.", "annotator_id": "fixture"}
+{"query_id": "q_0001", "record_id": "mini:openneuro:ds000002", "label": 0, "rationale": "Human fMRI but resting-state only; no reward or RL task. Task mismatch.", "annotator_id": "fixture"}
+{"query_id": "q_0001", "record_id": "mini:gin:000009", "label": 1, "rationale": "Reinforcement learning task matches, but mouse species and fiber photometry modality do not match human fMRI requirement.", "annotator_id": "fixture"}
+{"query_id": "q_0001", "record_id": "mini:neurovault:000006", "label": 1, "rationale": "Human fMRI with decision-making, adjacent to reward learning but not reward prediction error specifically.", "annotator_id": "fixture"}
+{"query_id": "q_0002", "record_id": "mini:dandi:000003", "label": 3, "rationale": "Mouse, calcium imaging, visual cortex, orientation tuning task. Ideal match.", "annotator_id": "fixture"}
+{"query_id": "q_0002", "record_id": "mini:dandi:000004", "label": 1, "rationale": "Mouse visual cortex but electrophysiology not calcium imaging. Modality mismatch is a hard negative.", "annotator_id": "fixture"}
+{"query_id": "q_0002", "record_id": "mini:openneuro:ds000001", "label": 0, "rationale": "Human fMRI, wrong species and modality.", "annotator_id": "fixture"}
+{"query_id": "q_0003", "record_id": "mini:dandi:000004", "label": 3, "rationale": "Neuropixels extracellular electrophysiology, spike sorting affordance, NWB standard. Strong match.", "annotator_id": "fixture"}
+{"query_id": "q_0003", "record_id": "mini:figshare:000007", "label": 2, "rationale": "Rat electrophysiology with spike times available. Spike sorting feasible.", "annotator_id": "fixture"}
+{"query_id": "q_0003", "record_id": "mini:zenodo:000005", "label": 0, "rationale": "EEG, no single-unit data. Hard negative: neural signal but wrong modality for spike sorting.", "annotator_id": "fixture"}
+{"query_id": "q_0003", "record_id": "mini:osf:000008", "label": 0, "rationale": "EEG, no extracellular recordings.", "annotator_id": "fixture"}
+{"query_id": "q_0004", "record_id": "mini:crcns:000010", "label": 3, "rationale": "Monkey PFC single-unit recordings during working memory delayed-response task. Strong match.", "annotator_id": "fixture"}
+{"query_id": "q_0004", "record_id": "mini:osf:000008", "label": 2, "rationale": "Human EEG during working memory task. Cross-modality comparison feasible.", "annotator_id": "fixture"}
+{"query_id": "q_0004", "record_id": "mini:openneuro:ds000002", "label": 0, "rationale": "Human resting-state fMRI; no task structure.", "annotator_id": "fixture"}
+{"query_id": "q_0005", "record_id": "mini:gin:000009", "label": 3, "rationale": "Mouse probabilistic reward learning with trial-level behavioral structure. Model fitting feasible.", "annotator_id": "fixture"}
+{"query_id": "q_0005", "record_id": "mini:openneuro:ds000001", "label": 2, "rationale": "Human RL task with behavioral events in BIDS format. Model fitting feasible.", "annotator_id": "fixture"}
+{"query_id": "q_0005", "record_id": "mini:neurovault:000006", "label": 1, "rationale": "Decision-making contrast maps only; no trial-level behavioral events for model fitting.", "annotator_id": "fixture"}
+{"query_id": "q_0005", "record_id": "mini:dandi:000003", "label": 0, "rationale": "Visual stimulation task; no behavioral choice or reward structure for model fitting.", "annotator_id": "fixture"}

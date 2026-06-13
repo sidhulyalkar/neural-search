@@ -29,8 +29,8 @@ from neural_search.embeddings.fingerprint_builder import (
     build_fingerprints_from_corpus,
 )
 from neural_search.embeddings.hashing import HashingEmbeddingProvider
-from neural_search.normalized import load_normalized_records
-from neural_search.schemas import NormalizedDatasetRecord
+from neural_search.normalized import load_normalized_records, stable_normalized_id
+from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord, NormalizedPaperRecord
 
 CORPUS_DIR = Path("data/corpus/normalized")
 EMBEDDINGS_DIR = Path("data/embeddings")
@@ -53,6 +53,108 @@ def _is_source_corpus_file(path: Path) -> bool:
 
 def collect_corpus_files() -> list[Path]:
     return sorted(p for p in CORPUS_DIR.glob("real_*.jsonl") if _is_source_corpus_file(p))
+
+
+def _as_list(value: object) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item.get("id") or item.get("label") or item) if isinstance(item, dict) else str(item)
+                for item in value if item is not None]
+    return [str(value)]
+
+
+def _evidence_labels(values: object, label_type: str, source_field: str) -> list[EvidenceLabel]:
+    labels: list[EvidenceLabel] = []
+    for value in _as_list(values):
+        if not value.strip():
+            continue
+        labels.append(
+            EvidenceLabel(
+                id=value.strip().replace(" ", "_").lower(),
+                label=value.strip().replace("_", " ").title(),
+                label_type=label_type,
+                confidence=0.75,
+                evidence_text=value,
+                source_field=source_field,
+                source_value=value,
+                extractor_name="scripts.recompute_embeddings.flat_compat_loader",
+            )
+        )
+    return labels
+
+
+def _flat_record_id(raw: dict, *, prefix: str) -> str:
+    source = str(raw.get("source") or "unknown")
+    source_id = str(
+        raw.get("source_id")
+        or raw.get("dataset_id")
+        or raw.get("paper_id")
+        or raw.get("openalex_id")
+        or raw.get("doi")
+        or raw.get("identifier")
+        or raw.get("title")
+        or "unknown"
+    ).strip() or "unknown"
+    return stable_normalized_id(prefix, source, source_id)
+
+
+def _flat_title(raw: dict, fallback: str) -> str:
+    title = str(raw.get("title") or "").strip()
+    return title or fallback.strip() or "Untitled record"
+
+
+def _flat_to_normalized_record(raw: dict) -> NormalizedDatasetRecord | NormalizedPaperRecord:
+    source = str(raw.get("source") or "unknown")
+    source_id = str(
+        raw.get("source_id")
+        or raw.get("openalex_id")
+        or raw.get("doi")
+        or raw.get("identifier")
+        or raw.get("title")
+        or "unknown"
+    ).strip() or "unknown"
+    if source == "openalex" or raw.get("abstract") is not None or raw.get("paper_id"):
+        return NormalizedPaperRecord(
+            paper_id=_flat_record_id(raw, prefix="paper"),
+            source=source,
+            source_id=source_id,
+            title=_flat_title(raw, source_id),
+            abstract=raw.get("abstract"),
+            doi=raw.get("doi"),
+            url=raw.get("url"),
+            year=raw.get("year") or raw.get("publication_year"),
+            authors=_as_list(raw.get("authors") or raw.get("authors_json")),
+            linked_datasets=_as_list(raw.get("linked_datasets") or raw.get("linked_dataset_ids")),
+        )
+
+    return NormalizedDatasetRecord(
+        dataset_id=_flat_record_id(raw, prefix="dataset"),
+        source=source,
+        source_id=source_id,
+        title=_flat_title(raw, source_id),
+        description=raw.get("description"),
+        url=raw.get("url"),
+        species=_evidence_labels(raw.get("species"), "species", "flat.species"),
+        modalities=_evidence_labels(raw.get("modalities"), "modality", "flat.modalities"),
+        brain_regions=_evidence_labels(raw.get("brain_regions"), "brain_region", "flat.brain_regions"),
+        tasks=_evidence_labels(raw.get("tasks"), "task", "flat.tasks"),
+        behavioral_events=_evidence_labels(raw.get("behaviors"), "behavioral_event", "flat.behaviors"),
+        data_standards=_evidence_labels(raw.get("data_standards"), "data_standard", "flat.data_standards"),
+    )
+
+
+def load_records_compatible(corpus_file: Path) -> list[NormalizedDatasetRecord | NormalizedPaperRecord]:
+    """Load normalized records, falling back to flat adapter records."""
+    try:
+        return load_normalized_records(corpus_file)
+    except ValueError:
+        records: list[NormalizedDatasetRecord | NormalizedPaperRecord] = []
+        with corpus_file.open(encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    records.append(_flat_to_normalized_record(json.loads(line)))
+        return records
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -89,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     all_records: list = []
     seen_ids: set[str] = set()
     for corpus_file in corpus_files:
-        records = load_normalized_records(corpus_file)
+        records = load_records_compatible(corpus_file)
         for record in records:
             rid = record.dataset_id if isinstance(record, NormalizedDatasetRecord) else record.paper_id
             if rid not in seen_ids:

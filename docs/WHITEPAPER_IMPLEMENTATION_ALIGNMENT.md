@@ -1,276 +1,292 @@
 # Whitepaper Implementation Alignment
 
-This document provides an honest assessment of what claims the Neural Search system can support and what remains scaffolded or incomplete.
+Updated: 2026-06-03
+
+This document tracks which whitepaper claims are currently supported by repository artifacts and which claims still require validation before publication.
 
 ## Claim Status Legend
 
-- ✅ **Implemented**: Working in codebase with tests
-- 🔶 **Partial**: Scaffolded or partially working
-- ❌ **Not Implemented**: Planned but not built
-- 🔬 **Research**: Requires further investigation
+- Supported: implemented and backed by a current artifact.
+- Partial: implemented or scaffolded, but validation or runtime integration is incomplete.
+- Historical: supported only by an older corpus/report and must not be presented as current.
+- Not supported: should be removed or framed as future work.
 
----
+## Current Evidence Snapshot
+
+| Artifact | Current value | Evidence |
+|---|---:|---|
+| Canonical corpus | 10,404 unique records | `data/corpus/normalized/combined_corpus.jsonl` |
+| Dense field embeddings | 60,175 rows | `data/embeddings/real_all.dense.field_embeddings.jsonl` |
+| Embedding model | BAAI/bge-large-en-v1.5 | embedding rows and provider code |
+| Embedding dimension | 1024 | `data/index/turbovec_dense_1024.index/meta.json` |
+| Indexed ids | 10,404 | `data/index/turbovec_dense_1024.index/meta.json` |
+| Turbovec metadata bit width | 4-bit | `data/index/turbovec_dense_1024.index/meta.json` |
+| Recall report | recall@50 = 1.0 | `reports/turbovec_recall.json` |
+| Corpus quality | PASS | `reports/corpus_quality.md` |
+| Tier-2 rejections | 24,160 | `data/corpus/rejected/tier2_rejected.jsonl` |
 
 ## Core Claims
 
-### Claim 1: "Structured multi-signal retrieval combining ontology, metadata, embeddings, and graph"
+### Claim 1: Structured multi-signal retrieval combines metadata, ontology, embeddings, and graph signals
 
-**Status**: ✅ Implemented
+Status: Partial
 
-**Evidence**:
-- `neural_search/search/core.py`: 1300+ LOC multi-signal scoring
-- `neural_search/core/retrieval.py`: Multi-stage pipeline architecture
-- `data/config/retrieval.yaml`: Configurable weights for 10+ signals
+Evidence:
 
-**Limitations**:
-- Embedding signal currently uses hashing (deterministic but low-signal)
-- Field embeddings provide ~0.10 weight in scoring
-- Graph signal provides ~0.04 weight by default
+- `neural_search/search/core.py`
+- `neural_search/core/retrieval.py`
+- `data/config/retrieval.yaml`
+- `neural_search/search/field_semantic.py`
+- `neural_search/graph/`
 
-**Next Milestone**: Increase semantic signal weight with better embeddings
+Limitations:
 
----
+- The retrieval benchmark has not yet been rerun on the 10,404-record corpus.
+- Graph artifacts and graph ablation should be regenerated against the current snapshot.
+- The scoring stack needs calibrated BGE weights for the expanded corpus.
 
-### Claim 2: "Query intent classification and routing"
+Publication framing:
 
-**Status**: 🔶 Partial
+Use "implemented retrieval architecture" and "current 10K index available"; do not claim final 10K retrieval performance until `reports/real_corpus_10k_eval_report.md` exists.
 
-**Evidence**:
-- `neural_search/core/query.py`: Intent classification with 12 intents
-- `neural_search/intelligence/planner.py`: Heuristic-based planner
+### Claim 2: Corpus contains 10K+ normalized neuroscience records
 
-**Limitations**:
-- Intent classification is regex/keyword-based, not learned
-- Planner is disabled in default config (`planner.enabled=false`)
-- No validation on real query distribution
+Status: Supported
 
-**Next Milestone**: Enable planner in CI, validate on benchmark queries
+Evidence:
 
----
+- `data/corpus/normalized/combined_corpus.jsonl`: 10,404 lines
+- `data/index/turbovec_dense_1024.index/meta.json`: 10,404 ids
+- `reports/corpus_quality.md`: corpus checks PASS
 
-### Claim 3: "Knowledge graph enhances retrieval via transitive relationships"
+Current source counts:
 
-**Status**: ✅ Implemented
+| Source | Records |
+|---|---:|
+| Zenodo | 3,000 |
+| OpenNeuro | 1,749 |
+| NeuroVault | 819 |
+| DANDI | 842 |
+| NeuroMorpho | 1,000 |
+| Figshare | 800 |
+| Allen | 500 |
+| GIN | 380 |
+| Brain Image Library | 300 |
+| BlueBrain | 300 |
+| IBL | 198 |
+| CRCNS | 153 |
+| OSF | 321 |
+| Others | 42 |
+| Total | 10,404 |
 
-**Evidence**:
-- `neural_search/graph/`: 39 node types, 39 edge types
-- `neural_search/graph/transitive.py`: BFS expansion up to N hops
-- `neural_search/graph/search_features.py`: Graph context scoring
+Publication framing:
 
-**Limitations**:
-- Graph is file-backed (JSON/JSONL), not a database
-- Scales to ~5k datasets; questionable beyond
-- Graph contribution is optional and low-weighted by default
+This is the current corpus-scale claim. Older corpus-count claims should remain archived and should not appear in the main whitepaper.
 
-**v2.0 Fix (s9)**: `usefulness_scorer.py` now resolves both bare IDs (`dataset:dandi:000003`) and node-prefixed IDs (`node:dataset:dandi:000003`). Ablation confirms 39% of benchmark pairs change rank after the fix.
+### Claim 3: Corpus expansion includes new and refreshed sources
 
-**Next Milestone**: Measure Spearman r improvement from graph signal
+Status: Supported
 
----
+Evidence:
 
-### Claim 4: "Paper-dataset linking via multi-signal evidence"
+- `neural_search/ingestion/zenodo.py`
+- `neural_search/ingestion/figshare.py`
+- `neural_search/ingestion/neuromorpho.py`
+- `neural_search/ingestion/osf.py`
+- refreshed normalized source files under `data/corpus/normalized/`
 
-**Status**: ✅ Implemented
+Supported changes:
 
-**Evidence**:
-- `neural_search/core/linking.py`: 8-signal linking (DOI, task, modality, species, author, etc.)
-- `neural_search/graph/paper_linking.py`: Graph-based paper linking
-- `PaperDatasetLinkV2`: Full provenance and confidence
+- Zenodo expanded to 3,000 records and uses page size 100.
+- Figshare source added with open-license filtering.
+- NeuroMorpho source added with archive-level morphology records.
+- OSF expanded to 39 neuroscience tags, embedded license handling, and persistent identifier support.
+- DANDI, GIN, and OpenNeuro refreshed after modality synonym improvements.
 
-**Limitations**:
-- Embedding similarity signal not yet integrated
-- No citation graph evidence (would require OpenAlex API calls)
-- Link verification requires human review
+Limitations:
 
-**Next Milestone**: Integrate embedding similarity, add citation evidence
+- Zenodo, Figshare, and OSF remain high-risk heterogeneous sources and need stricter off-topic QA.
+- NeuroMorpho records are archive-level, not individual-neuron records.
 
----
+### Claim 4: Dense BGE-large field embeddings and compressed index exist
 
-### Claim 5: "Provenance-aware results with confidence and explanation"
+Status: Supported
 
-**Status**: ✅ Implemented
+Evidence:
 
-**Evidence**:
-- `neural_search/core/records.py`: `ExtractionProvenance`, `ScientificEntity` with source tracking
-- `neural_search/schemas.py`: `EvidenceLabel` with extractor metadata
-- Search results include `why_matched`, `score_breakdown`, `warnings`
+- `neural_search/embeddings/dense_provider.py`
+- `neural_search/embeddings/turbovec_index.py`
+- `data/embeddings/real_all.dense.field_embeddings.jsonl`: 60,175 rows
+- `data/index/turbovec_dense_1024.index/meta.json`: 10,404 ids, 1024 dimension, 4-bit metadata
+- `reports/turbovec_recall.json`: recall@50 = 1.0, p50 = 7.24 ms, p95 = 24.47 ms
 
-**Limitations**:
-- Not all extracted labels have full provenance (legacy data)
-- Confidence calibration not applied by default
-- Explanation quality varies by signal
+Limitations:
 
-**Next Milestone**: Apply calibration adjustment to scores
+- The paper should disclose fallback/exact behavior when the turbovec runtime is not available.
+- Query-time provider and corpus embedding provider must remain locked to the same vector space.
+- Weight calibration is still preliminary.
 
----
+### Claim 5: Current 10K retrieval performance is publication-grade
 
-### Claim 6: "Analysis affordance detection"
+Status: Partial
 
-**Status**: ✅ Implemented
+Evidence:
 
-**Evidence**:
-- `neural_search/analysis_affordances.py`: Rule-based affordance detection
-- `neural_search/schemas.py`: `AnalysisAffordance` schema
-- 15+ affordance types (spike sorting, latent state, pose estimation, etc.)
+- No current 10K retrieval benchmark report exists yet.
+- Current supporting artifacts cover corpus scale, corpus quality, embedding/index validation, usefulness correlation, and graph-rank perturbation.
 
-**Limitations**:
-- Rule-based only, no learned detection
-- False positives possible without data inspection
-- Limited to metadata signals (no actual data analysis)
+Limitations:
 
-**Next Milestone**: Validate affordances against human judgments
+- Older retrieval reports predate the 10,404-record corpus and should remain archived.
+- Exact lookup must be validated on the 10K snapshot.
+- Existing labels are too small and not independently multi-annotated.
 
----
+Publication framing:
 
-### Claim 7: "Evaluation framework with baseline ladder"
+Do not make current ranking-performance claims until `reports/real_corpus_10k_eval_report.md` exists.
 
-**Status**: ✅ Implemented
+### Claim 6: Latent usefulness scoring is implemented
 
-**Evidence**:
-- `neural_search/evaluation/baseline_ladder.py`: 8-level ladder
-- `neural_search/evaluation/benchmark.py`: P@K, MRR metrics
-- `neural_search/evaluation/relevance.py`: Human labeling workflow
+Status: Partial
 
-**Limitations**:
-- Limited human labels (~20-30 benchmark queries)
-- No A/B testing framework
-- Ladder evaluation not integrated into CI
+Evidence:
 
-**Next Milestone**: Run ladder evaluation, collect more human labels
+- `neural_search/retrieval/usefulness_scorer.py`
+- `reports/usefulness_correlation_v09.json`: Spearman r = 0.3999 over 270 pairs
+- `reports/optimized_weights_v11.json`
+- `docs/LATENT_USEFULNESS_OPTIMIZATION.md`
 
----
+Limitations:
 
-### Claim 8: "Active learning for efficient labeling"
+- Usefulness labels are limited.
+- The current r = 0.3999 supports discriminative signal, not final downstream utility.
+- Human validation and content-derived labels are needed.
 
-**Status**: ✅ Implemented
+Publication framing:
 
-**Evidence**:
-- `neural_search/evaluation/relevance.py`: `select_samples_for_labeling()`, `SamplePriority`
-- Strategies: uncertainty, diversity, hybrid
-- Coverage tracking
+Claim that Neural Search operationalizes latent usefulness through a multi-dimensional scorer and preliminary correlation results. Do not claim validated downstream usefulness yet.
 
-**Limitations**:
-- No labeling UI (CLI only)
-- Not integrated with calibration loop
-- Requires manual invocation
+### Claim 7: Exact identifier lookup is robust
 
-**Next Milestone**: Build labeling workflow integration
+Status: Partial
 
----
+Evidence:
 
-### Claim 9: "Field-aware embeddings with multiple index types"
+- Identifier fields exist and no records lack identifiers in the current quality report.
+- Constraint and query parsing infrastructure exists.
 
-**Status**: ✅ Implemented (upgraded v2.0 Track 1)
+Limitations:
 
-**Evidence**:
-- `neural_search/embeddings/field_index.py`: Per-field embedding storage
-- `neural_search/embeddings/dense_provider.py`: `DenseEmbeddingProvider` — BAAI/bge-large-en-v1.5, 1024-dim, MTEB top-5 scientific retrieval
-- `neural_search/embeddings/turbovec_index.py`: `NeuralSearchTurboIndex` — compressed ANN index (4-bit quantization), brute-force fallback
-- `data/embeddings/real_all.dense.field_embeddings.jsonl`: 3688 field embeddings, 835 datasets
-- `data/index/turbovec_dense_1024.index/`: Built ANN index (recall@50 = 1.0 in fallback mode)
-- `data/config/retrieval.yaml`: Updated to use BGE-large embeddings path
+- `reports/real_corpus_v11_eval_report.md` shows missed direct lookup queries for DANDI and OpenNeuro.
+- A deterministic pinned exact-match lane must be implemented and tested against the 10K snapshot.
 
-**Limitations**:
-- turbovec not yet installed in dev environment (using exact brute-force fallback — same recall, higher latency)
-- Field weights are manually tuned
-- No live embedding updates on corpus change
+Publication framing:
 
-**Achieved**: Dense re-embedding complete; ANN index built; retrieval config updated to BGE-large path
+List exact lookup robustness as required validation, not as a completed feature.
 
----
+### Claim 8: Analysis affordance detection supports scientific reuse search
 
-### Claim 10: "Latent neural-state search"
+Status: Partial
 
-**Status**: 🔶 Scaffolded
+Evidence:
 
-**Evidence**:
-- `neural_search/latent/`: schema.py, search.py, feature_summary.py
-- `FeatureSummary`, `SessionFeatures` types defined
+- `neural_search/analysis_affordances.py`
+- `neural_search/affordances/registry.py`
+- `neural_search/affordances/validators/`
+- affordance tests under `tests/`
 
-**Limitations**:
-- No actual neural feature extraction implemented
-- Placeholder similarity functions
-- Not integrated into main search path
+Limitations:
 
-**Next Milestone**: Implement basic NWB feature extraction
+- Metadata-based predictions are not yet enough for publication-grade reuse claims.
+- File/content validation against NWB and BIDS datasets is still required.
+- Precision/recall against human or file-inspection labels is not yet reported for the 10K corpus.
 
----
+Publication framing:
 
-### Claim 11: "Corpus of 350+ neuroscience datasets"
+Use "affordance representation and prediction framework" rather than "validated reuse-readiness engine."
 
-**Status**: ✅ Implemented (expanding — v2.0 Track 2 in progress)
+### Claim 9: Knowledge graph enhances retrieval
 
-**Evidence**:
-- `data/corpus/`: Normalized records from 4 sources — 835 unique records indexed (as of v2.0 T1 completion)
-- DANDI: 163+ datasets
-- OpenNeuro: 190+ datasets
-- Allen/NeMO: 18 datasets
-- Additional curated datasets from prior expansion sprints
+Status: Partial
 
-**Limitations**:
-- Metadata quality varies by source
-- Some datasets lack task/modality labels
-- Paper linking coverage ~60%
+Evidence:
 
-**Next Milestone (v2.0 Track 2)**: Expand to ≥4000 datasets via NeuroVault, G-Node GIN, EBRAINS, HCP, OSF, figshare, zenodo adapters with 5-layer dedup pipeline
+- `neural_search/graph/`
+- `reports/graph_ablation.json`: 39% of pairs changed rank with graph signal
 
----
+Limitations:
 
-### Claim 12: "Scientific task ontology with 40+ behaviors"
+- The current ablation report does not show NDCG improvement.
+- Graph artifacts should be rebuilt and validated against the 10K corpus.
+- Paper links need better confidence/evidence surfacing.
 
-**Status**: ✅ Implemented
+Publication framing:
 
-**Evidence**:
-- `data/ontology/behavioral_task_ontology.yaml`: 40+ task definitions
-- Synonyms, common events, modalities, regions per task
-- Suggested analyses per task
+Claim graph signals affect rankings and support relational context. Do not claim demonstrated metric gains until rerun.
 
-**Limitations**:
-- Coverage focused on decision-making and motor tasks
-- Some tasks lack region/modality mappings
-- No formal ontology alignment (e.g., with InterLex)
+### Claim 10: Query intent classification and routing exist
 
-**Next Milestone**: Expand genomics/transcriptomics coverage
+Status: Partial
 
----
+Evidence:
 
----
+- `neural_search/core/query.py`
+- `neural_search/intelligence/planner.py`
+- `data/config/intent_profiles.yaml`
+- `reports/optimized_weights_v11.json`
 
-## v2.0 Track 1 Completed Work (2026-06-01)
+Limitations:
 
-Track 1 upgraded the embedding and retrieval pipeline from hashing to dense semantic embeddings.
+- Intent classification is still largely heuristic.
+- Per-intent weighting needs 10K evaluation.
+- Planner/runtime defaults should be verified.
 
-| Component | What Changed |
-|-----------|-------------|
-| **Baseline frozen** | `reports/baseline_v09.json` — Spearman r = 0.5044, 738 datasets, hashing embeddings |
-| **s9 graph proximity bug fixed** | `dataset_context_bridge.py` now prefers `dataset_id` over `source_id`; `usefulness_scorer.py` tries bare + `node:`-prefixed IDs |
-| **Graph proximity ablation** | `scripts/ablate_graph_proximity.py` — 39% of pairs change rank (exit criterion: ≥10%) |
-| **BGE-large-en-v1.5 provider** | `neural_search/embeddings/dense_provider.py` — 1024-dim, MTEB top-5 scientific retrieval |
-| **turbovec ANN index** | `neural_search/embeddings/turbovec_index.py` — 4-bit quantized, brute-force fallback |
-| **Dense embedding pipeline** | `recompute_embeddings.py --provider dense` — 3688 records written |
-| **Retrieval config updated** | `data/config/retrieval.yaml` field_embeddings path → `real_all.dense.field_embeddings.jsonl` |
-| **ANN recall validated** | recall@50 = 1.0 (brute-force fallback; passes ≥0.95 threshold) |
+### Claim 11: Paper-dataset linking is provenance-aware
 
-**Spearman r measurement**: baseline 0.5044 → post-Track-1 pending (evaluation running)
+Status: Partial
 
----
+Evidence:
 
-## Summary
+- `neural_search/core/linking.py`
+- `neural_search/graph/paper_linking.py`
+- graph/report infrastructure
 
-| Category | Implemented | Partial | Not Implemented |
-|----------|-------------|---------|-----------------|
-| Core Retrieval | 4 | 1 | 0 |
-| Graph | 2 | 0 | 0 |
-| Embeddings | 2 | 0 | 0 |
-| Evaluation | 3 | 0 | 0 |
-| Latent Search | 0 | 1 | 0 |
+Limitations:
 
-**Overall**: 11 claims implemented, 2 partial, 0 not implemented
+- Links should be regenerated for the 10K snapshot.
+- Dataset cards should surface link confidence and evidence.
+- Human review is still needed for high-impact claims.
 
-**Key Gaps**:
-1. Planner disabled by default (needs validation)
-2. Latent neural search scaffolded but not functional
-3. Limited human labels for evaluation (30 benchmark queries)
-4. Corpus at 835 datasets — Track 2 targets ≥4000
+### Claim 12: The system is deployable as a real-corpus product
 
-**Honest Assessment**: The system now implements a working multi-signal retrieval engine with provenance tracking, graph relationships, paper-dataset linking, and dense BGE-large-en-v1.5 semantic embeddings. Graph proximity fix confirmed via ablation (39% rank changes). Track 2 corpus expansion is the next major gap between the paper's claims and the implementation.
+Status: Partial
+
+Evidence:
+
+- FastAPI app exists under `apps/api/`
+- React frontend exists under `apps/web/`
+- Docker and infra files exist
+
+Limitations:
+
+- Runtime must be verified to load the real corpus snapshot by default.
+- Demo mode and real mode must be impossible to confuse.
+- Health endpoints should expose snapshot id, record count, embedding model, and index status.
+
+## Publication Required Before Strong Claims
+
+1. Freeze a 10K snapshot manifest with checksums.
+2. Rerun retrieval benchmarks on the 10,404-record corpus.
+3. Implement and test exact identifier pinning.
+4. Generate source-by-source metadata completeness and false-positive audits.
+5. Validate affordances against file inspection or human labels.
+6. Rebuild graph and paper-link artifacts for the 10K snapshot.
+7. Generate manuscript metric tables directly from JSON reports.
+
+## Current Bottom Line
+
+Neural Search now supports a strong corpus-scale claim: **10,404 unique normalized neuroscience records with 60,175 BGE-large field embeddings and a 10,404-record 1024-dimensional turbovec index.**
+
+The publication claim should not yet be "we have solved reusable neuroscience dataset search." The defensible claim is:
+
+> Neural Search is a 10K-scale, evidence-aware research prototype for experiment-aware neuroscience dataset retrieval, with structured corpus normalization, dense field embeddings, graph/reuse scoring infrastructure, and preliminary retrieval/usefulness validation. The next phase is rigorous 10K-snapshot evaluation, exact-lookup hardening, source-specific extraction QA, and content-validated analysis affordances.

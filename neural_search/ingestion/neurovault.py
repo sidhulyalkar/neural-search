@@ -71,28 +71,48 @@ def normalize_collection(raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-@register("neurovault")
-def fetch_neurovault(limit: int = 100) -> list[dict[str, Any]]:
-    """Fetch public NeuroVault collections."""
-    records: list[dict[str, Any]] = []
-    url: str | None = NEUROVAULT_API
-    while url and len(records) < limit:
-        try:
-            resp = httpx.get(url, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as exc:
-            logger.warning("NeuroVault fetch error: %s", exc)
-            break
+_SKIP_TITLE_FRAGMENTS = {"temporary collection", "test collection", "draft", "sandbox"}
 
-        for col in data.get("results", []):
-            if not col.get("id") or not col.get("name"):
-                continue
-            records.append(normalize_collection(col))
-            if len(records) >= limit:
+
+def _is_quality_collection(col: dict) -> bool:
+    """Basic quality gate: skip empty or throwaway collections."""
+    name = (col.get("name") or "").lower()
+    if any(frag in name for frag in _SKIP_TITLE_FRAGMENTS):
+        return False
+    n_images = col.get("number_of_images") or 0
+    description = col.get("description") or ""
+    # Must have at least some content
+    return bool(n_images > 0 or len(description) > 20)
+
+
+@register("neurovault")
+def fetch_neurovault(limit: int = 800) -> list[dict[str, Any]]:
+    """Fetch public NeuroVault collections, skipping empty/throwaway ones."""
+    records: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    url: str | None = NEUROVAULT_API
+    with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+        while url and len(records) < limit:
+            try:
+                resp = client.get(url)
+                resp.raise_for_status()
+                data = resp.json()
+            except Exception as exc:
+                logger.warning("NeuroVault fetch error: %s", exc)
                 break
 
-        url = data.get("next") if len(records) < limit else None
+            for col in data.get("results", []):
+                sid = str(col.get("id", ""))
+                if not sid or not col.get("name") or sid in seen_ids:
+                    continue
+                if not _is_quality_collection(col):
+                    continue
+                seen_ids.add(sid)
+                records.append(normalize_collection(col))
+                if len(records) >= limit:
+                    break
+
+            url = data.get("next") if len(records) < limit else None
 
     logger.info("NeuroVault: fetched %d collections", len(records))
     return records

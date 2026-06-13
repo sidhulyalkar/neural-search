@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from typing import Any
 
 import httpx
@@ -16,6 +17,7 @@ from neural_search.ingestion.live import (
     save_dataset_records,
     save_raw_response,
 )
+from neural_search.ingestion.registry import register
 from neural_search.normalized import (
     evidence_label_from_extraction,
     stable_normalized_id,
@@ -23,6 +25,41 @@ from neural_search.normalized import (
 from neural_search.schemas import NormalizedDatasetRecord, UsabilityFlags
 
 OPENNEURO_API_URL = "https://openneuro.org/crn/graphql"
+
+logger = logging.getLogger(__name__)
+
+
+def _paginated_query() -> str:
+    return """
+    query SearchDatasets($first: Int, $after: String) {
+        datasets(first: $first, after: $after, filterBy: {public: true}) {
+            edges {
+                cursor
+                node {
+                    id
+                    name
+                    created
+                    public
+                    latestSnapshot {
+                        tag
+                        created
+                        size
+                        readme
+                        summary {
+                            subjects
+                            tasks
+                            modalities
+                        }
+                    }
+                }
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+    }
+    """
 
 
 def _search_query() -> str:
@@ -74,6 +111,53 @@ def fetch_openneuro(modality: str | None, limit: int) -> dict[str, Any]:
     if data.get("errors"):
         raise RuntimeError(json.dumps(data["errors"], indent=2))
     return data
+
+
+def fetch_all_openneuro(
+    *,
+    page_size: int = 100,
+    max_records: int | None = None,
+) -> list[dict[str, Any]]:
+    """Fetch all public OpenNeuro datasets using GraphQL cursor pagination."""
+    all_records: list[dict[str, Any]] = []
+    after: str | None = None
+
+    with httpx.Client(timeout=60.0, follow_redirects=True) as client:
+        while True:
+            resp = client.post(
+                OPENNEURO_API_URL,
+                json={
+                    "query": _paginated_query(),
+                    "variables": {"first": page_size, "after": after},
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            if data.get("errors"):
+                # OpenNeuro returns partial results alongside errors (e.g. a single
+                # broken latestSnapshot). Log and continue; don't abort the crawl.
+                logger.warning("OpenNeuro GraphQL partial error: %s", data["errors"][:2])
+
+            datasets_data = data.get("data", {}).get("datasets", {})
+            edges = datasets_data.get("edges", [])
+            page_info = datasets_data.get("pageInfo", {})
+
+            for edge in edges:
+                edge = edge or {}
+                node = edge.get("node") or {}
+                if node.get("id"):
+                    all_records.append(normalize_openneuro_dataset(node))
+                    if max_records is not None and len(all_records) >= max_records:
+                        return all_records
+
+            logger.info("OpenNeuro harvest: %d records, hasNextPage=%s", len(all_records), page_info.get("hasNextPage"))
+
+            if not page_info.get("hasNextPage"):
+                break
+            after = page_info.get("endCursor")
+
+    return all_records
 
 
 async def search_datasets(
@@ -220,6 +304,12 @@ def records_from_response(data: dict[str, Any], limit: int) -> list[dict[str, An
             results.append(normalize_openneuro_dataset(node))
 
     return results[:limit]
+
+
+@register("openneuro")
+def fetch_openneuro_records(limit: int = 2000) -> list[dict[str, Any]]:
+    """Registry adapter for full OpenNeuro cursor pagination."""
+    return fetch_all_openneuro(max_records=limit)
 
 
 async def get_dataset(dataset_id: str) -> dict[str, Any] | None:

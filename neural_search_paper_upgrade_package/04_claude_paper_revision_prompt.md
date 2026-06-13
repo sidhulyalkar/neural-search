@@ -5,7 +5,7 @@ Paste this into Claude.
 ```text
 Read both LaTeX drafts.
 
-Use `neural_search_iclr_whitepaper.tex` as the main manuscript and treat `neural_search_whitepaper.tex` as a mathematical/technical appendix source.
+Use `neural_search_whitepaper.tex` as the main manuscript and treat `neural_search_whitepaper.tex` as a mathematical/technical appendix source.
 
 Revise the main paper to make it more scientifically reputable and submission-like.
 
@@ -120,7 +120,7 @@ Neural Search is not only a search engine for neuroscience datasets. It is a ret
 
 Deliverables:
 
-- Revised `neural_search_iclr_whitepaper.tex`
+- Revised `neural_search_whitepaper.tex`
 - Optional appendix sections extracted from `neural_search_whitepaper.tex`
 - A changelog summarizing major revisions
 - A list of TODOs where real experiments or citations are still needed

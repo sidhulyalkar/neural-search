@@ -7,6 +7,7 @@ import type {
   DatasetQAUpdate,
   ExperimentQuery,
   ComparisonResult,
+  RetrievalFeedbackEvent,
 } from '../types'
 
 const API_BASE = '/api'
@@ -79,6 +80,45 @@ export async function searchDatasets(
   return fetchJSON<SearchResult>(`${API_BASE}/search`, {
     method: 'POST',
     body: JSON.stringify({ query, filters, structured_query: structuredQuery }),
+  })
+}
+
+export async function createSearchSession(payload: {
+  query_text: string
+  query_id?: string | null
+  retrieval_method?: string
+  filters?: Record<string, unknown>
+  structured_query?: ExperimentQuery
+}): Promise<{ session_id: string; timestamp: string; provenance: string }> {
+  return fetchJSON<{ session_id: string; timestamp: string; provenance: string }>(`${API_BASE}/frontend/search-sessions`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export async function logRetrievalFeedback(
+  event: RetrievalFeedbackEvent,
+): Promise<RetrievalFeedbackEvent> {
+  return fetchJSON<RetrievalFeedbackEvent>(`${API_BASE}/frontend/feedback`, {
+    method: 'POST',
+    body: JSON.stringify(event),
+  })
+}
+
+export async function saveFrontendDataset(payload: {
+  session_id?: string | null
+  query_id?: string | null
+  query_text: string
+  dataset_id: string
+  dataset_title: string
+  rank?: number | null
+  retrieval_method?: string
+  exported?: boolean
+  judge_snapshot?: unknown
+}): Promise<Record<string, unknown>> {
+  return fetchJSON<Record<string, unknown>>(`${API_BASE}/frontend/saved-datasets`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
   })
 }
 
@@ -175,6 +215,11 @@ export async function exportComparisonMarkdown(datasetIds: string[]): Promise<Bl
   }
 
   return response.blob()
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getDemoReport(): Promise<any> {
+  return fetchJSON<any>(`${API_BASE}/demo/report`)
 }
 
 export async function exportComparisonJson(datasetIds: string[]): Promise<Blob> {
