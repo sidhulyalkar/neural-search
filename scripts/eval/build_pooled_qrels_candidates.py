@@ -178,7 +178,7 @@ def _normalize(vec: list[float]) -> list[float]:
 
 
 def _vec_add(acc: list[float], v: list[float]) -> list[float]:
-    return [a + b for a, b in zip(acc, v, strict=False)]
+    return [a + b for a, b in zip(acc, v, strict=True)]
 
 
 def load_embeddings(emb_path: Path, field: str = TARGET_FIELD) -> dict[str, list[float]]:
