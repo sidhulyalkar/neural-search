@@ -162,5 +162,3 @@ These test precision under multiple simultaneous constraints.
 ## References
 
 - [benchmark_queries_adversarial.yaml](../data/eval/benchmark_queries_adversarial.yaml)
-- [V0_3_IMPLEMENTATION_PLAN.md](V0_3_IMPLEMENTATION_PLAN.md)
-- [instruction_set:WS8](../neural_search_v0_3_claude_codex_instructionset.xml)
