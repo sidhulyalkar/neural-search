@@ -15,7 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -44,7 +44,7 @@ def _convert(rec: dict) -> dict:
         "hard_negative_violation": bool(rec.get("hard_negative_detected", False)),
         "missing_metadata": list(rec.get("missing_information", [])),
         "annotator_id": f"neuro_judge:{rec.get('judge_models', ['unknown'])[0] if rec.get('judge_models') else 'unknown'}",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "adjudicated": False,
         "adjudication_notes": NEURO_JUDGE_WATERMARK,
         "label_provenance": rec.get("label_provenance", "neuro_judge_consensus"),

@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from scripts.eval.analyze_failures import _analyze_variant, analyze_failures
 from scripts.eval.benchmark_schema import (
@@ -175,7 +176,7 @@ class TestQrelsEntryV1:
             assert e.requires_rationale() is False
 
     def test_invalid_relevance_raises(self):
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             QrelsEntryV1.model_validate(
                 {"query_id": "q", "dataset_id": "d", "relevance": 4}
             )

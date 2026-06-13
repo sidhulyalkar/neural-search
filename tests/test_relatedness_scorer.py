@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from neural_search.evaluation.relatedness_scorer import (
     DimensionScore,
     RelatednessDimension,

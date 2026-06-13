@@ -1,8 +1,6 @@
 # tests/test_seed_pairs_coverage.py
 import json
 from pathlib import Path
-from collections import Counter
-
 
 SEED_FILE = Path("data/eval/usefulness_seed_pairs.jsonl")
 
@@ -13,7 +11,7 @@ def test_seed_file_exists():
 
 def test_all_intents_covered():
     """Every UsefulnessIntent must have at least 2 query IDs."""
-    pairs = [json.loads(l) for l in SEED_FILE.read_text().splitlines() if l.strip()]
+    pairs = [json.loads(line) for line in SEED_FILE.read_text().splitlines() if line.strip()]
     intent_queries: dict[str, set] = {}
     for p in pairs:
         intent = p["intent"]
@@ -31,5 +29,5 @@ def test_all_intents_covered():
 
 
 def test_minimum_30_pairs():
-    pairs = [l for l in SEED_FILE.read_text().splitlines() if l.strip()]
+    pairs = [line for line in SEED_FILE.read_text().splitlines() if line.strip()]
     assert len(pairs) >= 99

@@ -7,7 +7,6 @@ import csv
 import json
 from pathlib import Path
 
-
 DEFAULT_REPORTS = Path("reports/eval")
 DEFAULT_OUT = Path("docs/whitepaper/generated/current_results_tables.tex")
 

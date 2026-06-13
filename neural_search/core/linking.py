@@ -37,7 +37,7 @@ The final link includes all evidence and uncertainty flags.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -107,7 +107,7 @@ class PaperDatasetLinkV2(BaseModel):
     # Provenance
     linking_method: str = "neural_search.core.linking"
     linking_version: str = "v0.5.0"
-    linked_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    linked_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Uncertainty
     uncertainty_flags: list[str] = Field(default_factory=list)

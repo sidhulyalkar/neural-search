@@ -61,8 +61,8 @@ class BenchmarkReport:
     def to_markdown(self) -> str:
         lines = [
             "# Usefulness Benchmark Report\n",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| NDCG@{self.k} | {self.ndcg_at_k:.4f} |",
             f"| MRR | {self.mrr:.4f} |",
             f"| P@{self.k} | {self.precision_at_k:.4f} |",

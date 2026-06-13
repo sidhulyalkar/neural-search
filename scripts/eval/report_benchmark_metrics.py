@@ -17,7 +17,7 @@ import json
 import math
 import sys
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -111,7 +111,7 @@ def build_report(
 ) -> str:
     n_pairs = len(qrels)
     preliminary = n_pairs < MIN_PAIRS_FOR_STABLE_ESTIMATE
-    generated = datetime.now(timezone.utc).isoformat()
+    generated = datetime.now(UTC).isoformat()
 
     # Group by query, maintain retrieval order (rank from candidates)
     rank_lookup: dict[str, int] = {}

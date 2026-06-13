@@ -33,13 +33,14 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from enum import Enum
+from datetime import UTC
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class LadderLevel(str, Enum):
+class LadderLevel(StrEnum):
     """Levels in the baseline ladder."""
 
     LEXICAL_ONLY = "lexical_only"
@@ -423,7 +424,7 @@ def run_baseline_ladder(
     Returns:
         LadderReport with metrics for each level
     """
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     if levels is None:
         levels = list(LadderLevel)
@@ -475,7 +476,7 @@ def run_baseline_ladder(
         graph_results = all_query_results[LadderLevel.FULL_WITH_GRAPH]
         no_graph_results = all_query_results[LadderLevel.FULL_WITHOUT_GRAPH]
 
-        for gr, ngr in zip(graph_results, no_graph_results):
+        for gr, ngr in zip(graph_results, no_graph_results, strict=False):
             query = gr.query
             graph_mrr = _compute_mrr(gr.result_ids, relevance_labels.get(query, set()))
             no_graph_mrr = _compute_mrr(ngr.result_ids, relevance_labels.get(query, set()))
@@ -496,7 +497,7 @@ def run_baseline_ladder(
         embedding_lift=round(embedding_lift, 4),
         queries_needing_graph=queries_needing_graph[:10],
         queries_hurt_by_graph=queries_hurt_by_graph[:10],
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
     )
 
 

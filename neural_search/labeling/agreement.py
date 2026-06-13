@@ -219,7 +219,7 @@ def compute_cohens_kappa(
 
     # Build confusion matrix
     confusion = [[0] * n_categories for _ in range(n_categories)]
-    for g1, g2 in zip(grades_1, grades_2):
+    for g1, g2 in zip(grades_1, grades_2, strict=False):
         if 0 <= g1 < n_categories and 0 <= g2 < n_categories:
             confusion[g1][g2] += 1
 
@@ -261,7 +261,6 @@ def compute_fleiss_kappa(
     if not valid_items:
         return 0.0
 
-    n_items = len(valid_items)
     n_raters_per_item = [len(item) for item in valid_items]
 
     # Count category assignments per item
@@ -387,7 +386,7 @@ def compute_agreement_report(
     # Compute annotator stats
     annotator_stats: dict[str, AnnotatorStats] = {}
     for ann_id, ann_labels in by_annotator.items():
-        grades = [l.relevance_grade for l in ann_labels]
+        grades = [label.relevance_grade for label in ann_labels]
         grade_dist = {}
         for g in grades:
             grade_dist[g] = grade_dist.get(g, 0) + 1
@@ -415,19 +414,19 @@ def compute_agreement_report(
             # Find shared items
             shared_grades_1 = []
             shared_grades_2 = []
-            for item_key, item_grades in by_item.items():
+            for _item_key, item_grades in by_item.items():
                 if ann1 in item_grades and ann2 in item_grades:
                     shared_grades_1.append(item_grades[ann1])
                     shared_grades_2.append(item_grades[ann2])
 
             if shared_grades_1:
                 # Exact agreement
-                exact = sum(1 for g1, g2 in zip(shared_grades_1, shared_grades_2) if g1 == g2)
+                exact = sum(1 for g1, g2 in zip(shared_grades_1, shared_grades_2, strict=False) if g1 == g2)
                 exact_rate = exact / len(shared_grades_1)
 
                 # Within-one agreement
                 within_one = sum(
-                    1 for g1, g2 in zip(shared_grades_1, shared_grades_2)
+                    1 for g1, g2 in zip(shared_grades_1, shared_grades_2, strict=False)
                     if abs(g1 - g2) <= 1
                 )
                 within_one_rate = within_one / len(shared_grades_1)
@@ -440,7 +439,7 @@ def compute_agreement_report(
                 mean2 = sum(shared_grades_2) / len(shared_grades_2)
                 cov = sum(
                     (g1 - mean1) * (g2 - mean2)
-                    for g1, g2 in zip(shared_grades_1, shared_grades_2)
+                    for g1, g2 in zip(shared_grades_1, shared_grades_2, strict=False)
                 )
                 var1 = sum((g - mean1) ** 2 for g in shared_grades_1)
                 var2 = sum((g - mean2) ** 2 for g in shared_grades_2)
@@ -458,7 +457,7 @@ def compute_agreement_report(
 
     # Build annotations matrix for Fleiss/Krippendorff
     annotations_matrix: list[list[int | None]] = []
-    for item_key, item_grades in by_item.items():
+    for _item_key, item_grades in by_item.items():
         row = [item_grades.get(ann_id) for ann_id in annotator_ids]
         annotations_matrix.append(row)
 

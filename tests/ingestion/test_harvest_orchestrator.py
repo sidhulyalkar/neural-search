@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 import json
 import tempfile
 from pathlib import Path
-import pytest
+
 from scripts.harvest_corpus import (
-    load_seen_ids,
     append_new_records,
     deduplicate_combined,
+    load_seen_ids,
     write_records,
 )
 

@@ -26,7 +26,6 @@ sys.path.insert(0, str(_REPO))
 from neural_search.eval.neuro_judge.evidence_retriever import build_evidence_packet
 from scripts.eval.benchmark_schema import BenchmarkQueryV1
 
-
 # ---------------------------------------------------------------------------
 # Loaders
 # ---------------------------------------------------------------------------
@@ -88,15 +87,6 @@ def _enrich_candidate(cand: dict, corpus_idx: dict[str, dict]) -> dict:
     if rec is None:
         return cand
     enriched = dict(cand)
-    # Map corpus fields to candidate fields
-    field_map = {
-        "dataset_description": "description",
-        "dataset_species": "species",
-        "dataset_modalities": "modalities",
-        "dataset_brain_regions": "brain_regions",
-        "dataset_tasks": "tasks",
-        "dataset_data_standards": "data_standards",
-    }
     # Also enrich the flat fields used by evidence_retriever
     if not enriched.get("dataset_description") and rec.get("description"):
         enriched["dataset_description"] = rec["description"]

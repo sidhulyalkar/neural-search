@@ -6,7 +6,7 @@ This module provides the core session management for human relevance labeling.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import IntEnum
 from typing import Any
 
@@ -43,7 +43,7 @@ class RelevanceLabel(BaseModel):
 
     # Metadata
     labeled_by: str = "anonymous"
-    labeled_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    labeled_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
     notes: str = ""
 
@@ -86,7 +86,7 @@ class LabelingSession:
 
     session_id: str
     labeler_id: str
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     # Session data
     pairs_to_label: list[QueryResultPair] = field(default_factory=list)

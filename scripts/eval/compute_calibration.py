@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 from collections import defaultdict
 from pathlib import Path
 
@@ -75,7 +74,7 @@ def compute_ece(
     bin_width = 1.0 / n_bins
     bins: dict[int, list[tuple[float, int]]] = defaultdict(list)
 
-    for score, label in zip(scores, labels):
+    for score, label in zip(scores, labels, strict=False):
         bin_idx = min(int(score / bin_width), n_bins - 1)
         bins[bin_idx].append((score, label))
 
@@ -99,9 +98,9 @@ def compute_ece(
             continue
 
         bin_scores = [s for s, _ in bin_items]
-        bin_labels = [l for _, l in bin_items]
+        bin_labels = [label for _, label in bin_items]
         mean_conf = sum(bin_scores) / len(bin_scores)
-        accuracy = sum(1 for l in bin_labels if l >= relevant_threshold) / len(bin_labels)
+        accuracy = sum(1 for label in bin_labels if label >= relevant_threshold) / len(bin_labels)
         weight = len(bin_items) / total
         ece += weight * abs(mean_conf - accuracy)
 

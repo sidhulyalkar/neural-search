@@ -47,6 +47,13 @@ from neural_search.search.semantic_expansion import (
     expand_query_with_concepts,
     merge_expansion_into_query,
 )
+from neural_search.search.semantic_scoring import (
+    SemanticScoreResult,
+    SemanticSearchIndex,
+    augment_result_with_semantic_score,
+    compute_semantic_score_for_result,
+    load_semantic_index,
+)
 from neural_search.search.sense_disambiguation import (
     DisambiguationResult,
     SenseDefinition,
@@ -57,13 +64,6 @@ from neural_search.search.sense_disambiguation import (
     get_sense_penalties,
     get_senses_by_category,
     list_senses,
-)
-from neural_search.search.semantic_scoring import (
-    SemanticScoreResult,
-    SemanticSearchIndex,
-    augment_result_with_semantic_score,
-    compute_semantic_score_for_result,
-    load_semantic_index,
 )
 from neural_search.search.weight_optimizer import (
     WEIGHT_PROFILES,

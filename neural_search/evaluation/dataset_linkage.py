@@ -34,11 +34,12 @@ Usage:
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -73,7 +74,7 @@ class AnnotatorLabel(BaseModel):
     confidence: float = 1.0  # 0-1
     notes: str | None = None
     labeled_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
 
 
@@ -97,7 +98,7 @@ class DatasetPair(BaseModel):
 
     # Metadata
     created_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
 
     def model_post_init(self, __context: Any) -> None:
@@ -116,7 +117,7 @@ class DatasetPair(BaseModel):
         if len(self.annotator_labels) < 2:
             return None
 
-        scores = [l.relatedness_score for l in self.annotator_labels]
+        scores = [label.relatedness_score for label in self.annotator_labels]
         agreements = 0
         total = 0
 
@@ -144,7 +145,7 @@ class LinkageBenchmark(BaseModel):
 
     # Metadata
     created_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
     annotator_ids: list[str] = Field(default_factory=list)
 
@@ -234,8 +235,6 @@ def evaluate_linkage(
     recalls_10: list[float] = []
     mrrs: list[float] = []
     ndcgs: list[float] = []
-
-    type_metrics: dict[str, list[dict[str, float]]] = {}
 
     for source_id, relevant_ids in relevance_labels.items():
         # Get retrieval results

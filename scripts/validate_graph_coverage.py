@@ -13,7 +13,7 @@ import json
 import sys
 from pathlib import Path
 
-from neural_search.graph.quality import validate_graph_coverage, GraphQualityReport
+from neural_search.graph.quality import GraphQualityReport, validate_graph_coverage
 from neural_search.graph.schema import read_graph_json, read_graph_jsonl
 
 

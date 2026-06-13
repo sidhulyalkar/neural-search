@@ -15,12 +15,17 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
 from neural_search.graph.builder import build_graph_from_records, split_records
-from neural_search.graph.paper_linking import add_paper_dataset_links_to_graph, generate_linking_report
-from neural_search.graph.provenance import add_provenance_metadata, analyze_graph_provenance
+from neural_search.graph.paper_linking import (
+    add_paper_dataset_links_to_graph,
+    generate_linking_report,
+)
+from neural_search.graph.provenance import (
+    add_provenance_metadata,
+    analyze_graph_provenance,
+)
 from neural_search.graph.quality import validate_graph_coverage
 from neural_search.graph.schema import write_graph_json
 from neural_search.normalized import load_normalized_records
-
 
 CORPUS_DIR = project_root / "data" / "corpus" / "normalized"
 GRAPH_OUTPUT = project_root / "data" / "graph" / "neural_search_graph.real_corpus.json"

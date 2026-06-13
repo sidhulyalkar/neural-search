@@ -89,9 +89,9 @@ class AffordanceValidationV2:
     def __init__(self, cards: list[SyntheticCard], labels: list[GroundTruthLabel]):
         self.cards = cards
         self._labels: dict[tuple[str, str], bool] = {
-            (l.dataset_id, l.affordance): l.supported for l in labels
+            (label.dataset_id, label.affordance): label.supported for label in labels
         }
-        self._labeled_datasets = {l.dataset_id for l in labels}
+        self._labeled_datasets = {label.dataset_id for label in labels}
         self._card_map = {c.dataset_id: c for c in cards}
 
     def run(self) -> ValidationReport:

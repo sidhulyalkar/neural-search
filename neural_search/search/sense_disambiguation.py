@@ -22,7 +22,6 @@ Usage:
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from enum import StrEnum
 from functools import lru_cache
@@ -30,7 +29,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 
 # =============================================================================
 # Sense Definitions
@@ -458,8 +456,6 @@ def disambiguate_query(query: str) -> DisambiguationResult:
     Returns:
         DisambiguationResult with primary sense, alternatives, and negatives
     """
-    query_lower = _normalize_query(query)
-
     # Score all senses
     sense_scores: list[tuple[str, float, dict[str, Any]]] = []
 
@@ -496,7 +492,7 @@ def disambiguate_query(query: str) -> DisambiguationResult:
     negative_senses = primary_sense.exclusive_senses.copy()
 
     # Also add senses that had negative matches
-    for sense_id, score, details in sense_scores:
+    for sense_id, _score, details in sense_scores:
         if details.get("negative_matches") and sense_id != primary_sense_id:
             if sense_id not in negative_senses:
                 negative_senses.append(sense_id)

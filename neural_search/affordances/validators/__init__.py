@@ -4,15 +4,15 @@ These validators inspect actual file contents to verify that datasets
 support the analysis affordances predicted from metadata.
 """
 
-from neural_search.affordances.validators.nwb_validator import (
-    NWBValidator,
-    NWBValidationResult,
-    validate_nwb_affordances,
-)
 from neural_search.affordances.validators.bids_validator import (
-    BIDSValidator,
     BIDSValidationResult,
+    BIDSValidator,
     validate_bids_affordances,
+)
+from neural_search.affordances.validators.nwb_validator import (
+    NWBValidationResult,
+    NWBValidator,
+    validate_nwb_affordances,
 )
 
 __all__ = [

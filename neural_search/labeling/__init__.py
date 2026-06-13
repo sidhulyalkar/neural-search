@@ -11,6 +11,15 @@ Components:
 - Agreement: Multi-annotator agreement metrics (Cohen's kappa, Fleiss' kappa)
 """
 
+from neural_search.labeling.agreement import (
+    AnnotatorStats,
+    MultiAnnotatorReport,
+    PairwiseAgreement,
+    compute_agreement_report,
+    compute_cohens_kappa,
+    compute_fleiss_kappa,
+    compute_krippendorff_alpha,
+)
 from neural_search.labeling.cli import (
     run_labeling_cli,
 )
@@ -23,15 +32,6 @@ from neural_search.labeling.storage import (
     LabelStorage,
     load_labels,
     save_labels,
-)
-from neural_search.labeling.agreement import (
-    compute_agreement_report,
-    compute_cohens_kappa,
-    compute_fleiss_kappa,
-    compute_krippendorff_alpha,
-    MultiAnnotatorReport,
-    AnnotatorStats,
-    PairwiseAgreement,
 )
 
 __all__ = [

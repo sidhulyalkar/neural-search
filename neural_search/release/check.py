@@ -7,7 +7,7 @@ import hashlib
 import json
 import subprocess
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -199,7 +199,7 @@ def _staleness(path: Path, inputs: list[Path]) -> dict[str, Any]:
         return {
             "stale": False,
             "newest_input": None,
-            "artifact_mtime": datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat(),
+            "artifact_mtime": datetime.fromtimestamp(path.stat().st_mtime, UTC).isoformat(),
         }
     newest_input = max(existing_inputs, key=lambda item: item.stat().st_mtime)
     artifact_mtime = path.stat().st_mtime
@@ -207,8 +207,8 @@ def _staleness(path: Path, inputs: list[Path]) -> dict[str, Any]:
     return {
         "stale": newest_input_mtime > artifact_mtime,
         "newest_input": _display_path(newest_input),
-        "newest_input_mtime": datetime.fromtimestamp(newest_input_mtime, timezone.utc).isoformat(),
-        "artifact_mtime": datetime.fromtimestamp(artifact_mtime, timezone.utc).isoformat(),
+        "newest_input_mtime": datetime.fromtimestamp(newest_input_mtime, UTC).isoformat(),
+        "artifact_mtime": datetime.fromtimestamp(artifact_mtime, UTC).isoformat(),
     }
 
 
@@ -233,7 +233,7 @@ def build_release_summary(
             "graph_counts": _graph_counts(path) if "graph" in name else None,
             "staleness": staleness,
             "modified_at": (
-                datetime.fromtimestamp(path.stat().st_mtime, timezone.utc).isoformat()
+                datetime.fromtimestamp(path.stat().st_mtime, UTC).isoformat()
                 if exists
                 else None
             ),
@@ -293,7 +293,7 @@ def build_release_summary(
     ]
 
     return {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "commit": _git_commit(),
         "artifact_versions": {
             "demo_corpus": "demo_v05",

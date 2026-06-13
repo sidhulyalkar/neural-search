@@ -4,8 +4,6 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from neural_search.ingestion.bluebrain import (
     _bundle_title,
     _child_asset,
@@ -15,10 +13,9 @@ from neural_search.ingestion.bluebrain import (
     _load_checkpoint_prefixes,
     _parse_path,
     _source_id,
-    normalize_bluebrain_bundle,
     fetch_bluebrain,
+    normalize_bluebrain_bundle,
 )
-
 
 # --- Unit tests: path parsing ---
 

@@ -13,7 +13,7 @@ import copy
 import json
 import random
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -297,7 +297,7 @@ def run_metadata_robustness(
     }
 
     return MetadataRobustnessReport(
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
         suite=suite,
         seed=seed,
         total_perturbations=len(results),

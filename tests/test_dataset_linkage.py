@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 from neural_search.evaluation.dataset_linkage import (
     AnnotatorLabel,
     DatasetPair,

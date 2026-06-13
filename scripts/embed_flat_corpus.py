@@ -15,7 +15,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -92,11 +92,11 @@ def embed_corpus(corpus_path: Path, out_path: Path, dry_run: bool = False) -> in
 
     texts = [t for _, _, t in triples]
     vectors = provider.embed_batch(texts)
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w") as f:
-        for (rid, field, text), vec in zip(triples, vectors):
+        for (rid, field, text), vec in zip(triples, vectors, strict=False):
             f.write(json.dumps({
                 "record_id": rid,
                 "record_type": "dataset",

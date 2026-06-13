@@ -2,19 +2,18 @@
 
 import pytest
 
+from neural_search.embeddings.model_comparison import (
+    EmbeddingIndex,
+    compare_embedding_models,
+    cosine_similarity,
+    generate_comparison_report_markdown,
+)
 from neural_search.embeddings.providers import (
     EmbeddingRecord,
     HashingEmbeddingProvider,
     check_provider_availability,
     get_provider,
     list_available_providers,
-)
-from neural_search.embeddings.model_comparison import (
-    EmbeddingIndex,
-    ModelComparisonReport,
-    compare_embedding_models,
-    cosine_similarity,
-    generate_comparison_report_markdown,
 )
 
 

@@ -6,7 +6,7 @@ import argparse
 import json
 from collections import Counter
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -264,7 +264,7 @@ def build_scientific_readiness_report(
     report = {
         "report": "scientific_readiness",
         "version": "v0.8.0",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "corpus": corpus,
         "graph": graph_summary,
         "evaluation": evaluation,

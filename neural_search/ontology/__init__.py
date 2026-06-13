@@ -1,11 +1,11 @@
 """Validated ontology loading and fuzzy matching."""
 
 from neural_search.ontology.loader import (
-    DEFAULT_ONTOLOGY_PATH,
     DEFAULT_BRAIN_REGIONS_PATH,
+    DEFAULT_ONTOLOGY_PATH,
     OntologyValidationError,
-    get_brain_regions,
     get_all_tasks,
+    get_brain_regions,
     get_ontology,
     get_task_by_id,
     load_brain_regions,
@@ -15,6 +15,9 @@ from neural_search.ontology.loader import (
 )
 from neural_search.ontology.matcher import (
     OntologyMatcher,
+    brain_region_children_by_parent,
+    expand_brain_region_ids,
+    expand_brain_region_query,
     expand_query_terms,
     expand_query_terms_with_graph,
     match_affordances,
@@ -45,6 +48,9 @@ __all__ = [
     "OntologyMatcher",
     "OntologyValidationError",
     "Task",
+    "brain_region_children_by_parent",
+    "expand_brain_region_ids",
+    "expand_brain_region_query",
     "expand_query_terms",
     "expand_query_terms_with_graph",
     "get_all_tasks",

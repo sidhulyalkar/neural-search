@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -276,7 +276,7 @@ def main():
     print("=" * 60)
     print(f"Corpus size: {report.corpus_size}")
     print(f"Sources: {report.datasets_by_source}")
-    print(f"\nTop affordances by support rate:")
+    print("\nTop affordances by support rate:")
     for aff, rate in sorted(
         report.affordance_support_rates.items(), key=lambda x: -x[1]
     )[:5]:

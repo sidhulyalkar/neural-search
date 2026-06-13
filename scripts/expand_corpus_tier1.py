@@ -33,11 +33,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, default=200)
     args = parser.parse_args(argv)
 
-    import neural_search.ingestion.neurovault  # noqa: F401
-    import neural_search.ingestion.gin  # noqa: F401
     import neural_search.ingestion.ebrains  # noqa: F401
+    import neural_search.ingestion.gin  # noqa: F401
     import neural_search.ingestion.hcp  # noqa: F401
-
+    import neural_search.ingestion.neurovault  # noqa: F401
     from neural_search.ingestion.registry import run_adapter
 
     for source in ["neurovault", "gin", "ebrains", "hcp"]:

@@ -172,8 +172,6 @@ _NWB_LOCATION_MAP: dict[str, str] = {
     "cortex": "neocortex",
     "neocortex": "neocortex",
     "isocortex": "neocortex",
-    # Allen Brain Atlas mouse abbreviations
-    "visp": "v1",
     "visam": "visual_cortex",
     "visal": "visual_cortex",
     "vispm": "visual_cortex",
@@ -199,9 +197,7 @@ _NWB_LOCATION_MAP: dict[str, str] = {
     "rspd": "retrosplenial_cortex",
     "rspl": "retrosplenial_cortex",
     "ent": "entorhinal_cortex",
-    "mec": "medial_entorhinal_cortex",
     "ect": "entorhinal_cortex",
-    "pir": "piriform_cortex",
     "aob": "olfactory_bulb",
     "olfb": "olfactory_bulb",
     "ai": "insula",
@@ -216,22 +212,15 @@ _NWB_LOCATION_MAP: dict[str, str] = {
     "orbl": "OFC",
     "orbm": "OFC",
     "orbvl": "OFC",
-    "dg": "dentate_gyrus",
     "entorhinal": "entorhinal_cortex",
-    "sub": "subiculum",
-    "hip": "hippocampus",
     "apn": "thalamus",
     "pf": "thalamus",
-    "vpm": "thalamus",
-    "vpl": "thalamus",
     "vpmpvc": "thalamus",
     "vpmpc": "thalamus",
     "lpn": "thalamus",
-    "lp": "thalamus",
     "lg": "lateral_geniculate_nucleus",
     "lgv": "lateral_geniculate_nucleus",
     "lgd": "lateral_geniculate_nucleus",
-    "md": "mediodorsal_thalamus",
     "mdt": "mediodorsal_thalamus",
     "imf": "thalamus",
     "imd": "thalamus",
@@ -240,41 +229,30 @@ _NWB_LOCATION_MAP: dict[str, str] = {
     "ad": "thalamus",
     "am": "thalamus",
     "pva": "thalamus",
-    "pf": "thalamus",
     "mb": "brainstem",
-    "snc": "substantia_nigra",
-    "snr": "substantia_nigra",
-    "vta": "vta",
     "scm": "superior_colliculus",
     "sci": "superior_colliculus",
     "scs": "superior_colliculus",
     "scig": "superior_colliculus",
     "scop": "superior_colliculus",
-    "ic": "inferior_colliculus",
     "ext": "brainstem",
     "dcn": "cerebellum",
     "cbn": "cerebellum",
     "cbp": "cerebellum",
     "cbx": "cerebellum",
-    "bla": "basolateral_amygdala",
-    "cea": "central_amygdala",
     "la": "basolateral_amygdala",
     "ba": "basolateral_amygdala",
     "bma": "amygdala",
     "me": "amygdala",
     "coa": "amygdala",
-    "nac": "nucleus_accumbens",
     "ot": "olfactory_bulb",
     "aon": "olfactory_bulb",
     "tt": "olfactory_bulb",
     "peri": "piriform_cortex",
-    "lh": "hypothalamus",
     "vmh": "hypothalamus",
     "dmh": "hypothalamus",
     "pvh": "hypothalamus",
     "ah": "hypothalamus",
-    "ls": "septum",
-    "ms": "septum",
     "sf": "septum",
     # Unknown/none — skip
     "none": "",
@@ -346,9 +324,9 @@ def _fetch_nwb_electrode_regions(source_id: str) -> list[str]:
     Returns a list of canonical brain region IDs, or [] on failure.
     """
     try:
-        from dandi.dandiapi import DandiAPIClient
-        import remfile
         import h5py
+        import remfile
+        from dandi.dandiapi import DandiAPIClient
 
         with DandiAPIClient() as client:
             dandiset = client.get_dandiset(source_id, "draft")
@@ -402,7 +380,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args(argv)
 
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     electrode_cache = _load_electrode_cache()
 
     ephys_mods = {"extracellular_ephys", "lfp", "neuropixels"}
