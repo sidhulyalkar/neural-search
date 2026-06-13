@@ -219,7 +219,7 @@ def compute_cohens_kappa(
 
     # Build confusion matrix
     confusion = [[0] * n_categories for _ in range(n_categories)]
-    for g1, g2 in zip(grades_1, grades_2, strict=False):
+    for g1, g2 in zip(grades_1, grades_2, strict=True):
         if 0 <= g1 < n_categories and 0 <= g2 < n_categories:
             confusion[g1][g2] += 1
 
