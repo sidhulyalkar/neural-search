@@ -74,7 +74,7 @@ def compute_ece(
     bin_width = 1.0 / n_bins
     bins: dict[int, list[tuple[float, int]]] = defaultdict(list)
 
-    for score, label in zip(scores, labels, strict=False):
+    for score, label in zip(scores, labels, strict=True):
         bin_idx = min(int(score / bin_width), n_bins - 1)
         bins[bin_idx].append((score, label))
 
