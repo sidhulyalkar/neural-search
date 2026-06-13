@@ -178,7 +178,7 @@ _QUOTA_EXHAUSTED = object()
 _gemini_model_index = 0
 
 
-def _call_gemini(client, title: str, description: str) -> list[str] | object:
+def _call_gemini(client, title: str, description: str) -> list[str] | None | object:
     global _gemini_model_index
     prompt = f"Title: {title}\nDescription: {description[:400] if description else '(none)'}"
     for _attempt in range(len(_GEMINI_MODELS)):
