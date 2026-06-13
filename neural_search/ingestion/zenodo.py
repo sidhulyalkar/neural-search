@@ -13,7 +13,6 @@ import httpx
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.dataset_classifier import is_valid_dataset
 from neural_search.ingestion.registry import register
-from neural_search.ingestion.osf import _log_rejection
 
 logger = logging.getLogger(__name__)
 

@@ -20,8 +20,6 @@ project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
 from neural_search.ingestion.openalex import fetch_openalex, normalize_work_record
-from neural_search.normalized import load_normalized_records
-from neural_search.graph.builder import split_records
 
 CORPUS_DIR = project_root / "data" / "corpus" / "normalized"
 OUTPUT_PATH = CORPUS_DIR / "real_papers.jsonl"

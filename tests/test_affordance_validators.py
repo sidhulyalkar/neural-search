@@ -3,18 +3,17 @@
 from __future__ import annotations
 
 import pytest
+
+from neural_search.affordances.validators.bids_validator import (
+    BIDSFeatureCheck,
+    BIDSValidator,
+    validate_bids_affordances,
+)
 from neural_search.affordances.validators.nwb_validator import (
-    NWBValidator,
-    NWBValidationResult,
     NWBFeatureCheck,
+    NWBValidator,
     ValidationConfidence,
     validate_nwb_affordances,
-)
-from neural_search.affordances.validators.bids_validator import (
-    BIDSValidator,
-    BIDSValidationResult,
-    BIDSFeatureCheck,
-    validate_bids_affordances,
 )
 
 

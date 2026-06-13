@@ -20,19 +20,6 @@ from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion import services as ingestion_services
 from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_seed
-
-# When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
-# (useful for CI and quick local demos). Default: full combined corpus.
-_DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
-FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
-NEURO_JUDGE_WATERMARK = (
-    "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
-    "NOT PURE HUMAN GOLD"
-)
-
-
-def _load_corpus() -> list[dict[str, Any]]:
-    return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.notebooks.templates import (
     evaluate_template_for_dataset,
@@ -63,8 +50,21 @@ from neural_search.schemas import (
 )
 from neural_search.search import search_datasets
 
+# When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
+# (useful for CI and quick local demos). Default: full combined corpus.
+_DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
+FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
+NEURO_JUDGE_WATERMARK = (
+    "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
+    "NOT PURE HUMAN GOLD"
+)
+
 # In-memory store for demo (replace with DB in production)
 _demo_data: list[dict[str, Any]] = []
+
+
+def _load_corpus() -> list[dict[str, Any]]:
+    return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 
 
 @asynccontextmanager

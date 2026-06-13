@@ -87,6 +87,15 @@ known-first-party = ["neural_search"]
 
 [tool.ruff.lint.per-file-ignores]
 "scripts/demo.py" = ["E402"]
+"scripts/build_real_corpus_graph.py" = ["E402"]
+"scripts/eval/build_neuro_judge_evidence.py" = ["E402"]
+"scripts/eval/consensus_neuro_qrels.py" = ["E402"]
+"scripts/eval/evaluate_known_item_lookup.py" = ["E402"]
+"scripts/expand_paper_corpus.py" = ["E402"]
+"scripts/run_calibration_analysis.py" = ["E402"]
+"tests/test_search_usefulness_integration.py" = ["E402"]
+"tests/test_sprint1_eval.py" = ["E402"]
+"tests/test_sprint1_pooled_eval.py" = ["E402"]
 
 [tool.mypy]
 python_version = "3.11"

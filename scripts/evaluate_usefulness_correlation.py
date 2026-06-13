@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import yaml
@@ -111,8 +110,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     corr, pval = spearmanr(sys_scores, binary_labels)
-    rel_all = [s for s, r in zip(sys_scores, binary_labels) if r == 1]
-    irrel_all = [s for s, r in zip(sys_scores, binary_labels) if r == 0]
+    rel_all = [s for s, r in zip(sys_scores, binary_labels, strict=False) if r == 1]
+    irrel_all = [s for s, r in zip(sys_scores, binary_labels, strict=False) if r == 0]
 
     print(f"\nSpearman r = {corr:.4f}  (p = {pval:.4f})")
     if rel_all:

@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None) -> int:
             pass
 
     baseline = {
-        "frozen_at": datetime.now(timezone.utc).isoformat(),
+        "frozen_at": datetime.now(UTC).isoformat(),
         "git_hash": _git_hash(),
         "corpus_record_counts": corpus_sizes,
         "total_corpus_records": sum(corpus_sizes.values()),

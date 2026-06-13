@@ -151,7 +151,7 @@ def _parse_llm_response(raw: str) -> list[str]:
     return [r for r in parsed if r in VALID_REGION_IDS]
 
 
-def _call_anthropic(client, title: str, description: str) -> list[str]:
+def _call_anthropic(client, title: str, description: str) -> list[str] | object:
     prompt = f"Title: {title}\nDescription: {description[:400] if description else '(none)'}"
     try:
         msg = client.messages.create(
@@ -173,11 +173,16 @@ _GEMINI_MODELS = [
     "models/gemini-flash-lite-latest",
 ]
 
+# Sentinel returned when all models are rate-limited — means "don't cache, retry later"
+_QUOTA_EXHAUSTED = object()
+_gemini_model_index = 0
 
-def _call_gemini(client, title: str, description: str, _model_state: list = [0]) -> list[str]:
+
+def _call_gemini(client, title: str, description: str) -> list[str] | object:
+    global _gemini_model_index
     prompt = f"Title: {title}\nDescription: {description[:400] if description else '(none)'}"
-    for attempt in range(len(_GEMINI_MODELS)):
-        model = _GEMINI_MODELS[_model_state[0] % len(_GEMINI_MODELS)]
+    for _attempt in range(len(_GEMINI_MODELS)):
+        model = _GEMINI_MODELS[_gemini_model_index % len(_GEMINI_MODELS)]
         try:
             response = client.models.generate_content(
                 model=model,
@@ -190,12 +195,13 @@ def _call_gemini(client, title: str, description: str, _model_state: list = [0])
             err = str(e)
             if "429" in err or "RESOURCE_EXHAUSTED" in err:
                 logger.warning("Quota exhausted on %s, trying next model", model)
-                _model_state[0] += 1
+                _gemini_model_index += 1
                 continue
             logger.warning("Gemini call failed: %s", e)
             return []
-    logger.error("All Gemini models quota-exhausted")
-    return []
+    logger.warning("All Gemini models quota-exhausted — sleeping 65s for per-minute reset")
+    time.sleep(65)
+    return _QUOTA_EXHAUSTED
 
 
 def _load_api_key(env_var: str) -> str | None:
@@ -229,7 +235,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             import anthropic as _anthropic
             client = _anthropic.Anthropic(api_key=anthropic_key)
-            call_llm = lambda t, d: _call_anthropic(client, t, d)
+            def call_llm(t, d):
+                return _call_anthropic(client, t, d)
             provenance = _PROVENANCE_ANTHROPIC
             logger.info("Provider: Anthropic Claude Haiku")
         except ImportError:
@@ -239,7 +246,8 @@ def main(argv: list[str] | None = None) -> int:
         try:
             from google import genai as _genai
             client = _genai.Client(api_key=gemini_key)
-            call_llm = lambda t, d: _call_gemini(client, t, d)
+            def call_llm(t, d):
+                return _call_gemini(client, t, d)
             provenance = _PROVENANCE_GEMINI
             logger.info("Provider: Gemini Flash")
         except ImportError:
@@ -254,9 +262,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     corpus = [
-        json.loads(l)
-        for l in CORPUS_PATH.read_text().strip().splitlines()
-        if l.strip()
+        json.loads(line)
+        for line in CORPUS_PATH.read_text().strip().splitlines()
+        if line.strip()
     ]
     llm_cache = _load_cache()
 
@@ -295,15 +303,23 @@ def main(argv: list[str] | None = None) -> int:
                     title[:60])
         regions = call_llm(title, description)
 
+        if regions is _QUOTA_EXHAUSTED:
+            # Retry this same record after the sleep
+            regions = call_llm(title, description)
+            if regions is _QUOTA_EXHAUSTED:
+                logger.error("Persistent quota failure on %s, skipping (not cached)", sid)
+                continue
+
         if not args.dry_run:
-            _save_cache(sid, regions)
+            # Only cache definitive answers — empty [] means "LLM says no region"
+            _save_cache(sid, regions)  # type: ignore[arg-type]
 
         if regions:
             logger.info("  → %s", regions)
-            enriched_map[sid] = regions
+            enriched_map[sid] = regions  # type: ignore[assignment]
             inferred += 1
 
-        time.sleep(0.1)  # rate limit courtesy
+        time.sleep(0.15)  # polite rate limiting
 
     logger.info("Cache hits: %d, Newly inferred: %d, With regions: %d",
                 skipped, inferred, len(enriched_map))
@@ -333,7 +349,7 @@ def main(argv: list[str] | None = None) -> int:
     logger.info("Updated %d records → %s", updated, CORPUS_PATH)
 
     # Report coverage
-    refreshed = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    refreshed = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     total = len(refreshed)
     with_region = sum(1 for r in refreshed if _has_region(r))
     logger.info("Brain region coverage: %d/%d = %d%%", with_region, total,

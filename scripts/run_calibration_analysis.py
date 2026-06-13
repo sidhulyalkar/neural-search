@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import asdict
 from pathlib import Path
 
 # Add project root to path
@@ -33,7 +32,6 @@ from neural_search.evaluation.calibration import (
 )
 from neural_search.evaluation.relevance import (
     RELEVANCE_SCORES,
-    load_relevance_labels,
 )
 from neural_search.search import search_datasets
 
@@ -177,7 +175,7 @@ def run_calibration_from_labels(
     ]
 
     print(f"  Score range: {min_score:.2f} - {max_score:.2f}")
-    print(f"  Normalized to 0-1 for calibration analysis")
+    print("  Normalized to 0-1 for calibration analysis")
 
     # Update per-query details with normalized scores
     idx = 0
@@ -371,7 +369,7 @@ def format_markdown_report(report: dict) -> str:
     summary = report["summary"]
     lines.append("## Summary Metrics")
     lines.append("")
-    lines.append(f"| Metric | Value |")
+    lines.append("| Metric | Value |")
     lines.append("|--------|-------|")
     lines.append(f"| Total Samples | {summary['total_samples']} |")
     lines.append(f"| Positive Samples | {summary['positive_samples']} |")

@@ -192,7 +192,7 @@ class RelatednessScorer:
 
     def _build_indices(self) -> None:
         """Build graph indices for efficient scoring."""
-        for edge_id, edge in self.edges.items():
+        for _edge_id, edge in self.edges.items():
             source = edge.get("source_node_id", "")
             target = edge.get("target_node_id", "")
             edge_type = edge.get("edge_type", "")
@@ -385,9 +385,9 @@ class RelatednessScorer:
         source_all = set()
         target_all = set()
 
-        for edge_type, neighbors in self._dataset_neighbors.get(source_id, {}).items():
+        for _edge_type, neighbors in self._dataset_neighbors.get(source_id, {}).items():
             source_all.update(neighbors)
-        for edge_type, neighbors in self._dataset_neighbors.get(target_id, {}).items():
+        for _edge_type, neighbors in self._dataset_neighbors.get(target_id, {}).items():
             target_all.update(neighbors)
 
         shared = source_all & target_all
@@ -559,7 +559,6 @@ def auto_label_linkage_benchmark(
 ) -> None:
     """Automatically label a linkage benchmark using graph-based scoring."""
     from neural_search.evaluation.dataset_linkage import (
-        LinkageBenchmark,
         load_benchmark,
         save_benchmark,
     )

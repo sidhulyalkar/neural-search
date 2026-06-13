@@ -49,7 +49,7 @@ import math
 import sys
 import termios
 import tty
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -179,7 +179,7 @@ def build_label(
         "hard_negative_violation": hard_negative_violation or (relevance == 0),
         "missing_metadata": [],
         "annotator_id": annotator_id,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "adjudicated": True,
         "adjudication_notes": "",
         "schema_version": "0.3",
@@ -329,7 +329,7 @@ def compute_ndcg(labels: list[dict]) -> float | None:
         return None
 
     ndcgs = []
-    for query_id, scores in by_query.items():
+    for _query_id, scores in by_query.items():
         dcg = sum(
             (2**s - 1) / math.log2(i + 2) for i, s in enumerate(scores[:10])
         )

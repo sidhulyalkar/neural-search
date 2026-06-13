@@ -192,7 +192,7 @@ class TestDelayDiscountingCaseStudy:
 
     def test_motor_delay_query_exists_separately(self, benchmark_data):
         """Test there are separate motor delay queries (not confused with discounting)."""
-        motor_queries = [
+        _motor_queries = [
             q for q in benchmark_data["queries"]
             if "motor" in q["query"].lower() and "delay" in q["query"].lower()
         ]

@@ -17,12 +17,12 @@ Design Philosophy:
 """
 
 from neural_search.core.claims import (
+    SOURCE_CONFIDENCE_DEFAULTS,
     ClaimPredicate,
     ClaimStore,
     EvidenceSourceType,
     ReusabilityClaim,
     ReviewStatus,
-    SOURCE_CONFIDENCE_DEFAULTS,
     claim_has_modality,
     claim_has_task,
     claim_has_variable,
@@ -41,6 +41,16 @@ from neural_search.core.dataset_card import (
     SourceSnapshot,
     create_corpus_snapshot,
     create_dataset_card_from_normalized,
+)
+from neural_search.core.neural_signature import (
+    CalciumStats,
+    FiringRateStats,
+    ISIStats,
+    NeuralSignatureV1,
+    RecordingModality,
+    SignatureQuality,
+    TrialStats,
+    extract_signature_from_metadata,
 )
 from neural_search.core.query import (
     QueryConstraint,
@@ -68,16 +78,6 @@ from neural_search.core.retrieval import (
     RetrievalStageResult,
     ScoredCandidate,
     ScoreFuser,
-)
-from neural_search.core.neural_signature import (
-    CalciumStats,
-    FiringRateStats,
-    ISIStats,
-    NeuralSignatureV1,
-    RecordingModality,
-    SignatureQuality,
-    TrialStats,
-    extract_signature_from_metadata,
 )
 
 __all__ = [

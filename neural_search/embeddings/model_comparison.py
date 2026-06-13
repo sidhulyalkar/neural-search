@@ -29,7 +29,7 @@ import logging
 import math
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -48,7 +48,7 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
     if len(a) != len(b):
         raise ValueError(f"Vector dimension mismatch: {len(a)} vs {len(b)}")
 
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
     norm_a = math.sqrt(sum(x * x for x in a))
     norm_b = math.sqrt(sum(x * x for x in b))
 
@@ -142,10 +142,10 @@ class EmbeddingIndex:
         if not entities:
             return
 
-        ids, texts = zip(*entities)
+        ids, texts = zip(*entities, strict=False)
         embeddings = self.provider.embed_batch(list(texts))
 
-        for entity_id, embedding in zip(ids, embeddings):
+        for entity_id, embedding in zip(ids, embeddings, strict=False):
             self.embeddings[entity_id] = embedding
             if entity_id not in self.ids:
                 self.ids.append(entity_id)
@@ -295,7 +295,6 @@ def compare_embedding_models(
         recalls_5: list[float] = []
         recalls_10: list[float] = []
         mrrs: list[float] = []
-        embedding_latencies: list[float] = []
         search_latencies: list[float] = []
         queries_with_results = 0
 
@@ -332,8 +331,6 @@ def compare_embedding_models(
 
         # Aggregate metrics
         n = len(queries)
-        search_latencies_sorted = sorted(search_latencies)
-
         metrics = ModelMetrics(
             model_name=model_name,
             provider=provider.provider_name,
@@ -408,7 +405,7 @@ def compare_embedding_models(
         corpus_size=len(corpus),
         query_count=len(queries),
         baseline_model=baseline,
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
     )
 
 

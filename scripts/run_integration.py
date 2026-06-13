@@ -13,7 +13,7 @@ import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     print(f"=== Neural Search v2.0 Integration Point ({'DRY RUN' if args.dry_run else 'LIVE'}) ===")
-    print(f"Started: {datetime.now(timezone.utc).isoformat()}")
+    print(f"Started: {datetime.now(UTC).isoformat()}")
 
     steps = []
 
@@ -69,8 +69,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.dry_run:
         record = {
-            "integration_run_at": datetime.now(timezone.utc).isoformat(),
-            "steps": {step: passed for step, passed in steps},
+            "integration_run_at": datetime.now(UTC).isoformat(),
+            "steps": dict(steps),
             "all_passed": all_ok,
         }
         Path("reports").mkdir(exist_ok=True)

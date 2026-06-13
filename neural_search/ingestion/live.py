@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +29,7 @@ def save_raw_response(source: str, query: str, payload: Any) -> Path:
 
     source_dir = RAW_DATA_DIR / source
     source_dir.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     base = source_dir / f"{timestamp}-{normalize_query_slug(query)}.json"
     path = base
     counter = 1

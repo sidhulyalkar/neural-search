@@ -12,7 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -76,7 +76,7 @@ def compute_corpus_completeness() -> dict[str, Any]:
     def _fill_rates(recs: list[dict]) -> dict[str, float]:
         n = len(recs)
         if n == 0:
-            return {f: 0.0 for f in COMPLETENESS_FIELDS}
+            return dict.fromkeys(COMPLETENESS_FIELDS, 0.0)
         rates = {}
         for field in COMPLETENESS_FIELDS:
             filled = sum(
@@ -92,7 +92,7 @@ def compute_corpus_completeness() -> dict[str, Any]:
     }
 
     return {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "total_datasets": len(records),
         "fields": COMPLETENESS_FIELDS,
         "overall": {"count": len(records), "fill_rates": _fill_rates(records)},
@@ -234,7 +234,7 @@ def compile_dataset_report() -> dict[str, Any]:
     )
 
     return {
-        "report_generated_at": datetime.now(timezone.utc).isoformat(),
+        "report_generated_at": datetime.now(UTC).isoformat(),
         "summary": {
             "total_datasets": len(records),
             "total_papers_linked": unique_papers,

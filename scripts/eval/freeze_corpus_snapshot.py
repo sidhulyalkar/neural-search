@@ -8,10 +8,9 @@ import hashlib
 import json
 import subprocess
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
 
 DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl")
 DEFAULT_EMBEDDINGS = Path("data/embeddings/real_all.dense.field_embeddings.jsonl")
@@ -95,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
         index_meta = json.loads(args.index_meta.read_text(encoding="utf-8"))
 
     manifest = {
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "corpus_path": str(args.corpus),
         "corpus_sha256": sha256_file(args.corpus),
         "corpus_size": len(records),

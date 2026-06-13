@@ -7,7 +7,6 @@ import pytest
 from neural_search.graph.schema import (
     SUPPORTED_EDGE_TYPES,
     SUPPORTED_NODE_TYPES,
-    GraphEvidence,
     KnowledgeGraphEdge,
     KnowledgeGraphNode,
     make_edge_id,

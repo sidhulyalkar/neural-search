@@ -1,9 +1,9 @@
 from __future__ import annotations
-import json
-import pytest
+
 import httpx
 import respx
-from neural_search.ingestion.dandi import fetch_all_dandisets, normalize_dandiset
+
+from neural_search.ingestion.dandi import fetch_all_dandisets
 
 DANDI_API = "https://api.dandiarchive.org/api"
 

@@ -1,18 +1,17 @@
 """Tests for ablation runner."""
 import tempfile
 from pathlib import Path
-import pytest
+
 from neural_search.evaluation.ablation_runner import (
-    AblationVariant,
+    VARIANT_NAMES,
     AblationConfig,
+    AblationReport,
     CandidatePool,
     run_ablation,
-    AblationReport,
-    VARIANT_NAMES,
 )
 from neural_search.evaluation.usefulness_benchmark import (
-    UsefulnessQuery,
     PairLabel,
+    UsefulnessQuery,
 )
 from neural_search.retrieval.usefulness_scorer import DatasetContext
 

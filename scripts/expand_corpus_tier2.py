@@ -33,10 +33,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args(argv)
 
-    import neural_search.ingestion.osf  # noqa: F401
     import neural_search.ingestion.figshare  # noqa: F401
+    import neural_search.ingestion.osf  # noqa: F401
     import neural_search.ingestion.zenodo  # noqa: F401
-
     from neural_search.ingestion.registry import run_adapter
 
     for source in ["osf", "figshare", "zenodo"]:

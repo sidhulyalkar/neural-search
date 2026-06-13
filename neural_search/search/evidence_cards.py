@@ -30,8 +30,8 @@ Example result card:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -138,7 +138,7 @@ class EvidenceResultCard(BaseModel):
 
     # Timestamps
     generated_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
 
 
@@ -248,7 +248,7 @@ def build_evidence_card(
     # Hard negative detection
     hard_negative_flags = []
     if sense_result:
-        for neg_sense in sense_result.get("negative_senses", []):
+        for _neg_sense in sense_result.get("negative_senses", []):
             # Check if dataset matches a negative sense
             # This would require checking dataset metadata against sense definitions
             pass  # Placeholder for actual implementation
@@ -292,11 +292,11 @@ def build_evidence_card(
 
     # Brief explanation
     if status == ReusabilityStatus.SUPPORTED:
-        brief = f"Dataset supports the requested analysis."
+        brief = "Dataset supports the requested analysis."
     elif status == ReusabilityStatus.PARTIAL:
         brief = f"Dataset partially supports the analysis (missing {len(missing_requirements)} requirement(s))."
     else:
-        brief = f"Dataset may not fully support the requested analysis."
+        brief = "Dataset may not fully support the requested analysis."
 
     # Evidence quality
     if len(evidence_list) >= 3 and all(e.get("confidence", 0) > 0.8 for e in evidence_list):
@@ -365,7 +365,7 @@ def format_evidence_card_text(card: EvidenceResultCard) -> str:
         lines.append(f"    ✗ Missing: {', '.join(card.missing_requirements)}")
 
     if card.evidence:
-        lines.append(f"    Evidence: {len(card.evidence)} claim(s) from {', '.join(set(e['source_type'] for e in card.evidence))}")
+        lines.append(f"    Evidence: {len(card.evidence)} claim(s) from {', '.join({e['source_type'] for e in card.evidence})}")
 
     if card.warnings:
         for warning in card.warnings:

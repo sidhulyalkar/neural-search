@@ -2,11 +2,7 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
-
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Helpers to build minimal valid feedback events
@@ -56,6 +52,7 @@ class TestFeedbackSchemaValidation:
     def test_invalid_usefulness_rejected_by_api(self):
         """The API Pydantic model should reject unknown usefulness strings."""
         from fastapi.testclient import TestClient
+
         from apps.api.main import app
 
         client = TestClient(app)
@@ -98,6 +95,7 @@ class TestFeedbackSchemaValidation:
 
     def test_feedback_event_missing_dataset_id_rejected(self):
         from fastapi.testclient import TestClient
+
         from apps.api.main import app
 
         client = TestClient(app)
@@ -109,6 +107,7 @@ class TestFeedbackSchemaValidation:
     def test_feedback_event_missing_query_text_uses_default(self):
         # query_text has a default empty string — omitting it is allowed.
         from fastapi.testclient import TestClient
+
         from apps.api.main import app
 
         client = TestClient(app)

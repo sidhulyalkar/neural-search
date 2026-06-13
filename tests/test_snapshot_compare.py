@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import pytest
 from pathlib import Path
 
 
@@ -37,7 +36,8 @@ class TestSnapshotDiff:
         _write_graph_manifest(old_dir / "memory_graph_manifest.json", 2, 1)
         _write_graph_manifest(new_dir / "memory_graph_manifest.json", 4, 2)
 
-        import subprocess, sys
+        import subprocess
+        import sys
         result = subprocess.run(
             [sys.executable, "scripts/field_state/compare_snapshots.py",
              "--old", str(old_dir), "--new", str(new_dir),
@@ -56,7 +56,8 @@ class TestSnapshotDiff:
         _write_graph_manifest(old_dir / "memory_graph_manifest.json", 4, 2)
         _write_graph_manifest(new_dir / "memory_graph_manifest.json", 2, 1)
 
-        import subprocess, sys
+        import subprocess
+        import sys
         result = subprocess.run(
             [sys.executable, "scripts/field_state/compare_snapshots.py",
              "--old", str(old_dir), "--new", str(new_dir),
@@ -75,7 +76,8 @@ class TestSnapshotDiff:
         _write_graph_manifest(old_dir / "memory_graph_manifest.json", 2, 1)
         _write_graph_manifest(new_dir / "memory_graph_manifest.json", 2, 1)
 
-        import subprocess, sys
+        import subprocess
+        import sys
         result = subprocess.run(
             [sys.executable, "scripts/field_state/compare_snapshots.py",
              "--old", str(old_dir), "--new", str(new_dir),
@@ -95,7 +97,8 @@ class TestSnapshotDiff:
         _write_graph_manifest(old_dir / "memory_graph_manifest.json", 4, 2)
         _write_graph_manifest(new_dir / "memory_graph_manifest.json", 4, 2)
 
-        import subprocess, sys
+        import subprocess
+        import sys
         result = subprocess.run(
             [sys.executable, "scripts/field_state/compare_snapshots.py",
              "--old", str(old_dir), "--new", str(new_dir),
@@ -119,7 +122,8 @@ class TestSnapshotDiff:
         _write_graph_manifest(old_dir / "memory_graph_manifest.json", 20, 10)
         _write_graph_manifest(new_dir / "memory_graph_manifest.json", 2, 1)
 
-        import subprocess, sys
+        import subprocess
+        import sys
         result = subprocess.run(
             [sys.executable, "scripts/field_state/compare_snapshots.py",
              "--old", str(old_dir), "--new", str(new_dir),

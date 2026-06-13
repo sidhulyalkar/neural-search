@@ -32,11 +32,10 @@ Example claim:
 from __future__ import annotations
 
 import hashlib
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -180,7 +179,7 @@ class ReusabilityClaim(BaseModel):
 
     # Timestamps
     created_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
     updated_at: str | None = None
 
@@ -204,7 +203,7 @@ class ReusabilityClaim(BaseModel):
         return self.model_dump_json()
 
     @classmethod
-    def from_jsonl(cls, line: str) -> "ReusabilityClaim":
+    def from_jsonl(cls, line: str) -> ReusabilityClaim:
         """Deserialize from JSONL format."""
         return cls.model_validate_json(line)
 
@@ -212,14 +211,14 @@ class ReusabilityClaim(BaseModel):
         self,
         status: ReviewStatus,
         reviewer: str,
-    ) -> "ReusabilityClaim":
+    ) -> ReusabilityClaim:
         """Return a new claim with updated review status."""
         return self.model_copy(
             update={
                 "review_status": status,
                 "reviewed_by": reviewer,
-                "reviewed_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
+                "reviewed_at": datetime.now(UTC).isoformat(),
+                "updated_at": datetime.now(UTC).isoformat(),
             }
         )
 

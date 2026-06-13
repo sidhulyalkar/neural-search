@@ -29,7 +29,10 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from neural_search.core.neural_signature import NeuralSignatureV1
 
 logger = logging.getLogger(__name__)
 
@@ -239,7 +242,7 @@ def extract_nwb_metadata_streaming(asset: DANDIAsset) -> dict[str, Any]:
 def extract_signature_streaming(
     dandiset_id: str,
     asset_id: str,
-) -> "NeuralSignatureV1":
+) -> NeuralSignatureV1:
     """Extract a NeuralSignatureV1 from a streaming NWB file.
 
     Args:

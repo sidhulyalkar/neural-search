@@ -481,7 +481,7 @@ export function DemoPage() {
             <h2 className="mt-2 text-2xl font-light text-neural-100">Launch useful searches</h2>
           </div>
           <Link to="/reports" className="text-sm text-neural-500 transition-colors hover:text-accent-cyan">
-            Corpus reports ->
+            Corpus reports &rarr;
           </Link>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
@@ -493,7 +493,7 @@ export function DemoPage() {
             >
               <div className="mb-2 flex items-center justify-between gap-4">
                 <span className="text-sm font-medium text-neural-200">{scenario.label}</span>
-                <span className="text-neural-700">-></span>
+                <span className="text-neural-700">&rarr;</span>
               </div>
               <p className="text-sm leading-relaxed text-neural-500">{scenario.query}</p>
               <p className="mt-3 text-xs text-neural-600">{scenario.focus}</p>
@@ -572,7 +572,7 @@ export function DemoPage() {
                             </p>
                           </div>
                           <span className="flex-shrink-0 text-neural-700 group-hover:text-accent-cyan">
-                            ->
+                            &rarr;
                           </span>
                         </div>
                       </Link>
@@ -607,13 +607,13 @@ export function DemoPage() {
 
       <div className="flex flex-wrap gap-6 border-t border-neural-800/40 pt-8">
         <Link to="/" className="text-sm text-neural-500 transition-colors hover:text-accent-cyan">
-          Try a search ->
+          Try a search &rarr;
         </Link>
         <Link to="/graph" className="text-sm text-neural-500 transition-colors hover:text-accent-cyan">
-          Corpus map ->
+          Corpus map &rarr;
         </Link>
         <Link to="/evaluation" className="text-sm text-neural-500 transition-colors hover:text-accent-cyan">
-          Evaluation dashboard ->
+          Evaluation dashboard &rarr;
         </Link>
       </div>
     </div>

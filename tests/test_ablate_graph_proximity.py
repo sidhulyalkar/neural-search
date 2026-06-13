@@ -36,7 +36,7 @@ def test_missing_graph_exits_nonzero(tmp_path, monkeypatch):
 
 # Unit tests for NDCG calculation
 def _import_ndcg():
-    import importlib.util, pathlib
+    import importlib.util
     spec = importlib.util.spec_from_file_location(
         "ablate_graph_proximity",
         "/mnt/c/Users/sidso/Documents/neural-search/scripts/ablate_graph_proximity.py",
@@ -73,6 +73,5 @@ def test_ndcg_partial_ranking():
 
 def test_dcg_ordering():
     _ndcg, _dcg = _import_ndcg()
-    import math
     # DCG([2, 0]) = 2/log2(2) = 2.0; DCG([0, 2]) = 0 + 2/log2(3) < 2.0
     assert _dcg([2.0, 0.0]) > _dcg([0.0, 2.0])

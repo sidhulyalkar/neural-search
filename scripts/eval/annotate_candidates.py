@@ -37,11 +37,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 import textwrap
 from collections import defaultdict
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Loaders
@@ -202,11 +200,11 @@ def print_stats(qrels_path: Path, pool: list[dict]) -> None:
     annotated = len(existing)
     remaining = total_pool - annotated
 
-    print(f"\nAnnotation progress:")
+    print("\nAnnotation progress:")
     print(f"  Pool size:       {total_pool}")
     print(f"  Annotated:       {annotated} ({100*annotated/max(total_pool,1):.1f}%)")
     print(f"  Remaining:       {remaining}")
-    print(f"\nLabel distribution:")
+    print("\nLabel distribution:")
     for label in range(4):
         count = label_counts[label]
         bar = "█" * int(count * 40 / max(sum(label_counts.values()), 1))
@@ -278,7 +276,7 @@ def annotate(
                 break
             print("  Invalid input. Enter 0, 1, 2, 3, s (skip), or q (quit).")
 
-    print(f"\nAnnotation session complete.")
+    print("\nAnnotation session complete.")
     print_stats(qrels_path, pool)
 
 
