@@ -115,6 +115,40 @@ class AnalysisAffordance(BaseModel):
         return value
 
 
+class BrainRegion(BaseModel):
+    """Search-oriented brain region entry with aliases and parent links."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    label: str
+    aliases: list[str] = Field(default_factory=list)
+    parents: list[str] = Field(default_factory=list)
+    strict: bool = False
+
+    @field_validator("id", "label")
+    @classmethod
+    def non_empty_string(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be empty")
+        return value
+
+    @field_validator("aliases", "parents")
+    @classmethod
+    def clean_string_list(cls, values: list[str]) -> list[str]:
+        if not isinstance(values, list):
+            raise ValueError("must be a list")
+        cleaned = []
+        for value in values:
+            if not isinstance(value, str):
+                raise ValueError("all entries must be strings")
+            value = value.strip()
+            if value:
+                cleaned.append(value)
+        return cleaned
+
+
 class Ontology(BaseModel):
     """Complete behavioral ontology loaded from YAML."""
 

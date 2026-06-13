@@ -9,13 +9,17 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
-from neural_search.ontology.models import REQUIRED_TASK_FIELDS, Ontology
+from neural_search.ontology.models import REQUIRED_TASK_FIELDS, BrainRegion, Ontology
 
 DEFAULT_ONTOLOGY_PATH = (
     Path(__file__).resolve().parents[2]
     / "data"
     / "ontology"
     / "behavioral_task_ontology.yaml"
+)
+
+DEFAULT_BRAIN_REGIONS_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "ontology" / "brain_regions.yaml"
 )
 
 
@@ -90,3 +94,28 @@ def get_all_tasks():
 def get_task_by_id(task_id: str):
     return get_ontology().task_by_id.get(task_id)
 
+
+@lru_cache(maxsize=8)
+def _load_brain_regions_cached(path_string: str) -> tuple[BrainRegion, ...]:
+    raw = _load_yaml(path_string)
+    entries = raw.get("brain_regions")
+    if not isinstance(entries, list):
+        raise OntologyValidationError("Brain-region ontology must define brain_regions list")
+    try:
+        return tuple(BrainRegion.model_validate(entry) for entry in entries)
+    except ValidationError as exc:
+        raise OntologyValidationError(str(exc)) from exc
+
+
+def load_brain_regions(
+    path: str | Path = DEFAULT_BRAIN_REGIONS_PATH,
+) -> tuple[BrainRegion, ...]:
+    """Load search-oriented brain region aliases and parent links."""
+
+    return _load_brain_regions_cached(str(Path(path)))
+
+
+def get_brain_regions() -> tuple[BrainRegion, ...]:
+    """Return the default brain-region ontology."""
+
+    return load_brain_regions(DEFAULT_BRAIN_REGIONS_PATH)

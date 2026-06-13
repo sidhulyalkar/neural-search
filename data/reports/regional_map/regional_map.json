@@ -1,0 +1,7364 @@
+{
+  "atlas_targets": [
+    {
+      "candidate_record_count": 1,
+      "label": "Basal forebrain",
+      "region_id": "basal_forebrain",
+      "status": "candidate_only",
+      "system": "basal_forebrain",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Dorsal raphe",
+      "region_id": "dorsal_raphe",
+      "status": "candidate_only",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Medulla",
+      "region_id": "medulla",
+      "status": "candidate_only",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 5,
+      "label": "Midbrain",
+      "region_id": "midbrain",
+      "status": "candidate_only",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 6,
+      "label": "Ventral tegmental area",
+      "region_id": "ventral_tegmental_area",
+      "status": "candidate_only",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 6,
+      "label": "Barrel cortex",
+      "region_id": "barrel_cortex",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 143,
+      "label": "Cortex",
+      "region_id": "cortex",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 4,
+      "label": "Insular cortex",
+      "region_id": "insular_cortex",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 6,
+      "label": "Medial temporal lobe",
+      "region_id": "medial_temporal_lobe",
+      "status": "candidate_only",
+      "system": "hippocampal_formation",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Ventral posteromedial nucleus",
+      "region_id": "vpm",
+      "status": "candidate_only",
+      "system": "thalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 8,
+      "label": "Whole brain",
+      "region_id": "whole_brain",
+      "status": "candidate_only",
+      "system": "whole_brain",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Central amygdala",
+      "region_id": "central_amygdala",
+      "status": "uncovered",
+      "system": "amygdala",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Caudate",
+      "region_id": "caudate",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dorsomedial striatum",
+      "region_id": "dorsomedial_striatum",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Putamen",
+      "region_id": "putamen",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Substantia nigra",
+      "region_id": "substantia_nigra",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Subthalamic nucleus",
+      "region_id": "subthalamic_nucleus",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Pons",
+      "region_id": "pons",
+      "status": "uncovered",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Cerebellar cortex",
+      "region_id": "cerebellar_cortex",
+      "status": "uncovered",
+      "system": "cerebellum",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Cerebellar vermis",
+      "region_id": "cerebellar_vermis",
+      "status": "uncovered",
+      "system": "cerebellum",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Deep cerebellar nuclei",
+      "region_id": "deep_cerebellar_nuclei",
+      "status": "uncovered",
+      "system": "cerebellum",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Area MT",
+      "region_id": "area_mt",
+      "status": "uncovered",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Medial superior temporal area",
+      "region_id": "mst",
+      "status": "uncovered",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Hippocampal CA2",
+      "region_id": "ca2",
+      "status": "uncovered",
+      "system": "hippocampal_formation",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Lateral hypothalamus",
+      "region_id": "lateral_hypothalamus",
+      "status": "uncovered",
+      "system": "hypothalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Medial geniculate body",
+      "region_id": "medial_geniculate_body",
+      "status": "uncovered",
+      "system": "thalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Mediodorsal thalamus",
+      "region_id": "mediodorsal_thalamus",
+      "status": "uncovered",
+      "system": "thalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Amygdala",
+      "region_id": "amygdala",
+      "status": "verified",
+      "system": "amygdala",
+      "verified_record_count": 12
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Basolateral amygdala",
+      "region_id": "basolateral_amygdala",
+      "status": "verified",
+      "system": "amygdala",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dorsal striatum",
+      "region_id": "dorsal_striatum",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dorsolateral striatum",
+      "region_id": "dorsolateral_striatum",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Globus pallidus",
+      "region_id": "globus_pallidus",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Nucleus accumbens",
+      "region_id": "nucleus_accumbens",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 6
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Striatum",
+      "region_id": "striatum",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 19
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Ventral striatum",
+      "region_id": "ventral_striatum",
+      "status": "verified",
+      "system": "basal_ganglia",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Brainstem",
+      "region_id": "brainstem",
+      "status": "verified",
+      "system": "brainstem",
+      "verified_record_count": 9
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Inferior colliculus",
+      "region_id": "inferior_colliculus",
+      "status": "verified",
+      "system": "brainstem",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Locus coeruleus",
+      "region_id": "locus_coeruleus",
+      "status": "verified",
+      "system": "brainstem",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Superior colliculus",
+      "region_id": "superior_colliculus",
+      "status": "verified",
+      "system": "brainstem",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Cerebellum",
+      "region_id": "cerebellum",
+      "status": "verified",
+      "system": "cerebellum",
+      "verified_record_count": 5
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Anterior cingulate cortex",
+      "region_id": "acc",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 26
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Auditory cortex",
+      "region_id": "auditory_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 6
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dorsolateral prefrontal cortex",
+      "region_id": "dlpfc",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Entorhinal cortex",
+      "region_id": "entorhinal_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Motor cortex",
+      "region_id": "motor_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 33
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Medial prefrontal cortex",
+      "region_id": "mpfc",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 10
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Orbitofrontal cortex",
+      "region_id": "ofc",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 2,
+      "label": "Parietal cortex",
+      "region_id": "parietal_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 5
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Piriform cortex",
+      "region_id": "piriform_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 10,
+      "label": "Prefrontal cortex",
+      "region_id": "prefrontal_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 19
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Premotor cortex",
+      "region_id": "premotor_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 14
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Retrosplenial cortex",
+      "region_id": "retrosplenial_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Somatosensory cortex",
+      "region_id": "somatosensory_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 13
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Temporal cortex",
+      "region_id": "temporal_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 19
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Primary visual cortex",
+      "region_id": "v1",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 15
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Visual area V2",
+      "region_id": "v2",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Visual area V4",
+      "region_id": "v4",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Visual cortex",
+      "region_id": "visual_cortex",
+      "status": "verified",
+      "system": "cortical",
+      "verified_record_count": 29
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Hippocampal CA1",
+      "region_id": "ca1",
+      "status": "verified",
+      "system": "hippocampal_formation",
+      "verified_record_count": 12
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Hippocampal CA3",
+      "region_id": "ca3",
+      "status": "verified",
+      "system": "hippocampal_formation",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dentate gyrus",
+      "region_id": "dentate_gyrus",
+      "status": "verified",
+      "system": "hippocampal_formation",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Hippocampus",
+      "region_id": "hippocampus",
+      "status": "verified",
+      "system": "hippocampal_formation",
+      "verified_record_count": 31
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Subiculum",
+      "region_id": "subiculum",
+      "status": "verified",
+      "system": "hippocampal_formation",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Hypothalamus",
+      "region_id": "hypothalamus",
+      "status": "verified",
+      "system": "hypothalamus",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Olfactory bulb",
+      "region_id": "olfactory_bulb",
+      "status": "verified",
+      "system": "olfactory",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Spinal cord",
+      "region_id": "spinal_cord",
+      "status": "verified",
+      "system": "spinal_cord",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Lateral geniculate nucleus",
+      "region_id": "lateral_geniculate_nucleus",
+      "status": "verified",
+      "system": "thalamus",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Thalamus",
+      "region_id": "thalamus",
+      "status": "verified",
+      "system": "thalamus",
+      "verified_record_count": 9
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Retina",
+      "region_id": "retina",
+      "status": "verified",
+      "system": "visual_periphery",
+      "verified_record_count": 2
+    }
+  ],
+  "by_modality": {
+    "audio": {
+      "hippocampus": 1,
+      "motor_cortex": 1,
+      "parietal_cortex": 1,
+      "temporal_cortex": 1,
+      "visual_cortex": 1
+    },
+    "behavior_video": {
+      "acc": 2,
+      "amygdala": 3,
+      "striatum": 2
+    },
+    "behavioral": {
+      "acc": 1,
+      "amygdala": 1,
+      "brainstem": 3,
+      "ca1": 8,
+      "ca3": 2,
+      "cerebellum": 1,
+      "dentate_gyrus": 1,
+      "dorsal_striatum": 1,
+      "dorsolateral_striatum": 1,
+      "entorhinal_cortex": 2,
+      "hippocampus": 14,
+      "hypothalamus": 3,
+      "it": 7,
+      "medial_entorhinal_cortex": 2,
+      "motor_cortex": 10,
+      "mpfc": 2,
+      "neocortex": 2,
+      "nucleus_accumbens": 4,
+      "ofc": 1,
+      "parietal_cortex": 1,
+      "pmd": 1,
+      "posterior_parietal_cortex": 2,
+      "prefrontal_cortex": 4,
+      "premotor_cortex": 3,
+      "retrosplenial_cortex": 3,
+      "septum": 3,
+      "somatosensory_area_2": 1,
+      "somatosensory_cortex": 5,
+      "striatum": 7,
+      "subiculum": 1,
+      "superior_colliculus": 1,
+      "temporal_cortex": 2,
+      "temporal_lobe": 1,
+      "thalamus": 4,
+      "v1": 6,
+      "ventral_striatum": 4,
+      "visual_cortex": 7,
+      "vta": 3
+    },
+    "calcium_imaging": {
+      "acc": 1,
+      "brainstem": 1,
+      "ca1": 2,
+      "cerebellum": 1,
+      "dorsal_striatum": 1,
+      "dorsolateral_striatum": 1,
+      "hippocampus": 2,
+      "it": 6,
+      "motor_cortex": 3,
+      "mpfc": 1,
+      "neocortex": 4,
+      "nucleus_accumbens": 4,
+      "ofc": 1,
+      "olfactory_bulb": 2,
+      "parietal_cortex": 1,
+      "piriform_cortex": 2,
+      "posterior_parietal_cortex": 1,
+      "prefrontal_cortex": 2,
+      "premotor_cortex": 1,
+      "retina": 1,
+      "retrosplenial_cortex": 3,
+      "striatum": 6,
+      "thalamus": 1,
+      "v1": 12,
+      "v2": 2,
+      "v4": 1,
+      "ventral_striatum": 4,
+      "visual_cortex": 15,
+      "vta": 3
+    },
+    "ecog": {
+      "motor_cortex": 2,
+      "somatosensory_cortex": 2
+    },
+    "eeg": {
+      "acc": 6,
+      "amygdala": 3,
+      "auditory_cortex": 2,
+      "brainstem": 1,
+      "cerebellum": 1,
+      "entorhinal_cortex": 1,
+      "hippocampus": 4,
+      "it": 1,
+      "motor_cortex": 3,
+      "premotor_cortex": 2,
+      "temporal_cortex": 2,
+      "temporal_lobe": 1,
+      "visual_cortex": 3
+    },
+    "emg": {
+      "ca1": 1,
+      "hippocampus": 1
+    },
+    "events": {
+      "spinal_cord": 1
+    },
+    "extracellular_ephys": {
+      "acc": 1,
+      "amygdala": 4,
+      "basolateral_amygdala": 1,
+      "brainstem": 3,
+      "ca1": 8,
+      "ca3": 2,
+      "cerebellum": 3,
+      "dentate_gyrus": 1,
+      "dmfc": 1,
+      "entorhinal_cortex": 3,
+      "hippocampus": 21,
+      "hypothalamus": 4,
+      "inferior_colliculus": 1,
+      "it": 10,
+      "lateral_geniculate_nucleus": 1,
+      "medial_entorhinal_cortex": 2,
+      "motor_cortex": 19,
+      "mpfc": 4,
+      "neocortex": 9,
+      "parietal_cortex": 3,
+      "pmd": 5,
+      "posterior_parietal_cortex": 2,
+      "prefrontal_cortex": 7,
+      "premotor_cortex": 9,
+      "retina": 1,
+      "septum": 4,
+      "somatosensory_area_2": 1,
+      "somatosensory_cortex": 11,
+      "spinal_cord": 5,
+      "striatum": 2,
+      "subiculum": 1,
+      "superior_colliculus": 3,
+      "temporal_cortex": 4,
+      "temporal_lobe": 4,
+      "thalamus": 8,
+      "v1": 2,
+      "ventral_striatum": 1,
+      "visual_cortex": 6,
+      "vta": 3
+    },
+    "eye_tracking": {
+      "entorhinal_cortex": 1,
+      "hypothalamus": 1,
+      "medial_entorhinal_cortex": 1,
+      "prefrontal_cortex": 1,
+      "v1": 2,
+      "visual_cortex": 2
+    },
+    "fiber_photometry": {
+      "nucleus_accumbens": 1,
+      "striatum": 1,
+      "ventral_striatum": 1
+    },
+    "fmri": {
+      "acc": 20,
+      "amygdala": 5,
+      "auditory_cortex": 4,
+      "brainstem": 1,
+      "default_mode_network": 1,
+      "dlpfc": 8,
+      "hippocampus": 4,
+      "insula": 4,
+      "locus_coeruleus": 2,
+      "motor_cortex": 4,
+      "mpfc": 2,
+      "ofc": 6,
+      "parietal_cortex": 1,
+      "posterior_parietal_cortex": 1,
+      "prefrontal_cortex": 6,
+      "premotor_cortex": 2,
+      "spinal_cord": 2,
+      "striatum": 7,
+      "superior_colliculus": 1,
+      "temporal_cortex": 14,
+      "temporal_lobe": 2,
+      "visual_cortex": 4
+    },
+    "ieeg": {
+      "amygdala": 2,
+      "entorhinal_cortex": 1,
+      "hippocampus": 1,
+      "temporal_cortex": 1,
+      "temporal_lobe": 1
+    },
+    "lfp": {
+      "amygdala": 1,
+      "basolateral_amygdala": 1,
+      "brainstem": 1,
+      "ca1": 8,
+      "ca3": 2,
+      "dentate_gyrus": 1,
+      "entorhinal_cortex": 2,
+      "hippocampus": 18,
+      "hypothalamus": 3,
+      "inferior_colliculus": 1,
+      "it": 5,
+      "lateral_geniculate_nucleus": 1,
+      "medial_entorhinal_cortex": 2,
+      "motor_cortex": 3,
+      "mpfc": 6,
+      "neocortex": 4,
+      "nucleus_accumbens": 1,
+      "ofc": 1,
+      "parietal_cortex": 1,
+      "pmd": 1,
+      "prefrontal_cortex": 8,
+      "premotor_cortex": 2,
+      "retina": 1,
+      "septum": 4,
+      "somatosensory_cortex": 3,
+      "striatum": 1,
+      "subiculum": 1,
+      "superior_colliculus": 1,
+      "temporal_cortex": 1,
+      "temporal_lobe": 1,
+      "thalamus": 2,
+      "v1": 2,
+      "ventral_striatum": 1,
+      "visual_cortex": 6
+    },
+    "meg": {
+      "amygdala": 1,
+      "temporal_cortex": 1
+    },
+    "neuropixels": {
+      "brainstem": 1,
+      "cerebellum": 1,
+      "entorhinal_cortex": 1,
+      "hippocampus": 1,
+      "hypothalamus": 2,
+      "it": 2,
+      "lateral_geniculate_nucleus": 1,
+      "medial_entorhinal_cortex": 1,
+      "neocortex": 3,
+      "prefrontal_cortex": 1,
+      "retina": 1,
+      "striatum": 1,
+      "superior_colliculus": 1,
+      "thalamus": 2,
+      "v1": 1,
+      "visual_cortex": 2
+    },
+    "patch_clamp": {
+      "hippocampus": 1,
+      "it": 1,
+      "motor_cortex": 1,
+      "neocortex": 4,
+      "spinal_cord": 5,
+      "visual_cortex": 1
+    },
+    "patch_seq": {
+      "motor_cortex": 2,
+      "neocortex": 3,
+      "visual_cortex": 1
+    },
+    "pose_tracking": {
+      "brainstem": 1,
+      "cerebellum": 1,
+      "dorsal_striatum": 1,
+      "dorsolateral_striatum": 1,
+      "hippocampus": 1,
+      "hypothalamus": 1,
+      "motor_cortex": 2,
+      "neocortex": 1,
+      "pmd": 1,
+      "premotor_cortex": 2,
+      "somatosensory_cortex": 1,
+      "striatum": 2,
+      "thalamus": 1
+    },
+    "single_cell_rnaseq": {
+      "motor_cortex": 1
+    },
+    "structural_mri": {
+      "spinal_cord": 1
+    }
+  },
+  "by_source": {
+    "dandi": {
+      "acc": 2,
+      "amygdala": 6,
+      "auditory_cortex": 1,
+      "basolateral_amygdala": 2,
+      "brainstem": 7,
+      "ca1": 12,
+      "ca3": 2,
+      "cerebellum": 4,
+      "dentate_gyrus": 1,
+      "dmfc": 1,
+      "dorsal_striatum": 1,
+      "dorsolateral_striatum": 1,
+      "entorhinal_cortex": 3,
+      "globus_pallidus": 1,
+      "hippocampus": 27,
+      "hypothalamus": 4,
+      "inferior_colliculus": 1,
+      "it": 16,
+      "lateral_geniculate_nucleus": 1,
+      "medial_entorhinal_cortex": 2,
+      "motor_cortex": 28,
+      "mpfc": 8,
+      "neocortex": 15,
+      "nucleus_accumbens": 6,
+      "ofc": 2,
+      "olfactory_bulb": 2,
+      "parietal_cortex": 4,
+      "piriform_cortex": 2,
+      "pmd": 7,
+      "posterior_parietal_cortex": 4,
+      "prefrontal_cortex": 13,
+      "premotor_cortex": 12,
+      "retina": 2,
+      "retrosplenial_cortex": 3,
+      "septum": 4,
+      "somatosensory_area_2": 1,
+      "somatosensory_cortex": 13,
+      "spinal_cord": 6,
+      "striatum": 11,
+      "subiculum": 1,
+      "superior_colliculus": 3,
+      "temporal_cortex": 5,
+      "temporal_lobe": 4,
+      "thalamus": 9,
+      "v1": 15,
+      "v2": 2,
+      "v4": 1,
+      "ventral_striatum": 8,
+      "visual_cortex": 25,
+      "vta": 6
+    },
+    "openneuro": {
+      "acc": 16,
+      "amygdala": 1,
+      "auditory_cortex": 5,
+      "brainstem": 1,
+      "cerebellum": 1,
+      "dlpfc": 8,
+      "hippocampus": 4,
+      "insula": 4,
+      "locus_coeruleus": 2,
+      "motor_cortex": 5,
+      "mpfc": 2,
+      "ofc": 6,
+      "parietal_cortex": 1,
+      "posterior_parietal_cortex": 1,
+      "prefrontal_cortex": 6,
+      "premotor_cortex": 2,
+      "spinal_cord": 2,
+      "striatum": 5,
+      "superior_colliculus": 1,
+      "temporal_cortex": 14,
+      "temporal_lobe": 2,
+      "visual_cortex": 4
+    },
+    "spark": {
+      "acc": 8,
+      "amygdala": 5,
+      "brainstem": 1,
+      "default_mode_network": 1,
+      "striatum": 3
+    }
+  },
+  "by_species": {
+    "drosophila": {
+      "it": 2
+    },
+    "human": {
+      "acc": 11,
+      "amygdala": 9,
+      "auditory_cortex": 3,
+      "brainstem": 2,
+      "cerebellum": 1,
+      "default_mode_network": 1,
+      "dlpfc": 1,
+      "entorhinal_cortex": 1,
+      "hippocampus": 6,
+      "insula": 1,
+      "it": 2,
+      "motor_cortex": 10,
+      "mpfc": 1,
+      "neocortex": 4,
+      "nucleus_accumbens": 1,
+      "parietal_cortex": 3,
+      "posterior_parietal_cortex": 2,
+      "prefrontal_cortex": 2,
+      "premotor_cortex": 3,
+      "somatosensory_area_2": 1,
+      "somatosensory_cortex": 5,
+      "striatum": 4,
+      "temporal_cortex": 9,
+      "temporal_lobe": 4,
+      "v1": 1,
+      "ventral_striatum": 1,
+      "visual_cortex": 3
+    },
+    "macaque": {
+      "dmfc": 1,
+      "motor_cortex": 8,
+      "pmd": 6,
+      "prefrontal_cortex": 1,
+      "premotor_cortex": 7,
+      "somatosensory_area_2": 1,
+      "somatosensory_cortex": 1,
+      "v1": 1,
+      "v2": 1,
+      "visual_cortex": 1
+    },
+    "mouse": {
+      "acc": 1,
+      "brainstem": 2,
+      "ca1": 5,
+      "ca3": 1,
+      "cerebellum": 3,
+      "dentate_gyrus": 1,
+      "dorsal_striatum": 1,
+      "dorsolateral_striatum": 1,
+      "entorhinal_cortex": 1,
+      "hippocampus": 9,
+      "hypothalamus": 2,
+      "inferior_colliculus": 1,
+      "it": 7,
+      "lateral_geniculate_nucleus": 1,
+      "medial_entorhinal_cortex": 1,
+      "motor_cortex": 13,
+      "mpfc": 2,
+      "neocortex": 7,
+      "ofc": 1,
+      "olfactory_bulb": 2,
+      "parietal_cortex": 1,
+      "piriform_cortex": 2,
+      "posterior_parietal_cortex": 2,
+      "prefrontal_cortex": 4,
+      "premotor_cortex": 3,
+      "retina": 2,
+      "retrosplenial_cortex": 2,
+      "somatosensory_cortex": 5,
+      "spinal_cord": 5,
+      "striatum": 3,
+      "subiculum": 1,
+      "superior_colliculus": 3,
+      "thalamus": 7,
+      "v1": 12,
+      "v2": 1,
+      "v4": 1,
+      "visual_cortex": 19,
+      "vta": 3
+    },
+    "rat": {
+      "amygdala": 1,
+      "basolateral_amygdala": 1,
+      "brainstem": 1,
+      "ca1": 5,
+      "entorhinal_cortex": 1,
+      "globus_pallidus": 1,
+      "hippocampus": 8,
+      "hypothalamus": 2,
+      "it": 1,
+      "medial_entorhinal_cortex": 1,
+      "mpfc": 4,
+      "neocortex": 1,
+      "parietal_cortex": 1,
+      "prefrontal_cortex": 6,
+      "septum": 2,
+      "somatosensory_cortex": 4,
+      "striatum": 1,
+      "ventral_striatum": 1
+    },
+    "zebrafish": {
+      "brainstem": 1,
+      "it": 1,
+      "nucleus_accumbens": 4,
+      "striatum": 4,
+      "ventral_striatum": 4,
+      "vta": 2
+    }
+  },
+  "candidate_region_mentions": {
+    "barrel_cortex": [
+      "dataset:dandi:000005",
+      "dataset:dandi:000013",
+      "dataset:dandi:000231",
+      "dataset:dandi:000359",
+      "dataset:dandi:000465",
+      "dataset:dandi:000554"
+    ],
+    "basal_forebrain": [
+      "dataset:dandi:000024"
+    ],
+    "cortex": [
+      "dataset:dandi:000005",
+      "dataset:dandi:000006",
+      "dataset:dandi:000007",
+      "dataset:dandi:000008",
+      "dataset:dandi:000010",
+      "dataset:dandi:000011",
+      "dataset:dandi:000013",
+      "dataset:dandi:000015",
+      "dataset:dandi:000016",
+      "dataset:dandi:000019",
+      "dataset:dandi:000020",
+      "dataset:dandi:000023",
+      "dataset:dandi:000026",
+      "dataset:dandi:000028",
+      "dataset:dandi:000035",
+      "dataset:dandi:000036",
+      "dataset:dandi:000037",
+      "dataset:dandi:000039",
+      "dataset:dandi:000041",
+      "dataset:dandi:000049",
+      "dataset:dandi:000050",
+      "dataset:dandi:000053",
+      "dataset:dandi:000055",
+      "dataset:dandi:000060",
+      "dataset:dandi:000065",
+      "dataset:dandi:000067",
+      "dataset:dandi:000070",
+      "dataset:dandi:000109",
+      "dataset:dandi:000121",
+      "dataset:dandi:000122",
+      "dataset:dandi:000125",
+      "dataset:dandi:000127",
+      "dataset:dandi:000128",
+      "dataset:dandi:000129",
+      "dataset:dandi:000130",
+      "dataset:dandi:000138",
+      "dataset:dandi:000139",
+      "dataset:dandi:000140",
+      "dataset:dandi:000147",
+      "dataset:dandi:000166",
+      "dataset:dandi:000167",
+      "dataset:dandi:000168",
+      "dataset:dandi:000172",
+      "dataset:dandi:000173",
+      "dataset:dandi:000206",
+      "dataset:dandi:000207",
+      "dataset:dandi:000210",
+      "dataset:dandi:000211",
+      "dataset:dandi:000218",
+      "dataset:dandi:000221",
+      "dataset:dandi:000223",
+      "dataset:dandi:000231",
+      "dataset:dandi:000232",
+      "dataset:dandi:000233",
+      "dataset:dandi:000239",
+      "dataset:dandi:000248",
+      "dataset:dandi:000249",
+      "dataset:dandi:000252",
+      "dataset:dandi:000253",
+      "dataset:dandi:000292",
+      "dataset:dandi:000293",
+      "dataset:dandi:000297",
+      "dataset:dandi:000336",
+      "dataset:dandi:000339",
+      "dataset:dandi:000341",
+      "dataset:dandi:000347",
+      "dataset:dandi:000348",
+      "dataset:dandi:000359",
+      "dataset:dandi:000362",
+      "dataset:dandi:000363",
+      "dataset:dandi:000364",
+      "dataset:dandi:000397",
+      "dataset:dandi:000398",
+      "dataset:dandi:000401",
+      "dataset:dandi:000402",
+      "dataset:dandi:000404",
+      "dataset:dandi:000447",
+      "dataset:dandi:000451",
+      "dataset:dandi:000454",
+      "dataset:dandi:000457",
+      "dataset:dandi:000458",
+      "dataset:dandi:000463",
+      "dataset:dandi:000465",
+      "dataset:dandi:000469",
+      "dataset:dandi:000473",
+      "dataset:dandi:000480",
+      "dataset:dandi:000481",
+      "dataset:dandi:000482",
+      "dataset:dandi:000483",
+      "dataset:dandi:000488",
+      "dataset:dandi:000491",
+      "dataset:dandi:000535",
+      "dataset:dandi:000554",
+      "dataset:dandi:000563",
+      "dataset:dandi:000574",
+      "dataset:dandi:000575",
+      "dataset:dandi:000579",
+      "dataset:dandi:000582",
+      "dataset:dandi:000617",
+      "dataset:dandi:000640",
+      "dataset:dandi:000785",
+      "dataset:dandi:001371",
+      "dataset:dandi:001550",
+      "dataset:openneuro:ds000105",
+      "dataset:openneuro:ds000109",
+      "dataset:openneuro:ds000116",
+      "dataset:openneuro:ds000117",
+      "dataset:openneuro:ds000119",
+      "dataset:openneuro:ds000210",
+      "dataset:openneuro:ds001105",
+      "dataset:openneuro:ds001145",
+      "dataset:openneuro:ds001345",
+      "dataset:openneuro:ds001439",
+      "dataset:openneuro:ds001722",
+      "dataset:openneuro:ds001740",
+      "dataset:openneuro:ds001762",
+      "dataset:openneuro:ds001847",
+      "dataset:openneuro:ds001921",
+      "dataset:openneuro:ds001923",
+      "dataset:openneuro:ds001927",
+      "dataset:openneuro:ds001942",
+      "dataset:openneuro:ds001971",
+      "dataset:openneuro:ds002076",
+      "dataset:openneuro:ds002155",
+      "dataset:openneuro:ds002218",
+      "dataset:openneuro:ds002236",
+      "dataset:openneuro:ds002241",
+      "dataset:openneuro:ds002322",
+      "dataset:openneuro:ds002336",
+      "dataset:openneuro:ds002338",
+      "dataset:openneuro:ds002358",
+      "dataset:openneuro:ds002366",
+      "dataset:openneuro:ds002382",
+      "dataset:spark:SPARK-BEHAV-001",
+      "dataset:spark:SPARK-EEG-001",
+      "dataset:spark:SPARK-EEG-002",
+      "dataset:spark:SPARK-EYE-001",
+      "dataset:spark:SPARK-FMRI-001",
+      "dataset:spark:SPARK-FMRI-002",
+      "dataset:spark:SPARK-FMRI-003",
+      "dataset:spark:SPARK-FMRI-004",
+      "dataset:spark:SPARK-MULTI-001",
+      "dataset:spark:SPARK-MULTI-002"
+    ],
+    "dorsal_raphe": [
+      "dataset:openneuro:ds001541"
+    ],
+    "insular_cortex": [
+      "dataset:openneuro:ds000133",
+      "dataset:openneuro:ds000140",
+      "dataset:openneuro:ds000208",
+      "dataset:openneuro:ds001928"
+    ],
+    "medial_temporal_lobe": [
+      "dataset:dandi:000207",
+      "dataset:dandi:000469",
+      "dataset:dandi:000574",
+      "dataset:dandi:000575",
+      "dataset:openneuro:ds001439",
+      "dataset:openneuro:ds001722"
+    ],
+    "medulla": [
+      "dataset:dandi:000363"
+    ],
+    "midbrain": [
+      "dataset:dandi:000221",
+      "dataset:dandi:000236",
+      "dataset:dandi:000238",
+      "dataset:dandi:000301",
+      "dataset:dandi:000530"
+    ],
+    "parietal_cortex": [
+      "dataset:dandi:000016",
+      "dataset:openneuro:ds000109"
+    ],
+    "prefrontal_cortex": [
+      "dataset:spark:SPARK-BEHAV-001",
+      "dataset:spark:SPARK-EEG-001",
+      "dataset:spark:SPARK-EEG-002",
+      "dataset:spark:SPARK-EYE-001",
+      "dataset:spark:SPARK-FMRI-001",
+      "dataset:spark:SPARK-FMRI-002",
+      "dataset:spark:SPARK-FMRI-003",
+      "dataset:spark:SPARK-FMRI-004",
+      "dataset:spark:SPARK-MULTI-001",
+      "dataset:spark:SPARK-MULTI-002"
+    ],
+    "ventral_tegmental_area": [
+      "dataset:dandi:000221",
+      "dataset:dandi:000236",
+      "dataset:dandi:000238",
+      "dataset:dandi:000301",
+      "dataset:dandi:000462",
+      "dataset:dandi:000530"
+    ],
+    "visual_cortex": [
+      "dataset:dandi:000210"
+    ],
+    "vpm": [
+      "dataset:dandi:000005"
+    ],
+    "whole_brain": [
+      "dataset:dandi:000350",
+      "dataset:dandi:000409",
+      "dataset:dandi:000541",
+      "dataset:dandi:000565",
+      "dataset:openneuro:ds000234",
+      "dataset:openneuro:ds000235",
+      "dataset:openneuro:ds000236",
+      "dataset:openneuro:ds002168"
+    ]
+  },
+  "missing_region_records": [
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_id": "dataset:dandi:000640",
+      "source": "dandi",
+      "source_id": "000640",
+      "species": [
+        "rat"
+      ],
+      "title": "32-CH Local Field Potential Data During Probabilistic Reversal Learning Task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000004",
+      "source": "dandi",
+      "source_id": "000004",
+      "species": [
+        "human"
+      ],
+      "title": "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_id": "dataset:dandi:000045",
+      "source": "dandi",
+      "source_id": "000045",
+      "species": [
+        "mouse"
+      ],
+      "title": "IBL behavioral data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000678",
+      "source": "dandi",
+      "source_id": "000678",
+      "species": [
+        "mouse"
+      ],
+      "title": "Pupil and movement measurements during mouse auditory and visual discrimination"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "lfp",
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:001079",
+      "source": "dandi",
+      "source_id": "001079",
+      "species": [
+        "mouse"
+      ],
+      "title": "Sharp Wave Ripples in Publicly Available Neuropixels Datasets"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000012",
+      "source": "dandi",
+      "source_id": "000012",
+      "species": [],
+      "title": "Kriegstein2020"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000017",
+      "source": "dandi",
+      "source_id": "000017",
+      "species": [
+        "mouse"
+      ],
+      "title": "Distributed coding of choice, action and engagement across the mouse brain"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000021",
+      "source": "dandi",
+      "source_id": "000021",
+      "species": [
+        "mouse",
+        "human"
+      ],
+      "title": "Allen Institute - Visual Coding - Neuropixels (Brain Observatory 1.1 Stimulus Set)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000022",
+      "source": "dandi",
+      "source_id": "000022",
+      "species": [
+        "mouse",
+        "human"
+      ],
+      "title": "Allen Institute - Visual Coding - Neuropixels (Functional Connectivity Stimulus Set)"
+    },
+    {
+      "candidate_regions": [
+        "basal_forebrain"
+      ],
+      "modalities": [
+        "lfp"
+      ],
+      "record_id": "dataset:dandi:000024",
+      "source": "dandi",
+      "source_id": "000024",
+      "species": [],
+      "title": "LFP & MUA from BF"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000025",
+      "source": "dandi",
+      "source_id": "000025",
+      "species": [],
+      "title": "Example intracellular ephys data from LNMC & BBP"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000027",
+      "source": "dandi",
+      "source_id": "000027",
+      "species": [],
+      "title": "Test dataset for testing dandi-cli."
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000028",
+      "source": "dandi",
+      "source_id": "000028",
+      "species": [],
+      "title": "Simulated cortical Neuropixels recording with ground truth"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000029",
+      "source": "dandi",
+      "source_id": "000029",
+      "species": [],
+      "title": "Test dataset for development purposes"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000030",
+      "source": "dandi",
+      "source_id": "000030",
+      "species": [],
+      "title": "Allen Brain Observatory Neuropixels recording"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000031",
+      "source": "dandi",
+      "source_id": "000031",
+      "species": [],
+      "title": "ABC"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000032",
+      "source": "dandi",
+      "source_id": "000032",
+      "species": [],
+      "title": "Test dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000033",
+      "source": "dandi",
+      "source_id": "000033",
+      "species": [],
+      "title": "Test-2 dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000034",
+      "source": "dandi",
+      "source_id": "000034",
+      "species": [
+        "mouse"
+      ],
+      "title": "SpikeInterface, a unified framework for spike sorting"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000038",
+      "source": "dandi",
+      "source_id": "000038",
+      "species": [],
+      "title": "Testytest"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000040",
+      "source": "dandi",
+      "source_id": "000040",
+      "species": [
+        "mouse"
+      ],
+      "title": "Neuropixels recordings in mouse visual system"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000042",
+      "source": "dandi",
+      "source_id": "000042",
+      "species": [],
+      "title": "Allen Institute Openscope - Meaningful project  - Full movies"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000043",
+      "source": "dandi",
+      "source_id": "000043",
+      "species": [
+        "mouse",
+        "human",
+        "macaque"
+      ],
+      "title": "Human, macaque, and mouse L5 pyramidal neuron physiology"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000046",
+      "source": "dandi",
+      "source_id": "000046",
+      "species": [],
+      "title": "asdf"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000047",
+      "source": "dandi",
+      "source_id": "000047",
+      "species": [],
+      "title": "Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000048",
+      "source": "dandi",
+      "source_id": "000048",
+      "species": [],
+      "title": "Electrical and optical physiology in in vivo population-scale two-photon calcium imaging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000051",
+      "source": "dandi",
+      "source_id": "000051",
+      "species": [],
+      "title": "pons8-yo_16xdownsampled"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000052",
+      "source": "dandi",
+      "source_id": "000052",
+      "species": [],
+      "title": "Pons8-BIDS-16xdownsampled"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000058",
+      "source": "dandi",
+      "source_id": "000058",
+      "species": [],
+      "title": "MITU01 Dataset"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [],
+      "record_id": "dataset:dandi:000060",
+      "source": "dandi",
+      "source_id": "000060",
+      "species": [],
+      "title": "Dataset for Finkelstein, Fontolan et al. \"Attractor dynamics gate cortical information flow during decision-making\""
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000063",
+      "source": "dandi",
+      "source_id": "000063",
+      "species": [
+        "human"
+      ],
+      "title": "UHN_human_heterogeneity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000064",
+      "source": "dandi",
+      "source_id": "000064",
+      "species": [],
+      "title": "Simulation extension example"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000066",
+      "source": "dandi",
+      "source_id": "000066",
+      "species": [
+        "mouse"
+      ],
+      "title": "Allen Mouse Common Coordinate Framework - Average Brain Template"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000068",
+      "source": "dandi",
+      "source_id": "000068",
+      "species": [],
+      "title": "Testing"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000071",
+      "source": "dandi",
+      "source_id": "000071",
+      "species": [],
+      "title": "Brandon's Test Dandiset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000072",
+      "source": "dandi",
+      "source_id": "000072",
+      "species": [],
+      "title": "neural data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000105",
+      "source": "dandi",
+      "source_id": "000105",
+      "species": [],
+      "title": "MGH19-1-021520"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000106",
+      "source": "dandi",
+      "source_id": "000106",
+      "species": [],
+      "title": "Electrophysiology data from simultaneous recordings"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000107",
+      "source": "dandi",
+      "source_id": "000107",
+      "species": [],
+      "title": "IVSCC stimulus sets"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000108",
+      "source": "dandi",
+      "source_id": "000108",
+      "species": [
+        "human"
+      ],
+      "title": "Light sheet imaging of the human brain"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000111",
+      "source": "dandi",
+      "source_id": "000111",
+      "species": [],
+      "title": "ZZZz"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000112",
+      "source": "dandi",
+      "source_id": "000112",
+      "species": [],
+      "title": "Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000114",
+      "source": "dandi",
+      "source_id": "000114",
+      "species": [],
+      "title": "Oxytocin neurons enable social transmission of maternal behaviour"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000116",
+      "source": "dandi",
+      "source_id": "000116",
+      "species": [],
+      "title": "Test_upload_LiZhang_SpinalCord"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000118",
+      "source": "dandi",
+      "source_id": "000118",
+      "species": [],
+      "title": "user test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000120",
+      "source": "dandi",
+      "source_id": "000120",
+      "species": [],
+      "title": "test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000126",
+      "source": "dandi",
+      "source_id": "000126",
+      "species": [
+        "mouse"
+      ],
+      "title": "NWB API Test Data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000131",
+      "source": "dandi",
+      "source_id": "000131",
+      "species": [],
+      "title": "Nestdesktop PK"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000132",
+      "source": "dandi",
+      "source_id": "000132",
+      "species": [],
+      "title": "Neurex Summer School"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000133",
+      "source": "dandi",
+      "source_id": "000133",
+      "species": [],
+      "title": "nest dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000134",
+      "source": "dandi",
+      "source_id": "000134",
+      "species": [],
+      "title": "neurex"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000135",
+      "source": "dandi",
+      "source_id": "000135",
+      "species": [],
+      "title": "Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000136",
+      "source": "dandi",
+      "source_id": "000136",
+      "species": [],
+      "title": "NEST"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000137",
+      "source": "dandi",
+      "source_id": "000137",
+      "species": [],
+      "title": "Neurex Summer School 2021"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000141",
+      "source": "dandi",
+      "source_id": "000141",
+      "species": [],
+      "title": "TravelingDirection_2021"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000143",
+      "source": "dandi",
+      "source_id": "000143",
+      "species": [
+        "mouse",
+        "human"
+      ],
+      "title": "IHC Validation Data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000144",
+      "source": "dandi",
+      "source_id": "000144",
+      "species": [],
+      "title": "croat-test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000145",
+      "source": "dandi",
+      "source_id": "000145",
+      "species": [],
+      "title": "Test 2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000146",
+      "source": "dandi",
+      "source_id": "000146",
+      "species": [],
+      "title": "NYB"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000149",
+      "source": "dandi",
+      "source_id": "000149",
+      "species": [
+        "mouse"
+      ],
+      "title": "IBL ephys data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000150",
+      "source": "dandi",
+      "source_id": "000150",
+      "species": [],
+      "title": "test_release_openscope"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000151",
+      "source": "dandi",
+      "source_id": "000151",
+      "species": [],
+      "title": "OpenScope_Credit_assignement_raw_test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000153",
+      "source": "dandi",
+      "source_id": "000153",
+      "species": [
+        "human"
+      ],
+      "title": "IEDs"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000154",
+      "source": "dandi",
+      "source_id": "000154",
+      "species": [],
+      "title": "test dandi workshop"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000155",
+      "source": "dandi",
+      "source_id": "000155",
+      "species": [],
+      "title": "dandi workshop djd"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000156",
+      "source": "dandi",
+      "source_id": "000156",
+      "species": [],
+      "title": "dandi workshop to be deleted"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000157",
+      "source": "dandi",
+      "source_id": "000157",
+      "species": [],
+      "title": "xiaoai"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000158",
+      "source": "dandi",
+      "source_id": "000158",
+      "species": [],
+      "title": "My Project"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000159",
+      "source": "dandi",
+      "source_id": "000159",
+      "species": [],
+      "title": "dandi workshop"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000160",
+      "source": "dandi",
+      "source_id": "000160",
+      "species": [],
+      "title": "Test_G"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000161",
+      "source": "dandi",
+      "source_id": "000161",
+      "species": [],
+      "title": "VD Dandi Workshop Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000162",
+      "source": "dandi",
+      "source_id": "000162",
+      "species": [],
+      "title": "Shin test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000163",
+      "source": "dandi",
+      "source_id": "000163",
+      "species": [],
+      "title": "xx"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000164",
+      "source": "dandi",
+      "source_id": "000164",
+      "species": [],
+      "title": "test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "neuropixels"
+      ],
+      "record_id": "dataset:dandi:000169",
+      "source": "dandi",
+      "source_id": "000169",
+      "species": [
+        "mouse"
+      ],
+      "title": "Milti-probe Neuropixels recordings in mouse visual system (additional data)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000170",
+      "source": "dandi",
+      "source_id": "000170",
+      "species": [],
+      "title": "CRACK"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000171",
+      "source": "dandi",
+      "source_id": "000171",
+      "species": [],
+      "title": "Test 1"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000172",
+      "source": "dandi",
+      "source_id": "000172",
+      "species": [
+        "mouse"
+      ],
+      "title": "UHN whole-cell excitability recordings from mouse cortical neurons"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000208",
+      "source": "dandi",
+      "source_id": "000208",
+      "species": [
+        "mouse"
+      ],
+      "title": "UHN_mouse_L5_patchclamp"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000209",
+      "source": "dandi",
+      "source_id": "000209",
+      "species": [
+        "human"
+      ],
+      "title": "20211223_AIBS_Patchseq_human"
+    },
+    {
+      "candidate_regions": [
+        "cortex",
+        "visual_cortex"
+      ],
+      "modalities": [],
+      "record_id": "dataset:dandi:000210",
+      "source": "dandi",
+      "source_id": "000210",
+      "species": [
+        "mouse"
+      ],
+      "title": "Visual cortical activity in mice performing naturalistic virtual foraging task"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000211",
+      "source": "dandi",
+      "source_id": "000211",
+      "species": [
+        "human"
+      ],
+      "title": "UHN whole-cell excitability recordings from human cortical neurons"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral"
+      ],
+      "record_id": "dataset:dandi:000212",
+      "source": "dandi",
+      "source_id": "000212",
+      "species": [
+        "drosophila"
+      ],
+      "title": "Tracking of Drosophila during egg-laying decisions"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000214",
+      "source": "dandi",
+      "source_id": "000214",
+      "species": [],
+      "title": "Jan_2022_DANDI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000215",
+      "source": "dandi",
+      "source_id": "000215",
+      "species": [],
+      "title": "1U01MH116990-01_Jan_2022"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000216",
+      "source": "dandi",
+      "source_id": "000216",
+      "species": [],
+      "title": "1U01MH116990-01_Jan_2022"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000217",
+      "source": "dandi",
+      "source_id": "000217",
+      "species": [
+        "mouse"
+      ],
+      "title": "Sniff-synchronized, gradient-guided olfactory search by freely moving mice -- Behavioral Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000222",
+      "source": "dandi",
+      "source_id": "000222",
+      "species": [],
+      "title": "O'Hare et al 2022"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000225",
+      "source": "dandi",
+      "source_id": "000225",
+      "species": [],
+      "title": "Neural and behavioral"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000226",
+      "source": "dandi",
+      "source_id": "000226",
+      "species": [
+        "mouse"
+      ],
+      "title": "Active Touch and Self-Motion Encoding by Merkel Cell-Associated Afferents"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000227",
+      "source": "dandi",
+      "source_id": "000227",
+      "species": [
+        "drosophila"
+      ],
+      "title": "Electrophysiological recordings in protein hunger neurons of Drosophila Melanogaster"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000228",
+      "source": "dandi",
+      "source_id": "000228",
+      "species": [
+        "human"
+      ],
+      "title": "20220330_AIBS_Patchseq_human"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000229",
+      "source": "dandi",
+      "source_id": "000229",
+      "species": [],
+      "title": "xxx"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_id": "dataset:dandi:000230",
+      "source": "dandi",
+      "source_id": "000230",
+      "species": [],
+      "title": "Jacobsen 2022"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000246",
+      "source": "dandi",
+      "source_id": "000246",
+      "species": [],
+      "title": "developing CaMPARI3"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000247",
+      "source": "dandi",
+      "source_id": "000247",
+      "species": [
+        "drosophila"
+      ],
+      "title": "Calcium imaging of egg-laying related neurons in head-fixed Drosophila"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral"
+      ],
+      "record_id": "dataset:dandi:000250",
+      "source": "dandi",
+      "source_id": "000250",
+      "species": [
+        "drosophila"
+      ],
+      "title": "High-resolution tracking of Drosophila during egg-laying"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000251",
+      "source": "dandi",
+      "source_id": "000251",
+      "species": [],
+      "title": "A Unified Framework for Dopamine Signals across Timescales"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000255",
+      "source": "dandi",
+      "source_id": "000255",
+      "species": [
+        "human"
+      ],
+      "title": "A unified 3D map of microscopic architecture and MRI of the human brain"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000288",
+      "source": "dandi",
+      "source_id": "000288",
+      "species": [
+        "human"
+      ],
+      "title": "20220630_AIBS_Patchseq_human"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000290",
+      "source": "dandi",
+      "source_id": "000290",
+      "species": [],
+      "title": "Diaz-Torga_Sfig1"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000292",
+      "source": "dandi",
+      "source_id": "000292",
+      "species": [
+        "mouse"
+      ],
+      "title": "UHN whole-cell patch-clamp excitability recordings from mouse cortical neurons"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000293",
+      "source": "dandi",
+      "source_id": "000293",
+      "species": [
+        "human"
+      ],
+      "title": "UHN whole-cell patch-clamp excitability recordings from human cortical neurons"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000297",
+      "source": "dandi",
+      "source_id": "000297",
+      "species": [
+        "human"
+      ],
+      "title": "UHN whole-cell patch-clamp excitability recordings from human cortical neurons"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000298",
+      "source": "dandi",
+      "source_id": "000298",
+      "species": [],
+      "title": "Brain_stim_and_FSCV_and_ensemble_recording_anesthetized"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000299",
+      "source": "dandi",
+      "source_id": "000299",
+      "species": [],
+      "title": "Stephen Test Set"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000302",
+      "source": "dandi",
+      "source_id": "000302",
+      "species": [],
+      "title": "Habenular neurophysiology"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000335",
+      "source": "dandi",
+      "source_id": "000335",
+      "species": [],
+      "title": "My Test Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000337",
+      "source": "dandi",
+      "source_id": "000337",
+      "species": [
+        "human"
+      ],
+      "title": "20220917_AIBS_Patchseq_human"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000338",
+      "source": "dandi",
+      "source_id": "000338",
+      "species": [],
+      "title": "groupweight BMI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000340",
+      "source": "dandi",
+      "source_id": "000340",
+      "species": [],
+      "title": "Allen Institute Openscope - Credit Assignment project with stimuli templates"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000343",
+      "source": "dandi",
+      "source_id": "000343",
+      "species": [],
+      "title": "da_network_2022"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000346",
+      "source": "dandi",
+      "source_id": "000346",
+      "species": [],
+      "title": "Test dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000349",
+      "source": "dandi",
+      "source_id": "000349",
+      "species": [],
+      "title": "HMV-test"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000398",
+      "source": "dandi",
+      "source_id": "000398",
+      "species": [
+        "mouse",
+        "rat"
+      ],
+      "title": "Scalable Thousand Channel Penetrating Microneedle Arrays on Flex for Multimodal and Large Area Coverage BrainMachine Interfaces"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000399",
+      "source": "dandi",
+      "source_id": "000399",
+      "species": [],
+      "title": "All-optical physiology resolves a synaptic basis for behavioral time scale plasticity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000406",
+      "source": "dandi",
+      "source_id": "000406",
+      "species": [],
+      "title": "Spyglass sample data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000408",
+      "source": "dandi",
+      "source_id": "000408",
+      "species": [],
+      "title": "In vitro electrochemical impedance spectroscopy data - microelectrode arrays"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000445",
+      "source": "dandi",
+      "source_id": "000445",
+      "species": [],
+      "title": "EDTest"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:dandi:000448",
+      "source": "dandi",
+      "source_id": "000448",
+      "species": [],
+      "title": "Time kinetics of the membrane potential at the cathode- and anode-facing poles of a cell induced by a train of 5 pulses at 833 kHz"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000449",
+      "source": "dandi",
+      "source_id": "000449",
+      "species": [],
+      "title": "Moving_C_Elegans_Corrected_Voleti_2019"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000452",
+      "source": "dandi",
+      "source_id": "000452",
+      "species": [],
+      "title": "Parabrachial"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "patch_clamp"
+      ],
+      "record_id": "dataset:dandi:000456",
+      "source": "dandi",
+      "source_id": "000456",
+      "species": [
+        "rat",
+        "human"
+      ],
+      "title": "Accelerated signal propagation speed in human neocortical microcircuits"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000461",
+      "source": "dandi",
+      "source_id": "000461",
+      "species": [],
+      "title": "Cohen Tickertapes Exploratory Data 1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000466",
+      "source": "dandi",
+      "source_id": "000466",
+      "species": [],
+      "title": "Optical Recording Exploratory Data 1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000467",
+      "source": "dandi",
+      "source_id": "000467",
+      "species": [],
+      "title": "Sparse and stereotyped encoding implicates a core glomerulus for ant alarm behavior"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000468",
+      "source": "dandi",
+      "source_id": "000468",
+      "species": [
+        "human"
+      ],
+      "title": "Human single-neuron activity during the Treasure Hunt spatial navigation task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000470",
+      "source": "dandi",
+      "source_id": "000470",
+      "species": [],
+      "title": "Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000472",
+      "source": "dandi",
+      "source_id": "000472",
+      "species": [
+        "c_elegans",
+        "human"
+      ],
+      "title": "NeuroPAL volumetric images"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000474",
+      "source": "dandi",
+      "source_id": "000474",
+      "species": [],
+      "title": "EIS DATA"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral"
+      ],
+      "record_id": "dataset:dandi:000485",
+      "source": "dandi",
+      "source_id": "000485",
+      "species": [
+        "zebrafish"
+      ],
+      "title": "Thermal Plaid Experiments"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000486",
+      "source": "dandi",
+      "source_id": "000486",
+      "species": [
+        "zebrafish"
+      ],
+      "title": "Thermal Plaid Replay Experiments"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000487",
+      "source": "dandi",
+      "source_id": "000487",
+      "species": [],
+      "title": "Allen Institute Openscope - Tmp"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000489",
+      "source": "dandi",
+      "source_id": "000489",
+      "species": [],
+      "title": "The impact of the second phase amplitude (% to the first phase) on the electroporation efficiency (measured as YP emission)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000490",
+      "source": "dandi",
+      "source_id": "000490",
+      "species": [],
+      "title": "test set"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000492",
+      "source": "dandi",
+      "source_id": "000492",
+      "species": [
+        "human"
+      ],
+      "title": "Accelerated signal propagation speed in human neocortical microcircuits"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000529",
+      "source": "dandi",
+      "source_id": "000529",
+      "species": [],
+      "title": "Test 2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000532",
+      "source": "dandi",
+      "source_id": "000532",
+      "species": [],
+      "title": "Allen Institute Openscope - Tmp 2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000534",
+      "source": "dandi",
+      "source_id": "000534",
+      "species": [],
+      "title": "to_be_deleted"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000536",
+      "source": "dandi",
+      "source_id": "000536",
+      "species": [],
+      "title": "test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000537",
+      "source": "dandi",
+      "source_id": "000537",
+      "species": [
+        "human"
+      ],
+      "title": "Scaling of GEVI Fluorescence with 1P and 2P Illumination"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000538",
+      "source": "dandi",
+      "source_id": "000538",
+      "species": [],
+      "title": "Comparing the 1P and 2P Voltage Contrast of JEDI2P and Voltron2_JF525"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000539",
+      "source": "dandi",
+      "source_id": "000539",
+      "species": [],
+      "title": "EDtest2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral"
+      ],
+      "record_id": "dataset:dandi:000540",
+      "source": "dandi",
+      "source_id": "000540",
+      "species": [
+        "human",
+        "rat"
+      ],
+      "title": "Dataset for: A change in behavioral state switches the pattern of motor output that underlies rhythmic head and orofacial movements"
+    },
+    {
+      "candidate_regions": [
+        "whole_brain"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000541",
+      "source": "dandi",
+      "source_id": "000541",
+      "species": [
+        "c_elegans"
+      ],
+      "title": "NeuroPAL Microfluidic Chip Images and GCaMP activity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000543",
+      "source": "dandi",
+      "source_id": "000543",
+      "species": [],
+      "title": "Test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000544",
+      "source": "dandi",
+      "source_id": "000544",
+      "species": [],
+      "title": "Test Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000545",
+      "source": "dandi",
+      "source_id": "000545",
+      "species": [],
+      "title": "Test set"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000547",
+      "source": "dandi",
+      "source_id": "000547",
+      "species": [
+        "mouse"
+      ],
+      "title": "Perivascular Pumping of Cerebrospinal Fluid in the Brain with a Valve Mechanism"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000548",
+      "source": "dandi",
+      "source_id": "000548",
+      "species": [],
+      "title": "Effect of the number of pulses on electroporation by unipolar and 50 % bipolar pulses"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000549",
+      "source": "dandi",
+      "source_id": "000549",
+      "species": [],
+      "title": "Effect of the pulse duration on electroporation by unipolar and 50% bipolar pulses"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000550",
+      "source": "dandi",
+      "source_id": "000550",
+      "species": [],
+      "title": "Pulse repetition rate"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000556",
+      "source": "dandi",
+      "source_id": "000556",
+      "species": [],
+      "title": "First set"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000557",
+      "source": "dandi",
+      "source_id": "000557",
+      "species": [
+        "human"
+      ],
+      "title": "Human brain mapping with multithousand-channel PtNRGrids resolves spatiotemporal dynamics"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000560",
+      "source": "dandi",
+      "source_id": "000560",
+      "species": [
+        "drosophila"
+      ],
+      "title": "Calcium imaging of odor responses in the fruit fly mushroom body"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000564",
+      "source": "dandi",
+      "source_id": "000564",
+      "species": [],
+      "title": "microwave neuromodulation"
+    },
+    {
+      "candidate_regions": [
+        "whole_brain"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000565",
+      "source": "dandi",
+      "source_id": "000565",
+      "species": [
+        "c_elegans"
+      ],
+      "title": "C. elegans whole-brain neuroPAL and immobilized calcium imaging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dataset:dandi:000566",
+      "source": "dandi",
+      "source_id": "000566",
+      "species": [],
+      "title": "ASAP4 data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000567",
+      "source": "dandi",
+      "source_id": "000567",
+      "species": [],
+      "title": "Tested"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000569",
+      "source": "dandi",
+      "source_id": "000569",
+      "species": [],
+      "title": "20230630_AIBS_Patchseq_nonhuman_primate"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_id": "dataset:dandi:000570",
+      "source": "dandi",
+      "source_id": "000570",
+      "species": [
+        "human"
+      ],
+      "title": "20230630_AIBS_Patchseq_human"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000571",
+      "source": "dandi",
+      "source_id": "000571",
+      "species": [
+        "human"
+      ],
+      "title": "Intracranial recordings using BCI2000 and the CorTec BrainInterchange"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:dandi:000577",
+      "source": "dandi",
+      "source_id": "000577",
+      "species": [
+        "human"
+      ],
+      "title": "Emergence of Agency in Human Infants"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dataset:dandi:000615",
+      "source": "dandi",
+      "source_id": "000615",
+      "species": [],
+      "title": "A Novel Neuropathic Pain Treatment: Achieving Neuronal Inhibition with a Splti Ring Resonator"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000001",
+      "source": "openneuro",
+      "source_id": "ds000001",
+      "species": [],
+      "title": "Balloon Analog Risk-taking Task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000002",
+      "source": "openneuro",
+      "source_id": "ds000002",
+      "species": [],
+      "title": "Classification learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000003",
+      "source": "openneuro",
+      "source_id": "ds000003",
+      "species": [],
+      "title": "Rhyme judgment"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000005",
+      "source": "openneuro",
+      "source_id": "ds000005",
+      "species": [],
+      "title": "Mixed-gambles task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000006",
+      "source": "openneuro",
+      "source_id": "ds000006",
+      "species": [],
+      "title": "ds000006"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000011",
+      "source": "openneuro",
+      "source_id": "ds000011",
+      "species": [],
+      "title": "Classification learning and tone-counting"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000051",
+      "source": "openneuro",
+      "source_id": "ds000051",
+      "species": [],
+      "title": "Cross-language repetition priming"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000052",
+      "source": "openneuro",
+      "source_id": "ds000052",
+      "species": [],
+      "title": "Classification learning and reversal"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000101",
+      "source": "openneuro",
+      "source_id": "ds000101",
+      "species": [],
+      "title": "Simon task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000107",
+      "source": "openneuro",
+      "source_id": "ds000107",
+      "species": [],
+      "title": "Word and object processing"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000110",
+      "source": "openneuro",
+      "source_id": "ds000110",
+      "species": [],
+      "title": "Incidental encoding task (Posner Cueing Paradigm)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000115",
+      "source": "openneuro",
+      "source_id": "ds000115",
+      "species": [],
+      "title": "Working memory in healthy and schizophrenic individuals"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000017",
+      "source": "openneuro",
+      "source_id": "ds000017",
+      "species": [],
+      "title": "ds000017"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000122",
+      "source": "openneuro",
+      "source_id": "ds000122",
+      "species": [],
+      "title": "Task-related concurrent but opposite modulations of overlapping functional networks as revealed by spatial ICA"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000148",
+      "source": "openneuro",
+      "source_id": "ds000148",
+      "species": [],
+      "title": "Who can afford self-control? The neural efficiency mechanism explains effective self-regulation of behavior"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000009",
+      "source": "openneuro",
+      "source_id": "ds000009",
+      "species": [],
+      "title": "The generality of self-control"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001021",
+      "source": "openneuro",
+      "source_id": "ds001021",
+      "species": [],
+      "title": "NKI-sample"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001037",
+      "source": "openneuro",
+      "source_id": "ds001037",
+      "species": [],
+      "title": "The brain of Chris"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:openneuro:ds001107",
+      "source": "openneuro",
+      "source_id": "ds001107",
+      "species": [],
+      "title": "ds001107"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "audio",
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001110",
+      "source": "openneuro",
+      "source_id": "ds001110",
+      "species": [],
+      "title": "Sherlock_Merlin"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001131",
+      "source": "openneuro",
+      "source_id": "ds001131",
+      "species": [],
+      "title": "Milky-Vodka"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001132",
+      "source": "openneuro",
+      "source_id": "ds001132",
+      "species": [],
+      "title": "Sherlock"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001168",
+      "source": "openneuro",
+      "source_id": "ds001168",
+      "species": [],
+      "title": "A high resolution 7-Tesla resting-state fMRI test-retest dataset with cognitive and physiological measures"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001178",
+      "source": "openneuro",
+      "source_id": "ds001178",
+      "species": [],
+      "title": "Example MR artifacts"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001218",
+      "source": "openneuro",
+      "source_id": "ds001218",
+      "species": [],
+      "title": "State representation pictures"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001226",
+      "source": "openneuro",
+      "source_id": "ds001226",
+      "species": [],
+      "title": "BTC_preop"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001228",
+      "source": "openneuro",
+      "source_id": "ds001228",
+      "species": [],
+      "title": "Decoding intentions of self and others"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001229",
+      "source": "openneuro",
+      "source_id": "ds001229",
+      "species": [],
+      "title": "Neural Evidence of the Strategic Choice Between Working Memory and Episodic Memory in Prospective Remembering."
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001232",
+      "source": "openneuro",
+      "source_id": "ds001232",
+      "species": [],
+      "title": "Competition between items in working memory leads to forgetting"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001233",
+      "source": "openneuro",
+      "source_id": "ds001233",
+      "species": [],
+      "title": "singleFingerRSA"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001235",
+      "source": "openneuro",
+      "source_id": "ds001235",
+      "species": [
+        "human"
+      ],
+      "title": "Human-Object Interaction"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001241",
+      "source": "openneuro",
+      "source_id": "ds001241",
+      "species": [],
+      "title": "OLVSL_ Object-location visual statistical learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001246",
+      "source": "openneuro",
+      "source_id": "ds001246",
+      "species": [],
+      "title": "Generic Object Decoding (fMRI on ImageNet)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001247",
+      "source": "openneuro",
+      "source_id": "ds001247",
+      "species": [],
+      "title": "sports_betting_study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001293",
+      "source": "openneuro",
+      "source_id": "ds001293",
+      "species": [],
+      "title": "Multi-resolution 7T fMRI data on the representation of visual orientation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001297",
+      "source": "openneuro",
+      "source_id": "ds001297",
+      "species": [],
+      "title": "Personally familiar faces"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001299",
+      "source": "openneuro",
+      "source_id": "ds001299",
+      "species": [],
+      "title": "NumberlineMarking"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001302",
+      "source": "openneuro",
+      "source_id": "ds001302",
+      "species": [],
+      "title": "Inverse Base Rate"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000217",
+      "source": "openneuro",
+      "source_id": "ds000217",
+      "species": [],
+      "title": "Route Learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000241",
+      "source": "openneuro",
+      "source_id": "ds000241",
+      "species": [],
+      "title": "AK6"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000232",
+      "source": "openneuro",
+      "source_id": "ds000232",
+      "species": [],
+      "title": "Adjudicating between face-coding models with individual-face fMRI responses"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000256",
+      "source": "openneuro",
+      "source_id": "ds000256",
+      "species": [],
+      "title": "Behavioral interventions for reducing head motion during MRI scans in children"
+    },
+    {
+      "candidate_regions": [
+        "whole_brain"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000236",
+      "source": "openneuro",
+      "source_id": "ds000236",
+      "species": [],
+      "title": "Whole-brain background-suppressed pCASL MRI with 1D-accelerated 3D RARE Stack-Of-Spirals Readout- Dataset 3"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000174",
+      "source": "openneuro",
+      "source_id": "ds000174",
+      "species": [],
+      "title": "T1-weighted structural MRI study of cannabis users at baseline and 3 years follow up"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000203",
+      "source": "openneuro",
+      "source_id": "ds000203",
+      "species": [],
+      "title": "Visual imagery and false memory for pictures"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000255",
+      "source": "openneuro",
+      "source_id": "ds000255",
+      "species": [],
+      "title": "Visual image reconstruction"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000157",
+      "source": "openneuro",
+      "source_id": "ds000157",
+      "species": [],
+      "title": "Block design food and nonfood picture viewing task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000216",
+      "source": "openneuro",
+      "source_id": "ds000216",
+      "species": [
+        "human"
+      ],
+      "title": "Multiband Multi-Echo Imaging of Simultaneous Oxygenation and Flow Timeseries for Resting State Connectivity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000202",
+      "source": "openneuro",
+      "source_id": "ds000202",
+      "species": [],
+      "title": "The heterogeneity in retrieved relations between the personality trait 'Harm avoidance' and gray matter volumes due to variations in the VBM and ROI labeling processing settings"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000249",
+      "source": "openneuro",
+      "source_id": "ds000249",
+      "species": [
+        "human"
+      ],
+      "title": "Value generalization in human avoidance learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000240",
+      "source": "openneuro",
+      "source_id": "ds000240",
+      "species": [],
+      "title": "Resting State Perfusion in Healthy Aging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000258",
+      "source": "openneuro",
+      "source_id": "ds000258",
+      "species": [],
+      "title": "Multi-echo Cambridge"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000231",
+      "source": "openneuro",
+      "source_id": "ds000231",
+      "species": [
+        "human"
+      ],
+      "title": "Integration of sweet taste and metabolism determines carbohydrate reward-study 3"
+    },
+    {
+      "candidate_regions": [
+        "whole_brain"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000235",
+      "source": "openneuro",
+      "source_id": "ds000235",
+      "species": [],
+      "title": "Whole-brain background-suppressed pCASL MRI with 1D-accelerated 3D RARE Stack-Of-Spirals Readout- Dataset 2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000219",
+      "source": "openneuro",
+      "source_id": "ds000219",
+      "species": [],
+      "title": "Flavour Pleasantness (Regular Products)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000200",
+      "source": "openneuro",
+      "source_id": "ds000200",
+      "species": [],
+      "title": "Pre-adolescents Exposure to Manganese"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000218",
+      "source": "openneuro",
+      "source_id": "ds000218",
+      "species": [],
+      "title": "Flavour Pleasantness (Oral Nutritional Supplements)"
+    },
+    {
+      "candidate_regions": [
+        "whole_brain"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000234",
+      "source": "openneuro",
+      "source_id": "ds000234",
+      "species": [],
+      "title": "Whole-brain background-suppressed pCASL MRI with 1D-accelerated 3D RARE Stack-Of-Spirals Readout- Dataset 1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000158",
+      "source": "openneuro",
+      "source_id": "ds000158",
+      "species": [
+        "human"
+      ],
+      "title": "The human Voice Areas: spatial organisation and inter-individual variability in temporal and extra-temporal cortices"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000221",
+      "source": "openneuro",
+      "source_id": "ds000221",
+      "species": [],
+      "title": "MPI-Leipzig_Mind-Brain-Body"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000144",
+      "source": "openneuro",
+      "source_id": "ds000144",
+      "species": [],
+      "title": "Preschool Anxiety Disorders"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000168",
+      "source": "openneuro",
+      "source_id": "ds000168",
+      "species": [],
+      "title": "Offline Processing in Associative Learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000053",
+      "source": "openneuro",
+      "source_id": "ds000053",
+      "species": [],
+      "title": "Training of loss aversion modulates neural sensitivity toward potential gains"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000237",
+      "source": "openneuro",
+      "source_id": "ds000237",
+      "species": [],
+      "title": "Phonological memory in sign language relies on the visuomotor neural system outside the left hemisphere language network"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000205",
+      "source": "openneuro",
+      "source_id": "ds000205",
+      "species": [],
+      "title": "Affective Videos"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000223",
+      "source": "openneuro",
+      "source_id": "ds000223",
+      "species": [],
+      "title": "Magnitude Effect"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000245",
+      "source": "openneuro",
+      "source_id": "ds000245",
+      "species": [],
+      "title": "ds000245_R1.0.0"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000222",
+      "source": "openneuro",
+      "source_id": "ds000222",
+      "species": [],
+      "title": "Sequential Inference VBM"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000229",
+      "source": "openneuro",
+      "source_id": "ds000229",
+      "species": [
+        "human"
+      ],
+      "title": "Integration of sweet taste and metabolism determines carbohydrate reward - study 1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000171",
+      "source": "openneuro",
+      "source_id": "ds000171",
+      "species": [],
+      "title": "Neural Processing of Emotional Musical and Nonmusical Stimuli in Depression"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000224",
+      "source": "openneuro",
+      "source_id": "ds000224",
+      "species": [],
+      "title": "The Midnight Scan Club (MSC) dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000254",
+      "source": "openneuro",
+      "source_id": "ds000254",
+      "species": [],
+      "title": "Multiband Multi-Echo Simultaneous ASL/BOLD for task-induced functional MRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000238",
+      "source": "openneuro",
+      "source_id": "ds000238",
+      "species": [],
+      "title": "Trial timing for multivariate pattern analysis"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000172",
+      "source": "openneuro",
+      "source_id": "ds000172",
+      "species": [],
+      "title": "Physiological Contribution in Spontaneous Oscillations: An Approximate Quality - Assurance Index for Resting-State fMRI Signals"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000214",
+      "source": "openneuro",
+      "source_id": "ds000214",
+      "species": [],
+      "title": "EUPD Cyberball"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000206",
+      "source": "openneuro",
+      "source_id": "ds000206",
+      "species": [
+        "human"
+      ],
+      "title": "DWI Traveling Human Phantom Study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000233",
+      "source": "openneuro",
+      "source_id": "ds000233",
+      "species": [],
+      "title": "Neural responses to naturalistic clips of behaving animals in two different task contexts"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000220",
+      "source": "openneuro",
+      "source_id": "ds000220",
+      "species": [],
+      "title": "Cost Analysis TBI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000243",
+      "source": "openneuro",
+      "source_id": "ds000243",
+      "species": [],
+      "title": "Washington University 120"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000170",
+      "source": "openneuro",
+      "source_id": "ds000170",
+      "species": [],
+      "title": "Learning and memory: motor skill consolidation and intermanual transfer"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000201",
+      "source": "openneuro",
+      "source_id": "ds000201",
+      "species": [],
+      "title": "The Stockholm Sleepy Brain Study: Effects of Sleep Deprivation on Cognitive and Emotional Processing in Young and Old"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "meg"
+      ],
+      "record_id": "dataset:openneuro:ds000246",
+      "source": "openneuro",
+      "source_id": "ds000246",
+      "species": [],
+      "title": "MEG-BIDS Brainstorm data sample"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000228",
+      "source": "openneuro",
+      "source_id": "ds000228",
+      "species": [],
+      "title": "MRI data of 3-12 year old children and adults during viewing of a short animated film"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000253",
+      "source": "openneuro",
+      "source_id": "ds000253",
+      "species": [],
+      "title": "Female action video game players."
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000030",
+      "source": "openneuro",
+      "source_id": "ds000030",
+      "species": [],
+      "title": "UCLA Consortium for Neuropsychiatric Phenomics LA5c Study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000212",
+      "source": "openneuro",
+      "source_id": "ds000212",
+      "species": [],
+      "title": "Moral judgments of intentional and accidental moral violations across Harm and Purity domains"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000213",
+      "source": "openneuro",
+      "source_id": "ds000213",
+      "species": [],
+      "title": "Neural mechanism underlying appearance social comparison"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000239",
+      "source": "openneuro",
+      "source_id": "ds000239",
+      "species": [],
+      "title": "Maclaren test-retest brain volume dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "meg"
+      ],
+      "record_id": "dataset:openneuro:ds000247",
+      "source": "openneuro",
+      "source_id": "ds000247",
+      "species": [
+        "human"
+      ],
+      "title": "MEG-BIDS OMEGA RestingState_sample"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001338",
+      "source": "openneuro",
+      "source_id": "ds001338",
+      "species": [],
+      "title": "ParanoiaStory"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001339",
+      "source": "openneuro",
+      "source_id": "ds001339",
+      "species": [],
+      "title": "SocialBrain"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001344",
+      "source": "openneuro",
+      "source_id": "ds001344",
+      "species": [],
+      "title": "phfMRI_Control_Tasks"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000114",
+      "source": "openneuro",
+      "source_id": "ds000114",
+      "species": [],
+      "title": "A test-retest fMRI dataset for motor, language and spatial attention functions."
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000108",
+      "source": "openneuro",
+      "source_id": "ds000108",
+      "species": [],
+      "title": "Prefrontal-Subcortical Pathways Mediating Successful Emotion Regulation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001353",
+      "source": "openneuro",
+      "source_id": "ds001353",
+      "species": [
+        "human"
+      ],
+      "title": "Information Filtering in Electronic Networks of Practice:  An fMRI Investigation of Expectation [Dis]confirmation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001357",
+      "source": "openneuro",
+      "source_id": "ds001357",
+      "species": [],
+      "title": "NameFacePriming"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000244",
+      "source": "openneuro",
+      "source_id": "ds000244",
+      "species": [],
+      "title": "Individual Brain Charting"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000031",
+      "source": "openneuro",
+      "source_id": "ds000031",
+      "species": [],
+      "title": "Myconnectome"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000149",
+      "source": "openneuro",
+      "source_id": "ds000149",
+      "species": [
+        "human"
+      ],
+      "title": "Scene Perception"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001365",
+      "source": "openneuro",
+      "source_id": "ds001365",
+      "species": [],
+      "title": "Indiv Diffs ReadingSkill"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001371",
+      "source": "openneuro",
+      "source_id": "ds001371",
+      "species": [
+        "human"
+      ],
+      "title": "Rule learning in adolescents at clinical high risk for psychosis shows altered patterns of activation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001378",
+      "source": "openneuro",
+      "source_id": "ds001378",
+      "species": [],
+      "title": "SCA2 Diffusion Tensor Imaging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001379",
+      "source": "openneuro",
+      "source_id": "ds001379",
+      "species": [
+        "human"
+      ],
+      "title": "Loci case study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001386",
+      "source": "openneuro",
+      "source_id": "ds001386",
+      "species": [
+        "human"
+      ],
+      "title": "Subject Data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001399",
+      "source": "openneuro",
+      "source_id": "ds001399",
+      "species": [],
+      "title": "multibandACQtests"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001408",
+      "source": "openneuro",
+      "source_id": "ds001408",
+      "species": [],
+      "title": "rsfMRI_single_session_EEG_NF"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "audio",
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001415",
+      "source": "openneuro",
+      "source_id": "ds001415",
+      "species": [
+        "human"
+      ],
+      "title": "Audio Cartography"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001417",
+      "source": "openneuro",
+      "source_id": "ds001417",
+      "species": [],
+      "title": "CAT snacks functional plasticity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001419",
+      "source": "openneuro",
+      "source_id": "ds001419",
+      "species": [],
+      "title": "thoughtExperiment"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "pet"
+      ],
+      "record_id": "dataset:openneuro:ds001420",
+      "source": "openneuro",
+      "source_id": "ds001420",
+      "species": [],
+      "title": "[11C]DASB PET Cimbi database example"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "pet"
+      ],
+      "record_id": "dataset:openneuro:ds001421",
+      "source": "openneuro",
+      "source_id": "ds001421",
+      "species": [],
+      "title": "[11C]SB207145 PET Cimbi database example"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000204",
+      "source": "openneuro",
+      "source_id": "ds000204",
+      "species": [],
+      "title": "Imaging [18F]AV-1451 and [18F]AV-45 in acute and chronic traumatic brain injury"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001430",
+      "source": "openneuro",
+      "source_id": "ds001430",
+      "species": [],
+      "title": "Neural Overlap in Item Representations Across Episodes Impairs Context Memory"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001450",
+      "source": "openneuro",
+      "source_id": "ds001450",
+      "species": [],
+      "title": "bids_results1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001461",
+      "source": "openneuro",
+      "source_id": "ds001461",
+      "species": [],
+      "title": "rsfMRI_comrobidity-SmokingandSchizophrenia"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds000113",
+      "source": "openneuro",
+      "source_id": "ds000113",
+      "species": [],
+      "title": "Forrest Gump"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001486",
+      "source": "openneuro",
+      "source_id": "ds001486",
+      "species": [],
+      "title": "Brain Correlates of Math Development"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001491",
+      "source": "openneuro",
+      "source_id": "ds001491",
+      "species": [],
+      "title": "Valence processing differs across stimulus modalities (Multi-echo)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001497",
+      "source": "openneuro",
+      "source_id": "ds001497",
+      "species": [],
+      "title": "Long-term Memory (LTM) for famous Faces, Places, and common Objects"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001499",
+      "source": "openneuro",
+      "source_id": "ds001499",
+      "species": [],
+      "title": "BOLD5000"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001506",
+      "source": "openneuro",
+      "source_id": "ds001506",
+      "species": [],
+      "title": "Deep Image Reconstruction"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001510",
+      "source": "openneuro",
+      "source_id": "ds001510",
+      "species": [],
+      "title": "Schematic narrative perception and recall (intact)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001511",
+      "source": "openneuro",
+      "source_id": "ds001511",
+      "species": [],
+      "title": "Schematic narrative perception and recall (scrambled)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001521",
+      "source": "openneuro",
+      "source_id": "ds001521",
+      "species": [],
+      "title": "Lingering representations of stimuli influence recall organization"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001525",
+      "source": "openneuro",
+      "source_id": "ds001525",
+      "species": [],
+      "title": "Syllable level speech sequencing"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001529",
+      "source": "openneuro",
+      "source_id": "ds001529",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_anesthesia"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001534",
+      "source": "openneuro",
+      "source_id": "ds001534",
+      "species": [],
+      "title": "Calorie-labeled food cues"
+    },
+    {
+      "candidate_regions": [
+        "dorsal_raphe"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001541",
+      "source": "openneuro",
+      "source_id": "ds001541",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_opto_DRN"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001545",
+      "source": "openneuro",
+      "source_id": "ds001545",
+      "species": [],
+      "title": "Learning Naturalistic Temporal Structure in the Posterior Medial Network"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001547",
+      "source": "openneuro",
+      "source_id": "ds001547",
+      "species": [],
+      "title": "Layer VASO in visual system"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001551",
+      "source": "openneuro",
+      "source_id": "ds001551",
+      "species": [],
+      "title": "Unnamed Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001553",
+      "source": "openneuro",
+      "source_id": "ds001553",
+      "species": [
+        "human"
+      ],
+      "title": "100 runs at 3T"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001554",
+      "source": "openneuro",
+      "source_id": "ds001554",
+      "species": [],
+      "title": "Neural pattern change during encoding of a narrative predicts retrospective duration estimates"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001555",
+      "source": "openneuro",
+      "source_id": "ds001555",
+      "species": [
+        "human"
+      ],
+      "title": "Large Single-Subject Functional MRI Datasets at 7T"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001563",
+      "source": "openneuro",
+      "source_id": "ds001563",
+      "species": [
+        "human"
+      ],
+      "title": "CMRR Workshop"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001566",
+      "source": "openneuro",
+      "source_id": "ds001566",
+      "species": [],
+      "title": "test"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001576",
+      "source": "openneuro",
+      "source_id": "ds001576",
+      "species": [],
+      "title": "Refresh my memory: Episodic memory reinstatements intrude on working memory maintenance"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001590",
+      "source": "openneuro",
+      "source_id": "ds001590",
+      "species": [],
+      "title": "Feature Discrimination"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001591",
+      "source": "openneuro",
+      "source_id": "ds001591",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_KCLtraining"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001595",
+      "source": "openneuro",
+      "source_id": "ds001595",
+      "species": [],
+      "title": "Test dataset for XCP software"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001597",
+      "source": "openneuro",
+      "source_id": "ds001597",
+      "species": [],
+      "title": "multiFingerRSA"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001600",
+      "source": "openneuro",
+      "source_id": "ds001600",
+      "species": [],
+      "title": "Example Fieldmaps"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001607",
+      "source": "openneuro",
+      "source_id": "ds001607",
+      "species": [],
+      "title": "Reinstated episodic context guides sampling-based decisions for reward"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001608",
+      "source": "openneuro",
+      "source_id": "ds001608",
+      "species": [],
+      "title": "Prestimulus Exp2"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001612",
+      "source": "openneuro",
+      "source_id": "ds001612",
+      "species": [
+        "human"
+      ],
+      "title": "Offline replay supports planning in human reinforcement learning"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "events",
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds001614",
+      "source": "openneuro",
+      "source_id": "ds001614",
+      "species": [],
+      "title": "Perceptual decisions result from the continuous accumulation of memory and sensory evidence"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001618",
+      "source": "openneuro",
+      "source_id": "ds001618",
+      "species": [],
+      "title": "Shared and differential default-mode related patterns of activity in an autobiographical, a self-referential and an attentional task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001621",
+      "source": "openneuro",
+      "source_id": "ds001621",
+      "species": [],
+      "title": "Neural representations of events arise from temporal community structure"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001634",
+      "source": "openneuro",
+      "source_id": "ds001634",
+      "species": [],
+      "title": "Visual working memory: Study one Task fMRI and Behavioural response"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001635",
+      "source": "openneuro",
+      "source_id": "ds001635",
+      "species": [],
+      "title": "Visual working memory: Study two Task fMRI and Behavioural response"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001652",
+      "source": "openneuro",
+      "source_id": "ds001652",
+      "species": [],
+      "title": "Ironia VEV"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001653",
+      "source": "openneuro",
+      "source_id": "ds001653",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_awake"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "pet"
+      ],
+      "record_id": "dataset:openneuro:ds001705",
+      "source": "openneuro",
+      "source_id": "ds001705",
+      "species": [],
+      "title": "NRM2018 PET Grand Challenge Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001715",
+      "source": "openneuro",
+      "source_id": "ds001715",
+      "species": [],
+      "title": "Dissociable neural mechanisms track evidence accumulation for selection of attention versus action"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001720",
+      "source": "openneuro",
+      "source_id": "ds001720",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_multicentre"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001725",
+      "source": "openneuro",
+      "source_id": "ds001725",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_psilocybin"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001728",
+      "source": "openneuro",
+      "source_id": "ds001728",
+      "species": [],
+      "title": "Test-GEIER"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001734",
+      "source": "openneuro",
+      "source_id": "ds001734",
+      "species": [],
+      "title": "NARPS"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001743",
+      "source": "openneuro",
+      "source_id": "ds001743",
+      "species": [],
+      "title": "Unilateral Glaucoma 3T dMRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001745",
+      "source": "openneuro",
+      "source_id": "ds001745",
+      "species": [],
+      "title": "A neural signature of contextually mediated intentional forgetting"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001747",
+      "source": "openneuro",
+      "source_id": "ds001747",
+      "species": [
+        "human"
+      ],
+      "title": "Exploring the Resting State Neural Activity of Monolinguals and Late and Early Bilinguals"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001748",
+      "source": "openneuro",
+      "source_id": "ds001748",
+      "species": [],
+      "title": "Differentiation of functional networks during long-term memory retrieval in children and adolescents"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001761",
+      "source": "openneuro",
+      "source_id": "ds001761",
+      "species": [],
+      "title": "Reconstructing Faces from fMRI Patterns using Deep Generative Neural Networks."
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001769",
+      "source": "openneuro",
+      "source_id": "ds001769",
+      "species": [],
+      "title": "studyforrest_movie_denoised"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001771",
+      "source": "openneuro",
+      "source_id": "ds001771",
+      "species": [],
+      "title": "InterTVA. A multimodal MRI dataset for the study of inter-individual differences in voice perception and identification."
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001775",
+      "source": "openneuro",
+      "source_id": "ds001775",
+      "species": [],
+      "title": "Neural Differentiation Tracks Improved Recall of Competing Memories Following Interleaved Study and Retrieval Practice"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavioral",
+        "channels",
+        "eeg",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds001784",
+      "source": "openneuro",
+      "source_id": "ds001784",
+      "species": [],
+      "title": "Effects of ON/OFF deep brain stimulation on cognitive control in treatment-resistant depression (EEG)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg"
+      ],
+      "record_id": "dataset:openneuro:ds001785",
+      "source": "openneuro",
+      "source_id": "ds001785",
+      "species": [
+        "human"
+      ],
+      "title": "Evidence accumulation relates to perceptual consciousness and monitoring"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg"
+      ],
+      "record_id": "dataset:openneuro:ds001787",
+      "source": "openneuro",
+      "source_id": "ds001787",
+      "species": [],
+      "title": "EEG meditation study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001796",
+      "source": "openneuro",
+      "source_id": "ds001796",
+      "species": [],
+      "title": "Bilingualism and the brain"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "channels",
+        "eeg",
+        "events"
+      ],
+      "record_id": "dataset:openneuro:ds001810",
+      "source": "openneuro",
+      "source_id": "ds001810",
+      "species": [],
+      "title": "EEG study of the attentional blink; before, during, and after transcranial Direct Current Stimulation (tDCS)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "events",
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds001814",
+      "source": "openneuro",
+      "source_id": "ds001814",
+      "species": [],
+      "title": "Neuroanatomical correlates of approach-avoidance conflict (fMRI)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001818",
+      "source": "openneuro",
+      "source_id": "ds001818",
+      "species": [],
+      "title": "CAT Faces MRI experiment"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds001832",
+      "source": "openneuro",
+      "source_id": "ds001832",
+      "species": [],
+      "title": "Resting State - TMS"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001838",
+      "source": "openneuro",
+      "source_id": "ds001838",
+      "species": [],
+      "title": "Handedness and Symbolic Number Representation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001840",
+      "source": "openneuro",
+      "source_id": "ds001840",
+      "species": [],
+      "title": "Prestimulus Exp1"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001848",
+      "source": "openneuro",
+      "source_id": "ds001848",
+      "species": [],
+      "title": "Parallel Adaptation of Symbols, Quantities, and Physical Size"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg"
+      ],
+      "record_id": "dataset:openneuro:ds001849",
+      "source": "openneuro",
+      "source_id": "ds001849",
+      "species": [],
+      "title": "RS_TMSEEG_Data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001875",
+      "source": "openneuro",
+      "source_id": "ds001875",
+      "species": [
+        "macaque"
+      ],
+      "title": "TheVirtualBrain Macaque MRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001890",
+      "source": "openneuro",
+      "source_id": "ds001890",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_3xTG"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "audio",
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001894",
+      "source": "openneuro",
+      "source_id": "ds001894",
+      "species": [],
+      "title": "Longitudinal Brain Correlates of Multisensory Lexical Processing in Children"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001907",
+      "source": "openneuro",
+      "source_id": "ds001907",
+      "species": [
+        "human"
+      ],
+      "title": "ANT: Healthy aging and Parkinson's disease"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001912",
+      "source": "openneuro",
+      "source_id": "ds001912",
+      "species": [],
+      "title": "S-cone_MotionInDepth_fMRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001926",
+      "source": "openneuro",
+      "source_id": "ds001926",
+      "species": [],
+      "title": "Violation Differentiation"
+    },
+    {
+      "candidate_regions": [
+        "cortex"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001927",
+      "source": "openneuro",
+      "source_id": "ds001927",
+      "species": [
+        "human"
+      ],
+      "title": "The physiological effects of non-invasive brain stimulation fundamentally differ across the human cortex"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001945",
+      "source": "openneuro",
+      "source_id": "ds001945",
+      "species": [],
+      "title": "MouseLemurAtlas_MRIraw"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001972",
+      "source": "openneuro",
+      "source_id": "ds001972",
+      "species": [],
+      "title": "SVNDL anatomical data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001978",
+      "source": "openneuro",
+      "source_id": "ds001978",
+      "species": [],
+      "title": "Image segmentation Based on Relative Motion and Relative Disparity Cues (central letter task)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001981",
+      "source": "openneuro",
+      "source_id": "ds001981",
+      "species": [
+        "rat"
+      ],
+      "title": "Temporal stability of fMRI in medetomidine-anesthetized rats"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds001984",
+      "source": "openneuro",
+      "source_id": "ds001984",
+      "species": [],
+      "title": "Image segmentation Based on Relative Motion and Relative Disparity Cues (passive fixation)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002000",
+      "source": "openneuro",
+      "source_id": "ds002000",
+      "species": [],
+      "title": "reinstatement_fidelity"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "meg"
+      ],
+      "record_id": "dataset:openneuro:ds002001",
+      "source": "openneuro",
+      "source_id": "ds002001",
+      "species": [],
+      "title": "Rivalry_Tagging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002006",
+      "source": "openneuro",
+      "source_id": "ds002006",
+      "species": [
+        "human"
+      ],
+      "title": "Memory and decision making dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002013",
+      "source": "openneuro",
+      "source_id": "ds002013",
+      "species": [],
+      "title": "StimDisc"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002014",
+      "source": "openneuro",
+      "source_id": "ds002014",
+      "species": [],
+      "title": "Language Production fMRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002016",
+      "source": "openneuro",
+      "source_id": "ds002016",
+      "species": [],
+      "title": "BigBrainMRICoreg"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002033",
+      "source": "openneuro",
+      "source_id": "ds002033",
+      "species": [],
+      "title": "Investigating the visual number form area: A replication study"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg"
+      ],
+      "record_id": "dataset:openneuro:ds002034",
+      "source": "openneuro",
+      "source_id": "ds002034",
+      "species": [
+        "human"
+      ],
+      "title": "Real-time EEG feedback on alpha power lateralization leads to behavioral improvements in a covert attention task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002040",
+      "source": "openneuro",
+      "source_id": "ds002040",
+      "species": [],
+      "title": "BIDS_PARKINSON"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri",
+        "pet"
+      ],
+      "record_id": "dataset:openneuro:ds002041",
+      "source": "openneuro",
+      "source_id": "ds002041",
+      "species": [],
+      "title": "Mesolimbic dopamine D2 receptors and neural representations of subjective value"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002080",
+      "source": "openneuro",
+      "source_id": "ds002080",
+      "species": [],
+      "title": "BTC_postop"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002087",
+      "source": "openneuro",
+      "source_id": "ds002087",
+      "species": [],
+      "title": "Datasets with and without deliberate head movements for detection and imputation of dropout in diffusion MRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "channels",
+        "eeg",
+        "events"
+      ],
+      "record_id": "dataset:openneuro:ds002094",
+      "source": "openneuro",
+      "source_id": "ds002094",
+      "species": [],
+      "title": "Single-pulse open-loop TMS-EEG dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002105",
+      "source": "openneuro",
+      "source_id": "ds002105",
+      "species": [
+        "human"
+      ],
+      "title": "Multi-Domain Task Battery (MDTB)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002116",
+      "source": "openneuro",
+      "source_id": "ds002116",
+      "species": [
+        "human"
+      ],
+      "title": "Development of Symbolic Number Processing"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002134",
+      "source": "openneuro",
+      "source_id": "ds002134",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_opto_3xTG"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002144",
+      "source": "openneuro",
+      "source_id": "ds002144",
+      "species": [],
+      "title": "Stat Episodic"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002149",
+      "source": "openneuro",
+      "source_id": "ds002149",
+      "species": [],
+      "title": "Conditional Visual Associative Learning Task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002153",
+      "source": "openneuro",
+      "source_id": "ds002153",
+      "species": [],
+      "title": "testrun"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002154",
+      "source": "openneuro",
+      "source_id": "ds002154",
+      "species": [
+        "mouse"
+      ],
+      "title": "Mouse_rest_psilocybin_pilot"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002156",
+      "source": "openneuro",
+      "source_id": "ds002156",
+      "species": [],
+      "title": "Multi-echo masking test dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002158",
+      "source": "openneuro",
+      "source_id": "ds002158",
+      "species": [
+        "human"
+      ],
+      "title": "Disentangling the origins of confidence in speeded perceptual judgments through multimodal imaging"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002169",
+      "source": "openneuro",
+      "source_id": "ds002169",
+      "species": [],
+      "title": "CCD"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002179",
+      "source": "openneuro",
+      "source_id": "ds002179",
+      "species": [
+        "human"
+      ],
+      "title": "7 Tesla MRI of the ex vivo human brain at 100 micron resolution"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "channels",
+        "eeg",
+        "events"
+      ],
+      "record_id": "dataset:openneuro:ds002181",
+      "source": "openneuro",
+      "source_id": "ds002181",
+      "species": [],
+      "title": "CRYPTO and PROVIDE EEG Baseline Data"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "diffusion_mri",
+        "events",
+        "fmri",
+        "structural_mri",
+        "t2w"
+      ],
+      "record_id": "dataset:openneuro:ds002185",
+      "source": "openneuro",
+      "source_id": "ds002185",
+      "species": [
+        "human"
+      ],
+      "title": "Human Olfaction Without Apparent Olfactory Bulbs"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002207",
+      "source": "openneuro",
+      "source_id": "ds002207",
+      "species": [
+        "human"
+      ],
+      "title": "CEREBRuM: a 3T MRI segmentation tool"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "events",
+        "fieldmap",
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds002219",
+      "source": "openneuro",
+      "source_id": "ds002219",
+      "species": [
+        "human"
+      ],
+      "title": "L1_STORIES_SENTENCES"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002232",
+      "source": "openneuro",
+      "source_id": "ds002232",
+      "species": [],
+      "title": "Caltech rsfMRI Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002237",
+      "source": "openneuro",
+      "source_id": "ds002237",
+      "species": [],
+      "title": "Briefly cueing memories leads to suppression of their neural representations"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002242",
+      "source": "openneuro",
+      "source_id": "ds002242",
+      "species": [
+        "human"
+      ],
+      "title": "Correcting False Memories: The Effect of Mnemonic Generalization on Original Memory Traces"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002250",
+      "source": "openneuro",
+      "source_id": "ds002250",
+      "species": [
+        "human"
+      ],
+      "title": "When my wrongs are worse than yours: behavioral and neural asymmetries in first-person and third-person perspectives of accidents"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002270",
+      "source": "openneuro",
+      "source_id": "ds002270",
+      "species": [
+        "human"
+      ],
+      "title": "Viewing_food_cues"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002274",
+      "source": "openneuro",
+      "source_id": "ds002274",
+      "species": [],
+      "title": "Hands on analysis tutorial"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002278",
+      "source": "openneuro",
+      "source_id": "ds002278",
+      "species": [
+        "human"
+      ],
+      "title": "Dense Investigation of Variability of Affect (DIVA)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002293",
+      "source": "openneuro",
+      "source_id": "ds002293",
+      "species": [
+        "human"
+      ],
+      "title": "FSL open science dev dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002294",
+      "source": "openneuro",
+      "source_id": "ds002294",
+      "species": [
+        "human"
+      ],
+      "title": "trait-role"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002295",
+      "source": "openneuro",
+      "source_id": "ds002295",
+      "species": [
+        "human"
+      ],
+      "title": "ODC mapper 7T surface coil"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "events",
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds002306",
+      "source": "openneuro",
+      "source_id": "ds002306",
+      "species": [
+        "human"
+      ],
+      "title": "Over 100 Task fMRI Dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002307",
+      "source": "openneuro",
+      "source_id": "ds002307",
+      "species": [],
+      "title": "individual_dMRI_fMRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002311",
+      "source": "openneuro",
+      "source_id": "ds002311",
+      "species": [
+        "human"
+      ],
+      "title": "Multiple-object tracking as atool for parametrically modulating memory reactivation"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "channels",
+        "coordsystem",
+        "events",
+        "meg"
+      ],
+      "record_id": "dataset:openneuro:ds002312",
+      "source": "openneuro",
+      "source_id": "ds002312",
+      "species": [],
+      "title": "OcularLDT"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002320",
+      "source": "openneuro",
+      "source_id": "ds002320",
+      "species": [
+        "human"
+      ],
+      "title": "Dynamic_Passive_Threat"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002328",
+      "source": "openneuro",
+      "source_id": "ds002328",
+      "species": [],
+      "title": "FSL open science dev dataset"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002330",
+      "source": "openneuro",
+      "source_id": "ds002330",
+      "species": [
+        "human"
+      ],
+      "title": "Neuroimaging predictors of creativity in healthy adults"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002345",
+      "source": "openneuro",
+      "source_id": "ds002345",
+      "species": [
+        "human"
+      ],
+      "title": "Narratives"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002363",
+      "source": "openneuro",
+      "source_id": "ds002363",
+      "species": [
+        "human"
+      ],
+      "title": "Repetition of Computer Security Warnings Results in Differential Repetition Suppression Effects as Revealed with Functional MRI"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002367",
+      "source": "openneuro",
+      "source_id": "ds002367",
+      "species": [
+        "human"
+      ],
+      "title": "OHBM abstract 2020"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002372",
+      "source": "openneuro",
+      "source_id": "ds002372",
+      "species": [
+        "human"
+      ],
+      "title": "Yale_Single_Subject_Task_Rest30x"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002374",
+      "source": "openneuro",
+      "source_id": "ds002374",
+      "species": [],
+      "title": "3AM straight reproducibility phantoms"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002380",
+      "source": "openneuro",
+      "source_id": "ds002380",
+      "species": [],
+      "title": "SerumGreyMatterCorticalThickness"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:openneuro:ds002385",
+      "source": "openneuro",
+      "source_id": "ds002385",
+      "species": [
+        "human"
+      ],
+      "title": "PETfrog"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002411",
+      "source": "openneuro",
+      "source_id": "ds002411",
+      "species": [
+        "human"
+      ],
+      "title": "fMRI dataset on program comprehension and expertise"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002419",
+      "source": "openneuro",
+      "source_id": "ds002419",
+      "species": [
+        "human"
+      ],
+      "title": "Short-term consumption of sucralose with, but not without, carbohydrate impairs neural and metabolic sensitivity to sugar"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "events",
+        "fieldmap",
+        "fmri",
+        "structural_mri"
+      ],
+      "record_id": "dataset:openneuro:ds002422",
+      "source": "openneuro",
+      "source_id": "ds002422",
+      "species": [
+        "human"
+      ],
+      "title": "fMRI: resting state and arithmetic task"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002424",
+      "source": "openneuro",
+      "source_id": "ds002424",
+      "species": [
+        "human"
+      ],
+      "title": "Working Memory and Reward in Children with and without Attention Deficit Hyperactivity Disorder (ADHD)"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "dataset:openneuro:ds002425",
+      "source": "openneuro",
+      "source_id": "ds002425",
+      "species": [
+        "human"
+      ],
+      "title": "The neural representation of visually evoked emotion is high-dimensional, categorical, and distributed across transmodal brain regions"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:spark:SPARK-GENO-001",
+      "source": "spark",
+      "source_id": "SPARK-GENO-001",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Whole-Exome Sequencing: De Novo Variants in ASD"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-BEHAV-002",
+      "source": "spark",
+      "source_id": "SPARK-BEHAV-002",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Longitudinal Adaptive Behavior Assessments"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-EYE-002",
+      "source": "spark",
+      "source_id": "SPARK-EYE-002",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Infant Sibling Eye-Tracking: Early Social Attention"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-BEHAV-003",
+      "source": "spark",
+      "source_id": "SPARK-BEHAV-003",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Social Communication Questionnaire Longitudinal Database"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-EYE-003",
+      "source": "spark",
+      "source_id": "SPARK-EYE-003",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Eye-Tracking Gaze Contingency and Joint Attention"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [],
+      "record_id": "dataset:spark:SPARK-GENO-002",
+      "source": "spark",
+      "source_id": "SPARK-GENO-002",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Genome-Wide Association Study: ASD Polygenic Architecture"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-BEHAV-004",
+      "source": "spark",
+      "source_id": "SPARK-BEHAV-004",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Caregiver Stress and Family Functioning in ASD"
+    },
+    {
+      "candidate_regions": [],
+      "modalities": [
+        "behavior_video"
+      ],
+      "record_id": "dataset:spark:SPARK-EYE-004",
+      "source": "spark",
+      "source_id": "SPARK-EYE-004",
+      "species": [
+        "human"
+      ],
+      "title": "SPARK Eye-Tracking Biological Motion Perception in ASD"
+    }
+  ],
+  "regions": [
+    {
+      "example_records": [
+        "dataset:dandi:000006",
+        "dataset:dandi:000007",
+        "dataset:dandi:000008",
+        "dataset:dandi:000010",
+        "dataset:dandi:000011",
+        "dataset:dandi:000015",
+        "dataset:dandi:000019",
+        "dataset:dandi:000026"
+      ],
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "ecog",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "patch_clamp",
+        "patch_seq",
+        "pose_tracking",
+        "single_cell_rnaseq"
+      ],
+      "record_count": 33,
+      "region_id": "motor_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000003",
+        "dataset:dandi:000044",
+        "dataset:dandi:000054",
+        "dataset:dandi:000056",
+        "dataset:dandi:000059",
+        "dataset:dandi:000061",
+        "dataset:dandi:000065",
+        "dataset:dandi:000115"
+      ],
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "emg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "pose_tracking"
+      ],
+      "record_count": 31,
+      "region_id": "hippocampus",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000020",
+        "dataset:dandi:000036",
+        "dataset:dandi:000037",
+        "dataset:dandi:000039",
+        "dataset:dandi:000049",
+        "dataset:dandi:000050",
+        "dataset:dandi:000166",
+        "dataset:dandi:000168"
+      ],
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "eye_tracking",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "record_count": 29,
+      "region_id": "visual_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000469",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds000007",
+        "dataset:openneuro:ds000008",
+        "dataset:openneuro:ds000102",
+        "dataset:openneuro:ds000116",
+        "dataset:openneuro:ds000119",
+        "dataset:openneuro:ds000120"
+      ],
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri"
+      ],
+      "record_count": 26,
+      "region_id": "acc",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000041",
+        "dataset:dandi:000065",
+        "dataset:dandi:000067",
+        "dataset:dandi:000130",
+        "dataset:dandi:000447",
+        "dataset:dandi:000451",
+        "dataset:dandi:000457",
+        "dataset:dandi:000469"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "eye_tracking",
+        "fmri",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 19,
+      "region_id": "prefrontal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236",
+        "dataset:dandi:000237",
+        "dataset:dandi:000238",
+        "dataset:dandi:000351",
+        "dataset:dandi:000409",
+        "dataset:dandi:000476"
+      ],
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fiber_photometry",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 19,
+      "region_id": "striatum",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000207",
+        "dataset:dandi:000249",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574",
+        "dataset:dandi:000575",
+        "dataset:openneuro:ds000105",
+        "dataset:openneuro:ds000116",
+        "dataset:openneuro:ds000117"
+      ],
+      "modalities": [
+        "audio",
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "meg"
+      ],
+      "record_count": 19,
+      "region_id": "temporal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000010",
+        "dataset:dandi:000036",
+        "dataset:dandi:000041",
+        "dataset:dandi:000059",
+        "dataset:dandi:000232",
+        "dataset:dandi:000289",
+        "dataset:dandi:000294",
+        "dataset:dandi:000296"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels",
+        "patch_clamp"
+      ],
+      "record_count": 16,
+      "region_id": "it",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "drosophila",
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000016",
+        "dataset:dandi:000023",
+        "dataset:dandi:000041",
+        "dataset:dandi:000109",
+        "dataset:dandi:000142",
+        "dataset:dandi:000166",
+        "dataset:dandi:000223",
+        "dataset:dandi:000244"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "patch_seq",
+        "pose_tracking"
+      ],
+      "record_count": 15,
+      "region_id": "neocortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000037",
+        "dataset:dandi:000166",
+        "dataset:dandi:000168",
+        "dataset:dandi:000206",
+        "dataset:dandi:000253",
+        "dataset:dandi:000336",
+        "dataset:dandi:000347",
+        "dataset:dandi:000348"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 15,
+      "region_id": "v1",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000011",
+        "dataset:dandi:000070",
+        "dataset:dandi:000121",
+        "dataset:dandi:000125",
+        "dataset:dandi:000128",
+        "dataset:dandi:000138",
+        "dataset:dandi:000139",
+        "dataset:dandi:000140"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "pose_tracking"
+      ],
+      "record_count": 14,
+      "region_id": "premotor_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000005",
+        "dataset:dandi:000013",
+        "dataset:dandi:000127",
+        "dataset:dandi:000173",
+        "dataset:dandi:000231",
+        "dataset:dandi:000232",
+        "dataset:dandi:000239",
+        "dataset:dandi:000339"
+      ],
+      "modalities": [
+        "behavioral",
+        "ecog",
+        "extracellular_ephys",
+        "lfp",
+        "pose_tracking"
+      ],
+      "record_count": 13,
+      "region_id": "somatosensory_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000061",
+        "dataset:dandi:000113",
+        "dataset:dandi:000207",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574",
+        "dataset:dandi:000576",
+        "dataset:openneuro:ds000117",
+        "dataset:spark:SPARK-EYE-001"
+      ],
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "meg"
+      ],
+      "record_count": 12,
+      "region_id": "amygdala",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000044",
+        "dataset:dandi:000054",
+        "dataset:dandi:000115",
+        "dataset:dandi:000165",
+        "dataset:dandi:000213",
+        "dataset:dandi:000219",
+        "dataset:dandi:000410",
+        "dataset:dandi:000447"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "emg",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 12,
+      "region_id": "ca1",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000067",
+        "dataset:dandi:000447",
+        "dataset:dandi:000451",
+        "dataset:dandi:000457",
+        "dataset:dandi:000469",
+        "dataset:dandi:000785",
+        "dataset:dandi:001371"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri",
+        "lfp"
+      ],
+      "record_count": 10,
+      "region_id": "mpfc",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000218",
+        "dataset:dandi:000243",
+        "dataset:dandi:000350",
+        "dataset:dandi:000363",
+        "dataset:dandi:000409",
+        "dataset:dandi:000478",
+        "dataset:dandi:000479",
+        "dataset:openneuro:ds002011"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 9,
+      "region_id": "brainstem",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000005",
+        "dataset:dandi:000007",
+        "dataset:dandi:000009",
+        "dataset:dandi:000010",
+        "dataset:dandi:000056",
+        "dataset:dandi:000221",
+        "dataset:dandi:000409",
+        "dataset:dandi:000444"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 9,
+      "region_id": "thalamus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:openneuro:ds000007",
+        "dataset:openneuro:ds000008",
+        "dataset:openneuro:ds000119",
+        "dataset:openneuro:ds000120",
+        "dataset:openneuro:ds000121",
+        "dataset:openneuro:ds000164",
+        "dataset:openneuro:ds001762",
+        "dataset:openneuro:ds002316"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_count": 8,
+      "region_id": "dlpfc",
+      "sources": [
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds001762",
+        "dataset:openneuro:ds001847",
+        "dataset:openneuro:ds001882",
+        "dataset:openneuro:ds001883",
+        "dataset:openneuro:ds001921",
+        "dataset:openneuro:ds001923"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "fmri",
+        "lfp"
+      ],
+      "record_count": 8,
+      "region_id": "ofc",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000018",
+        "dataset:dandi:000117",
+        "dataset:dandi:000148",
+        "dataset:dandi:000220",
+        "dataset:dandi:000245",
+        "dataset:dandi:000295",
+        "dataset:openneuro:ds000138",
+        "dataset:openneuro:ds001839"
+      ],
+      "modalities": [
+        "events",
+        "extracellular_ephys",
+        "fmri",
+        "patch_clamp",
+        "structural_mri"
+      ],
+      "record_count": 8,
+      "region_id": "spinal_cord",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236",
+        "dataset:dandi:000237",
+        "dataset:dandi:000238",
+        "dataset:dandi:000351",
+        "dataset:dandi:000476",
+        "dataset:dandi:000546"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fiber_photometry",
+        "lfp"
+      ],
+      "record_count": 8,
+      "region_id": "ventral_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "rat",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000070",
+        "dataset:dandi:000125",
+        "dataset:dandi:000128",
+        "dataset:dandi:000138",
+        "dataset:dandi:000139",
+        "dataset:dandi:000140",
+        "dataset:dandi:000404"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp",
+        "pose_tracking"
+      ],
+      "record_count": 7,
+      "region_id": "pmd",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000249",
+        "dataset:openneuro:ds000116",
+        "dataset:openneuro:ds001942",
+        "dataset:openneuro:ds002218",
+        "dataset:openneuro:ds002322",
+        "dataset:openneuro:ds002382"
+      ],
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "record_count": 6,
+      "region_id": "auditory_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236",
+        "dataset:dandi:000237",
+        "dataset:dandi:000238",
+        "dataset:dandi:000351"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "fiber_photometry",
+        "lfp"
+      ],
+      "record_count": 6,
+      "region_id": "nucleus_accumbens",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000207",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574",
+        "dataset:dandi:000575",
+        "dataset:openneuro:ds001439",
+        "dataset:openneuro:ds001722"
+      ],
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp"
+      ],
+      "record_count": 6,
+      "region_id": "temporal_lobe",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000221",
+        "dataset:dandi:000236",
+        "dataset:dandi:000238",
+        "dataset:dandi:000301",
+        "dataset:dandi:000462",
+        "dataset:dandi:000530"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys"
+      ],
+      "record_count": 6,
+      "region_id": "vta",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "zebrafish"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000007",
+        "dataset:dandi:000409",
+        "dataset:dandi:000558",
+        "dataset:dandi:000572",
+        "dataset:openneuro:ds001971"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 5,
+      "region_id": "cerebellum",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000147",
+        "dataset:dandi:000233",
+        "dataset:dandi:000252",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds001345"
+      ],
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri",
+        "lfp"
+      ],
+      "record_count": 5,
+      "region_id": "parietal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000016",
+        "dataset:dandi:000147",
+        "dataset:dandi:000252",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds000109"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri"
+      ],
+      "record_count": 5,
+      "region_id": "posterior_parietal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000218",
+        "dataset:dandi:000233",
+        "dataset:dandi:000409",
+        "dataset:dandi:000473"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 4,
+      "region_id": "hypothalamus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:openneuro:ds000133",
+        "dataset:openneuro:ds000140",
+        "dataset:openneuro:ds000208",
+        "dataset:openneuro:ds001928"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_count": 4,
+      "region_id": "insula",
+      "sources": [
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000059",
+        "dataset:dandi:000213",
+        "dataset:dandi:000218",
+        "dataset:dandi:000233"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 4,
+      "region_id": "septum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000301",
+        "dataset:dandi:000530",
+        "dataset:dandi:000563",
+        "dataset:openneuro:ds001780"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 4,
+      "region_id": "superior_colliculus",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000053",
+        "dataset:dandi:000574",
+        "dataset:dandi:000582"
+      ],
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "eye_tracking",
+        "ieeg",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 3,
+      "region_id": "entorhinal_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000483",
+        "dataset:dandi:000488",
+        "dataset:dandi:000579"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging"
+      ],
+      "record_count": 3,
+      "region_id": "retrosplenial_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000061",
+        "dataset:dandi:000113"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 2,
+      "region_id": "basolateral_amygdala",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000165",
+        "dataset:dandi:000213"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 2,
+      "region_id": "ca3",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:openneuro:ds001242",
+        "dataset:openneuro:ds002011"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_count": 2,
+      "region_id": "locus_coeruleus",
+      "sources": [
+        "openneuro"
+      ],
+      "species": []
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000053",
+        "dataset:dandi:000582"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 2,
+      "region_id": "medial_entorhinal_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000555",
+        "dataset:dandi:000785"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_count": 2,
+      "region_id": "olfactory_bulb",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000167",
+        "dataset:dandi:000785"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_count": 2,
+      "region_id": "piriform_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000563",
+        "dataset:dandi:000617"
+      ],
+      "modalities": [
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 2,
+      "region_id": "retina",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000347",
+        "dataset:dandi:000617"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_count": 2,
+      "region_id": "v2",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque",
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:spark:SPARK-FMRI-004"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_count": 1,
+      "region_id": "default_mode_network",
+      "sources": [
+        "spark"
+      ],
+      "species": [
+        "human"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000165"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 1,
+      "region_id": "dentate_gyrus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000130"
+      ],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_count": 1,
+      "region_id": "dmfc",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000559"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "pose_tracking"
+      ],
+      "record_count": 1,
+      "region_id": "dorsal_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000559"
+      ],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "pose_tracking"
+      ],
+      "record_count": 1,
+      "region_id": "dorsolateral_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000476"
+      ],
+      "modalities": [],
+      "record_count": 1,
+      "region_id": "globus_pallidus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000248"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 1,
+      "region_id": "inferior_colliculus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000563"
+      ],
+      "modalities": [
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 1,
+      "region_id": "lateral_geniculate_nucleus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000127"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_count": 1,
+      "region_id": "somatosensory_area_2",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000056"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 1,
+      "region_id": "subiculum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    },
+    {
+      "example_records": [
+        "dataset:dandi:000617"
+      ],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_count": 1,
+      "region_id": "v4",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ]
+    }
+  ],
+  "summary": {
+    "atlas_target_regions": 69,
+    "atlas_targets_candidate_only": 11,
+    "atlas_targets_uncovered": 16,
+    "atlas_targets_verified": 42,
+    "dataset_records": 625,
+    "records_with_verified_regions": 206,
+    "records_without_verified_regions": 419,
+    "region_coverage": 0.3296,
+    "regionless_records_with_candidate_mentions": 18
+  }
+}

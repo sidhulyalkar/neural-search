@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -144,6 +144,15 @@ corpus-build:
 		--datasets data/seed/demo_datasets.yaml \
 		--papers data/seed/demo_papers.yaml \
 		--out-dir data/corpus/normalized
+
+coverage-depth-build:
+	python -m neural_search.corpus.coverage_depth
+
+regional-map-build:
+	python -m neural_search.corpus.regional_map
+
+regional-signals-build:
+	python -m neural_search.corpus.regional_signals
 
 graph-build: corpus-build
 	python -m neural_search.graph.build_graph \
@@ -380,6 +389,9 @@ help:
 	@echo "  make demo-search       Run demo search (use QUERY=\"...\" for custom)"
 	@echo "  make eval              Run benchmark evaluation (alias: benchmark)"
 	@echo "  make report            Generate compilation reports (alias: reports)"
+	@echo "  make coverage-depth-build Build reviewed coverage-depth corpus pack"
+	@echo "  make regional-map-build Build regional coverage map and review queue"
+	@echo "  make regional-signals-build Build reviewable regional signal overlay"
 	@echo "  make generate-notebook Generate notebook (use DATASET_ID=<id>)"
 	@echo ""
 	@echo "DEVELOPMENT:"

@@ -1,0 +1,149 @@
+[
+  {
+    "example_records": [
+      "dataset:dandi:000045",
+      "dataset:dandi:000678",
+      "dataset:dandi:001079",
+      "dataset:dandi:000021",
+      "dataset:dandi:000022"
+    ],
+    "high_confidence_count": 15,
+    "priority": "critical",
+    "region": "visual_cortex",
+    "sources": [
+      "dandi",
+      "openneuro"
+    ],
+    "suggested_record_count": 16,
+    "system": "cortical"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000051",
+      "dataset:dandi:000052"
+    ],
+    "high_confidence_count": 2,
+    "priority": "high",
+    "region": "pons",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 2,
+    "system": "brainstem"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000640",
+      "dataset:dandi:000028",
+      "dataset:dandi:000043",
+      "dataset:dandi:000060",
+      "dataset:dandi:000172"
+    ],
+    "high_confidence_count": 0,
+    "priority": "medium",
+    "region": "cortex",
+    "sources": [
+      "dandi",
+      "openneuro"
+    ],
+    "suggested_record_count": 12,
+    "system": "cortical"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000066",
+      "dataset:dandi:000108",
+      "dataset:dandi:000541",
+      "dataset:dandi:000565",
+      "dataset:openneuro:ds000236"
+    ],
+    "high_confidence_count": 0,
+    "priority": "medium",
+    "region": "whole_brain",
+    "sources": [
+      "dandi",
+      "openneuro"
+    ],
+    "suggested_record_count": 7,
+    "system": "whole_brain"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000004",
+      "dataset:dandi:000468"
+    ],
+    "high_confidence_count": 0,
+    "priority": "medium",
+    "region": "medial_temporal_lobe",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 2,
+    "system": "hippocampal_formation"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000024"
+    ],
+    "high_confidence_count": 1,
+    "priority": "low",
+    "region": "basal_forebrain",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 1,
+    "system": "basal_forebrain"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:001079"
+    ],
+    "high_confidence_count": 1,
+    "priority": "low",
+    "region": "hippocampus",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 1,
+    "system": "hippocampal_formation"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000116"
+    ],
+    "high_confidence_count": 1,
+    "priority": "low",
+    "region": "spinal_cord",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 1,
+    "system": "spinal_cord"
+  },
+  {
+    "example_records": [
+      "dataset:openneuro:ds001541"
+    ],
+    "high_confidence_count": 0,
+    "priority": "low",
+    "region": "dorsal_raphe",
+    "sources": [
+      "openneuro"
+    ],
+    "suggested_record_count": 1,
+    "system": "brainstem"
+  },
+  {
+    "example_records": [
+      "dataset:openneuro:ds002185"
+    ],
+    "high_confidence_count": 0,
+    "priority": "low",
+    "region": "olfactory_bulb",
+    "sources": [
+      "openneuro"
+    ],
+    "suggested_record_count": 1,
+    "system": "olfactory"
+  }
+]

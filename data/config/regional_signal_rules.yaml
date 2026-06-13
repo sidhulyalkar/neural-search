@@ -1,0 +1,102 @@
+# Conservative regional signal rules for records without verified region labels.
+#
+# These rules produce reviewable suggestions, not verified labels. They capture
+# common collection names, abbreviations, and task phrases that exact atlas
+# aliases miss.
+
+regional_signal_rules:
+  - id: allen_brain_observatory_visual
+    regions: [visual_cortex]
+    confidence: 0.84
+    include_any:
+      - allen brain observatory
+      - visual coding
+      - openscope
+    evidence_tier: named_collection
+    rationale: Allen Brain Observatory / Visual Coding / OpenScope datasets are visual-system resources.
+
+  - id: mouse_visual_system
+    regions: [visual_cortex]
+    confidence: 0.80
+    include_any:
+      - visual system
+      - visual discrimination
+      - visual stimulus
+      - visual stimuli
+    evidence_tier: title_description_candidate
+    rationale: Visual-system phrasing is a high-yield visual cortex candidate.
+
+  - id: sharp_wave_ripple_hippocampus
+    regions: [hippocampus]
+    confidence: 0.86
+    include_any:
+      - sharp wave ripple
+      - sharp wave ripples
+      - swr
+    evidence_tier: title_description_candidate
+    rationale: Sharp-wave ripple datasets are usually hippocampal or hippocampal-adjacent.
+
+  - id: pons_named_record
+    regions: [pons]
+    confidence: 0.82
+    patterns:
+      - '\bpons[0-9_-]*\b'
+    evidence_tier: title_description_candidate
+    rationale: Pons appears as a compact title token that exact word-boundary aliases miss.
+
+  - id: spinal_cord_compound
+    regions: [spinal_cord]
+    confidence: 0.88
+    include_any:
+      - spinalcord
+      - spinal cord
+    evidence_tier: title_description_candidate
+    rationale: Spinal-cord terms directly name the anatomical target.
+
+  - id: basal_forebrain_abbreviation
+    regions: [basal_forebrain]
+    confidence: 0.78
+    patterns:
+      - '\bbf\b'
+      - '\bbasal forebrain\b'
+    evidence_tier: title_description_candidate
+    rationale: BF is commonly used as basal forebrain in electrophysiology dataset titles.
+
+  - id: human_single_neuron_memory_mtl
+    regions: [medial_temporal_lobe]
+    confidence: 0.66
+    include_all:
+      - single-neuron
+      - memory
+    evidence_tier: task_inferred
+    rationale: Human single-neuron declarative memory recordings commonly target medial temporal lobe structures.
+
+  - id: pyramidal_neuron_cortex
+    regions: [cortex]
+    confidence: 0.58
+    include_any:
+      - pyramidal neuron
+      - pyramidal neurons
+    evidence_tier: weak_text_candidate
+    rationale: Pyramidal-neuron physiology is often cortical, but this stays broad and low confidence.
+
+  - id: olfaction_bulb_signal
+    regions: [olfactory_bulb]
+    confidence: 0.72
+    include_any:
+      - olfactory bulb
+      - olfactory bulbs
+      - olfaction
+    evidence_tier: title_description_candidate
+    rationale: Olfactory terms suggest olfactory bulb or olfactory pathway relevance.
+
+  - id: whole_brain_template
+    regions: [whole_brain]
+    confidence: 0.62
+    include_any:
+      - average brain template
+      - whole brain
+      - brain template
+      - light sheet imaging of the human brain
+    evidence_tier: weak_text_candidate
+    rationale: Whole-brain templates and whole-brain imaging are useful broad map targets.

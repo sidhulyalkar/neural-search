@@ -89,7 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     dandi_records = [r for r in corpus if r.get("source") == "dandi"]
     needs_enrichment = [
         r for r in dandi_records
-        if args.force_all or not r.get("modalities") or not r.get("species")
+        if args.force_all or not r.get("modalities") or not r.get("species") or not r.get("brain_regions")
     ]
     logger.info("DANDI records needing enrichment: %d", len(needs_enrichment))
 

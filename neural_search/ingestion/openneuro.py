@@ -233,6 +233,133 @@ def _map_openneuro_modalities(raw_modalities: list[str]) -> list[str]:
     return result
 
 
+# Map BIDS task names AND ontology task IDs to brain regions likely recruited.
+# Keys are lowercased/stripped/cleaned strings; values are lists of canonical region IDs.
+_OPENNEURO_TASK_REGION_MAP: dict[str, list[str]] = {
+    # Episodic memory / spatial navigation
+    "memory": ["hippocampus"],
+    "memorytask": ["hippocampus"],
+    "encoding": ["hippocampus"],
+    "retrieval": ["hippocampus"],
+    "autobiographicalmemory": ["hippocampus", "mPFC"],
+    "prospection": ["hippocampus", "mPFC"],
+    "spatial": ["hippocampus", "entorhinal_cortex"],
+    "navigation": ["hippocampus", "entorhinal_cortex"],
+    "spatialnavigation": ["hippocampus", "entorhinal_cortex"],
+    "virtualnavigation": ["hippocampus", "entorhinal_cortex"],
+    "contextualfear": ["hippocampus", "amygdala"],
+    # Working memory / executive
+    "workingmemory": ["dlPFC", "hippocampus"],
+    "working_memory": ["dlPFC", "hippocampus"],
+    "nback": ["dlPFC"],
+    "stroop": ["ACC", "dlPFC"],
+    "stroop_task": ["ACC", "dlPFC"],
+    "taskswitch": ["dlPFC", "ACC"],
+    "flanker": ["ACC"],
+    "flanker_task": ["ACC"],
+    "inhibition": ["dlPFC", "ACC"],
+    "stop_signal_task": ["dlPFC", "ACC"],
+    "stopsignaltask": ["dlPFC", "ACC"],
+    "go_nogo": ["ACC", "dlPFC"],
+    "gonogo": ["ACC", "dlPFC"],
+    # Reward / value
+    "reward": ["nucleus_accumbens", "OFC"],
+    "monetary": ["nucleus_accumbens", "OFC"],
+    "gambling": ["OFC", "nucleus_accumbens"],
+    "decision": ["OFC", "dlPFC"],
+    "rewardlearning": ["striatum", "OFC"],
+    "monetaryincentivedelay": ["nucleus_accumbens"],
+    "mid": ["nucleus_accumbens"],
+    "value_based_decision_making": ["OFC", "striatum"],
+    "valuebaseddecisionmaking": ["OFC", "striatum"],
+    "delay_discounting": ["OFC", "striatum"],
+    "delaydiscounting": ["OFC", "striatum"],
+    "probability_discounting": ["OFC", "striatum"],
+    "foraging": ["striatum", "OFC"],
+    # Motor
+    "motor": ["motor_cortex"],
+    "motor_imagery": ["motor_cortex", "premotor_cortex"],
+    "motorimagery": ["motor_cortex", "premotor_cortex"],
+    "fingertapping": ["motor_cortex", "cerebellum"],
+    "tapping": ["motor_cortex"],
+    "movement": ["motor_cortex", "premotor_cortex"],
+    "sequencelearning": ["motor_cortex", "striatum"],
+    "handmotor": ["motor_cortex"],
+    "reaching": ["motor_cortex", "posterior_parietal_cortex"],
+    "locomotion": ["motor_cortex", "cerebellum"],
+    # Visual / perception
+    "visual": ["visual_cortex"],
+    "faceperception": ["temporal_cortex"],
+    "objectrecognition": ["temporal_cortex"],
+    "object_recognition": ["temporal_cortex"],
+    "facerecognition": ["temporal_cortex"],
+    "face_processing": ["temporal_cortex", "amygdala"],
+    "faceprocessing": ["temporal_cortex", "amygdala"],
+    "faces": ["temporal_cortex", "amygdala"],
+    "objects": ["temporal_cortex"],
+    "multisensory_integration": ["temporal_cortex", "parietal_cortex"],
+    "oddball": ["temporal_cortex", "ACC"],
+    "mismatch_negativity": ["temporal_cortex"],
+    "missmatchnegativity": ["temporal_cortex"],
+    "natural_movie_viewing": ["visual_cortex", "temporal_cortex"],
+    "movieviewing": ["visual_cortex", "temporal_cortex"],
+    # Auditory
+    "auditory": ["auditory_cortex"],
+    "auditory_processing": ["auditory_cortex"],
+    "auditoryprocessing": ["auditory_cortex"],
+    "sentencelistening": ["auditory_cortex", "temporal_cortex"],
+    # Language / speech
+    "language": ["temporal_cortex"],
+    "language_comprehension": ["temporal_cortex"],
+    "languagecomprehension": ["temporal_cortex"],
+    "speech": ["temporal_cortex", "broca_area"],
+    "words": ["temporal_cortex"],
+    "reading": ["temporal_cortex"],
+    "semantic": ["temporal_cortex"],
+    # Emotion / social
+    "emotion": ["amygdala"],
+    "fear": ["amygdala"],
+    "emotionregulation": ["amygdala", "mPFC"],
+    "social": ["mPFC", "temporal_cortex"],
+    "social_interaction": ["mPFC", "temporal_cortex"],
+    "socialinteraction": ["mPFC", "temporal_cortex"],
+    "theory_of_mind": ["mPFC", "temporal_cortex"],
+    "theoryofmind": ["mPFC", "temporal_cortex"],
+    # Attention
+    "attention": ["parietal_cortex", "ACC"],
+    "spatialattention": ["parietal_cortex"],
+    "pupil_arousal": ["locus_coeruleus"],
+    # Pain / interoception
+    "pain": ["insula", "ACC"],
+    "pain_task": ["insula", "ACC"],
+    "paintask": ["insula", "ACC"],
+    "heat": ["insula"],
+    "interoception": ["insula"],
+}
+
+
+def _map_openneuro_tasks_to_regions(tasks_raw: list[str]) -> list[str]:
+    """Map OpenNeuro/BIDS task names to canonical brain region IDs."""
+    canonical: set[str] = set()
+    for task in tasks_raw:
+        key = str(task).lower().strip().replace("-", "").replace("_", "").replace(" ", "")
+        # Try exact match on cleaned key
+        if key in _OPENNEURO_TASK_REGION_MAP:
+            canonical.update(_OPENNEURO_TASK_REGION_MAP[key])
+            continue
+        # Try raw cleaned key directly
+        raw_key = str(task).lower().strip()
+        if raw_key in _OPENNEURO_TASK_REGION_MAP:
+            canonical.update(_OPENNEURO_TASK_REGION_MAP[raw_key])
+            continue
+        # Substring match for compound task names
+        for map_key, regions in _OPENNEURO_TASK_REGION_MAP.items():
+            if map_key in raw_key or map_key in key:
+                canonical.update(regions)
+                break
+    return sorted(canonical)
+
+
 def _map_openneuro_species(raw_species: list[str] | str | None) -> list[str]:
     """Normalize OpenNeuro species strings to canonical IDs."""
     if not raw_species:
@@ -293,6 +420,9 @@ def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
 
     tasks_raw = list(on_metadata.get("tasksCompleted") or summary.get("tasks") or [])
     tasks = sorted({*tasks_raw, *(item.id for item in extraction.tasks)})
+    task_regions = _map_openneuro_tasks_to_regions(tasks_raw)
+    extractor_regions = [item.id for item in extraction.brain_regions]
+    brain_regions = list(dict.fromkeys(extractor_regions + task_regions))
     return {
         "source": "openneuro",
         "source_id": node["id"],
@@ -302,7 +432,7 @@ def normalize_openneuro_dataset(node: dict[str, Any]) -> dict[str, Any]:
         "license": snap_desc.get("License") if isinstance(snap_desc, dict) else None,
         "species": species_ids,
         "modalities": sorted({*modalities, *(item.id for item in extraction.modalities)}),
-        "brain_regions": [item.id for item in extraction.brain_regions],
+        "brain_regions": brain_regions,
         "tasks": tasks,
         "behaviors": [item.id for item in extraction.behaviors],
         "data_standards": ["BIDS"],
