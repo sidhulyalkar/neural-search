@@ -9,7 +9,13 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
-from neural_search.ontology.models import REQUIRED_TASK_FIELDS, BrainRegion, Ontology
+from neural_search.ontology.models import (
+    REQUIRED_TASK_FIELDS,
+    BrainRegion,
+    Ontology,
+    RecordingScale,
+    Task,
+)
 
 DEFAULT_ONTOLOGY_PATH = (
     Path(__file__).resolve().parents[2]
@@ -20,6 +26,10 @@ DEFAULT_ONTOLOGY_PATH = (
 
 DEFAULT_BRAIN_REGIONS_PATH = (
     Path(__file__).resolve().parents[2] / "data" / "ontology" / "brain_regions.yaml"
+)
+
+DEFAULT_RECORDING_SCALES_PATH = (
+    Path(__file__).resolve().parents[2] / "data" / "ontology" / "recording_scales.yaml"
 )
 
 
@@ -87,11 +97,11 @@ def reload_ontology(path: str | Path = DEFAULT_ONTOLOGY_PATH) -> Ontology:
     return load_ontology(path)
 
 
-def get_all_tasks():
+def get_all_tasks() -> list[Task]:
     return get_ontology().tasks
 
 
-def get_task_by_id(task_id: str):
+def get_task_by_id(task_id: str) -> Task | None:
     return get_ontology().task_by_id.get(task_id)
 
 
@@ -119,3 +129,72 @@ def get_brain_regions() -> tuple[BrainRegion, ...]:
     """Return the default brain-region ontology."""
 
     return load_brain_regions(DEFAULT_BRAIN_REGIONS_PATH)
+
+
+@lru_cache(maxsize=8)
+def _load_recording_scales_cached(path_string: str) -> tuple[RecordingScale, ...]:
+    raw = _load_yaml(path_string)
+    entries = raw.get("recording_scales")
+    if not isinstance(entries, list):
+        raise OntologyValidationError("Recording-scale ontology must define recording_scales list")
+    try:
+        return tuple(RecordingScale.model_validate(entry) for entry in entries)
+    except ValidationError as exc:
+        raise OntologyValidationError(str(exc)) from exc
+
+
+def load_recording_scales(
+    path: str | Path = DEFAULT_RECORDING_SCALES_PATH,
+) -> tuple[RecordingScale, ...]:
+    """Load search-oriented recording/sampling scale categories."""
+
+    return _load_recording_scales_cached(str(Path(path)))
+
+
+def get_recording_scales() -> tuple[RecordingScale, ...]:
+    """Return the default recording-scale ontology."""
+
+    return load_recording_scales(DEFAULT_RECORDING_SCALES_PATH)
+
+
+# ── Atlas-ref helpers ──────────────────────────────────────────────────────
+
+def _build_region_index(regions: tuple[BrainRegion, ...]) -> dict[str, BrainRegion]:
+    return {r.id: r for r in regions}
+
+
+@lru_cache(maxsize=1)
+def _region_index_cached() -> dict[str, BrainRegion]:
+    return _build_region_index(get_brain_regions())
+
+
+def get_region_atlas_refs(region_id: str) -> dict[str, str]:
+    """Return the atlas_refs mapping for a canonical region ID, or {} if unknown."""
+    region = _region_index_cached().get(region_id)
+    return dict(region.atlas_refs) if region else {}
+
+
+def get_region_uberon_id(region_id: str) -> str | None:
+    """Return the UBERON ID for a canonical region ID, or None."""
+    return get_region_atlas_refs(region_id).get("uberon")
+
+
+def get_region_allen_ccf_id(region_id: str) -> str | None:
+    """Return the Allen CCF v3 mouse structure ID for a canonical region ID, or None."""
+    return get_region_atlas_refs(region_id).get("allen_ccf_mouse")
+
+
+def get_regions_by_uberon(uberon_id: str) -> list[BrainRegion]:
+    """Return all canonical regions that map to a given UBERON ID."""
+    return [
+        r for r in get_brain_regions()
+        if r.atlas_refs.get("uberon") == uberon_id
+    ]
+
+
+def get_regions_by_allen_ccf(structure_id: str) -> list[BrainRegion]:
+    """Return all canonical regions that map to a given Allen CCF structure ID."""
+    return [
+        r for r in get_brain_regions()
+        if r.atlas_refs.get("allen_ccf_mouse") == structure_id
+    ]

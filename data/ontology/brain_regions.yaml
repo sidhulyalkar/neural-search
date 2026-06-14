@@ -5,789 +5,1567 @@
 # OpenNeuro/BIDS task names. Not a complete atlas.
 
 brain_regions:
-  - id: visual_cortex
-    label: Visual cortex
-    aliases:
-      - visual cortex
-      - visual cortical areas
-      - visual areas
-      - visual system
-      - striate and extrastriate cortex
-      - anterolateral visual area
-      - anteromedial visual area
-      - posteromedial visual area
-    parents: []
-    strict: false
+- id: visual_cortex
+  label: Visual cortex
+  aliases:
+  - visual cortex
+  - visual cortical areas
+  - visual areas
+  - visual system
+  - striate and extrastriate cortex
+  - anterolateral visual area
+  - anteromedial visual area
+  - posteromedial visual area
+  parents: []
+  strict: false
 
-  - id: v1
-    label: Primary visual cortex
-    aliases:
-      - v1
-      - primary visual cortex
-      - striate cortex
-      - visp
-    parents:
-      - visual_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0000411
+    allen_ccf_mouse: '669'
+    waxholm_rat: '12'
+- id: v1
+  label: Primary visual cortex
+  aliases:
+  - v1
+  - primary visual cortex
+  - striate cortex
+  - visp
+  parents:
+  - visual_cortex
+  strict: true
 
-  - id: v2
-    label: Visual area V2
-    aliases:
-      - v2
-      - visual area 2
-    parents:
-      - visual_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002316
+    allen_ccf_mouse: '385'
+- id: v2
+  label: Visual area V2
+  aliases:
+  - v2
+  - visual area 2
+  parents:
+  - visual_cortex
+  strict: true
 
-  - id: v4
-    label: Visual area V4
-    aliases:
-      - v4
-      - visual area 4
-    parents:
-      - visual_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002317
+    allen_ccf_mouse: '231'
+- id: v4
+  label: Visual area V4
+  aliases:
+  - v4
+  - visual area 4
+  parents:
+  - visual_cortex
+  strict: true
 
-  - id: area_mt
-    label: Middle temporal visual area
-    aliases:
-      - area mt
-      - mt
-      - middle temporal area
-      - middle temporal visual area
-      - v5
-      - visual area mt
-      - motion area mt
-    parents:
-      - visual_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0006578
+    allen_ccf_mouse: '533'
+- id: area_mt
+  label: Middle temporal visual area
+  aliases:
+  - area mt
+  - mt
+  - middle temporal area
+  - middle temporal visual area
+  - v5
+  - visual area mt
+  - motion area mt
+  parents:
+  - visual_cortex
+  strict: true
 
-  - id: mst
-    label: Medial superior temporal area
-    aliases:
-      - mst
-      - medial superior temporal
-      - medial superior temporal area
-      - dorsal mst
-      - mstd
-    parents:
-      - visual_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0003107
+    allen_ccf_mouse: '417'
+- id: mst
+  label: Medial superior temporal area
+  aliases:
+  - mst
+  - medial superior temporal
+  - medial superior temporal area
+  - dorsal mst
+  - mstd
+  parents:
+  - visual_cortex
+  strict: true
 
-  - id: prefrontal_cortex
-    label: Prefrontal cortex
-    aliases:
-      - prefrontal cortex
-      - pfc
-      - frontal cortex
-      - frontal lobe
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0022705
+- id: prefrontal_cortex
+  label: Prefrontal cortex
+  aliases:
+  - prefrontal cortex
+  - pfc
+  - frontal cortex
+  - frontal lobe
+  parents: []
+  strict: false
 
-  - id: mPFC
-    label: Medial prefrontal cortex
-    aliases:
-      - mpfc
-      - medial prefrontal
-      - medial prefrontal cortex
-      - prelimbic
-      - infralimbic
-    parents:
-      - prefrontal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0000451
+    allen_ccf_mouse: '184'
+    waxholm_rat: '6'
+- id: mPFC
+  label: Medial prefrontal cortex
+  aliases:
+  - mpfc
+  - medial prefrontal
+  - medial prefrontal cortex
+  - prelimbic
+  - infralimbic
+  parents:
+  - prefrontal_cortex
+  strict: true
 
-  - id: OFC
-    label: Orbitofrontal cortex
-    aliases:
-      - ofc
-      - orbitofrontal
-      - orbitofrontal cortex
-    parents:
-      - prefrontal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0005398
+    allen_ccf_mouse: '972'
+- id: OFC
+  label: Orbitofrontal cortex
+  aliases:
+  - ofc
+  - orbitofrontal
+  - orbitofrontal cortex
+  parents:
+  - prefrontal_cortex
+  strict: true
 
-  - id: ACC
-    label: Anterior cingulate cortex
-    aliases:
-      - acc
-      - anterior cingulate
-      - anterior cingulate cortex
-      - cingulate cortex
-    parents:
-      - prefrontal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0004169
+    allen_ccf_mouse: '714'
+    allen_human: '4253'
+- id: ACC
+  label: Anterior cingulate cortex
+  aliases:
+  - acc
+  - anterior cingulate
+  - anterior cingulate cortex
+  - cingulate cortex
+  parents:
+  - prefrontal_cortex
+  strict: true
 
-  - id: dlPFC
-    label: Dorsolateral prefrontal cortex
-    aliases:
-      - dlpfc
-      - dorsolateral prefrontal
-      - dorsolateral prefrontal cortex
-      - lateral prefrontal cortex
-    parents:
-      - prefrontal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0009765
+    allen_ccf_mouse: '31'
+    allen_human: '4249'
+- id: dlPFC
+  label: Dorsolateral prefrontal cortex
+  aliases:
+  - dlpfc
+  - dorsolateral prefrontal
+  - dorsolateral prefrontal cortex
+  - lateral prefrontal cortex
+  parents:
+  - prefrontal_cortex
+  strict: true
 
-  - id: dmFC
-    label: Dorsomedial frontal cortex
-    aliases:
-      - dmfc
-      - dorsomedial frontal cortex
-      - dorsomedial frontal
-      - medial frontal cortex
-    parents:
-      - prefrontal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0009834
+    allen_human: '4248'
+- id: dmFC
+  label: Dorsomedial frontal cortex
+  aliases:
+  - dmfc
+  - dorsomedial frontal cortex
+  - dorsomedial frontal
+  - medial frontal cortex
+  parents:
+  - prefrontal_cortex
+  strict: true
 
-  - id: PMd
-    label: Dorsal premotor cortex
-    aliases:
-      - pmd
-      - dorsal premotor cortex
-      - dorsal premotor
-      - premotor cortex dorsal
-    parents:
-      - premotor_cortex
-      - motor_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002664
+- id: PMd
+  label: Dorsal premotor cortex
+  aliases:
+  - pmd
+  - dorsal premotor cortex
+  - dorsal premotor
+  - premotor cortex dorsal
+  parents:
+  - premotor_cortex
+  - motor_cortex
+  strict: true
 
-  - id: premotor_cortex
-    label: Premotor cortex
-    aliases:
-      - premotor cortex
-      - premotor
-      - pmc
-      - supplementary motor
-      - sma
-    parents:
-      - motor_cortex
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0014892
+    allen_ccf_mouse: '993'
+- id: premotor_cortex
+  label: Premotor cortex
+  aliases:
+  - premotor cortex
+  - premotor
+  - pmc
+  - supplementary motor
+  - sma
+  parents:
+  - motor_cortex
+  strict: false
 
-  - id: motor_cortex
-    label: Motor cortex
-    aliases:
-      - motor cortex
-      - m1
-      - primary motor
-      - primary motor cortex
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0007232
+    allen_ccf_mouse: '993'
+- id: motor_cortex
+  label: Motor cortex
+  aliases:
+  - motor cortex
+  - primary motor
+  - primary motor cortex
+  parents: []
+  strict: false
 
-  - id: striatum
-    label: Striatum
-    aliases:
-      - striatum
-      - striatal
-      - basal ganglia
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0001384
+    allen_ccf_mouse: '500'
+    waxholm_rat: '7'
+- id: striatum
+  label: Striatum
+  aliases:
+  - striatum
+  - striatal
+  - basal ganglia
+  parents: []
+  strict: false
 
-  - id: dorsal_striatum
-    label: Dorsal striatum
-    aliases:
-      - dorsal striatum
-      - dorsal striatal
-      - neostriatum
-    parents:
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0000369
+    allen_ccf_mouse: '477'
+    allen_human: '4256'
+    waxholm_rat: '68'
+- id: dorsal_striatum
+  label: Dorsal striatum
+  aliases:
+  - dorsal striatum
+  - dorsal striatal
+  - neostriatum
+  parents:
+  - striatum
+  strict: true
 
-  - id: dorsolateral_striatum
-    label: Dorsolateral striatum
-    aliases:
-      - dorsolateral striatum
-      - dorsolateral striatal
-      - dls
-    parents:
-      - dorsal_striatum
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002038
+    allen_ccf_mouse: '251'
+- id: dorsolateral_striatum
+  label: Dorsolateral striatum
+  aliases:
+  - dorsolateral striatum
+  - dorsolateral striatal
+  - dls
+  parents:
+  - dorsal_striatum
+  - striatum
+  strict: true
 
-  - id: dorsomedial_striatum
-    label: Dorsomedial striatum
-    aliases:
-      - dorsomedial striatum
-      - dorsomedial striatal
-      - dms
-    parents:
-      - dorsal_striatum
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0018697
+    allen_ccf_mouse: '672'
+- id: dorsomedial_striatum
+  label: Dorsomedial striatum
+  aliases:
+  - dorsomedial striatum
+  - dorsomedial striatal
+  - dms
+  parents:
+  - dorsal_striatum
+  - striatum
+  strict: true
 
-  - id: ventral_striatum
-    label: Ventral striatum
-    aliases:
-      - ventral striatum
-      - ventral striatal
-      - vstr
-    parents:
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0018696
+    allen_ccf_mouse: '672'
+- id: ventral_striatum
+  label: Ventral striatum
+  aliases:
+  - ventral striatum
+  - ventral striatal
+  - vstr
+  parents:
+  - striatum
+  strict: true
 
-  - id: nucleus_accumbens
-    label: Nucleus accumbens
-    aliases:
-      - nucleus accumbens
-      - accumbens
-      - nac
-      - nacc
-    parents:
-      - ventral_striatum
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002039
+    allen_ccf_mouse: '754'
+- id: nucleus_accumbens
+  label: Nucleus accumbens
+  aliases:
+  - nucleus accumbens
+  - accumbens
+  - nac
+  - nacc
+  parents:
+  - ventral_striatum
+  - striatum
+  strict: true
 
-  - id: caudate
-    label: Caudate
-    aliases:
-      - caudate
-      - caudate nucleus
-    parents:
-      - dorsal_striatum
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001871
+    allen_ccf_mouse: '56'
+    waxholm_rat: '69'
+- id: caudate
+  label: Caudate
+  aliases:
+  - caudate
+  - caudate nucleus
+  parents:
+  - dorsal_striatum
+  - striatum
+  strict: true
 
-  - id: putamen
-    label: Putamen
-    aliases:
-      - putamen
-    parents:
-      - dorsal_striatum
-      - striatum
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001873
+    allen_ccf_mouse: '672'
+- id: putamen
+  label: Putamen
+  aliases:
+  - putamen
+  parents:
+  - dorsal_striatum
+  - striatum
+  strict: true
 
-  - id: somatosensory_cortex
-    label: Somatosensory cortex
-    aliases:
-      - somatosensory cortex
-      - s1
-      - primary somatosensory
-      - primary somatosensory cortex
-      - barrel cortex
-      - barrel field
-      - s1bf
-      - vibrissa cortex
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0001874
+    allen_ccf_mouse: '672'
+- id: somatosensory_cortex
+  label: Somatosensory cortex
+  aliases:
+  - somatosensory cortex
+  - primary somatosensory
+  - primary somatosensory cortex
+  parents: []
+  strict: false
 
-  - id: somatosensory_area_2
-    label: Somatosensory area 2
-    aliases:
-      - somatosensory area 2
-      - area 2
-      - area2
-    parents:
-      - somatosensory_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0003022
+    allen_ccf_mouse: '453'
+    waxholm_rat: '9'
+- id: somatosensory_area_2
+  label: Somatosensory area 2
+  aliases:
+  - somatosensory area 2
+  - area 2
+  - area2
+  parents:
+  - somatosensory_cortex
+  strict: true
 
   # ─── Parietal cortex ─────────────────────────────────────────────────────────
 
-  - id: parietal_cortex
-    label: Parietal cortex
-    aliases:
-      - parietal cortex
-      - parietal lobe
-      - parietal areas
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0008930
+    allen_ccf_mouse: '378'
+- id: parietal_cortex
+  label: Parietal cortex
+  aliases:
+  - parietal cortex
+  - parietal lobe
+  - parietal areas
+  parents: []
+  strict: false
 
-  - id: posterior_parietal_cortex
-    label: Posterior parietal cortex
-    aliases:
-      - posterior parietal cortex
-      - ppc
-      - area 7
-      - area 7a
-      - area 7b
-      - posterior parietal
-    parents:
-      - parietal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001872
+    allen_ccf_mouse: '1057'
+- id: posterior_parietal_cortex
+  label: Posterior parietal cortex
+  aliases:
+  - posterior parietal cortex
+  - ppc
+  - area 7
+  - area 7a
+  - area 7b
+  - posterior parietal
+  parents:
+  - parietal_cortex
+  strict: true
 
-  - id: lip
-    label: Lateral intraparietal area
-    aliases:
-      - lip
-      - lateral intraparietal area
-      - lateral intraparietal cortex
-      - area lip
-    parents:
-      - parietal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0034968
+    allen_ccf_mouse: '1057'
+- id: lip
+  label: Lateral intraparietal area
+  aliases:
+  - lip
+  - lateral intraparietal area
+  - lateral intraparietal cortex
+  - area lip
+  parents:
+  - parietal_cortex
+  strict: true
 
-  - id: aip
-    label: Anterior intraparietal area
-    aliases:
-      - aip
-      - anterior intraparietal area
-      - anterior intraparietal cortex
-    parents:
-      - parietal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0022745
+- id: aip
+  label: Anterior intraparietal area
+  aliases:
+  - aip
+  - anterior intraparietal area
+  - anterior intraparietal cortex
+  parents:
+  - parietal_cortex
+  strict: true
 
   # ─── Temporal cortex ─────────────────────────────────────────────────────────
 
-  - id: temporal_cortex
-    label: Temporal cortex
-    aliases:
-      - temporal cortex
-      - temporal lobe
-      - inferior temporal cortex
-      - it cortex
-      - inferotemporal cortex
-      - inferior temporal gyrus
-      - superior temporal gyrus
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0022741
+- id: temporal_cortex
+  label: Temporal cortex
+  aliases:
+  - temporal cortex
+  - temporal lobe
+  - inferior temporal cortex
+  - it cortex
+  - inferotemporal cortex
+  - inferior temporal gyrus
+  - superior temporal gyrus
+  parents: []
+  strict: false
 
-  - id: auditory_cortex
-    label: Auditory cortex
-    aliases:
-      - auditory cortex
-      - a1
-      - primary auditory cortex
-      - auditory cortical areas
-      - auditory areas
-    parents:
-      - temporal_cortex
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0006480
+    allen_ccf_mouse: '541'
+- id: auditory_cortex
+  label: Auditory cortex
+  aliases:
+  - auditory cortex
+  - a1
+  - primary auditory cortex
+  - auditory cortical areas
+  - auditory areas
+  parents:
+  - temporal_cortex
+  strict: false
 
   # ─── Cingulate / retrosplenial ───────────────────────────────────────────────
 
-  - id: retrosplenial_cortex
-    label: Retrosplenial cortex
-    aliases:
-      - retrosplenial cortex
-      - rsc
-      - retrosplenial area
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001732
+    allen_ccf_mouse: '247'
+    waxholm_rat: '11'
+- id: retrosplenial_cortex
+  label: Retrosplenial cortex
+  aliases:
+  - retrosplenial cortex
+  - rsc
+  - retrosplenial area
+  parents: []
+  strict: true
 
-  - id: posterior_cingulate_cortex
-    label: Posterior cingulate cortex
-    aliases:
-      - posterior cingulate cortex
-      - pcc
-      - posterior cingulate
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0004069
+    allen_ccf_mouse: '254'
+- id: posterior_cingulate_cortex
+  label: Posterior cingulate cortex
+  aliases:
+  - posterior cingulate cortex
+  - pcc
+  - posterior cingulate
+  parents: []
+  strict: true
 
-  - id: insula
-    label: Insula
-    aliases:
-      - insula
-      - insular cortex
-      - insular lobe
-      - anterior insula
-      - posterior insula
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0009972
+    allen_ccf_mouse: '254'
+- id: insula
+  label: Insula
+  aliases:
+  - insula
+  - insular cortex
+  - insular lobe
+  - anterior insula
+  - posterior insula
+  parents: []
+  strict: true
 
   # ─── Neocortex (broad) ───────────────────────────────────────────────────────
 
-  - id: neocortex
-    label: Neocortex
-    aliases:
-      - neocortex
-      - neocortical
-      - cerebral cortex
-      - cortical recording
-      - isocortex
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0000064
+    allen_ccf_mouse: '95'
+- id: neocortex
+  label: Neocortex
+  aliases:
+  - neocortex
+  - neocortical
+  - cerebral cortex
+  - cortical recording
+  - isocortex
+  parents: []
+  strict: false
 
   # ─── Hippocampal formation ───────────────────────────────────────────────────
 
-  - id: hippocampus
-    label: Hippocampus
-    aliases:
-      - hippocampus
-      - hippocampal
-      - hippocampal formation
-      - hippocampal complex
-      - hippocampal region
-      - hip
-      - ammon's horn
-      - cornu ammonis
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0001950
+    allen_ccf_mouse: '695'
+- id: hippocampus
+  label: Hippocampus
+  aliases:
+  - hippocampus
+  - hippocampal
+  - hippocampal formation
+  - hippocampal complex
+  - hippocampal region
+  - hip
+  - ammon's horn
+  - cornu ammonis
+  parents: []
+  strict: false
 
-  - id: ca1
-    label: CA1 field of hippocampus
-    aliases:
-      - ca1
-      - ca1 field
-      - ca1 field of hippocampus
-      - hippocampal ca1
-    parents:
-      - hippocampus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002421
+    allen_ccf_mouse: '1080'
+    allen_human: '4234'
+    waxholm_rat: '22'
+- id: ca1
+  label: CA1 field of hippocampus
+  aliases:
+  - ca1
+  - ca1 field
+  - ca1 field of hippocampus
+  - hippocampal ca1
+  parents:
+  - hippocampus
+  strict: true
 
-  - id: ca2
-    label: CA2 field of hippocampus
-    aliases:
-      - ca2
-      - ca2 field
-      - ca2 field of hippocampus
-    parents:
-      - hippocampus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0003881
+    allen_ccf_mouse: '382'
+    waxholm_rat: '23'
+- id: ca2
+  label: CA2 field of hippocampus
+  aliases:
+  - ca2
+  - ca2 field
+  - ca2 field of hippocampus
+  parents:
+  - hippocampus
+  strict: true
 
-  - id: ca3
-    label: CA3 field of hippocampus
-    aliases:
-      - ca3
-      - ca3 field
-      - ca3 field of hippocampus
-      - hippocampal ca3
-    parents:
-      - hippocampus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0003882
+    allen_ccf_mouse: '423'
+    waxholm_rat: '24'
+- id: ca3
+  label: CA3 field of hippocampus
+  aliases:
+  - ca3
+  - ca3 field
+  - ca3 field of hippocampus
+  - hippocampal ca3
+  parents:
+  - hippocampus
+  strict: true
 
-  - id: dentate_gyrus
-    label: Dentate gyrus
-    aliases:
-      - dentate gyrus
-      - dg
-      - dentate
-      - fascia dentata
-    parents:
-      - hippocampus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0003883
+    allen_ccf_mouse: '463'
+    waxholm_rat: '25'
+- id: dentate_gyrus
+  label: Dentate gyrus
+  aliases:
+  - dentate gyrus
+  - dg
+  - dentate
+  - fascia dentata
+  parents:
+  - hippocampus
+  strict: true
 
-  - id: subiculum
-    label: Subiculum
-    aliases:
-      - subiculum
-      - subicular cortex
-      - presubiculum
-      - parasubiculum
-    parents:
-      - hippocampus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001914
+    allen_ccf_mouse: '726'
+    waxholm_rat: '27'
+- id: subiculum
+  label: Subiculum
+  aliases:
+  - subiculum
+  - subicular cortex
+  - presubiculum
+  - parasubiculum
+  parents:
+  - hippocampus
+  strict: true
 
   # ─── Entorhinal cortex ───────────────────────────────────────────────────────
 
-  - id: entorhinal_cortex
-    label: Entorhinal cortex
-    aliases:
-      - entorhinal cortex
-      - ec
-      - entorhinal area
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001880
+    allen_ccf_mouse: '502'
+- id: entorhinal_cortex
+  label: Entorhinal cortex
+  aliases:
+  - entorhinal cortex
+  - ec
+  - entorhinal area
+  parents: []
+  strict: true
 
-  - id: medial_entorhinal_cortex
-    label: Medial entorhinal cortex
-    aliases:
-      - medial entorhinal cortex
-      - mec
-      - medial entorhinal area
-    parents:
-      - entorhinal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002254
+    allen_ccf_mouse: '909'
+    waxholm_rat: '35'
+- id: medial_entorhinal_cortex
+  label: Medial entorhinal cortex
+  aliases:
+  - medial entorhinal cortex
+  - mec
+  - medial entorhinal area
+  parents:
+  - entorhinal_cortex
+  strict: true
 
-  - id: lateral_entorhinal_cortex
-    label: Lateral entorhinal cortex
-    aliases:
-      - lateral entorhinal cortex
-      - lec
-    parents:
-      - entorhinal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0034716
+    allen_ccf_mouse: '926'
+- id: lateral_entorhinal_cortex
+  label: Lateral entorhinal cortex
+  aliases:
+  - lateral entorhinal cortex
+  - lec
+  parents:
+  - entorhinal_cortex
+  strict: true
 
   # ─── Amygdala ────────────────────────────────────────────────────────────────
 
-  - id: amygdala
-    label: Amygdala
-    aliases:
-      - amygdala
-      - amg
-      - amygdaloid complex
-      - amygdaloid nucleus
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0034717
+    allen_ccf_mouse: '918'
+- id: amygdala
+  label: Amygdala
+  aliases:
+  - amygdala
+  - amg
+  - amygdaloid complex
+  - amygdaloid nucleus
+  parents: []
+  strict: false
 
-  - id: basolateral_amygdala
-    label: Basolateral amygdala
-    aliases:
-      - basolateral amygdala
-      - bla
-      - basolateral amygdaloid complex
-      - lateral amygdala
-      - basal amygdala
-    parents:
-      - amygdala
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001876
+    allen_ccf_mouse: '131'
+    allen_human: '4239'
+    waxholm_rat: '41'
+- id: basolateral_amygdala
+  label: Basolateral amygdala
+  aliases:
+  - basolateral amygdala
+  - bla
+  - basolateral amygdaloid complex
+  - lateral amygdala
+  - basal amygdala
+  parents:
+  - amygdala
+  strict: true
 
-  - id: central_amygdala
-    label: Central amygdala
-    aliases:
-      - central amygdala
-      - cea
-      - central amygdaloid nucleus
-    parents:
-      - amygdala
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002894
+    allen_ccf_mouse: '295'
+- id: central_amygdala
+  label: Central amygdala
+  aliases:
+  - central amygdala
+  - cea
+  - central amygdaloid nucleus
+  parents:
+  - amygdala
+  strict: true
 
   # ─── Thalamus ────────────────────────────────────────────────────────────────
 
-  - id: thalamus
-    label: Thalamus
-    aliases:
-      - thalamus
-      - thal
-      - thalamic
-      - dorsal thalamus
-      - dorsal plus ventral thalamus
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0002896
+    allen_ccf_mouse: '536'
+- id: thalamus
+  label: Thalamus
+  aliases:
+  - thalamus
+  - thal
+  - thalamic
+  - dorsal thalamus
+  - dorsal plus ventral thalamus
+  parents: []
+  strict: false
 
-  - id: lateral_geniculate_nucleus
-    label: Lateral geniculate nucleus
-    aliases:
-      - lateral geniculate nucleus
-      - lateral geniculate
-      - lgn
-      - lateral geniculate body
-    parents:
-      - thalamus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001897
+    allen_ccf_mouse: '549'
+    allen_human: '4255'
+    waxholm_rat: '72'
+- id: lateral_geniculate_nucleus
+  label: Lateral geniculate nucleus
+  aliases:
+  - lateral geniculate nucleus
+  - lateral geniculate
+  - lgn
+  - lateral geniculate body
+  parents:
+  - thalamus
+  strict: true
 
-  - id: medial_geniculate_nucleus
-    label: Medial geniculate nucleus
-    aliases:
-      - medial geniculate nucleus
-      - medial geniculate
-      - mgn
-      - medial geniculate body
-    parents:
-      - thalamus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002481
+    allen_ccf_mouse: '170'
+- id: medial_geniculate_nucleus
+  label: Medial geniculate nucleus
+  aliases:
+  - medial geniculate nucleus
+  - medial geniculate
+  - mgn
+  - medial geniculate body
+  parents:
+  - thalamus
+  strict: true
 
-  - id: mediodorsal_thalamus
-    label: Mediodorsal thalamus
-    aliases:
-      - mediodorsal thalamus
-      - md
-      - mediodorsal nucleus
-      - mediodorsal thalamic nucleus
-    parents:
-      - thalamus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001927
+    allen_ccf_mouse: '475'
+- id: mediodorsal_thalamus
+  label: Mediodorsal thalamus
+  aliases:
+  - mediodorsal thalamus
+  - md
+  - mediodorsal nucleus
+  - mediodorsal thalamic nucleus
+  parents:
+  - thalamus
+  strict: true
 
-  - id: pulvinar
-    label: Pulvinar
-    aliases:
-      - pulvinar
-      - pulvinar nucleus
-    parents:
-      - thalamus
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002697
+    allen_ccf_mouse: '362'
+- id: pulvinar
+  label: Pulvinar
+  aliases:
+  - pulvinar
+  - pulvinar nucleus
+  parents:
+  - thalamus
+  strict: true
 
   # ─── Globus pallidus / STN ───────────────────────────────────────────────────
 
-  - id: globus_pallidus
-    label: Globus pallidus
-    aliases:
-      - globus pallidus
-      - gp
-      - pallidum
-      - gpe
-      - gpi
-      - globus pallidus externa
-      - globus pallidus interna
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002470
+    allen_ccf_mouse: '163'
+- id: globus_pallidus
+  label: Globus pallidus
+  aliases:
+  - globus pallidus
+  - gp
+  - pallidum
+  - gpe
+  - gpi
+  - globus pallidus externa
+  - globus pallidus interna
+  parents: []
+  strict: true
 
-  - id: subthalamic_nucleus
-    label: Subthalamic nucleus
-    aliases:
-      - subthalamic nucleus
-      - stn
-      - subthalamus
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002477
+    allen_ccf_mouse: '1022'
+- id: subthalamic_nucleus
+  label: Subthalamic nucleus
+  aliases:
+  - subthalamic nucleus
+  - stn
+  - subthalamus
+  parents: []
+  strict: true
 
   # ─── Substantia nigra / VTA ──────────────────────────────────────────────────
 
-  - id: substantia_nigra
-    label: Substantia nigra
-    aliases:
-      - substantia nigra
-      - sn
-      - substantia nigra pars compacta
-      - substantia nigra pars reticulata
-      - snc
-      - snr
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001875
+    allen_ccf_mouse: '470'
+- id: substantia_nigra
+  label: Substantia nigra
+  aliases:
+  - substantia nigra
+  - sn
+  - substantia nigra pars compacta
+  - substantia nigra pars reticulata
+  - snc
+  - snr
+  parents: []
+  strict: true
 
-  - id: vta
-    label: Ventral tegmental area
-    aliases:
-      - vta
-      - ventral tegmental area
-      - dopaminergic neurons
-      - dopamine neurons
-      - mesolimbic dopamine
-      - dopamine system
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002599
+    allen_ccf_mouse: '381'
+- id: vta
+  label: Ventral tegmental area
+  aliases:
+  - vta
+  - ventral tegmental area
+  - dopaminergic neurons
+  - dopamine neurons
+  - mesolimbic dopamine
+  - dopamine system
+  parents: []
+  strict: true
 
   # ─── Midbrain colliculi / PAG ────────────────────────────────────────────────
 
-  - id: superior_colliculus
-    label: Superior colliculus
-    aliases:
-      - superior colliculus
-      - sc
-      - tectum
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001987
+    allen_ccf_mouse: '749'
+- id: superior_colliculus
+  label: Superior colliculus
+  aliases:
+  - superior colliculus
+  - sc
+  - tectum
+  parents: []
+  strict: true
 
-  - id: inferior_colliculus
-    label: Inferior colliculus
-    aliases:
-      - inferior colliculus
-      - ic
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001945
+    allen_ccf_mouse: '302'
+- id: inferior_colliculus
+  label: Inferior colliculus
+  aliases:
+  - inferior colliculus
+  - ic
+  parents: []
+  strict: true
 
-  - id: periaqueductal_gray
-    label: Periaqueductal gray
-    aliases:
-      - periaqueductal gray
-      - pag
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0000377
+    allen_ccf_mouse: '4'
+- id: periaqueductal_gray
+  label: Periaqueductal gray
+  aliases:
+  - periaqueductal gray
+  - pag
+  parents: []
+  strict: true
 
   # ─── Brainstem / hindbrain ───────────────────────────────────────────────────
 
-  - id: brainstem
-    label: Brainstem
-    aliases:
-      - brainstem
-      - brain stem
-      - pons
-      - medulla
-      - medulla oblongata
-      - tegmentum
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0003040
+    allen_ccf_mouse: '795'
+- id: brainstem
+  label: Brainstem
+  aliases:
+  - brainstem
+  - brain stem
+  - tegmentum
+  parents: []
+  strict: false
 
-  - id: locus_coeruleus
-    label: Locus coeruleus
-    aliases:
-      - locus coeruleus
-      - lc
-      - locus ceruleus
-    parents:
-      - brainstem
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002298
+    allen_ccf_mouse: '1009'
+    waxholm_rat: '117'
+- id: locus_coeruleus
+  label: Locus coeruleus
+  aliases:
+  - locus coeruleus
+  - lc
+  - locus ceruleus
+  parents:
+  - brainstem
+  strict: true
 
   # ─── Cerebellum ──────────────────────────────────────────────────────────────
 
-  - id: cerebellum
-    label: Cerebellum
-    aliases:
-      - cerebellum
-      - cerebellar
-      - cerebellar cortex
-      - purkinje cell layer
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0004019
+    allen_ccf_mouse: '147'
+- id: cerebellum
+  label: Cerebellum
+  aliases:
+  - cerebellum
+  - cerebellar
+  - purkinje cell layer
+  parents: []
+  strict: false
 
   # ─── Hypothalamus ────────────────────────────────────────────────────────────
 
-  - id: hypothalamus
-    label: Hypothalamus
-    aliases:
-      - hypothalamus
-      - hyp
-      - hypothalamic
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002037
+    allen_ccf_mouse: '512'
+    allen_human: '4287'
+    waxholm_rat: '149'
+- id: hypothalamus
+  label: Hypothalamus
+  aliases:
+  - hypothalamus
+  - hyp
+  - hypothalamic
+  parents: []
+  strict: true
 
   # ─── Septum ──────────────────────────────────────────────────────────────────
 
-  - id: septum
-    label: Septum
-    aliases:
-      - septum
-      - lateral septum
-      - medial septum
-      - lateral septum complex
-      - septal nuclei
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001898
+    allen_ccf_mouse: '1097'
+    waxholm_rat: '90'
+- id: septum
+  label: Septum
+  aliases:
+  - septum
+  - lateral septum
+  - medial septum
+  - lateral septum complex
+  - septal nuclei
+  parents: []
+  strict: true
 
   # ─── Olfactory ───────────────────────────────────────────────────────────────
 
-  - id: olfactory_bulb
-    label: Olfactory bulb
-    aliases:
-      - olfactory bulb
-      - olfactory system
-      - ob
-      - main olfactory bulb
-      - mob
-      - glomerulus
-      - olfactory glomeruli
-    parents: []
-    strict: false
+  atlas_refs:
+    uberon: UBERON:0009789
+    allen_ccf_mouse: '803'
+- id: olfactory_bulb
+  label: Olfactory bulb
+  aliases:
+  - olfactory bulb
+  - olfactory system
+  - ob
+  - main olfactory bulb
+  - mob
+  - glomerulus
+  - olfactory glomeruli
+  parents: []
+  strict: false
 
-  - id: piriform_cortex
-    label: Piriform cortex
-    aliases:
-      - piriform cortex
-      - piriform
-      - prepiriform cortex
-      - olfactory cortex
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0001905
+    allen_ccf_mouse: '507'
+    waxholm_rat: '1'
+- id: piriform_cortex
+  label: Piriform cortex
+  aliases:
+  - piriform cortex
+  - piriform
+  - prepiriform cortex
+  - olfactory cortex
+  parents: []
+  strict: true
 
   # ─── Language areas (human) ──────────────────────────────────────────────────
 
-  - id: broca_area
-    label: Broca's area
-    aliases:
-      - broca's area
-      - broca area
-      - broca
-      - inferior frontal gyrus
-      - ifg
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0002430
+    allen_ccf_mouse: '961'
+- id: broca_area
+  label: Broca's area
+  aliases:
+  - broca's area
+  - broca area
+  - broca
+  - inferior frontal gyrus
+  - ifg
+  parents: []
+  strict: true
 
-  - id: wernicke_area
-    label: Wernicke's area
-    aliases:
-      - wernicke's area
-      - wernicke area
-    parents:
-      - temporal_cortex
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0013540
+    allen_human: '4253'
+- id: wernicke_area
+  label: Wernicke's area
+  aliases:
+  - wernicke's area
+  - wernicke area
+  parents:
+  - temporal_cortex
+  strict: true
 
   # ─── Spinal cord ─────────────────────────────────────────────────────────────
 
-  - id: spinal_cord
-    label: Spinal cord
-    aliases:
-      - spinal cord
-      - dorsal horn
-      - ventral horn
-    parents: []
-    strict: true
+  atlas_refs:
+    uberon: UBERON:0006845
+    allen_human: '4261'
+- id: spinal_cord
+  label: Spinal cord
+  aliases:
+  - spinal cord
+  parents: []
+  strict: true
+
+  # ─── Expanded cortical motor/somatosensory hierarchy ───────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0001100
+    allen_ccf_mouse: '771'
+- id: primary_motor_cortex
+  label: Primary motor cortex
+  aliases:
+  - primary motor cortex
+  - primary motor
+  - motor area 1
+  - m1 cortex
+  - m1
+  parents:
+  - motor_cortex
+  system: cortical
+  species_scope:
+  - cross_species
+  species_aliases:
+    mouse:
+    - m1
+    rat:
+    - m1
+    macaque:
+    - m1
+    human:
+    - m1
+  disambiguation_notes:
+  - M1 requires motor-cortex context or species context when used alone.
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001384
+    allen_ccf_mouse: '985'
+- id: supplementary_motor_area
+  label: Supplementary motor area
+  aliases:
+  - supplementary motor area
+  - supplementary motor cortex
+  - sma
+  - pre-sma
+  - presma
+  parents:
+  - premotor_cortex
+  - motor_cortex
+  system: cortical
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0007234
+    allen_ccf_mouse: '993'
+- id: frontal_eye_field
+  label: Frontal eye field
+  aliases:
+  - frontal eye field
+  - frontal eye fields
+  - fef
+  parents:
+  - premotor_cortex
+  - prefrontal_cortex
+  system: cortical
+  species_scope:
+  - human
+  - macaque
+  - marmoset
+  - non_human_primate
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0014908
+    allen_ccf_mouse: '993'
+- id: primary_somatosensory_cortex
+  label: Primary somatosensory cortex
+  aliases:
+  - primary somatosensory cortex
+  - primary somatosensory
+  - somatosensory area 1
+  - s1 cortex
+  parents:
+  - somatosensory_cortex
+  system: cortical
+  species_aliases:
+    mouse:
+    - s1
+    rat:
+    - s1
+    macaque:
+    - s1
+    human:
+    - s1
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0000382
+    allen_ccf_mouse: '322'
+- id: barrel_cortex
+  label: Barrel cortex
+  aliases:
+  - barrel cortex
+  - barrel field
+  - barrel cortex field
+  - vibrissa cortex
+  - whisker barrel cortex
+  - whisker barrel
+  - s1bf
+  parents:
+  - primary_somatosensory_cortex
+  - somatosensory_cortex
+  system: cortical
+  species_scope:
+  - mouse
+  - rat
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0008953
+    allen_ccf_mouse: '329'
+- id: gustatory_cortex
+  label: Gustatory cortex
+  aliases:
+  - gustatory cortex
+  - gustatory area
+  - taste cortex
+  parents:
+  - insula
+  system: cortical
+  strict: true
+
+  # ─── Expanded thalamic relays ───────────────────────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0034946
+    allen_ccf_mouse: '1057'
+- id: ventral_posteromedial_thalamus
+  label: Ventral posteromedial thalamic nucleus
+  aliases:
+  - ventral posteromedial nucleus
+  - ventral posteromedial thalamus
+  - vpm
+  - vpm thalamus
+  parents:
+  - thalamus
+  system: thalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0003027
+    allen_ccf_mouse: '733'
+- id: ventral_posterolateral_thalamus
+  label: Ventral posterolateral thalamic nucleus
+  aliases:
+  - ventral posterolateral nucleus
+  - ventral posterolateral thalamus
+  - vpl
+  - vpl thalamus
+  parents:
+  - thalamus
+  system: thalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001925
+    allen_ccf_mouse: '718'
+- id: anterior_thalamic_nuclei
+  label: Anterior thalamic nuclei
+  aliases:
+  - anterior thalamic nuclei
+  - anterior thalamus
+  - anterodorsal thalamus
+  - anteroventral thalamus
+  parents:
+  - thalamus
+  system: thalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0008775
+    allen_ccf_mouse: '255'
+- id: thalamic_reticular_nucleus
+  label: Thalamic reticular nucleus
+  aliases:
+  - thalamic reticular nucleus
+  - reticular thalamic nucleus
+  - trn
+  parents:
+  - thalamus
+  system: thalamus
+  strict: true
+
+  # ─── Expanded basal ganglia / basal forebrain ───────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0001903
+    allen_ccf_mouse: '262'
+- id: globus_pallidus_external
+  label: External globus pallidus
+  aliases:
+  - external globus pallidus
+  - globus pallidus externa
+  - gpe
+  parents:
+  - globus_pallidus
+  - striatum
+  system: basal_ganglia
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002474
+    allen_ccf_mouse: '1022'
+- id: globus_pallidus_internal
+  label: Internal globus pallidus
+  aliases:
+  - internal globus pallidus
+  - globus pallidus interna
+  - gpi
+  parents:
+  - globus_pallidus
+  - striatum
+  system: basal_ganglia
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002476
+    allen_ccf_mouse: '1031'
+- id: substantia_nigra_pars_compacta
+  label: Substantia nigra pars compacta
+  aliases:
+  - substantia nigra pars compacta
+  - snc
+  - pars compacta
+  parents:
+  - substantia_nigra
+  system: basal_ganglia
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001979
+    allen_ccf_mouse: '374'
+- id: substantia_nigra_pars_reticulata
+  label: Substantia nigra pars reticulata
+  aliases:
+  - substantia nigra pars reticulata
+  - snr
+  - pars reticulata
+  parents:
+  - substantia_nigra
+  system: basal_ganglia
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001980
+    allen_ccf_mouse: '382'
+- id: basal_forebrain
+  label: Basal forebrain
+  aliases:
+  - basal forebrain
+  - cholinergic basal forebrain
+  - bf
+  parents: []
+  system: basal_forebrain
+  strict: false
+
+  atlas_refs:
+    uberon: UBERON:0002743
+    allen_ccf_mouse: '1065'
+- id: nucleus_basalis
+  label: Nucleus basalis
+  aliases:
+  - nucleus basalis
+  - nucleus basalis of meynert
+  - nbm
+  parents:
+  - basal_forebrain
+  system: basal_forebrain
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0004044
+    allen_ccf_mouse: '580'
+- id: medial_septum
+  label: Medial septum
+  aliases:
+  - medial septum
+  - medial septal nucleus
+  - medial septal complex
+  parents:
+  - septum
+  - basal_forebrain
+  system: basal_forebrain
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001909
+    allen_ccf_mouse: '564'
+- id: lateral_septum
+  label: Lateral septum
+  aliases:
+  - lateral septum
+  - lateral septal nucleus
+  parents:
+  - septum
+  system: basal_forebrain
+  strict: true
+
+  # ─── Expanded brainstem / neuromodulatory nuclei ────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0002884
+    allen_ccf_mouse: '242'
+- id: midbrain
+  label: Midbrain
+  aliases:
+  - midbrain
+  - mesencephalon
+  parents:
+  - brainstem
+  system: brainstem
+  strict: false
+
+  atlas_refs:
+    uberon: UBERON:0001891
+    allen_ccf_mouse: '313'
+- id: pons
+  label: Pons
+  aliases:
+  - pons
+  - pontine
+  - pontine nuclei
+  parents:
+  - brainstem
+  system: brainstem
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0000988
+    allen_ccf_mouse: '771'
+- id: medulla
+  label: Medulla
+  aliases:
+  - medulla
+  - medullary
+  - medulla oblongata
+  parents:
+  - brainstem
+  system: brainstem
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001896
+    allen_ccf_mouse: '354'
+- id: dorsal_raphe
+  label: Dorsal raphe nucleus
+  aliases:
+  - dorsal raphe
+  - dorsal raphe nucleus
+  - drn
+  parents:
+  - brainstem
+  system: brainstem
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002044
+    allen_ccf_mouse: '872'
+- id: median_raphe
+  label: Median raphe nucleus
+  aliases:
+  - median raphe
+  - median raphe nucleus
+  - mrn
+  parents:
+  - brainstem
+  system: brainstem
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002048
+    allen_ccf_mouse: '208'
+- id: red_nucleus
+  label: Red nucleus
+  aliases:
+  - red nucleus
+  - ruber nucleus
+  parents:
+  - midbrain
+  - brainstem
+  system: brainstem
+  strict: true
+
+  # ─── Expanded cerebellum ────────────────────────────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0001966
+    allen_ccf_mouse: '214'
+- id: cerebellar_cortex
+  label: Cerebellar cortex
+  aliases:
+  - cerebellar cortex
+  - cerebellar molecular layer
+  - cerebellar granule layer
+  - purkinje layer
+  parents:
+  - cerebellum
+  system: cerebellum
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002129
+    allen_ccf_mouse: '528'
+- id: cerebellar_vermis
+  label: Cerebellar vermis
+  aliases:
+  - cerebellar vermis
+  - vermis
+  parents:
+  - cerebellum
+  system: cerebellum
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0004674
+    allen_ccf_mouse: '645'
+- id: deep_cerebellar_nuclei
+  label: Deep cerebellar nuclei
+  aliases:
+  - deep cerebellar nuclei
+  - deep cerebellar nucleus
+  - dcn
+  - dentate nucleus
+  - fastigial nucleus
+  - interposed nucleus
+  parents:
+  - cerebellum
+  system: cerebellum
+  strict: true
+
+  # ─── Expanded hypothalamus ──────────────────────────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0002131
+    allen_ccf_mouse: '519'
+- id: lateral_hypothalamus
+  label: Lateral hypothalamus
+  aliases:
+  - lateral hypothalamus
+  - lateral hypothalamic area
+  - lha
+  parents:
+  - hypothalamus
+  system: hypothalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002552
+    allen_ccf_mouse: '194'
+- id: arcuate_nucleus
+  label: Arcuate nucleus
+  aliases:
+  - arcuate nucleus
+  - arcuate hypothalamic nucleus
+  - arc
+  parents:
+  - hypothalamus
+  system: hypothalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001581
+    allen_ccf_mouse: '223'
+- id: paraventricular_hypothalamic_nucleus
+  label: Paraventricular hypothalamic nucleus
+  aliases:
+  - paraventricular hypothalamic nucleus
+  - paraventricular nucleus
+  - pvn
+  parents:
+  - hypothalamus
+  system: hypothalamus
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0001930
+    allen_ccf_mouse: '38'
+- id: suprachiasmatic_nucleus
+  label: Suprachiasmatic nucleus
+  aliases:
+  - suprachiasmatic nucleus
+  - scn
+  parents:
+  - hypothalamus
+  system: hypothalamus
+  strict: true
+
+  # ─── Expanded spinal cord ───────────────────────────────────────────────────
+
+  atlas_refs:
+    uberon: UBERON:0002055
+    allen_ccf_mouse: '218'
+- id: cervical_spinal_cord
+  label: Cervical spinal cord
+  aliases:
+  - cervical spinal cord
+  - cervical cord
+  - cervical spinal
+  parents:
+  - spinal_cord
+  system: spinal_cord
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002726
+- id: thoracic_spinal_cord
+  label: Thoracic spinal cord
+  aliases:
+  - thoracic spinal cord
+  - thoracic cord
+  - thoracic spinal
+  parents:
+  - spinal_cord
+  system: spinal_cord
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0003038
+- id: lumbar_spinal_cord
+  label: Lumbar spinal cord
+  aliases:
+  - lumbar spinal cord
+  - lumbar cord
+  - lumbar spinal
+  parents:
+  - spinal_cord
+  system: spinal_cord
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002840
+- id: dorsal_horn
+  label: Dorsal horn
+  aliases:
+  - dorsal horn
+  - spinal dorsal horn
+  parents:
+  - spinal_cord
+  system: spinal_cord
+  strict: true
+
+  atlas_refs:
+    uberon: UBERON:0002714
+- id: ventral_horn
+  label: Ventral horn
+  aliases:
+  - ventral horn
+  - spinal ventral horn
+  - motor horn
+  parents:
+  - spinal_cord
+  system: spinal_cord
+  strict: true
 
   # ─── Retina ──────────────────────────────────────────────────────────────────
 
-  - id: retina
-    label: Retina
-    aliases:
-      - retina
-      - retinal ganglion cell
-      - retinal ganglion cells
-      - rgc
-    parents: []
-    strict: true
-
+  atlas_refs:
+    uberon: UBERON:0002715
+- id: retina
+  label: Retina
+  aliases:
+  - retina
+  - retinal ganglion cell
+  - retinal ganglion cells
+  - rgc
+  parents: []
+  strict: true
+  atlas_refs:
+    uberon: UBERON:0000966
+    allen_ccf_mouse: '304325711'
