@@ -185,6 +185,59 @@ class BrainRegion(BaseModel):
         return cleaned
 
 
+class RecordingScale(BaseModel):
+    """How a dataset samples neural information below broad modality level."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    label: str
+    category: str
+    sampling_unit: str
+    signal_form: str
+    temporal_resolution: str
+    spatial_resolution: str
+    compatible_modalities: list[str] = Field(default_factory=list)
+    data_types: list[str] = Field(default_factory=list)
+    aliases: list[str] = Field(default_factory=list)
+    relationship_tags: list[str] = Field(default_factory=list)
+
+    @field_validator(
+        "id",
+        "label",
+        "category",
+        "sampling_unit",
+        "signal_form",
+        "temporal_resolution",
+        "spatial_resolution",
+    )
+    @classmethod
+    def non_empty_string(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be empty")
+        return value
+
+    @field_validator(
+        "compatible_modalities",
+        "data_types",
+        "aliases",
+        "relationship_tags",
+    )
+    @classmethod
+    def clean_string_list(cls, values: list[str]) -> list[str]:
+        if not isinstance(values, list):
+            raise ValueError("must be a list")
+        cleaned = []
+        for value in values:
+            if not isinstance(value, str):
+                raise ValueError("all entries must be strings")
+            value = value.strip()
+            if value:
+                cleaned.append(value)
+        return cleaned
+
+
 class Ontology(BaseModel):
     """Complete behavioral ontology loaded from YAML."""
 

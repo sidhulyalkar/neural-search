@@ -1,0 +1,140 @@
+# Neural Search Species Taxonomy
+# Canonical species identifiers with NCBITaxon IDs and atlas mappings
+
+species:
+- id: mus_musculus
+  label: Mouse
+  common_name: House mouse
+  ncbitaxon_id: NCBITaxon:10090
+  is_model_organism: true
+  primary_atlas: allen_ccf_v3
+  available_atlases:
+  - allen_ccf_v3
+  - waxholm_rat
+  - brainglobe_mouse
+  typical_modalities:
+  - extracellular_ephys
+  - calcium_imaging
+  - fmri
+  - two_photon
+  - widefield
+  - single_nucleus_rnaseq
+- id: rattus_norvegicus
+  label: Rat
+  common_name: Norway rat
+  ncbitaxon_id: NCBITaxon:10116
+  is_model_organism: true
+  primary_atlas: waxholm_v4
+  available_atlases:
+  - waxholm_v4
+  - paxinos_watson
+  typical_modalities:
+  - extracellular_ephys
+  - lfp
+  - calcium_imaging
+  - fmri
+- id: homo_sapiens
+  label: Human
+  common_name: Human
+  ncbitaxon_id: NCBITaxon:9606
+  is_model_organism: false
+  primary_atlas: mni152
+  available_atlases:
+  - mni152
+  - allen_human_brain_atlas
+  - harvard_oxford
+  - brodmann
+  - brainnetome
+  typical_modalities:
+  - fmri
+  - eeg
+  - meg
+  - ecog
+  - fnirs
+  - dti
+  - pet
+- id: macaca_mulatta
+  label: Rhesus macaque
+  common_name: Rhesus monkey
+  ncbitaxon_id: NCBITaxon:9544
+  is_model_organism: true
+  primary_atlas: macaque_d99
+  available_atlases:
+  - macaque_d99
+  - charm_macaque
+  - sarm_macaque
+  typical_modalities:
+  - extracellular_ephys
+  - ecog
+  - fmri
+  - two_photon
+- id: macaca_fascicularis
+  label: Crab-eating macaque
+  common_name: Cynomolgus macaque
+  ncbitaxon_id: NCBITaxon:9541
+  is_model_organism: true
+  primary_atlas: charm_macaque
+  available_atlases:
+  - charm_macaque
+  typical_modalities:
+  - extracellular_ephys
+  - fmri
+- id: callithrix_jacchus
+  label: Common marmoset
+  common_name: Marmoset
+  ncbitaxon_id: NCBITaxon:9483
+  is_model_organism: true
+  primary_atlas: marmoset_mbisc
+  available_atlases:
+  - marmoset_mbisc
+  - marmoset_brain_atlas
+  typical_modalities:
+  - extracellular_ephys
+  - two_photon
+  - fmri
+- id: danio_rerio
+  label: Zebrafish
+  common_name: Zebrafish
+  ncbitaxon_id: NCBITaxon:7955
+  is_model_organism: true
+  primary_atlas: zbrain
+  available_atlases:
+  - zbrain
+  - z_brain_atlas
+  typical_modalities:
+  - calcium_imaging
+  - light_sheet
+  - single_nucleus_rnaseq
+- id: drosophila_melanogaster
+  label: Fruit fly
+  common_name: Drosophila
+  ncbitaxon_id: NCBITaxon:7227
+  is_model_organism: true
+  primary_atlas: jrc2018f
+  available_atlases:
+  - jrc2018f
+  - jfrc2
+  - fcwb
+  typical_modalities:
+  - calcium_imaging
+  - two_photon
+  - em_connectome
+- id: caenorhabditis_elegans
+  label: C. elegans
+  common_name: Roundworm
+  ncbitaxon_id: NCBITaxon:6239
+  is_model_organism: true
+  primary_atlas: ce_atlas
+  available_atlases:
+  - ce_atlas
+  typical_modalities:
+  - calcium_imaging
+  - em_connectome
+- id: rattus_rattus
+  label: Black rat
+  common_name: Black rat
+  ncbitaxon_id: NCBITaxon:10117
+  is_model_organism: false
+  primary_atlas: null
+  available_atlases: []
+  typical_modalities: []

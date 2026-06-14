@@ -7,8 +7,17 @@ from collections.abc import Iterable
 from difflib import SequenceMatcher
 from typing import TYPE_CHECKING
 
-from neural_search.ontology.loader import get_brain_regions, get_ontology
-from neural_search.ontology.models import BrainRegion, LabelMatch, Ontology
+from neural_search.ontology.loader import (
+    get_brain_regions,
+    get_ontology,
+    get_recording_scales,
+)
+from neural_search.ontology.models import (
+    BrainRegion,
+    LabelMatch,
+    Ontology,
+    RecordingScale,
+)
 
 if TYPE_CHECKING:
     from neural_search.graph.schema import KnowledgeGraph
@@ -280,6 +289,10 @@ def _brain_region_entries(ontology: Ontology) -> dict[str, BrainRegion]:
     return entries
 
 
+def _recording_scale_entries() -> dict[str, RecordingScale]:
+    return {scale.id: scale for scale in get_recording_scales()}
+
+
 def match_tasks(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
     ontology = ontology or get_ontology()
     matches: list[LabelMatch] = []
@@ -313,6 +326,31 @@ def match_modalities(text: str, ontology: Ontology | None = None) -> list[LabelM
     for modality in modality_names:
         phrases = [(alias, 0.94 if alias != modality else 0.96, "modality") for alias in _aliases_for(modality)]
         match = _best_phrase_match(text, modality, modality, "modality", phrases)
+        if match:
+            matches.append(match)
+    return sorted(matches, key=lambda item: item.confidence, reverse=True)
+
+
+def match_recording_scales(text: str) -> list[LabelMatch]:
+    """Match neural sampling/recording scale terms such as LFP or single-unit."""
+
+    matches: list[LabelMatch] = []
+    for scale_id, scale in _recording_scale_entries().items():
+        phrases = [
+            (scale.label, 0.98, "label"),
+            (scale_id, 0.96, "id"),
+            (scale.sampling_unit, 0.90, "sampling_unit"),
+            (scale.signal_form, 0.86, "signal_form"),
+        ]
+        phrases.extend((alias, 0.94, "scale_alias") for alias in scale.aliases)
+        phrases.extend((data_type, 0.90, "data_type") for data_type in scale.data_types)
+        match = _best_phrase_match(
+            text,
+            scale_id,
+            scale.label,
+            "recording_scale",
+            phrases,
+        )
         if match:
             matches.append(match)
     return sorted(matches, key=lambda item: item.confidence, reverse=True)
@@ -600,6 +638,7 @@ def match_all(text: str, ontology: Ontology | None = None) -> dict[str, list[Lab
         "behaviors": match_behavior_labels(text, ontology),
         "regions": match_brain_regions(text, ontology),
         "modalities": match_modalities(text, ontology),
+        "recording_scales": match_recording_scales(text),
         "affordances": match_affordances(text, ontology),
     }
 
@@ -618,6 +657,9 @@ class OntologyMatcher:
 
     def match_modalities(self, text: str) -> list[LabelMatch]:
         return match_modalities(text, self.ontology)
+
+    def match_recording_scales(self, text: str) -> list[LabelMatch]:
+        return match_recording_scales(text)
 
     def match_brain_regions(self, text: str) -> list[LabelMatch]:
         return match_brain_regions(text, self.ontology)
