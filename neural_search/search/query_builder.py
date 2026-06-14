@@ -11,6 +11,7 @@ STRUCTURED_FILTER_FIELD_MAP = {
     "task": "tasks",
     "behavior": "behaviors",
     "modality": "modalities",
+    "recording_scale": "recording_scales",
     "species": "species",
     "brain_region": "brain_regions",
     "data_standard": "data_standards",
@@ -54,6 +55,7 @@ def structured_query_to_text(value: ExperimentQuery | Mapping[str, Any] | None) 
     _append(parts, "task", query.task)
     _append(parts, "behavior", query.behavior)
     _append(parts, "modality", query.modality)
+    _append(parts, "recording scale", query.recording_scale)
     _append(parts, "species", query.species)
     _append(parts, "brain region", query.brain_region)
     _append(parts, "data standard", query.data_standard)
