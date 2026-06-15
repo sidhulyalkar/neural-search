@@ -15,6 +15,7 @@ type SortKey =
   | 'evidence_completeness'
   | 'source'
   | 'modality'
+  | 'recording_scale'
   | 'species'
   | 'abstain'
   | 'feedback'
@@ -23,6 +24,7 @@ interface ResultFilters {
   source: string
   species: string
   modality: string
+  recordingScale: string
   brainRegion: string
   neuroLabel: string
   minEvidenceCompleteness: number
@@ -32,7 +34,7 @@ interface ResultFilters {
 }
 
 const emptyExperimentQuery: ExperimentQuery = {
-  task: [], behavior: [], modality: [], species: [],
+  task: [], behavior: [], modality: [], recording_scale: [], species: [],
   brain_region: [], data_standard: [], source_archive: [],
   analysis_goal: [], reviewed_trusted_only: false,
 }
@@ -44,6 +46,7 @@ const defaultResultFilters: ResultFilters = {
   source: '',
   species: '',
   modality: '',
+  recordingScale: '',
   brainRegion: '',
   neuroLabel: '',
   minEvidenceCompleteness: 0,
@@ -178,6 +181,9 @@ export function ResultsPage() {
                 <FilterSelect label="Modality" values={experimentQuery.modality}
                   options={(ontology?.modalities || []).map((v) => ({ value: v, label: v.replace(/_/g, ' ') }))}
                   onChange={(v) => setExperimentField('modality', v)} />
+                <FilterSelect label="Recording Scale" values={experimentQuery.recording_scale}
+                  options={(ontology?.recording_scales || []).map((v) => ({ value: v.id, label: v.label }))}
+                  onChange={(v) => setExperimentField('recording_scale', v)} />
                 <FilterSelect label="Species" values={experimentQuery.species}
                   options={speciesOptions.map((v) => ({ value: v, label: v }))}
                   onChange={(v) => setExperimentField('species', v)} />
@@ -443,6 +449,7 @@ function ResultControls({
             <option value="evidence_completeness">Evidence completeness</option>
             <option value="source">Source/archive</option>
             <option value="modality">Modality</option>
+            <option value="recording_scale">Recording scale</option>
             <option value="species">Species</option>
             <option value="abstain">Abstain recommended</option>
             <option value="feedback">Feedback score</option>
@@ -455,6 +462,8 @@ function ResultControls({
           onChange={(value) => setFilter('species', value)} />
         <CompactSelect label="Modality" value={filters.modality} options={options.modalities}
           onChange={(value) => setFilter('modality', value)} />
+        <CompactSelect label="Scale" value={filters.recordingScale} options={options.recordingScales}
+          onChange={(value) => setFilter('recordingScale', value)} />
         <CompactSelect label="Region" value={filters.brainRegion} options={options.brainRegions}
           onChange={(value) => setFilter('brainRegion', value)} />
         <CompactSelect label="Judge" value={filters.neuroLabel} options={['0', '1', '2', '3']}
@@ -543,6 +552,7 @@ function buildResultFilterOptions(results: SearchResultItem[]) {
     sources: unique(results.map((r) => r.dataset.source)),
     species: unique(results.flatMap((r) => r.dataset.species || [])),
     modalities: unique(results.flatMap((r) => r.dataset.modalities || [])),
+    recordingScales: unique(results.flatMap((r) => r.dataset.recording_scales || [])),
     brainRegions: unique(results.flatMap((r) => r.dataset.brain_regions || [])),
   }
 }
@@ -555,6 +565,7 @@ function filterResults(results: SearchResultItem[], filters: ResultFilters): Sea
     if (filters.source && dataset.source !== filters.source) return false
     if (filters.species && !(dataset.species || []).includes(filters.species)) return false
     if (filters.modality && !(dataset.modalities || []).includes(filters.modality)) return false
+    if (filters.recordingScale && !(dataset.recording_scales || []).includes(filters.recordingScale)) return false
     if (filters.brainRegion && !(dataset.brain_regions || []).includes(filters.brainRegion)) return false
     if (filters.neuroLabel && String(judge?.label ?? '') !== filters.neuroLabel) return false
     if ((judge?.evidence_completeness ?? 0) < filters.minEvidenceCompleteness) return false
@@ -571,6 +582,7 @@ function sortResults(results: SearchResultItem[], sortBy: SortKey): SearchResult
   sorted.sort((a, b) => {
     if (sortBy === 'source') return first([a.dataset.source]).localeCompare(first([b.dataset.source]))
     if (sortBy === 'modality') return first(a.dataset.modalities).localeCompare(first(b.dataset.modalities))
+    if (sortBy === 'recording_scale') return first(a.dataset.recording_scales).localeCompare(first(b.dataset.recording_scales))
     if (sortBy === 'species') return first(a.dataset.species).localeCompare(first(b.dataset.species))
     if (sortBy === 'abstain') return Number(b.neuro_judge?.abstain_recommended ?? false) - Number(a.neuro_judge?.abstain_recommended ?? false)
     if (sortBy === 'feedback') return feedbackScore(b) - feedbackScore(a)
@@ -604,7 +616,7 @@ function needsAudit(result: SearchResultItem): boolean {
 function hasStructuredQuery(query: ExperimentQuery): boolean {
   return Boolean(
     query.task.length || query.behavior.length || query.modality.length ||
-    query.species.length || query.brain_region.length || query.data_standard.length ||
+    query.recording_scale.length || query.species.length || query.brain_region.length || query.data_standard.length ||
     query.source_archive.length || query.analysis_goal.length ||
     (query.min_analysis_readiness_score ?? 0) > 0 || query.reviewed_trusted_only,
   )

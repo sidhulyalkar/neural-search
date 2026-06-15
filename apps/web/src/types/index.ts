@@ -24,6 +24,7 @@ export interface DatasetRecord {
   data_standard?: string
   data_standards?: string[]
   modalities: string[]
+  recording_scales?: string[]
   brain_regions: string[]
   tasks: string[]
   behaviors: string[]
@@ -122,6 +123,7 @@ export interface EvidencePacketSummary {
 
 export interface MemoryGraphEvidence {
   modality_matches: string[]
+  recording_scale_matches?: string[]
   species_matches: string[]
   region_matches: string[]
   affordance_matches: string[]
@@ -155,6 +157,20 @@ export interface RetrievalFeedbackEvent {
   provenance?: 'user_feedback_downstream_signal'
 }
 
+export interface DimensionMatch {
+  queried: string[]
+  matched: string[]
+  quality: 'full' | 'partial' | 'inferred' | 'none'
+}
+
+export interface ExplanationGroups {
+  task?: DimensionMatch
+  modality?: DimensionMatch
+  species?: DimensionMatch
+  brain_region?: DimensionMatch
+  recording_scale?: DimensionMatch
+}
+
 export interface SearchResultItem {
   dataset: DatasetRecord
   score: number
@@ -175,6 +191,18 @@ export interface SearchResultItem {
   evidence_packet?: EvidencePacketSummary | null
   prior_feedback?: RetrievalFeedbackEvent[]
   memory_graph_evidence?: MemoryGraphEvidence | null
+  dataset_card_preview?: {
+    explanation?: {
+      brief?: string
+      quality_grade?: string
+      match_summary?: {
+        dimension_matches?: ExplanationGroups
+        quality_grade?: string
+        categories_matched?: string[]
+      }
+    }
+    [key: string]: unknown
+  }
 }
 
 export interface SearchResult {
@@ -189,6 +217,7 @@ export interface ExperimentQuery {
   task: string[]
   behavior: string[]
   modality: string[]
+  recording_scale: string[]
   species: string[]
   brain_region: string[]
   data_standard: string[]
@@ -229,6 +258,7 @@ export interface DatasetCard {
   license?: string
   species: string[]
   modalities: string[]
+  recording_scales?: string[]
   brain_regions: string[]
   tasks: string[]
   behaviors: string[]
@@ -330,7 +360,26 @@ export interface Ontology {
     synonyms: string[]
   }>
   modalities?: string[]
+  recording_scales?: Array<{
+    id: string
+    label: string
+    category: string
+    sampling_unit: string
+    signal_form: string
+    compatible_modalities: string[]
+  }>
   brain_regions?: string[]
+  brain_region_index?: Array<{
+    id: string
+    label: string
+    system: string
+    aliases: string[]
+    parents: string[]
+    children: string[]
+    species_scope: string[]
+    atlas_refs: Record<string, string>
+    index_categories: string[]
+  }>
   analysis_goals?: string[]
 }
 
@@ -408,6 +457,7 @@ export interface DatasetComparisonItem {
 
   task_labels: string[]
   modalities: string[]
+  recording_scales: string[]
   species: string[]
   brain_regions: string[]
   behavior_labels: string[]
@@ -472,8 +522,10 @@ export interface ComparisonSummary {
   }
   shared_tasks: string[]
   shared_modalities: string[]
+  shared_recording_scales?: string[]
   all_tasks: string[]
   all_modalities: string[]
+  all_recording_scales?: string[]
 }
 
 export interface ComparisonResult {
