@@ -310,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
     md_path.write_text(render_markdown(items, total))
     print(f"Markdown → {md_path}")
 
-    print(f"\nTop 5 by impact:")
+    print("\nTop 5 by impact:")
     for item in items[:5]:
         desc = item.get("label") or item.get("source") or f"{item.get('region')} × {item.get('modality')}"
         print(f"  [{item['priority']}] {desc} — impact={item['impact_score']:.3f}, est. {item['estimated_new_datasets']} datasets")

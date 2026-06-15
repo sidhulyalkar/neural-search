@@ -485,6 +485,7 @@ def main(argv: list[str] | None = None) -> int:
             ryaml.width = 120
             ryaml.indent(mapping=2, sequence=4, offset=2)
             from io import StringIO
+
             # Round-trip: load then dump to preserve comments
             from ruamel.yaml import YAML as RY
             ry = RY()

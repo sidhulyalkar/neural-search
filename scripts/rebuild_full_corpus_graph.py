@@ -168,8 +168,12 @@ def _add_cross_dataset_edges(
 
     Returns number of edges added.
     """
-    from neural_search.graph.schema import KnowledgeGraphEdge, GraphEvidence, make_edge_id
     from neural_search.graph.builder import dataset_node_id
+    from neural_search.graph.schema import (
+        GraphEvidence,
+        KnowledgeGraphEdge,
+        make_edge_id,
+    )
 
     # Build indexes: concept_id → list of (dataset_node_id, modality_set, task_set, species_set)
     region_to_datasets: dict[str, list[str]] = defaultdict(list)

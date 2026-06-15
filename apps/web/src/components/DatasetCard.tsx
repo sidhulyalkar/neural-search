@@ -7,7 +7,7 @@ import {
   logRetrievalFeedback,
   saveFrontendDataset,
 } from '../api/search'
-import type { DimensionMatch, ExplanationGroups, FeedbackUsefulness, MemoryGraphEvidence, SearchResultItem, WouldUseForAnalysis } from '../types'
+import type { DimensionMatch, ExplanationGroups, FeedbackUsefulness, MemoryGraphEvidence, RetrievalFeedbackEvent, SearchResultItem, WouldUseForAnalysis } from '../types'
 
 interface DatasetCardProps {
   result: SearchResultItem
@@ -358,8 +358,8 @@ export function DatasetCard({
     },
   })
 
-  const feedbackMutation = useMutation({
-    mutationFn: (overrides: Partial<Parameters<typeof logRetrievalFeedback>[0]> = {}) => logRetrievalFeedback({
+  const feedbackMutation = useMutation<RetrievalFeedbackEvent, unknown, Partial<Parameters<typeof logRetrievalFeedback>[0]>>({
+    mutationFn: (overrides?: Partial<Parameters<typeof logRetrievalFeedback>[0]>) => logRetrievalFeedback({
       session_id: sessionId,
       query_id: evidence_packet?.query_id || null,
       query_text: queryText || evidence_packet?.query_text || '',
@@ -380,8 +380,8 @@ export function DatasetCard({
     }),
   })
 
-  const saveMutation = useMutation({
-    mutationFn: (exported = false) => saveFrontendDataset({
+  const saveMutation = useMutation<Record<string, unknown>, unknown, boolean | undefined>({
+    mutationFn: (exported?: boolean) => saveFrontendDataset({
       session_id: sessionId,
       query_id: evidence_packet?.query_id || null,
       query_text: queryText || evidence_packet?.query_text || '',
@@ -723,7 +723,7 @@ export function DatasetCard({
               />
               <button
                 type="button"
-                onClick={() => feedbackMutation.mutate()}
+                onClick={() => feedbackMutation.mutate({})}
                 disabled={feedbackMutation.isPending}
                 className="text-xs bg-neural-800 text-neural-200 rounded px-3 py-1.5 hover:bg-neural-700 disabled:opacity-50"
               >

@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import math
+
 import pytest
 
-from neural_search.coverage.gap_boost import CoverageGapBooster, MAX_BOOST
+from neural_search.coverage.gap_boost import MAX_BOOST, CoverageGapBooster
 
 
 @pytest.fixture

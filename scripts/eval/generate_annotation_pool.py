@@ -157,13 +157,13 @@ def print_pool_stats(pool_rows: list[dict]) -> None:
         r = row["pool_reason"]
         by_reason[r] = by_reason.get(r, 0) + 1
     unique_queries = len({r["query_id"] for r in pool_rows})
-    print(f"\n=== Annotation Pool Summary ===")
+    print("\n=== Annotation Pool Summary ===")
     print(f"  Total pairs:   {len(pool_rows)}")
     print(f"  Unique queries: {unique_queries}")
     for reason, count in sorted(by_reason.items()):
         print(f"  {reason:12s}: {count}")
     print(f"\nEstimated annotation time: ~{len(pool_rows) * 30 // 60} minutes")
-    print(f"  (assuming 30s/pair)")
+    print("  (assuming 30s/pair)")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -206,11 +206,11 @@ def main(argv: list[str] | None = None) -> int:
     write_queries(query_rows, args.out_queries)
     print_pool_stats(pool_rows)
 
-    print(f"\nNext step — annotate:")
-    print(f"  python scripts/eval/annotate_candidates.py \\")
+    print("\nNext step — annotate:")
+    print("  python scripts/eval/annotate_candidates.py \\")
     print(f"    --pool {args.out} \\")
     print(f"    --queries {args.out_queries} \\")
-    print(f"    --out artifacts/qrels_human.jsonl")
+    print("    --out artifacts/qrels_human.jsonl")
     return 0
 
 

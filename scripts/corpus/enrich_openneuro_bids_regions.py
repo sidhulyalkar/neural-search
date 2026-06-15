@@ -34,7 +34,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
-from urllib import request, error
+from urllib import error, request
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")

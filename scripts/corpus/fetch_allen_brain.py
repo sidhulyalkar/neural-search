@@ -7,8 +7,13 @@ Usage:
     python scripts/corpus/fetch_allen_brain.py [--dry-run] [--limit N]
 """
 from __future__ import annotations
-import argparse, json, logging, sys
+
+import argparse
+import json
+import logging
+import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
@@ -20,8 +25,9 @@ def main(argv=None):
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args(argv)
+    from _fetch_common import append_to_corpus, canonical_region_ids
+
     from neural_search.ingestion.allen_brain import fetch_allen_records
-    from _fetch_common import canonical_region_ids, has_region, append_to_corpus
     valid = canonical_region_ids()
     corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
     existing = {r["source_id"] for r in corpus if r.get("source") == "allen"}

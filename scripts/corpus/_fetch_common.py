@@ -1,5 +1,6 @@
 """Shared helpers for corpus fetch scripts."""
 from __future__ import annotations
+
 from functools import lru_cache
 
 

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -11,7 +10,7 @@ import yaml
 
 class TestExpandQuerySet:
     def test_generates_100_queries(self) -> None:
-        from scripts.eval.expand_query_set import load_existing, generate_queries
+        from scripts.eval.expand_query_set import generate_queries, load_existing
 
         base = Path("data/eval/benchmark_queries.yaml")
         if not base.exists():
@@ -21,7 +20,7 @@ class TestExpandQuerySet:
         assert len(queries) == 100
 
     def test_all_queries_have_required_fields(self) -> None:
-        from scripts.eval.expand_query_set import load_existing, generate_queries
+        from scripts.eval.expand_query_set import generate_queries, load_existing
 
         base = Path("data/eval/benchmark_queries.yaml")
         if not base.exists():
@@ -35,7 +34,7 @@ class TestExpandQuerySet:
             assert len(q["query"]) > 10
 
     def test_query_ids_are_unique(self) -> None:
-        from scripts.eval.expand_query_set import load_existing, generate_queries
+        from scripts.eval.expand_query_set import generate_queries, load_existing
 
         base = Path("data/eval/benchmark_queries.yaml")
         if not base.exists():
@@ -45,7 +44,7 @@ class TestExpandQuerySet:
         assert len(ids) == len(set(ids)), "Duplicate query IDs found"
 
     def test_has_adversarial_queries(self) -> None:
-        from scripts.eval.expand_query_set import load_existing, generate_queries
+        from scripts.eval.expand_query_set import generate_queries, load_existing
 
         base = Path("data/eval/benchmark_queries.yaml")
         if not base.exists():
@@ -58,7 +57,7 @@ class TestExpandQuerySet:
         assert len(adversarial) >= 5, "Expected at least 5 adversarial queries"
 
     def test_output_file_is_valid_yaml(self, tmp_path: Path) -> None:
-        from scripts.eval.expand_query_set import load_existing, generate_queries
+        from scripts.eval.expand_query_set import generate_queries, load_existing
 
         base = Path("data/eval/benchmark_queries.yaml")
         if not base.exists():
