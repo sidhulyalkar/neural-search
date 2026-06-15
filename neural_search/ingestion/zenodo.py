@@ -6,6 +6,7 @@ API: https://zenodo.org/api/records?type=dataset&q=neuroscience
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
 import httpx
@@ -15,6 +16,19 @@ from neural_search.ingestion.dataset_classifier import is_valid_dataset
 from neural_search.ingestion.registry import register
 
 logger = logging.getLogger(__name__)
+
+from functools import lru_cache
+
+
+@lru_cache(maxsize=1)
+def _canonical_region_ids() -> frozenset[str]:
+    from neural_search.ontology.loader import get_brain_regions
+    return frozenset(r.id for r in get_brain_regions())
+
+
+def _is_canonical_region(region_id: str) -> bool:
+    return region_id in _canonical_region_ids()
+
 
 ZENODO_API = "https://zenodo.org/api/records"
 ZENODO_QUERIES = [
@@ -81,7 +95,8 @@ def normalize_zenodo_record(raw: dict[str, Any]) -> dict[str, Any]:
         "resource_type": resource_type,
         "species": [item.id for item in extraction.species],
         "modalities": sorted({item.id for item in extraction.modalities}),
-        "brain_regions": [item.id for item in extraction.brain_regions],
+        "brain_regions": [item.id for item in extraction.brain_regions
+                          if _is_canonical_region(item.id)],
         "tasks": [item.id for item in extraction.tasks],
         "behaviors": [item.id for item in extraction.behaviors],
         "data_standards": sorted({item.id for item in extraction.data_standards}),
@@ -104,14 +119,24 @@ def fetch_zenodo(limit: int = 500) -> list[dict[str, Any]]:
             if len(accepted) >= limit:
                 break
             page = 1
-            per_page = 100
+            per_page = 25  # smaller pages to stay within rate limits
+            retries = 0
             while len(accepted) < limit:
                 try:
                     resp = client.get(
                         ZENODO_API,
-                        params={"q": query, "type": "dataset", "size": per_page, "page": page, "sort": "mostrecent"},
+                        params={"q": query, "resource_type.type": "dataset", "size": per_page, "page": page, "sort": "bestmatch"},
                     )
+                    if resp.status_code in (429, 400):
+                        wait = 10 * (retries + 1)
+                        logger.debug("Zenodo %s for '%s' — waiting %ds", resp.status_code, query, wait)
+                        time.sleep(wait)
+                        retries += 1
+                        if retries >= 3:
+                            break
+                        continue
                     resp.raise_for_status()
+                    retries = 0
                     hits = resp.json().get("hits", {}).get("hits", [])
                     if not hits:
                         break
@@ -129,9 +154,11 @@ def fetch_zenodo(limit: int = 500) -> list[dict[str, Any]]:
                     if len(hits) < per_page:
                         break
                     page += 1
+                    time.sleep(1.0)
                 except Exception as exc:
                     logger.warning("zenodo fetch error for '%s' page %d: %s", query, page, exc)
                     break
+            time.sleep(1.5)  # polite inter-query delay
 
     logger.info("zenodo: accepted %d datasets", len(accepted))
     return accepted
