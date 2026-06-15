@@ -1,0 +1,38 @@
+{
+  "bm25": {
+    "ndcg@10": 0.0,
+    "mrr": 0.027777777777777776,
+    "recall@50": 1.0,
+    "judged_queries": 1
+  },
+  "bm25_structured": {
+    "ndcg@10": 0.0,
+    "mrr": 0.027777777777777776,
+    "recall@50": 1.0,
+    "judged_queries": 1
+  },
+  "dense_bge": {
+    "ndcg@10": 0.0,
+    "mrr": 0.016666666666666666,
+    "recall@50": 0.0,
+    "judged_queries": 1
+  },
+  "hybrid_rrf": {
+    "ndcg@10": 0.0,
+    "mrr": 0.09090909090909091,
+    "recall@50": 1.0,
+    "judged_queries": 1
+  },
+  "hybrid_graph": {
+    "ndcg@10": 0.0,
+    "mrr": 0.09090909090909091,
+    "recall@50": 1.0,
+    "judged_queries": 1
+  },
+  "full": {
+    "ndcg@10": 0.0,
+    "mrr": 0.09090909090909091,
+    "recall@50": 1.0,
+    "judged_queries": 1
+  }
+}
