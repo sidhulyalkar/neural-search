@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -70,7 +69,9 @@ class TestExpandQueryWithLlm:
     def test_returns_empty_dict_when_anthropic_not_installed(self):
         """Returns {} gracefully when the anthropic package cannot be imported."""
         with patch.dict(sys.modules, {"anthropic": None}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("hippocampus theta oscillations")
 
@@ -85,7 +86,9 @@ class TestExpandQueryWithLlm:
         stub = _make_error_anthropic_stub(RuntimeError("connection refused"))
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("mouse visual cortex calcium imaging")
 
@@ -101,7 +104,9 @@ class TestExpandQueryWithLlm:
         stub = _make_anthropic_stub(json.dumps(payload))
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("hippocampus place cells")
 
@@ -122,7 +127,9 @@ class TestExpandQueryWithLlm:
         stub = _make_anthropic_stub(markdown_response)
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("visual cortex passive viewing mouse")
 
@@ -139,7 +146,9 @@ class TestExpandQueryWithLlm:
         stub = _make_anthropic_stub(json.dumps(payload))
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("prefrontal cortex working memory")
 
@@ -165,7 +174,9 @@ class TestExpandQueryWithLlm:
         stub = _make_anthropic_stub(json.dumps(payload))
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("mouse hippocampus place cells sharp wave ripples")
 
@@ -180,7 +191,9 @@ class TestExpandQueryWithLlm:
         stub = _make_anthropic_stub("Sorry, I cannot help with that.")
 
         with patch.dict(sys.modules, {"anthropic": stub}):
-            from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+            from neural_search.search.llm_expansion import (
+                expand_query_with_llm,  # noqa: PLC0415
+            )
 
             result = expand_query_with_llm("fmri resting state default mode network")
 
@@ -193,7 +206,9 @@ class TestExpandQueryWithLlm:
     def test_function_is_callable_without_anthropic(self):
         """The module can be imported and the function called even if anthropic is absent."""
         # The module must already be importable (it has been imported above).
-        from neural_search.search.llm_expansion import expand_query_with_llm  # noqa: PLC0415
+        from neural_search.search.llm_expansion import (
+            expand_query_with_llm,  # noqa: PLC0415
+        )
 
         assert callable(expand_query_with_llm)
 

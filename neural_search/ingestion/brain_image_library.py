@@ -149,7 +149,9 @@ def _extract_brain_regions(record: dict[str, Any]) -> list[str]:
                 text_parts.extend(str(value) for value in item.values() if value)
     haystack = " ".join(text_parts)
     try:
-        from neural_search.ontology import match_brain_regions  # lazy import to avoid circular imports
+        from neural_search.ontology import (
+            match_brain_regions,  # lazy import to avoid circular imports
+        )
 
         matches = match_brain_regions(haystack)
         return _dedupe([m.id for m in matches])

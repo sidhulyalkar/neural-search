@@ -25,7 +25,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
-from urllib import request, parse, error
+from urllib import error, parse, request
 
 import yaml
 

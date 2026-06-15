@@ -1,6 +1,5 @@
 """Tests for Sprint 1 atlas-ref helpers and enriched brain_regions.yaml."""
 
-import pytest
 
 from neural_search.ontology.loader import (
     get_brain_regions,
@@ -123,16 +122,18 @@ class TestSpeciesTaxonomy:
         assert path.exists(), "species_taxonomy.yaml not found"
 
     def test_species_taxonomy_has_key_species(self):
-        import yaml
         from pathlib import Path
+
+        import yaml
         raw = yaml.safe_load(Path("data/ontology/species_taxonomy.yaml").read_text())
         ids = {s["id"] for s in raw["species"]}
         assert {"mus_musculus", "rattus_norvegicus", "homo_sapiens",
                 "macaca_mulatta", "danio_rerio"} <= ids
 
     def test_all_species_have_ncbitaxon_id(self):
-        import yaml
         from pathlib import Path
+
+        import yaml
         raw = yaml.safe_load(Path("data/ontology/species_taxonomy.yaml").read_text())
         for s in raw["species"]:
             assert s["ncbitaxon_id"].startswith("NCBITaxon:"), (

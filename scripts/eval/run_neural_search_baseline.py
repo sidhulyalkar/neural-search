@@ -117,7 +117,7 @@ def write_run(results: dict[str, list[dict]], out_path: Path) -> int:
 def print_summary(results: dict[str, list[dict]]) -> None:
     total = sum(len(v) for v in results.values())
     empty = sum(1 for v in results.values() if not v)
-    print(f"\n=== Neural-Search Run Summary ===")
+    print("\n=== Neural-Search Run Summary ===")
     print(f"  Queries:          {len(results)}")
     print(f"  Total results:    {total}")
     print(f"  Empty queries:    {empty}")

@@ -17,7 +17,6 @@ Usage
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path
@@ -28,8 +27,6 @@ sys.path.insert(0, str(ROOT))
 from neural_search.coverage.duckdb_store import CoverageStore
 from neural_search.coverage.ledger import (
     CoverageLedger,
-    load_dataset_mappings,
-    render_gap_report_markdown,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
