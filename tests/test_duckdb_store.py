@@ -239,4 +239,5 @@ def test_datasets_for_region_returns_list(tmp_path):
         assert "dataset_id" in r
         assert "source" in r
         assert "title" in r
+        assert "access_tier" in r
         assert "confidence" in r
