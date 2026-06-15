@@ -17,8 +17,9 @@ class SimilarityWeights:
     """Weights for different concept types in similarity computation."""
 
     task: float = 0.30
-    modality: float = 0.25
-    brain_region: float = 0.20
+    modality: float = 0.20
+    recording_scale: float = 0.12
+    brain_region: float = 0.18
     behavioral_event: float = 0.15
     analysis_affordance: float = 0.10
 
@@ -35,6 +36,7 @@ class DatasetSimilarity:
     similarity_score: float
     shared_tasks: list[str]
     shared_modalities: list[str]
+    shared_recording_scales: list[str]
     shared_regions: list[str]
     shared_events: list[str]
     shared_affordances: list[str]
@@ -49,6 +51,7 @@ def _get_dataset_concepts(
     concepts: dict[str, set[str]] = {
         "task": set(),
         "modality": set(),
+        "recording_scale": set(),
         "brain_region": set(),
         "behavioral_event": set(),
         "analysis_affordance": set(),
@@ -58,6 +61,7 @@ def _get_dataset_concepts(
     edge_type_mapping = {
         "dataset_has_task": "task",
         "dataset_has_modality": "modality",
+        "dataset_has_recording_scale": "recording_scale",
         "dataset_records_region": "brain_region",
         "dataset_has_behavioral_event": "behavioral_event",
         "dataset_supports_analysis": "analysis_affordance",
@@ -110,6 +114,7 @@ def compute_dataset_similarity(
     weight_map = {
         "task": weights.task,
         "modality": weights.modality,
+        "recording_scale": weights.recording_scale,
         "brain_region": weights.brain_region,
         "behavioral_event": weights.behavioral_event,
         "analysis_affordance": weights.analysis_affordance,
@@ -134,6 +139,10 @@ def compute_dataset_similarity(
         explanation_parts.append(f"tasks: {', '.join(sorted(shared['task']))}")
     if shared["modality"]:
         explanation_parts.append(f"modalities: {', '.join(sorted(shared['modality']))}")
+    if shared["recording_scale"]:
+        explanation_parts.append(
+            f"recording scales: {', '.join(sorted(shared['recording_scale']))}"
+        )
     if shared["brain_region"]:
         explanation_parts.append(f"regions: {', '.join(sorted(shared['brain_region']))}")
 
@@ -145,6 +154,7 @@ def compute_dataset_similarity(
         similarity_score=round(similarity, 4),
         shared_tasks=sorted(shared["task"]),
         shared_modalities=sorted(shared["modality"]),
+        shared_recording_scales=sorted(shared["recording_scale"]),
         shared_regions=sorted(shared["brain_region"]),
         shared_events=sorted(shared["behavioral_event"]),
         shared_affordances=sorted(shared["analysis_affordance"]),
@@ -226,6 +236,7 @@ def build_similarity_edges(
             total_shared = (
                 len(sim.shared_tasks)
                 + len(sim.shared_modalities)
+                + len(sim.shared_recording_scales)
                 + len(sim.shared_regions)
                 + len(sim.shared_events)
                 + len(sim.shared_affordances)

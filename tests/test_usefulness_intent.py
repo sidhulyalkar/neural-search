@@ -1,8 +1,6 @@
 """Tests for UsefulnessIntent classification."""
-import pytest
 from neural_search.retrieval.query_intent import (
     UsefulnessIntent,
-    IntentClassification,
     classify_query_intent,
 )
 

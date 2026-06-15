@@ -31,6 +31,7 @@ DEFAULT_GRAPH_SEARCH_WEIGHTS = {
 
 REQUIREMENT_GROUPS = {
     "modality": "modality",
+    "recording_scale": "recording_scale",
     "behavioral_event": "behavioral_event",
     "data_standard": "data_standard",
     "required_signal": "required_signal",
@@ -118,6 +119,7 @@ def _empty_features(*, graph_available: bool) -> dict[str, Any]:
             "animal_types": [],
         },
         "brain_regions": [],
+        "recording_scales": [],
         "matched_query_context": {},
         "requirement_matches": {
             "modality": [],
@@ -151,6 +153,7 @@ def _dataset_concept_terms(
 ) -> dict[str, set[str]]:
     edge_to_group = {
         "dataset_has_modality": "modality",
+        "dataset_has_recording_scale": "recording_scale",
         "dataset_has_behavioral_event": "behavioral_event",
         "dataset_uses_standard": "data_standard",
     }
@@ -300,6 +303,7 @@ def compute_graph_features_for_result(
     analysis_affordances = _neighbor_labels(graph, node_id, "dataset_supports_analysis")
     tasks = _neighbor_labels(graph, node_id, "dataset_has_task")
     modalities = _neighbor_labels(graph, node_id, "dataset_has_modality")
+    recording_scales = _neighbor_labels(graph, node_id, "dataset_has_recording_scale")
     species = _neighbor_labels(graph, node_id, "dataset_has_species")
     species_context = _species_context(graph, node_id)
     brain_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
@@ -317,6 +321,9 @@ def compute_graph_features_for_result(
     matched_query_context = {
         "tasks": sorted(set(context.get("tasks", [])) & set(tasks)),
         "modalities": sorted(set(context.get("modalities", [])) & set(modalities)),
+        "recording_scales": sorted(
+            set(context.get("recording_scales", [])) & set(recording_scales)
+        ),
         "species": sorted(query_species & species_terms),
         "taxon_groups": sorted(query_species & broader_species_terms),
         "brain_regions": sorted(
@@ -334,6 +341,7 @@ def compute_graph_features_for_result(
         "analysis_affordances": analysis_affordances,
         "tasks": tasks,
         "modalities": modalities,
+        "recording_scales": recording_scales,
         "species": species,
         "species_context": species_context,
         "brain_regions": brain_regions,

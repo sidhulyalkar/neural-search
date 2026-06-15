@@ -84,7 +84,7 @@ def validate_qrels(  # noqa: C901
     seen_pairs: set[tuple[str, str]] = set()
     seen_annotator_triples: set[tuple[str, str, str]] = set()
 
-    for i, record in enumerate(raw_records):
+    for _i, record in enumerate(raw_records):
         record_id = f"{record.get('query_id','?')}:{record.get('dataset_id','?')}"
         try:
             entry = QrelsEntryV1.model_validate(record)

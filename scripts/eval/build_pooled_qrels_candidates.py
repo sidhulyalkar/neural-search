@@ -167,7 +167,7 @@ def bm25_retrieve(
 # ---------------------------------------------------------------------------
 
 def _dot(a: list[float], b: list[float]) -> float:
-    return sum(x * y for x, y in zip(a, b))
+    return sum(x * y for x, y in zip(a, b, strict=True))
 
 
 def _normalize(vec: list[float]) -> list[float]:
@@ -178,7 +178,7 @@ def _normalize(vec: list[float]) -> list[float]:
 
 
 def _vec_add(acc: list[float], v: list[float]) -> list[float]:
-    return [a + b for a, b in zip(acc, v)]
+    return [a + b for a, b in zip(acc, v, strict=True)]
 
 
 def load_embeddings(emb_path: Path, field: str = TARGET_FIELD) -> dict[str, list[float]]:
@@ -576,7 +576,7 @@ def main() -> None:
         print(f"  {len(emb_index)} embedding records")
     else:
         if not args.no_dense:
-            print(f"  Embeddings file not found, skipping dense PRF.")
+            print("  Embeddings file not found, skipping dense PRF.")
 
     all_candidates: list[dict] = []
     stats: dict[str, Any] = {}

@@ -50,7 +50,6 @@ def _feedback_event(
 
 def _load_script():
     import importlib.util
-    import sys
     from pathlib import Path
 
     spec = importlib.util.spec_from_file_location(

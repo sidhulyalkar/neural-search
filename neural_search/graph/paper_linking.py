@@ -9,7 +9,7 @@ This module provides functionality to link papers and datasets based on:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from neural_search.graph.query import get_neighbors
@@ -67,7 +67,7 @@ DEFAULT_LINKING_CONFIG = LinkingConfig()
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _get_node_concepts(

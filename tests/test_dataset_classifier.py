@@ -1,5 +1,5 @@
 """Tests for dataset inclusion classifier."""
-from neural_search.ingestion.dataset_classifier import is_valid_dataset, ClassificationResult
+from neural_search.ingestion.dataset_classifier import is_valid_dataset
 
 
 def test_rejects_paper_only():

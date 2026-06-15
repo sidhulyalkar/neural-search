@@ -1,59 +1,82 @@
 # Regional Coverage Map
 
 - Dataset records: 625
-- Records with verified regions: 206
-- Region coverage: 33.0%
-- Records without verified regions: 419
-- Regionless records with candidate mentions: 18
-- Atlas target regions: 69
-- Atlas targets verified: 42
-- Atlas targets candidate-only: 11
-- Atlas targets uncovered: 16
+- Records with verified regions: 223
+- Region coverage: 35.7%
+- Records without verified regions: 402
+- Regionless records with candidate mentions: 13
+- Atlas target regions: 94
+- Atlas targets verified: 43
+- Atlas targets candidate-only: 16
+- Atlas targets uncovered: 35
 
 ## Top Verified Regions
 
 | Region | Records | Sources | Species | Modalities |
 | --- | ---: | --- | --- | --- |
+| hippocampus | 34 | dandi, openneuro | human, mouse, rat | audio, behavioral, calcium_imaging, eeg, emg, extracellular_ephys |
 | motor_cortex | 33 | dandi, openneuro | human, macaque, mouse | audio, behavioral, calcium_imaging, ecog, eeg, extracellular_ephys |
-| hippocampus | 31 | dandi, openneuro | human, mouse, rat | audio, behavioral, calcium_imaging, eeg, emg, extracellular_ephys |
-| visual_cortex | 29 | dandi, openneuro | human, macaque, mouse | audio, behavioral, calcium_imaging, eeg, extracellular_ephys, eye_tracking |
+| neocortex | 32 | dandi | human, mouse, rat | behavioral, calcium_imaging, extracellular_ephys, eye_tracking, lfp, neuropixels |
+| visual_cortex | 32 | dandi, openneuro | human, macaque, mouse | audio, behavioral, calcium_imaging, eeg, extracellular_ephys, eye_tracking |
 | acc | 26 | dandi, openneuro, spark | human, mouse | behavior_video, behavioral, calcium_imaging, eeg, extracellular_ephys, fmri |
+| temporal_cortex | 21 | dandi, openneuro | human | audio, behavioral, eeg, extracellular_ephys, fmri, ieeg |
 | prefrontal_cortex | 19 | dandi, openneuro | human, macaque, mouse, rat | behavioral, calcium_imaging, extracellular_ephys, eye_tracking, fmri, lfp |
 | striatum | 19 | dandi, openneuro, spark | human, mouse, rat, zebrafish | behavior_video, behavioral, calcium_imaging, extracellular_ephys, fiber_photometry, fmri |
-| temporal_cortex | 19 | dandi, openneuro | human | audio, behavioral, eeg, extracellular_ephys, fmri, ieeg |
-| it | 16 | dandi | drosophila, human, mouse, rat, zebrafish | behavioral, calcium_imaging, eeg, extracellular_ephys, lfp, neuropixels |
-| neocortex | 15 | dandi | human, mouse, rat | behavioral, calcium_imaging, extracellular_ephys, lfp, neuropixels, patch_clamp |
-| v1 | 15 | dandi | human, macaque, mouse | behavioral, calcium_imaging, extracellular_ephys, eye_tracking, lfp, neuropixels |
-| premotor_cortex | 14 | dandi, openneuro | human, macaque, mouse | behavioral, calcium_imaging, eeg, extracellular_ephys, fmri, lfp |
-| somatosensory_cortex | 13 | dandi | human, macaque, mouse, rat | behavioral, ecog, extracellular_ephys, lfp, pose_tracking |
+| v1 | 18 | dandi | human, macaque, mouse | behavioral, calcium_imaging, extracellular_ephys, eye_tracking, lfp, neuropixels |
+| ca1 | 17 | dandi | human, mouse, rat | behavioral, calcium_imaging, emg, extracellular_ephys, lfp, neuropixels |
+| it | 17 | dandi | drosophila, human, mouse, rat, zebrafish | behavioral, calcium_imaging, eeg, extracellular_ephys, lfp, neuropixels |
+| premotor_cortex | 17 | dandi, openneuro | human, macaque, mouse | behavioral, calcium_imaging, eeg, extracellular_ephys, fmri, lfp |
+| somatosensory_cortex | 14 | dandi | human, macaque, mouse, rat | behavioral, ecog, extracellular_ephys, lfp, pose_tracking |
 | amygdala | 12 | dandi, openneuro, spark | human, rat | behavior_video, behavioral, eeg, extracellular_ephys, fmri, ieeg |
-| ca1 | 12 | dandi | mouse, rat | behavioral, calcium_imaging, emg, extracellular_ephys, lfp |
+| thalamus | 11 | dandi | human, mouse | behavioral, calcium_imaging, extracellular_ephys, lfp, neuropixels, pose_tracking |
+| brainstem | 10 | dandi, openneuro, spark | human, mouse, rat, zebrafish | behavioral, calcium_imaging, eeg, extracellular_ephys, fmri, lfp |
 | mpfc | 10 | dandi, openneuro | human, mouse, rat | behavioral, calcium_imaging, extracellular_ephys, fmri, lfp |
-| brainstem | 9 | dandi, openneuro, spark | human, mouse, rat, zebrafish | behavioral, calcium_imaging, eeg, extracellular_ephys, fmri, lfp |
-| thalamus | 9 | dandi | mouse | behavioral, calcium_imaging, extracellular_ephys, lfp, neuropixels, pose_tracking |
 | dlpfc | 8 | openneuro | human | fmri |
 | ofc | 8 | dandi, openneuro | mouse | behavioral, calcium_imaging, fmri, lfp |
 | spinal_cord | 8 | dandi, openneuro | mouse | events, extracellular_ephys, fmri, patch_clamp, structural_mri |
 | ventral_striatum | 8 | dandi | human, rat, zebrafish | behavioral, calcium_imaging, extracellular_ephys, fiber_photometry, lfp |
 | pmd | 7 | dandi | macaque | behavioral, extracellular_ephys, lfp, pose_tracking |
+| temporal_lobe | 7 | dandi, openneuro | human | behavioral, eeg, extracellular_ephys, fmri, ieeg, lfp |
 | auditory_cortex | 6 | dandi, openneuro | human | eeg, fmri |
 | nucleus_accumbens | 6 | dandi | human, zebrafish | behavioral, calcium_imaging, fiber_photometry, lfp |
-| temporal_lobe | 6 | dandi, openneuro | human | behavioral, eeg, extracellular_ephys, fmri, ieeg, lfp |
+
+## System Coverage
+
+| System | Targets | Verified | Candidate-only | Uncovered | Verified Records | Candidate Records |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| amygdala | 3 | 2 | 0 | 1 | 14 | 0 |
+| basal_forebrain | 4 | 0 | 3 | 1 | 0 | 5 |
+| basal_ganglia | 15 | 6 | 0 | 9 | 36 | 0 |
+| brainstem | 11 | 5 | 3 | 3 | 23 | 7 |
+| cerebellum | 4 | 1 | 0 | 3 | 5 | 0 |
+| cortical | 28 | 18 | 6 | 4 | 228 | 190 |
+| hippocampal_formation | 7 | 5 | 1 | 1 | 58 | 6 |
+| hypothalamus | 5 | 1 | 0 | 4 | 4 | 0 |
+| olfactory | 1 | 1 | 0 | 0 | 3 | 0 |
+| spinal_cord | 6 | 1 | 0 | 5 | 8 | 0 |
+| thalamus | 8 | 2 | 2 | 4 | 12 | 2 |
+| visual_periphery | 1 | 1 | 0 | 0 | 2 | 0 |
+| whole_brain | 1 | 0 | 1 | 0 | 0 | 8 |
 
 ## Candidate-Only Atlas Targets
 
 | Region | System | Candidate Records |
 | --- | --- | ---: |
 | basal_forebrain | basal_forebrain | 1 |
+| lateral_septum | basal_forebrain | 3 |
+| medial_septum | basal_forebrain | 1 |
 | dorsal_raphe | brainstem | 1 |
 | medulla | brainstem | 1 |
 | midbrain | brainstem | 5 |
-| ventral_tegmental_area | brainstem | 6 |
 | barrel_cortex | cortical | 6 |
-| cortex | cortical | 143 |
+| cortex | cortical | 148 |
 | insular_cortex | cortical | 4 |
+| primary_motor_cortex | cortical | 10 |
+| primary_somatosensory_cortex | cortical | 8 |
+| supplementary_motor_area | cortical | 1 |
 | medial_temporal_lobe | hippocampal_formation | 6 |
-| vpm | thalamus | 1 |
+| ventral_posterolateral_thalamus | thalamus | 1 |
+| ventral_posteromedial_thalamus | thalamus | 1 |
 | whole_brain | whole_brain | 8 |
 
 ## Regionless Review Queue
@@ -61,14 +84,10 @@
 | Record | Source | Candidate Regions | Title |
 | --- | --- | --- | --- |
 | dataset:dandi:000640 | dandi | cortex | 32-CH Local Field Potential Data During Probabilistic Reversal Learning Task |
-| dataset:dandi:000004 | dandi | - | A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task |
 | dataset:dandi:000045 | dandi | - | IBL behavioral data |
 | dataset:dandi:000678 | dandi | - | Pupil and movement measurements during mouse auditory and visual discrimination |
-| dataset:dandi:001079 | dandi | - | Sharp Wave Ripples in Publicly Available Neuropixels Datasets |
 | dataset:dandi:000012 | dandi | - | Kriegstein2020 |
 | dataset:dandi:000017 | dandi | - | Distributed coding of choice, action and engagement across the mouse brain |
-| dataset:dandi:000021 | dandi | - | Allen Institute - Visual Coding - Neuropixels (Brain Observatory 1.1 Stimulus Set) |
-| dataset:dandi:000022 | dandi | - | Allen Institute - Visual Coding - Neuropixels (Functional Connectivity Stimulus Set) |
 | dataset:dandi:000024 | dandi | basal_forebrain | LFP & MUA from BF |
 | dataset:dandi:000025 | dandi | - | Example intracellular ephys data from LNMC & BBP |
 | dataset:dandi:000027 | dandi | - | Test dataset for testing dandi-cli. |
@@ -80,7 +99,6 @@
 | dataset:dandi:000033 | dandi | - | Test-2 dataset |
 | dataset:dandi:000034 | dandi | - | SpikeInterface, a unified framework for spike sorting |
 | dataset:dandi:000038 | dandi | - | Testytest |
-| dataset:dandi:000040 | dandi | - | Neuropixels recordings in mouse visual system |
 | dataset:dandi:000042 | dandi | - | Allen Institute Openscope - Meaningful project  - Full movies |
 | dataset:dandi:000043 | dandi | - | Human, macaque, and mouse L5 pyramidal neuron physiology |
 | dataset:dandi:000046 | dandi | - | asdf |
@@ -110,3 +128,8 @@
 | dataset:dandi:000131 | dandi | - | Nestdesktop PK |
 | dataset:dandi:000132 | dandi | - | Neurex Summer School |
 | dataset:dandi:000133 | dandi | - | nest dataset |
+| dataset:dandi:000134 | dandi | - | neurex |
+| dataset:dandi:000135 | dandi | - | Test |
+| dataset:dandi:000136 | dandi | - | NEST |
+| dataset:dandi:000137 | dandi | - | Neurex Summer School 2021 |
+| dataset:dandi:000141 | dandi | - | TravelingDirection_2021 |

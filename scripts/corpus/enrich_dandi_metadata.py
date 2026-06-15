@@ -78,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--force-all", action="store_true", help="Re-enrich all DANDI records")
     args = parser.parse_args(argv)
 
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     raw_map = _load_raw_dandisets()
     rich_cache = _load_rich_cache()
 

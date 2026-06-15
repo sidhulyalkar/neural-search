@@ -1,6 +1,5 @@
 """Tests for DatasetCardV1 and CorpusSnapshot schemas."""
 
-import json
 
 import pytest
 
@@ -164,6 +163,7 @@ class TestCorpusSnapshot:
         id2 = CorpusSnapshot.generate_snapshot_id()
 
         assert id1.startswith("corpus_")
+        assert id2.startswith("corpus_")
         assert len(id1) > 20
         # IDs should be different (different timestamps)
         # Note: Could be same if called in same millisecond, but unlikely

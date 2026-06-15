@@ -166,6 +166,10 @@ def build_demo_seed(
             source_metadata=dataset,
             linked_paper_abstracts=[paper["abstract"] for paper in linked_papers],
         )
+        dataset["recording_scales"] = [
+            label.id for label in extraction.recording_scales
+        ] or dataset.get("recording_scales", [])
+        dataset["metadata_json"]["recording_scales"] = dataset["recording_scales"]
         records.append(
             {
                 "dataset": dataset,

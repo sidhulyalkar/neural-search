@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from neural_search.ingestion.doi_utils import (
     dois_to_paper_ids,
     extract_dois_from_dandi_metadata,

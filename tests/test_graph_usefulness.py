@@ -1,11 +1,12 @@
 """Tests for graph-derived usefulness signals."""
 import pytest
+
 from neural_search.retrieval.graph_usefulness import (
     affordance_overlap,
-    pipeline_overlap,
     complementarity_score,
-    normalized_metapath_score,
     graph_usefulness_features,
+    normalized_metapath_score,
+    pipeline_overlap,
 )
 
 

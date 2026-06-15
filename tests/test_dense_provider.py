@@ -1,5 +1,4 @@
 """Tests for DenseEmbeddingProvider (BGE-large-en-v1.5)."""
-import pytest
 
 
 def test_dense_provider_import():
@@ -21,6 +20,7 @@ def test_dense_provider_registry():
 def test_dense_provider_get_provider_bge(monkeypatch):
     """get_provider('bge-large') returns DenseEmbeddingProvider without loading model."""
     import numpy as np
+
     from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
 
     class _FakeModel:
@@ -42,6 +42,7 @@ def test_dense_provider_get_provider_bge(monkeypatch):
 def test_embed_batch_shape(monkeypatch):
     """embed_batch returns list of 1024-dim vectors."""
     import numpy as np
+
     from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
 
     class _FakeModel:
@@ -63,6 +64,7 @@ def test_embed_batch_shape(monkeypatch):
 def test_embed_corpus_batch_empty(monkeypatch):
     """embed_corpus_batch([]) returns (0, 1024) array, not (0,)."""
     import numpy as np
+
     from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
 
     class _FakeModel:

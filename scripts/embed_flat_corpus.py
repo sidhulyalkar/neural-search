@@ -15,7 +15,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-CORPUS_PATH = Path("data/corpus/normalized/combined_corpus.jsonl")
+CORPUS_PATH = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl")
 EMBEDDINGS_OUT = Path("data/embeddings/real_all.dense.field_embeddings.jsonl")
 INDEX_PATH = Path("data/index/turbovec_dense_1024.index")
 
@@ -92,11 +92,11 @@ def embed_corpus(corpus_path: Path, out_path: Path, dry_run: bool = False) -> in
 
     texts = [t for _, _, t in triples]
     vectors = provider.embed_batch(texts)
-    timestamp = datetime.now(timezone.utc).isoformat()
+    timestamp = datetime.now(UTC).isoformat()
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w") as f:
-        for (rid, field, text), vec in zip(triples, vectors):
+        for (rid, field, text), vec in zip(triples, vectors, strict=False):
             f.write(json.dumps({
                 "record_id": rid,
                 "record_type": "dataset",

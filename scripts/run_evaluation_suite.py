@@ -18,7 +18,7 @@ import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -41,7 +41,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     results: dict = {
-        "run_at": datetime.now(timezone.utc).isoformat(),
+        "run_at": datetime.now(UTC).isoformat(),
         "n_queries": args.n_queries,
         "layers": {},
     }
@@ -113,7 +113,7 @@ def main(argv: list[str] | None = None) -> int:
 
     Path("reports").mkdir(exist_ok=True)
     Path("reports/evaluation_suite_v2.json").write_text(json.dumps(results, indent=2))
-    print(f"\nReport → reports/evaluation_suite_v2.json")
+    print("\nReport → reports/evaluation_suite_v2.json")
     return 0
 
 

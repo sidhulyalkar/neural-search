@@ -45,18 +45,38 @@ regional_targets:
     label: Somatosensory cortex
     system: cortical
     aliases: [somatosensory cortex, somatosensory cortical, s1]
+  - id: primary_somatosensory_cortex
+    label: Primary somatosensory cortex
+    system: cortical
+    aliases: [primary somatosensory cortex, primary somatosensory, s1, s1 cortex]
   - id: barrel_cortex
     label: Barrel cortex
     system: cortical
     aliases: [barrel cortex, barrel field, whisker barrel]
+  - id: gustatory_cortex
+    label: Gustatory cortex
+    system: cortical
+    aliases: [gustatory cortex, gustatory area, taste cortex]
   - id: motor_cortex
     label: Motor cortex
     system: cortical
     aliases: [motor cortex, primary motor cortex, m1]
+  - id: primary_motor_cortex
+    label: Primary motor cortex
+    system: cortical
+    aliases: [primary motor cortex, primary motor, m1, m1 cortex]
   - id: premotor_cortex
     label: Premotor cortex
     system: cortical
     aliases: [premotor cortex, premotor, pmc]
+  - id: supplementary_motor_area
+    label: Supplementary motor area
+    system: cortical
+    aliases: [supplementary motor area, supplementary motor cortex, sma, pre-sma]
+  - id: frontal_eye_field
+    label: Frontal eye field
+    system: cortical
+    aliases: [frontal eye field, frontal eye fields, fef]
   - id: prefrontal_cortex
     label: Prefrontal cortex
     system: cortical
@@ -157,10 +177,22 @@ regional_targets:
     label: Mediodorsal thalamus
     system: thalamus
     aliases: [mediodorsal thalamus, md thalamus]
-  - id: vpm
+  - id: ventral_posteromedial_thalamus
     label: Ventral posteromedial nucleus
     system: thalamus
     aliases: [vpm, ventral posteromedial nucleus]
+  - id: ventral_posterolateral_thalamus
+    label: Ventral posterolateral nucleus
+    system: thalamus
+    aliases: [vpl, ventral posterolateral nucleus]
+  - id: anterior_thalamic_nuclei
+    label: Anterior thalamic nuclei
+    system: thalamus
+    aliases: [anterior thalamic nuclei, anterior thalamus]
+  - id: thalamic_reticular_nucleus
+    label: Thalamic reticular nucleus
+    system: thalamus
+    aliases: [thalamic reticular nucleus, reticular thalamic nucleus, trn]
   - id: striatum
     label: Striatum
     system: basal_ganglia
@@ -197,14 +229,42 @@ regional_targets:
     label: Globus pallidus
     system: basal_ganglia
     aliases: [globus pallidus, pallidum]
+  - id: globus_pallidus_external
+    label: External globus pallidus
+    system: basal_ganglia
+    aliases: [external globus pallidus, globus pallidus externa, gpe]
+  - id: globus_pallidus_internal
+    label: Internal globus pallidus
+    system: basal_ganglia
+    aliases: [internal globus pallidus, globus pallidus interna, gpi]
   - id: basal_forebrain
     label: Basal forebrain
     system: basal_forebrain
     aliases: [basal forebrain, bf]
+  - id: nucleus_basalis
+    label: Nucleus basalis
+    system: basal_forebrain
+    aliases: [nucleus basalis, nucleus basalis of meynert, nbm]
+  - id: medial_septum
+    label: Medial septum
+    system: basal_forebrain
+    aliases: [medial septum, medial septal nucleus]
+  - id: lateral_septum
+    label: Lateral septum
+    system: basal_forebrain
+    aliases: [lateral septum, lateral septal nucleus]
   - id: substantia_nigra
     label: Substantia nigra
     system: basal_ganglia
     aliases: [substantia nigra, snc, snr]
+  - id: substantia_nigra_pars_compacta
+    label: Substantia nigra pars compacta
+    system: basal_ganglia
+    aliases: [substantia nigra pars compacta, snc]
+  - id: substantia_nigra_pars_reticulata
+    label: Substantia nigra pars reticulata
+    system: basal_ganglia
+    aliases: [substantia nigra pars reticulata, snr]
   - id: subthalamic_nucleus
     label: Subthalamic nucleus
     system: basal_ganglia
@@ -249,7 +309,7 @@ regional_targets:
     label: Inferior colliculus
     system: brainstem
     aliases: [inferior colliculus, ic]
-  - id: ventral_tegmental_area
+  - id: vta
     label: Ventral tegmental area
     system: brainstem
     aliases: [ventral tegmental area, vta]
@@ -257,10 +317,18 @@ regional_targets:
     label: Dorsal raphe
     system: brainstem
     aliases: [dorsal raphe, drn]
+  - id: median_raphe
+    label: Median raphe
+    system: brainstem
+    aliases: [median raphe, median raphe nucleus, mrn]
   - id: locus_coeruleus
     label: Locus coeruleus
     system: brainstem
     aliases: [locus coeruleus, lc]
+  - id: red_nucleus
+    label: Red nucleus
+    system: brainstem
+    aliases: [red nucleus, ruber nucleus]
   - id: hypothalamus
     label: Hypothalamus
     system: hypothalamus
@@ -269,6 +337,18 @@ regional_targets:
     label: Lateral hypothalamus
     system: hypothalamus
     aliases: [lateral hypothalamus]
+  - id: arcuate_nucleus
+    label: Arcuate nucleus
+    system: hypothalamus
+    aliases: [arcuate nucleus, arcuate hypothalamic nucleus, arc]
+  - id: paraventricular_hypothalamic_nucleus
+    label: Paraventricular hypothalamic nucleus
+    system: hypothalamus
+    aliases: [paraventricular hypothalamic nucleus, paraventricular nucleus, pvn]
+  - id: suprachiasmatic_nucleus
+    label: Suprachiasmatic nucleus
+    system: hypothalamus
+    aliases: [suprachiasmatic nucleus, scn]
   - id: olfactory_bulb
     label: Olfactory bulb
     system: olfactory
@@ -281,3 +361,23 @@ regional_targets:
     label: Spinal cord
     system: spinal_cord
     aliases: [spinal cord]
+  - id: cervical_spinal_cord
+    label: Cervical spinal cord
+    system: spinal_cord
+    aliases: [cervical spinal cord, cervical cord]
+  - id: thoracic_spinal_cord
+    label: Thoracic spinal cord
+    system: spinal_cord
+    aliases: [thoracic spinal cord, thoracic cord]
+  - id: lumbar_spinal_cord
+    label: Lumbar spinal cord
+    system: spinal_cord
+    aliases: [lumbar spinal cord, lumbar cord]
+  - id: dorsal_horn
+    label: Dorsal horn
+    system: spinal_cord
+    aliases: [dorsal horn, spinal dorsal horn]
+  - id: ventral_horn
+    label: Ventral horn
+    system: spinal_cord
+    aliases: [ventral horn, spinal ventral horn]

@@ -16,29 +16,22 @@ from pydantic import BaseModel, Field, field_validator
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
+from neural_search.corpus.brain_region_index import build_brain_region_index
 from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion import services as ingestion_services
 from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_seed
-
-# When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
-# (useful for CI and quick local demos). Default: full combined corpus.
-_DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
-FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
-NEURO_JUDGE_WATERMARK = (
-    "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
-    "NOT PURE HUMAN GOLD"
-)
-
-
-def _load_corpus() -> list[dict[str, Any]]:
-    return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 from neural_search.notebooks import generate_nwb_starter_notebook
 from neural_search.notebooks.templates import (
     evaluate_template_for_dataset,
     get_notebook_template,
 )
-from neural_search.ontology import get_ontology, load_ontology
+from neural_search.ontology import (
+    get_brain_regions,
+    get_ontology,
+    get_recording_scales,
+    load_ontology,
+)
 from neural_search.qa import (
     QA_FIELD_DEFAULTS,
     attach_qa_to_card,
@@ -63,8 +56,21 @@ from neural_search.schemas import (
 )
 from neural_search.search import search_datasets
 
+# When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
+# (useful for CI and quick local demos). Default: full combined corpus.
+_DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
+FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
+NEURO_JUDGE_WATERMARK = (
+    "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
+    "NOT PURE HUMAN GOLD"
+)
+
 # In-memory store for demo (replace with DB in production)
 _demo_data: list[dict[str, Any]] = []
+
+
+def _load_corpus() -> list[dict[str, Any]]:
+    return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 
 
 @asynccontextmanager
@@ -983,6 +989,7 @@ def _frontend_card_payload(
             "data_standard": standard.lower() if isinstance(standard, str) else standard,
             "species": dataset.get("species", []),
             "modalities": dataset.get("modalities", []),
+            "recording_scales": dataset.get("recording_scales", []),
             "brain_regions": dataset.get("brain_regions", []),
             "tasks": dataset.get("tasks", []),
             "behaviors": dataset.get("behaviors", []),
@@ -1019,7 +1026,9 @@ class OntologyResponse(BaseModel):
     tasks: list[OntologyTermRead]
     behavior_labels: list[dict[str, Any]] = Field(default_factory=list)
     modalities: list[str] = Field(default_factory=list)
+    recording_scales: list[dict[str, Any]] = Field(default_factory=list)
     brain_regions: list[str] = Field(default_factory=list)
+    brain_region_index: list[dict[str, Any]] = Field(default_factory=list)
     analysis_goals: list[str] = Field(default_factory=list)
 
 
@@ -1052,7 +1061,17 @@ async def get_ontology_tasks() -> OntologyResponse:
             for behavior in ontology.behavior_labels
         ],
         modalities=ontology.modality_names,
-        brain_regions=ontology.region_names,
+        recording_scales=[
+            scale.model_dump(mode="json") for scale in get_recording_scales()
+        ],
+        brain_regions=sorted(region.id for region in get_brain_regions()),
+        brain_region_index=[
+            entry.model_dump(mode="json")
+            for entry in sorted(
+                build_brain_region_index().values(),
+                key=lambda item: item.id,
+            )
+        ],
         analysis_goals=sorted(
             {
                 analysis
@@ -1312,3 +1331,143 @@ def _frontend_evaluation_payload(report: Any) -> dict[str, Any]:
         "recommendations": report.recommendations,
         "query_evaluations": query_evaluations,
     }
+
+
+# ── Coverage gap API ──────────────────────────────────────────────────────────
+# NOTE: No app-wide auth exists; this API is intended to run on localhost only
+# behind an authenticating reverse proxy. Do not expose it directly to the
+# public internet. See deployment docs for proxy configuration.
+
+_COVERAGE_DB_PATH = Path("data/coverage/ledger.duckdb")
+
+_ALLOWED_COVERAGE_DIMS = frozenset({
+    "brain_regions",
+    "modalities",
+    "species",
+    "tasks",
+    "recording_scales",
+})
+
+_SPECIES_ID_RE = re.compile(r"^[a-zA-Z0-9_:\-]{1,64}$")
+
+
+def _validate_dim(name: str, value: str) -> str:
+    if value not in _ALLOWED_COVERAGE_DIMS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid {name!r}: must be one of {sorted(_ALLOWED_COVERAGE_DIMS)}",
+        )
+    return value
+
+
+def _validate_species(value: str | None) -> str | None:
+    if value is None:
+        return None
+    if not _SPECIES_ID_RE.match(value):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid species filter: use alphanumeric/underscore/hyphen/colon IDs only",
+        )
+    return value
+
+
+def _coverage_store() -> Any:
+    from neural_search.coverage.duckdb_store import CoverageStore
+    if not _COVERAGE_DB_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Coverage ledger not built. Run: python scripts/coverage/build_duckdb_ledger.py",
+        )
+    return CoverageStore(_COVERAGE_DB_PATH)
+
+
+@app.get("/api/coverage/summary")
+async def get_coverage_summary() -> dict[str, Any]:
+    """Overall coverage statistics from the DuckDB ledger."""
+    with _coverage_store() as store:
+        return store.coverage_summary()
+
+
+@app.get("/api/coverage/source-rates")
+async def get_coverage_source_rates() -> list[dict[str, Any]]:
+    """Per-source coverage percentages for brain_regions, modalities, species, tasks."""
+    with _coverage_store() as store:
+        rows = store.source_coverage_rates().fetchall()
+    return [
+        {
+            "source": r[0],
+            "n_total": r[1],
+            "regions_covered": r[2],
+            "regions_pct": r[3],
+            "modalities_covered": r[4],
+            "modalities_pct": r[5],
+            "species_covered": r[6],
+            "species_pct": r[7],
+            "tasks_covered": r[8],
+            "tasks_pct": r[9],
+        }
+        for r in rows
+    ]
+
+
+@app.get("/api/coverage/uncovered-regions")
+async def get_uncovered_regions() -> list[dict[str, Any]]:
+    """Ontology regions with zero corpus datasets."""
+    with _coverage_store() as store:
+        rows = store.uncovered_regions().fetchall()
+    return [
+        {
+            "id": r[0],
+            "label": r[1],
+            "uberon_id": r[2],
+            "allen_ccf_mouse_id": r[3],
+            "parents": json.loads(r[4] or "[]"),
+        }
+        for r in rows
+    ]
+
+
+@app.get("/api/coverage/gap-matrix")
+async def get_coverage_gap_matrix(
+    row_dim: str = "brain_regions",
+    col_dim: str = "modalities",
+    species: str | None = None,
+    limit: int = 50,
+) -> list[dict[str, Any]]:
+    """Top region × modality (or other dimension) dataset counts."""
+    row_dim = _validate_dim("row_dim", row_dim)
+    col_dim = _validate_dim("col_dim", col_dim)
+    species = _validate_species(species)
+    with _coverage_store() as store:
+        rows = store.gap_matrix(
+            row_dim, col_dim, species_filter=species
+        ).fetchmany(limit)
+    row_key = row_dim.rstrip("s")
+    col_key = col_dim.rstrip("s")
+    return [{"row": r[0], "col": r[1], "n_datasets": r[2], "row_dim": row_key, "col_dim": col_key} for r in rows]
+
+
+@app.get("/api/coverage/dark-pairs")
+async def get_dark_pairs(
+    dim_a: str = "brain_regions",
+    dim_b: str = "modalities",
+    limit: int = 20,
+) -> list[dict[str, Any]]:
+    """Highest-opportunity zero-coverage dimension pairs."""
+    dim_a = _validate_dim("dim_a", dim_a)
+    dim_b = _validate_dim("dim_b", dim_b)
+    with _coverage_store() as store:
+        rows = store.dark_pairs(dim_a, dim_b, top_n=limit).fetchall()
+    return [
+        {
+            "a_value": r[0],
+            "b_value": r[1],
+            "n_observed": r[2],
+            "a_marginal": r[3],
+            "b_marginal": r[4],
+            "opportunity_score": r[5],
+            "dim_a": dim_a,
+            "dim_b": dim_b,
+        }
+        for r in rows
+    ]

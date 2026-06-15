@@ -26,18 +26,16 @@ import argparse
 import json
 import re
 import time
-from collections import defaultdict
 from pathlib import Path
 from typing import Any
+
+from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
+from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 
 # ---------------------------------------------------------------------------
 # Imports — only use modules that don't require nbformat / GPU
 # ---------------------------------------------------------------------------
 from neural_search.search.sparse import SparseIndex
-from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
-from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
-from neural_search.retrieval.query_intent import classify_query_intent
-
 
 DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl")
 DEFAULT_QUERIES = Path("artifacts/benchmark_queries.jsonl")

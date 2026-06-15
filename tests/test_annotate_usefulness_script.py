@@ -31,7 +31,7 @@ def test_script_dry_run_exits_cleanly(tmp_path):
         [sys.executable, "scripts/annotate_usefulness.py",
          "--file", str(pairs_file), "--dry-run"],
         capture_output=True, text=True, input="",
-        cwd="/mnt/c/Users/sidso/Documents/neural-search",
+        cwd=str(Path(__file__).parent.parent),
     )
     assert result.returncode == 0
     content_after = pairs_file.read_text()

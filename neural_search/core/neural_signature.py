@@ -29,8 +29,7 @@ Usage:
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -141,7 +140,7 @@ class NeuralSignatureV1(BaseModel):
     quality: SignatureQuality = SignatureQuality.LOW
     extraction_version: str = "0.1.0"
     extracted_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+        default_factory=lambda: datetime.now(UTC).isoformat()
     )
     source_file_hash: str | None = None
     extractor_notes: list[str] = Field(default_factory=list)
@@ -185,7 +184,7 @@ class NeuralSignatureV1(BaseModel):
             return 0.0
 
         # Cosine similarity
-        dot = sum(a * b for a, b in zip(self.feature_vector, other.feature_vector))
+        dot = sum(a * b for a, b in zip(self.feature_vector, other.feature_vector, strict=True))
         norm_a = sum(a * a for a in self.feature_vector) ** 0.5
         norm_b = sum(b * b for b in other.feature_vector) ** 0.5
 
@@ -312,9 +311,9 @@ def extract_signature_from_nwb(
         # ROIs (calcium imaging)
         n_rois = None
         if hasattr(nwbfile, "processing"):
-            for mod_name, mod in nwbfile.processing.items():
+            for _mod_name, mod in nwbfile.processing.items():
                 if hasattr(mod, "data_interfaces"):
-                    for di_name, di in mod.data_interfaces.items():
+                    for _di_name, di in mod.data_interfaces.items():
                         if "PlaneSegmentation" in type(di).__name__:
                             if hasattr(di, "id"):
                                 n_rois = len(di.id.data)

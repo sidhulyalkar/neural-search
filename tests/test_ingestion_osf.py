@@ -24,8 +24,8 @@ def test_normalize_basic():
 
 
 def test_classifier_gate_applied():
-    from neural_search.ingestion.osf import normalize_osf_project
     from neural_search.ingestion.dataset_classifier import is_valid_dataset
+    from neural_search.ingestion.osf import normalize_osf_project
     raw = {
         "id": "xyz99",
         "type": "nodes",

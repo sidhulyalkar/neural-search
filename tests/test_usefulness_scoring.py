@@ -1,19 +1,16 @@
 """Unit tests for usefulness scorer correctness, missingness, and renormalization."""
 from __future__ import annotations
 
-import pytest
-
+from neural_search.retrieval.query_intent import UsefulnessIntent
 from neural_search.retrieval.usefulness_scorer import (
-    DatasetContext,
     INACTIVE_DIMENSIONS,
     INTENT_WEIGHT_PROFILES,
+    DatasetContext,
     _active_weights,
     _jaccard,
     _warn_if_both_missing,
     score_usefulness,
 )
-from neural_search.retrieval.query_intent import UsefulnessIntent
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -55,13 +52,13 @@ class TestInactiveDimensionRenormalization:
 
     def test_active_weights_exclude_inactive_dims(self):
         weights = INTENT_WEIGHT_PROFILES[UsefulnessIntent.EXPLORATION]
-        dims = {d: 0.5 for d in weights}
+        dims = dict.fromkeys(weights, 0.5)
         active = _active_weights(weights, dims)
         assert "neural_signature_similarity" not in active
 
     def test_active_weights_sum_to_one(self):
         for intent, weights in INTENT_WEIGHT_PROFILES.items():
-            dims = {d: 0.5 for d in weights}
+            dims = dict.fromkeys(weights, 0.5)
             active = _active_weights(weights, dims)
             if active:
                 total = sum(active.values())
@@ -225,15 +222,15 @@ class TestScoreBounds:
             assert 0.0 <= val <= 1.0, f"{dim} = {val} out of bounds"
 
     def test_perfect_match_scores_high(self):
-        attrs = dict(
-            modalities=["neuropixels"],
-            tasks=["decision_making"],
-            species=["mouse"],
-            brain_regions=["prefrontal_cortex"],
-            affordances=["choice_decoding"],
-            data_standards=["nwb"],
-            quality_score=1.0,
-        )
+        attrs = {
+            "modalities": ["neuropixels"],
+            "tasks": ["decision_making"],
+            "species": ["mouse"],
+            "brain_regions": ["prefrontal_cortex"],
+            "affordances": ["choice_decoding"],
+            "data_standards": ["nwb"],
+            "quality_score": 1.0,
+        }
         q = _ctx(**attrs)
         c = _ctx(**attrs)
         result = score_usefulness(q, c, UsefulnessIntent.STRICT_LOOKUP)

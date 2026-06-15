@@ -20,13 +20,11 @@ sys.path.insert(0, str(ROOT))
 from scripts.eval.build_pooled_qrels_candidates import (
     _add_to_pool,
     _candidate_id,
-    _hard_negative_match,
     _normalize,
     _vec_add,
     build_pooled_candidate,
     dense_retrieve_prf,
     hybrid_rrf,
-    tokenize,
 )
 from scripts.eval.evaluate_known_item_lookup import (
     compute_system_metrics,
@@ -36,16 +34,15 @@ from scripts.eval.evaluate_known_item_lookup import (
     source_dedup_rerank,
 )
 from scripts.eval.report_gold_qrels_metrics import (
+    _build_system_rankings,
     _compute_metrics,
     _macro_avg,
-    _ndcg,
     _mrr,
+    _ndcg,
     _p_at_k,
     _recall_at_k,
-    _build_system_rankings,
     build_report,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -307,7 +304,7 @@ class TestSourceDedupRerank:
         return _make_record("allen", eid, title=f"Allen Visual Coding Neuropixels: session_{eid}")
 
     def _dandi_rec(self, sid: str) -> dict:
-        return _make_record("dandi", sid, title=f"Neuropixels recordings in mouse visual system")
+        return _make_record("dandi", sid, title="Neuropixels recordings in mouse visual system")
 
     def test_collapses_allen_sessions(self) -> None:
         records = [

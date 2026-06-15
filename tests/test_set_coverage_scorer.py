@@ -1,9 +1,8 @@
 """Tests for set-coverage scorer."""
-import pytest
 from neural_search.retrieval.set_coverage_scorer import (
-    SetCoverageScorer,
-    SetCoverageResult,
     SetConstraints,
+    SetCoverageResult,
+    SetCoverageScorer,
 )
 
 

@@ -174,6 +174,14 @@ class MemoryGraphBuilder:
 
         # Label-type nodes from structured metadata
         self._add_label_list_nodes(ds_node_id, rec, "modalities", "modality", "dataset_has_modality", dataset_id)
+        self._add_label_list_nodes(
+            ds_node_id,
+            rec,
+            "recording_scales",
+            "recording_scale",
+            "dataset_has_recording_scale",
+            dataset_id,
+        )
         self._add_contraindication_edges(ds_node_id, rec)
         self._add_label_list_nodes(ds_node_id, rec, "species", "species", "dataset_has_species", dataset_id)
         self._add_label_list_nodes(ds_node_id, rec, "brain_regions", "brain_region", "dataset_records_region", dataset_id)

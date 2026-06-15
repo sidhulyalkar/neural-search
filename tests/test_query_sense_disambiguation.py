@@ -1,11 +1,8 @@
 """Tests for query sense disambiguation."""
 
-import pytest
 
 from neural_search.search.sense_disambiguation import (
     ALL_SENSES,
-    DisambiguationResult,
-    SenseDefinition,
     disambiguate_query,
     get_associated_affordances,
     get_associated_tasks,
@@ -36,7 +33,7 @@ class TestSenseDefinitions:
 
     def test_exclusive_senses_are_symmetric(self):
         """Test that exclusive senses reference each other."""
-        for sense_id, sense in ALL_SENSES.items():
+        for _sense_id, sense in ALL_SENSES.items():
             for exclusive in sense.exclusive_senses:
                 if exclusive in ALL_SENSES:
                     # The exclusive sense should also list this sense as exclusive

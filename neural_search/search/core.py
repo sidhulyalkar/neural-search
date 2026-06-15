@@ -33,6 +33,7 @@ from neural_search.ontology import (
     match_behavior_labels,
     match_brain_regions,
     match_modalities,
+    match_recording_scales,
     match_tasks,
     normalize_text,
 )
@@ -142,6 +143,25 @@ DEFAULT_RETRIEVAL_CONFIG: dict[str, Any] = {
         "nodes_path": "artifacts/field_state/memory_graph_nodes.jsonl",
         "edges_path": "artifacts/field_state/memory_graph_edges.jsonl",
         "weight": 0.06,  # conservative initial weight
+    },
+    "coverage_gap": {
+        "enabled": False,
+        "db_path": "data/coverage/ledger.duckdb",
+    },
+    "diversity": {
+        "enabled": True,
+        "max_per_source": 3,
+    },
+    "specter2": {
+        "enabled": False,
+        "embeddings_path": "data/embeddings/specter2_corpus.jsonl",
+        "weight": 0.20,
+        "model": "allenai/specter2_base",
+    },
+    "llm_expansion": {
+        "enabled": False,
+        "model": "claude-haiku-4-5-20251001",
+        "max_tokens": 256,
     },
     "hard_negative_filters": {"enabled": True},
 }
@@ -261,6 +281,7 @@ def _text_for_dataset(dataset: Any, card: DatasetCardRead | Mapping[str, Any] | 
         _get_value(dataset, "title", ""),
         _get_value(dataset, "description", ""),
         _get_value(dataset, "source_id", ""),
+        _get_value(dataset, "recording_scales", []),
         _get_value(dataset, "metadata_json", {}),
     ]
     if card:
@@ -357,6 +378,7 @@ def parse_query(
     task_matches = match_tasks(query)
     behavior_matches = match_behavior_labels(query)
     brain_region_matches = match_brain_regions(query)
+    recording_scale_matches = match_recording_scales(query)
     affordance_matches = match_affordances(query)
     normalized = normalize_text(query)
 
@@ -470,7 +492,8 @@ def parse_query(
             "matches": species_intents,
             "only_query_exclusions": only_species_exclusions,
         },
-        "brain_regions": [match.id for match in brain_region_matches],
+        "brain_regions": [m.id for m in brain_region_matches if m.match_type != "parent"],
+        "recording_scales": [match.id for match in recording_scale_matches],
         "analysis": sorted(set(analysis_ids)),
         "task_intent": _match_dumps(task_matches),
         "behavior_intent": _match_dumps(behavior_matches),
@@ -500,6 +523,7 @@ def parse_query(
         ],
         "species_intent": species_intents,
         "brain_region_intent": _match_dumps(brain_region_matches),
+        "recording_scale_intent": _match_dumps(recording_scale_matches),
         "affordance_intent": _match_dumps(affordance_matches),
         "analysis_intent": analysis_intents,
         "inferred_concepts": sorted(
@@ -632,11 +656,15 @@ def score_dataset_against_query(
     weights = config.get("weights", {})
     penalties = config.get("penalties", {})
     dataset_id = _get_value(dataset, "id", _get_value(dataset, "source_id", "unknown"))
+    dataset_source = _get_value(dataset, "source", "")
     text = _text_for_dataset(dataset, card)
     query_terms = set(parsed_query.get("expanded", {}).get("terms", []))
     task_terms = {normalize_text(value) for value in parsed_query.get("tasks", [])}
     behavior_terms = {normalize_text(value) for value in parsed_query.get("behaviors", [])}
     modality_terms = {normalize_text(value) for value in parsed_query.get("modalities", [])}
+    recording_scale_terms = {
+        normalize_text(value) for value in parsed_query.get("recording_scales", [])
+    }
     species_terms = {
         normalize_text(value).replace(" ", "_")
         for value in parsed_query.get("species", [])
@@ -654,6 +682,9 @@ def score_dataset_against_query(
     dataset_modalities = _normalize_values(_get_value(dataset, "modalities", [])) | (
         _card_labels(card, "modalities") if card else set()
     )
+    dataset_recording_scales = _normalize_values(
+        _get_value(dataset, "recording_scales", [])
+    ) | (_card_labels(card, "recording_scales") if card else set())
     raw_dataset_species = [
         *_raw_values(_get_value(dataset, "species", [])),
         *list(_card_labels(card, "species") if card else set()),
@@ -687,6 +718,10 @@ def score_dataset_against_query(
     task_score, matched_tasks = _field_score(task_terms, dataset_tasks)
     behavior_score, matched_behaviors = _field_score(behavior_terms, dataset_behaviors)
     modality_score, matched_modalities = _field_score(modality_terms, dataset_modalities)
+    recording_scale_score, matched_recording_scales = _field_score(
+        recording_scale_terms,
+        dataset_recording_scales,
+    )
     species_score, matched_species = _field_score(species_terms, dataset_species)
     region_score, matched_regions = _field_score(region_terms, dataset_regions)
     analysis_score, matched_analyses = _field_score(analysis_terms, dataset_analyses)
@@ -701,6 +736,8 @@ def score_dataset_against_query(
         metadata_scores.append(region_score)
     if analysis_terms:
         metadata_scores.append(analysis_score)
+    if recording_scale_terms:
+        metadata_scores.append(recording_scale_score)
     metadata_match = sum(metadata_scores) / len(metadata_scores) if metadata_scores else 0.0
 
     why: list[str] = []
@@ -710,6 +747,7 @@ def score_dataset_against_query(
         *matched_tasks,
         *matched_behaviors,
         *matched_modalities,
+        *matched_recording_scales,
         *matched_species,
         *matched_regions,
         *matched_analyses,
@@ -719,6 +757,7 @@ def score_dataset_against_query(
     why.extend(f"Task matched: {value}" for value in matched_tasks)
     why.extend(f"Behavior matched: {value}" for value in matched_behaviors)
     why.extend(f"Modality matched: {value}" for value in matched_modalities)
+    why.extend(f"Recording scale matched: {value}" for value in matched_recording_scales)
     why.extend(f"Species matched: {value}" for value in matched_species)
     why.extend(f"Brain region matched: {value}" for value in matched_regions)
     why.extend(f"Analysis matched: {value}" for value in matched_analyses)
@@ -782,6 +821,21 @@ def score_dataset_against_query(
     # Affordance match contributes when query specifies affordances
     affordance_match = affordance_score if affordance_terms else 0.0
 
+    # Coverage rarity boost — upweights results covering underrepresented dimensions
+    coverage_gap_boost = 0.0
+    gap_cfg = config.get("coverage_gap", {})
+    if gap_cfg.get("enabled") and (region_terms or modality_terms or species_terms):
+        try:
+            from neural_search.coverage.gap_boost import get_global_booster
+            booster = get_global_booster()
+            coverage_gap_boost = booster.score(
+                region_ids=dataset_regions & region_terms if region_terms else None,
+                modality_ids=dataset_modalities & modality_terms if modality_terms else None,
+                species_ids=dataset_species & species_terms if species_terms else None,
+            )
+        except Exception:
+            pass
+
     final_score = (
         float(weights.get("ontology", 0.0)) * ontology_match
         + float(weights.get("behavior", 0.0)) * behavior_match
@@ -791,6 +845,7 @@ def score_dataset_against_query(
         + float(weights.get("semantic", 0.0)) * semantic_similarity
         + float(weights.get("readiness", 0.0)) * readiness_score
         + float(weights.get("paper_confidence", 0.0)) * paper_score
+        + coverage_gap_boost
         - modality_penalty
         - missing_penalty
         - exclusion_penalty
@@ -800,9 +855,10 @@ def score_dataset_against_query(
         task_score
         + behavior_score
         + modality_score
+        + recording_scale_score
         + species_score
         + region_score
-    ) / 5
+    ) / 6
     provenance_score = paper_score
     usability_score = readiness_score
     analysis_fit_score = analysis_score if analysis_terms else 0.0
@@ -815,7 +871,12 @@ def score_dataset_against_query(
         "usability_score": round(usability_score, 3),
         "analysis_fit_score": round(analysis_fit_score, 3),
         "affordance_score": round(affordance_match, 3),
+        "recording_scale_score": round(
+            recording_scale_score if recording_scale_terms else 0.0,
+            3,
+        ),
         "negative_constraint_score": round(negative_constraint_score, 3),
+        "coverage_gap_boost": round(coverage_gap_boost, 4),
         "final_score": round(final_score, 3),
         # Backward-compatible aliases for v0.2 UI/tests.
         "ontology": round(ontology_match, 3),
@@ -863,6 +924,7 @@ def score_dataset_against_query(
     )
     return SearchResult(
         dataset_id=dataset_id,
+        source=dataset_source,
         score=round(final_score * 100, 2),
         why_matched=why,
         warnings=warnings,
@@ -1012,6 +1074,10 @@ def _augment_result_with_optional_scores(
             _mg_parts: list[str] = []
             if mg_evidence.get("modality_matches"):
                 _mg_parts.append("modality: " + ", ".join(mg_evidence["modality_matches"][:2]))
+            if mg_evidence.get("recording_scale_matches"):
+                _mg_parts.append(
+                    "scale: " + ", ".join(mg_evidence["recording_scale_matches"][:2])
+                )
             if mg_evidence.get("species_matches"):
                 _mg_parts.append("species: " + ", ".join(mg_evidence["species_matches"][:2]))
             if mg_evidence.get("region_matches"):
@@ -1124,6 +1190,21 @@ def _generate_rich_explanation(
                 match_quality="full" if matched_modalities else "none",
             ))
 
+        # Recording scales
+        recording_scale_terms = [
+            normalize_text(s) for s in parsed_query.get("recording_scales", [])
+        ]
+        matched_recording_scales = [
+            s for s in result.matched_terms if s in recording_scale_terms
+        ]
+        if recording_scale_terms or matched_recording_scales:
+            match_groups.append(MatchGroup(
+                category="recording_scale",
+                query_terms=recording_scale_terms,
+                matched_terms=matched_recording_scales,
+                match_quality="full" if matched_recording_scales else "none",
+            ))
+
         # Species
         species_terms = [normalize_text(s) for s in parsed_query.get("species", [])]
         matched_species = [s for s in result.matched_terms if s in species_terms]
@@ -1190,6 +1271,31 @@ def search_datasets(
     config = _retrieval_config_with_defaults(retrieval_config)
     combined_query = combine_query_and_structured_text(query, structured_query)
     parsed = parse_query(combined_query, config)
+
+    # LLM query expansion fallback — fires only when rule-based parsing finds nothing
+    llm_cfg = config.get("llm_expansion", {})
+    if (
+        llm_cfg.get("enabled")
+        and not parsed.get("brain_regions")
+        and not parsed.get("tasks")
+    ):
+        try:
+            from neural_search.search.llm_expansion import expand_query_with_llm
+            llm_terms = expand_query_with_llm(
+                combined_query,
+                model=str(llm_cfg.get("model", "claude-haiku-4-5-20251001")),
+                max_tokens=int(llm_cfg.get("max_tokens", 256)),
+            )
+            if llm_terms:
+                for dim in ("brain_regions", "tasks", "modalities", "species"):
+                    if llm_terms.get(dim):
+                        existing = list(parsed.get(dim, []))
+                        merged = list(dict.fromkeys(existing + llm_terms[dim]))
+                        parsed[dim] = merged
+                parsed["llm_expansion_applied"] = True
+                parsed["llm_expanded_terms"] = llm_terms
+        except Exception:
+            pass
 
     # Classify query intent and adjust weights
     intent = classify_query_intent(combined_query, parsed)
@@ -1355,6 +1461,29 @@ def search_datasets(
         results.append(result)
 
     results.sort(key=lambda item: item.score, reverse=True)
+
+    # SPECTER2 hybrid fusion — additive cosine signal from scientific paper embeddings
+    specter2_cfg = config.get("specter2", {})
+    if specter2_cfg.get("enabled") and results:
+        try:
+            from neural_search.search.specter2_fusion import augment_with_specter2
+            augment_with_specter2(results, combined_query, specter2_cfg)
+            results.sort(key=lambda item: item.score, reverse=True)
+        except Exception:
+            pass
+
+    # Source diversity — prevent a single large corpus from monopolising the top-K
+    diversity_cfg = config.get("diversity", {})
+    if diversity_cfg.get("enabled"):
+        from neural_search.search.diversity import apply_source_diversity
+        results = apply_source_diversity(
+            results,
+            max_per_source=int(diversity_cfg.get("max_per_source", 3)),
+            limit=limit,
+        )
+    else:
+        results = results[:limit]
+
     # Strip private/internal keys (DatasetContext objects, enum instances) before serialising
     parsed_response = {k: v for k, v in parsed.items() if not k.startswith("_")}
     if filtered_constraints:
@@ -1362,7 +1491,7 @@ def search_datasets(
     return SearchResponse(
         query=combined_query,
         parsed_query=parsed_response,
-        results=results[:limit],
+        results=results,
         filtered_constraints=filtered_constraints,
     )
 

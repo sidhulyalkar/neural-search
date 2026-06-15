@@ -37,7 +37,7 @@ def main() -> int:
         else:
             print(f"  {name}: NOT FOUND (will be skipped by builder)")
 
-    print(f"\nRunning build_real_corpus_graph.py ...")
+    print("\nRunning build_real_corpus_graph.py ...")
     result = subprocess.run(
         [sys.executable, str(PROJECT_ROOT / "scripts" / "build_real_corpus_graph.py")],
         capture_output=False,   # stream output live

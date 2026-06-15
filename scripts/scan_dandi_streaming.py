@@ -143,7 +143,7 @@ def main():
     }
 
     print(f"\n{'='*60}")
-    print(f"DANDI STREAMING SCAN")
+    print("DANDI STREAMING SCAN")
     print(f"{'='*60}")
     print(f"Dandisets to scan: {len(dandiset_ids)}")
     print(f"Max assets per dandiset: {args.max_per_dandiset}")

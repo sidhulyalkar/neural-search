@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from neural_search.field_state.graph_store import FieldStateGraphStore
 from neural_search.field_state.memory_graph import MemoryGraphBuilder
 from neural_search.graph.schema import (

@@ -52,7 +52,7 @@ def _load_dataset_details(graph_path: Path) -> dict[str, dict]:
         }
 
     # Enrich from edges
-    for edge_id, edge in edges.items():
+    for _edge_id, edge in edges.items():
         source = edge.get("source_node_id", "")
         target = edge.get("target_node_id", "")
         edge_type = edge.get("edge_type", "")

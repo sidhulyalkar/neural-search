@@ -106,6 +106,7 @@ class NormalizedDatasetRecord(BaseModel):
     raw_payload_path: str | None = None
     species: list[EvidenceLabel] = Field(default_factory=list)
     modalities: list[EvidenceLabel] = Field(default_factory=list)
+    recording_scales: list[EvidenceLabel] = Field(default_factory=list)
     brain_regions: list[EvidenceLabel] = Field(default_factory=list)
     tasks: list[EvidenceLabel] = Field(default_factory=list)
     behavioral_events: list[EvidenceLabel] = Field(default_factory=list)
@@ -183,6 +184,7 @@ class DatasetCreate(BaseModel):
     license: str | None = None
     species: list[str] = Field(default_factory=list)
     modalities: list[str] = Field(default_factory=list)
+    recording_scales: list[str] = Field(default_factory=list)
     brain_regions: list[str] = Field(default_factory=list)
     tasks: list[str] = Field(default_factory=list)
     behaviors: list[str] = Field(default_factory=list)
@@ -250,6 +252,7 @@ class ExtractionResult(BaseModel):
     tasks: list[LabelEvidence] = Field(default_factory=list)
     behaviors: list[LabelEvidence] = Field(default_factory=list)
     modalities: list[LabelEvidence] = Field(default_factory=list)
+    recording_scales: list[LabelEvidence] = Field(default_factory=list)
     brain_regions: list[LabelEvidence] = Field(default_factory=list)
     species: list[LabelEvidence] = Field(default_factory=list)
     data_standards: list[LabelEvidence] = Field(default_factory=list)
@@ -276,6 +279,7 @@ class DatasetCardRead(BaseModel):
     data_standard: str | None = None
     species: list[str] = Field(default_factory=list)
     modalities: list[str] = Field(default_factory=list)
+    recording_scales: list[str] = Field(default_factory=list)
     brain_regions: list[str] = Field(default_factory=list)
     tasks: list[str] = Field(default_factory=list)
     behaviors: list[str] = Field(default_factory=list)
@@ -321,6 +325,7 @@ class ExperimentQuery(BaseModel):
     task: list[str] = Field(default_factory=list)
     behavior: list[str] = Field(default_factory=list)
     modality: list[str] = Field(default_factory=list)
+    recording_scale: list[str] = Field(default_factory=list)
     species: list[str] = Field(default_factory=list)
     brain_region: list[str] = Field(default_factory=list)
     data_standard: list[str] = Field(default_factory=list)
@@ -339,6 +344,7 @@ class SearchRequest(BaseModel):
 
 class SearchResult(BaseModel):
     dataset_id: UUID | str
+    source: str = ""
     score: float = Field(ge=0.0)
     why_matched: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
@@ -393,6 +399,7 @@ class DatasetComparisonItemRead(BaseModel):
 
     task_labels: list[str] = Field(default_factory=list)
     modalities: list[str] = Field(default_factory=list)
+    recording_scales: list[str] = Field(default_factory=list)
     species: list[str] = Field(default_factory=list)
     brain_regions: list[str] = Field(default_factory=list)
     behavior_labels: list[str] = Field(default_factory=list)

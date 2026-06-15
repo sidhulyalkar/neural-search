@@ -5,8 +5,6 @@ import json
 import tempfile
 from pathlib import Path
 
-import pytest
-
 
 def _feedback_row(
     dataset_id: str = "ds001",
@@ -268,6 +266,6 @@ class TestMainCLI:
                 "--out-jsonl", str(jsonl_out),
                 "--out-md", str(md_out),
             ])
-            rows = [json.loads(l) for l in jsonl_out.read_text().splitlines() if l.strip()]
+            rows = [json.loads(line) for line in jsonl_out.read_text().splitlines() if line.strip()]
             assert len(rows) == 1
             assert rows[0]["priority_score"] >= 3.0

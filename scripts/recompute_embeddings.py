@@ -26,11 +26,14 @@ from neural_search.embeddings.field_index import (
 )
 from neural_search.embeddings.fingerprint_builder import (
     DatasetFingerprintBuilder,
-    build_fingerprints_from_corpus,
 )
 from neural_search.embeddings.hashing import HashingEmbeddingProvider
 from neural_search.normalized import load_normalized_records, stable_normalized_id
-from neural_search.schemas import EvidenceLabel, NormalizedDatasetRecord, NormalizedPaperRecord
+from neural_search.schemas import (
+    EvidenceLabel,
+    NormalizedDatasetRecord,
+    NormalizedPaperRecord,
+)
 
 CORPUS_DIR = Path("data/corpus/normalized")
 EMBEDDINGS_DIR = Path("data/embeddings")
@@ -220,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
         from neural_search.embeddings.dense_provider import DenseEmbeddingProvider
         provider = DenseEmbeddingProvider()
         field_embeddings_out = FIELD_EMBEDDINGS_DENSE_OUT
-        print(f"\nUsing DenseEmbeddingProvider (BGE-large-en-v1.5, dim=1024)")
+        print("\nUsing DenseEmbeddingProvider (BGE-large-en-v1.5, dim=1024)")
     else:
         provider = HashingEmbeddingProvider(dimensions=args.dimensions)
         field_embeddings_out = FIELD_EMBEDDINGS_OUT

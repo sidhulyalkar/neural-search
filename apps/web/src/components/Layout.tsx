@@ -10,6 +10,7 @@ const navLinks = [
   { path: '/demo', label: 'Demo' },
   { path: '/graph', label: 'Graph' },
   { path: '/ontology', label: 'Ontology' },
+  { path: '/coverage', label: 'Coverage' },
   { path: '/reports', label: 'Reports' },
   { path: '/evaluation', label: 'Evaluation' },
 ]

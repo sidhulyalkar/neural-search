@@ -11,8 +11,8 @@ License: CC BY 4.0 (https://neuromorpho.org/about.jsp)
 from __future__ import annotations
 
 import logging
-import urllib.parse
 import time
+import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 

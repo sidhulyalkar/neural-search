@@ -96,3 +96,13 @@ Each brain region should carry:
 - Regional map reports verified vs candidate coverage.
 - Tests cover exact match, alias match, hierarchy expansion, ambiguity handling, and hard-negative separation.
 - Search can distinguish broad-region, subregion, and exact-region intent.
+
+## Progress: 2026-06-13
+
+- Expanded the brain-region ontology with explicit motor, somatosensory, thalamic, basal ganglia, basal forebrain, brainstem, cerebellar, hypothalamic, and spinal-cord subregions.
+- Added optional ontology metadata for region `system`, `species_scope`, `species_aliases`, `atlas_refs`, `children`, and `disambiguation_notes`.
+- Moved child-specific aliases such as `M1`, `S1`, `barrel cortex`, `pons`, `medulla`, `cerebellar cortex`, `dorsal horn`, and `ventral horn` toward explicit child nodes instead of broad parent nodes.
+- Added species-aware matching for species-scoped aliases, so shorthand such as `M1` or `S1` is interpreted in species context and does not become a global false-positive synonym.
+- Added explicit region hierarchy expansion helpers for exact-vs-descendant query behavior.
+- Expanded regional reporting targets and regenerated the regional map and regional signal overlay.
+- Added tests for species-aware aliases, parent-child inheritance, explicit hippocampal descendant expansion, spinal sibling separation, and regional map product fields.

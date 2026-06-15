@@ -1,0 +1,671 @@
+[
+  {
+    "type": "dark_pair",
+    "region": "retina",
+    "modality": "fmri",
+    "region_n_datasets": 87,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine retina with fmri. 87 retina datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for retina+fmri co-recorded datasets.",
+    "estimated_new_datasets": 17,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "septum",
+    "modality": "fmri",
+    "region_n_datasets": 11,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine septum with fmri. 11 septum datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for septum+fmri co-recorded datasets.",
+    "estimated_new_datasets": 2,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "medial_entorhinal_cortex",
+    "modality": "fmri",
+    "region_n_datasets": 11,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine medial_entorhinal_cortex with fmri. 11 medial_entorhinal_cortex datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for medial_entorhinal_cortex+fmri co-recorded datasets.",
+    "estimated_new_datasets": 2,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "barrel_cortex",
+    "modality": "fmri",
+    "region_n_datasets": 9,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine barrel_cortex with fmri. 9 barrel_cortex datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for barrel_cortex+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "piriform_cortex",
+    "modality": "fmri",
+    "region_n_datasets": 7,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine piriform_cortex with fmri. 7 piriform_cortex datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for piriform_cortex+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "lateral_geniculate_nucleus",
+    "modality": "fmri",
+    "region_n_datasets": 6,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine lateral_geniculate_nucleus with fmri. 6 lateral_geniculate_nucleus datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for lateral_geniculate_nucleus+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "dorsolateral_striatum",
+    "modality": "fmri",
+    "region_n_datasets": 6,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine dorsolateral_striatum with fmri. 6 dorsolateral_striatum datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for dorsolateral_striatum+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "dorsomedial_striatum",
+    "modality": "fmri",
+    "region_n_datasets": 5,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine dorsomedial_striatum with fmri. 5 dorsomedial_striatum datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for dorsomedial_striatum+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "dorsal_raphe",
+    "modality": "fmri",
+    "region_n_datasets": 4,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine dorsal_raphe with fmri. 4 dorsal_raphe datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for dorsal_raphe+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "arcuate_nucleus",
+    "modality": "fmri",
+    "region_n_datasets": 4,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine arcuate_nucleus with fmri. 4 arcuate_nucleus datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for arcuate_nucleus+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "lateral_entorhinal_cortex",
+    "modality": "fmri",
+    "region_n_datasets": 3,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine lateral_entorhinal_cortex with fmri. 3 lateral_entorhinal_cortex datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for lateral_entorhinal_cortex+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "cerebellar_cortex",
+    "modality": "fmri",
+    "region_n_datasets": 3,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine cerebellar_cortex with fmri. 3 cerebellar_cortex datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for cerebellar_cortex+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "somatosensory_area_2",
+    "modality": "fmri",
+    "region_n_datasets": 3,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine somatosensory_area_2 with fmri. 3 somatosensory_area_2 datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for somatosensory_area_2+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "lateral_septum",
+    "modality": "fmri",
+    "region_n_datasets": 2,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine lateral_septum with fmri. 2 lateral_septum datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for lateral_septum+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "anterior_thalamic_nuclei",
+    "modality": "fmri",
+    "region_n_datasets": 2,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine anterior_thalamic_nuclei with fmri. 2 anterior_thalamic_nuclei datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for anterior_thalamic_nuclei+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "mst",
+    "modality": "fmri",
+    "region_n_datasets": 1,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine mst with fmri. 1 mst datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for mst+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "cervical_spinal_cord",
+    "modality": "fmri",
+    "region_n_datasets": 1,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine cervical_spinal_cord with fmri. 1 cervical_spinal_cord datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for cervical_spinal_cord+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "thoracic_spinal_cord",
+    "modality": "fmri",
+    "region_n_datasets": 1,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine thoracic_spinal_cord with fmri. 1 thoracic_spinal_cord datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for thoracic_spinal_cord+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "seizure_focus",
+    "modality": "fmri",
+    "region_n_datasets": 1,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine seizure_focus with fmri. 1 seizure_focus datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for seizure_focus+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "dark_pair",
+    "region": "frontal_eye_field",
+    "modality": "fmri",
+    "region_n_datasets": 1,
+    "modality_n_datasets": 2473,
+    "n_observed": 0,
+    "description": "No datasets combine frontal_eye_field with fmri. 1 frontal_eye_field datasets and 2473 fmri datasets exist separately \u2014 cross-species or protocol bridging could close this gap.",
+    "recommended_action": "Search OpenNeuro, NeuroVault for frontal_eye_field+fmri co-recorded datasets.",
+    "estimated_new_datasets": 1,
+    "impact_score": 1.0,
+    "priority": "P0",
+    "gap_type": "dark_region_modality_pair"
+  },
+  {
+    "type": "low_coverage_source",
+    "source": "neurovault",
+    "current_datasets": 2000,
+    "current_region_coverage_pct": 12.6,
+    "description": "neurovault has 2,000 datasets but only 13% have brain region labels. Structured metadata enrichment or additional adapter fields could unlock 1,748 more.",
+    "recommended_action": "NeuroVault whole-brain fMRI maps rarely specify recording regions \u2014 by design. Region coverage here represents ROI analyses only. Parse `contrast_definition` field for region mentions instead.",
+    "estimated_new_datasets": 699,
+    "impact_score": 0.874,
+    "priority": "P0",
+    "gap_type": "low_coverage_source"
+  },
+  {
+    "type": "missing_region",
+    "id": "PMd",
+    "label": "Dorsal premotor cortex",
+    "uberon_id": "UBERON:0014892",
+    "allen_ccf_mouse_id": "993",
+    "description": "Zero datasets cover Dorsal premotor cortex. Target repositories with explicit Dorsal premotor cortex recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro",
+      "gin"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.7,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "red_nucleus",
+    "label": "Red nucleus",
+    "uberon_id": "UBERON:0001966",
+    "allen_ccf_mouse_id": "214",
+    "description": "Zero datasets cover Red nucleus. Target repositories with explicit Red nucleus recording metadata.",
+    "recommended_sources": [
+      "gin",
+      "zenodo"
+    ],
+    "estimated_new_datasets": 20,
+    "impact_score": 0.7,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "ACC",
+    "label": "Anterior cingulate cortex",
+    "uberon_id": "UBERON:0009765",
+    "allen_ccf_mouse_id": "31",
+    "description": "Zero datasets cover Anterior cingulate cortex. Target repositories with explicit Anterior cingulate cortex recording metadata.",
+    "recommended_sources": [
+      "openneuro",
+      "gin",
+      "dandi"
+    ],
+    "estimated_new_datasets": 50,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "OFC",
+    "label": "Orbitofrontal cortex",
+    "uberon_id": "UBERON:0004169",
+    "allen_ccf_mouse_id": "714",
+    "description": "Zero datasets cover Orbitofrontal cortex. Target repositories with explicit Orbitofrontal cortex recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "crcns",
+      "gin"
+    ],
+    "estimated_new_datasets": 50,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "aip",
+    "label": "Anterior intraparietal area",
+    "uberon_id": "UBERON:0022741",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Anterior intraparietal area. Target repositories with explicit Anterior intraparietal area recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro",
+      "gin"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "dlPFC",
+    "label": "Dorsolateral prefrontal cortex",
+    "uberon_id": "UBERON:0009834",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Dorsolateral prefrontal cortex. Target repositories with explicit Dorsolateral prefrontal cortex recording metadata.",
+    "recommended_sources": [
+      "openneuro",
+      "harvard_dataverse",
+      "osf"
+    ],
+    "estimated_new_datasets": 50,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "dmFC",
+    "label": "Dorsomedial frontal cortex",
+    "uberon_id": "UBERON:0002664",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Dorsomedial frontal cortex. Target repositories with explicit Dorsomedial frontal cortex recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro",
+      "gin"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "lateral_hypothalamus",
+    "label": "Lateral hypothalamus",
+    "uberon_id": "UBERON:0002552",
+    "allen_ccf_mouse_id": "194",
+    "description": "Zero datasets cover Lateral hypothalamus. Target repositories with explicit Lateral hypothalamus recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "crcns"
+    ],
+    "estimated_new_datasets": 50,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "lip",
+    "label": "Lateral intraparietal area",
+    "uberon_id": "UBERON:0022745",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Lateral intraparietal area. Target repositories with explicit Lateral intraparietal area recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro",
+      "gin"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "lumbar_spinal_cord",
+    "label": "Lumbar spinal cord",
+    "uberon_id": "UBERON:0002840",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Lumbar spinal cord. Target repositories with explicit Lumbar spinal cord recording metadata.",
+    "recommended_sources": [
+      "osf",
+      "zenodo",
+      "figshare"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "mPFC",
+    "label": "Medial prefrontal cortex",
+    "uberon_id": "UBERON:0005398",
+    "allen_ccf_mouse_id": "972",
+    "description": "Zero datasets cover Medial prefrontal cortex. Target repositories with explicit Medial prefrontal cortex recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "crcns",
+      "gin"
+    ],
+    "estimated_new_datasets": 50,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "median_raphe",
+    "label": "Median raphe nucleus",
+    "uberon_id": "UBERON:0002048",
+    "allen_ccf_mouse_id": "208",
+    "description": "Zero datasets cover Median raphe nucleus. Target repositories with explicit Median raphe nucleus recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "gin"
+    ],
+    "estimated_new_datasets": 20,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "thalamic_reticular_nucleus",
+    "label": "Thalamic reticular nucleus",
+    "uberon_id": "UBERON:0001903",
+    "allen_ccf_mouse_id": "262",
+    "description": "Zero datasets cover Thalamic reticular nucleus. Target repositories with explicit Thalamic reticular nucleus recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "gin"
+    ],
+    "estimated_new_datasets": 20,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "ventral_horn",
+    "label": "Ventral horn",
+    "uberon_id": "UBERON:0002715",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Ventral horn. Target repositories with explicit Ventral horn recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro",
+      "gin"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "ventral_posterolateral_thalamus",
+    "label": "Ventral posterolateral thalamic nucleus",
+    "uberon_id": "UBERON:0001925",
+    "allen_ccf_mouse_id": "718",
+    "description": "Zero datasets cover Ventral posterolateral thalamic nucleus. Target repositories with explicit Ventral posterolateral thalamic nucleus recording metadata.",
+    "recommended_sources": [
+      "dandi",
+      "openneuro"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "missing_region",
+    "id": "wernicke_area",
+    "label": "Wernicke's area",
+    "uberon_id": "UBERON:0006845",
+    "allen_ccf_mouse_id": null,
+    "description": "Zero datasets cover Wernicke's area. Target repositories with explicit Wernicke's area recording metadata.",
+    "recommended_sources": [
+      "openneuro",
+      "osf"
+    ],
+    "estimated_new_datasets": 10,
+    "impact_score": 0.65,
+    "priority": "P1",
+    "gap_type": "uncovered_region"
+  },
+  {
+    "type": "low_coverage_source",
+    "source": "gin",
+    "current_datasets": 408,
+    "current_region_coverage_pct": 27.5,
+    "description": "gin has 408 datasets but only 28% have brain region labels. Structured metadata enrichment or additional adapter fields could unlock 295 more.",
+    "recommended_action": "GIN repositories often link to publications. Run CrossRef DOI resolver on linked papers to extract region mentions. Estimate +100-150 region labels.",
+    "estimated_new_datasets": 118,
+    "impact_score": 0.592,
+    "priority": "P1",
+    "gap_type": "low_coverage_source"
+  },
+  {
+    "type": "low_coverage_source",
+    "source": "openneuro",
+    "current_datasets": 300,
+    "current_region_coverage_pct": 20.3,
+    "description": "openneuro has 300 datasets but only 20% have brain region labels. Structured metadata enrichment or additional adapter fields could unlock 239 more.",
+    "recommended_action": "OpenNeuro BIDS datasets include `participants.tsv` (species) and electrode location files. Run NWB/BIDS electrode extractor on the 239 uncovered datasets.",
+    "estimated_new_datasets": 95,
+    "impact_score": 0.478,
+    "priority": "P2",
+    "gap_type": "low_coverage_source"
+  },
+  {
+    "type": "underrepresented_species",
+    "species": "other",
+    "current_datasets": 6,
+    "description": "other has only 6 datasets. Targeted crawl of species-specific repositories could expand coverage.",
+    "recommended_sources": [
+      "dandi",
+      "zenodo",
+      "figshare"
+    ],
+    "estimated_new_datasets": 12,
+    "impact_score": 0.468,
+    "priority": "P2",
+    "gap_type": "underrepresented_species"
+  },
+  {
+    "type": "underrepresented_species",
+    "species": "c_elegans",
+    "current_datasets": 9,
+    "description": "c_elegans has only 9 datasets. Targeted crawl of species-specific repositories could expand coverage.",
+    "recommended_sources": [
+      "dandi",
+      "zenodo",
+      "figshare"
+    ],
+    "estimated_new_datasets": 18,
+    "impact_score": 0.444,
+    "priority": "P2",
+    "gap_type": "underrepresented_species"
+  },
+  {
+    "type": "underrepresented_species",
+    "species": "marmoset",
+    "current_datasets": 11,
+    "description": "marmoset has only 11 datasets. Targeted crawl of species-specific repositories could expand coverage.",
+    "recommended_sources": [
+      "dandi",
+      "gin",
+      "zenodo"
+    ],
+    "estimated_new_datasets": 22,
+    "impact_score": 0.432,
+    "priority": "P2",
+    "gap_type": "underrepresented_species"
+  },
+  {
+    "type": "underrepresented_species",
+    "species": "cat",
+    "current_datasets": 11,
+    "description": "cat has only 11 datasets. Targeted crawl of species-specific repositories could expand coverage.",
+    "recommended_sources": [
+      "dandi",
+      "zenodo",
+      "figshare"
+    ],
+    "estimated_new_datasets": 22,
+    "impact_score": 0.432,
+    "priority": "P2",
+    "gap_type": "underrepresented_species"
+  },
+  {
+    "type": "low_coverage_source",
+    "source": "brain_image_library",
+    "current_datasets": 200,
+    "current_region_coverage_pct": 1.0,
+    "description": "brain_image_library has 200 datasets but only 1% have brain region labels. Structured metadata enrichment or additional adapter fields could unlock 198 more.",
+    "recommended_action": "BIL datasets use a structured JSON manifest. Parse `general/subject/species` and `general/technique` fields to extract brain_regions and modalities. Expected yield: ~180 additional structured records.",
+    "estimated_new_datasets": 79,
+    "impact_score": 0.396,
+    "priority": "P2",
+    "gap_type": "low_coverage_source"
+  },
+  {
+    "type": "underrepresented_species",
+    "species": "drosophila",
+    "current_datasets": 43,
+    "description": "drosophila has only 43 datasets. Targeted crawl of species-specific repositories could expand coverage.",
+    "recommended_sources": [
+      "dandi",
+      "zenodo",
+      "figshare"
+    ],
+    "estimated_new_datasets": 86,
+    "impact_score": 0.344,
+    "priority": "P2",
+    "gap_type": "underrepresented_species"
+  }
+]

@@ -25,7 +25,7 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def corpus() -> list[dict[str, Any]]:
-    return [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    return [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
 
 
 @pytest.fixture(scope="module")

@@ -1,6 +1,5 @@
 """Tests for evidence-backed result cards."""
 
-import pytest
 
 from neural_search.search.evidence_cards import (
     EvidenceResultCard,

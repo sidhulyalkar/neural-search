@@ -8,19 +8,18 @@ fixtures and the usefulness scorer module.
 from __future__ import annotations
 
 import json
-import math
 from collections import defaultdict
 from pathlib import Path
 
 import pytest
 
+from neural_search.retrieval.query_intent import UsefulnessIntent
 from neural_search.retrieval.usefulness_scorer import (
     DatasetContext,
     score_usefulness,
 )
-from neural_search.retrieval.query_intent import UsefulnessIntent
-from scripts.eval.compute_ir_metrics import ndcg_at_k, mrr, recall_at_k
 from scripts.eval.compute_calibration import compute_ece
+from scripts.eval.compute_ir_metrics import mrr, ndcg_at_k, recall_at_k
 
 MINI_CORPUS = Path("tests/fixtures/mini_corpus")
 

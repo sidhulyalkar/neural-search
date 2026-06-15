@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from neural_search.awareness.taxonomy import DATA_FORMS, DataForm
@@ -34,6 +34,7 @@ TAXONOMY_EXTRACTOR_VERSION = "v0.7.0"
 DATASET_LABEL_FIELDS: Mapping[str, tuple[str, str]] = {
     "tasks": ("task", "dataset_has_task"),
     "modalities": ("modality", "dataset_has_modality"),
+    "recording_scales": ("recording_scale", "dataset_has_recording_scale"),
     "brain_regions": ("brain_region", "dataset_records_region"),
     "species": ("species", "dataset_has_species"),
     "behavioral_events": ("behavioral_event", "dataset_has_behavioral_event"),
@@ -59,7 +60,7 @@ BEHAVIORAL_REQUIREMENT_SIGNALS = {
 
 
 def _now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _parts_from_record_id(record_id: str, expected_type: str) -> list[str]:

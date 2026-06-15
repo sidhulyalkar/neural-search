@@ -9,7 +9,8 @@ Usage:
 """
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 # Registry maps source_name -> (fetch_function, default_kwargs)
 # All fetch functions must accept a `limit: int` kwarg.

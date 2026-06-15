@@ -1,0 +1,101 @@
+{
+  "access_tier_counts": {
+    "open_access": 7151,
+    "unknown_access": 20
+  },
+  "actionable_state_rates": {
+    "access_tiers": 0.9972,
+    "analysis_levels": 1.0,
+    "behavioral_events": 0.7975,
+    "brain_regions": 0.4811,
+    "modalities": 0.8194,
+    "recording_scales": 0.8163,
+    "species": 0.7281,
+    "tasks": 0.8855
+  },
+  "analysis_level_counts": {
+    "behavior_correlation": 4637,
+    "circuit_structure": 1368,
+    "mesoscale_field_potential": 427,
+    "molecular_profile": 35,
+    "population_dynamics": 870,
+    "processed_derivative": 3975,
+    "raw_signal": 5161,
+    "spike_sorted": 114,
+    "standardized_container": 4877,
+    "unit_activity": 114,
+    "voxelwise_imaging": 2479
+  },
+  "completion_worklist_items": 10576,
+  "coverage_state_counts": {
+    "access_tiers": {
+      "derived_from_source_default": 7151,
+      "unknown_needs_review": 20
+    },
+    "analysis_levels": {
+      "derived_from_source_default": 7171
+    },
+    "behavioral_events": {
+      "derived_from_file": 45,
+      "derived_from_source_default": 158,
+      "inferred_silver": 6,
+      "not_applicable": 5443,
+      "observed": 67,
+      "unknown_needs_review": 1452
+    },
+    "brain_regions": {
+      "inferred_silver": 87,
+      "observed": 3363,
+      "unknown_needs_review": 3721
+    },
+    "modalities": {
+      "derived_from_file": 18,
+      "inferred_silver": 60,
+      "observed": 5798,
+      "unknown_needs_review": 1295
+    },
+    "recording_scales": {
+      "derived_from_source_default": 5785,
+      "inferred_silver": 69,
+      "unknown_needs_review": 1317
+    },
+    "species": {
+      "derived_from_file": 77,
+      "inferred_silver": 39,
+      "observed": 5105,
+      "unknown_needs_review": 1950
+    },
+    "tasks": {
+      "derived_from_file": 9,
+      "derived_from_source_default": 66,
+      "inferred_silver": 21,
+      "not_applicable": 4612,
+      "observed": 1642,
+      "unknown_needs_review": 821
+    }
+  },
+  "dataset_count": 7171,
+  "dimension_counts": {
+    "access_tiers": 7171,
+    "analysis_levels": 24057,
+    "behavioral_events": 138,
+    "brain_regions": 7104,
+    "modalities": 8083,
+    "recording_scales": 6729,
+    "species": 5393,
+    "tasks": 2423
+  },
+  "entry_count": 61098,
+  "field_state_coverage_rates": {
+    "access_tiers": 1.0,
+    "analysis_levels": 1.0,
+    "behavioral_events": 1.0,
+    "brain_regions": 1.0,
+    "modalities": 1.0,
+    "recording_scales": 1.0,
+    "species": 1.0,
+    "tasks": 1.0
+  },
+  "generated_at": "2026-06-13T20:00:25.711722+00:00",
+  "snapshot_id": "full_corpus_v09"
+}

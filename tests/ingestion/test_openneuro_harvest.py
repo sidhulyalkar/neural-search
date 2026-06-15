@@ -1,7 +1,8 @@
 from __future__ import annotations
-import pytest
+
 import httpx
 import respx
+
 from neural_search.ingestion.openneuro import fetch_all_openneuro
 
 OPENNEURO_GQL = "https://openneuro.org/crn/graphql"

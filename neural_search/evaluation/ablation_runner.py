@@ -5,12 +5,11 @@ BM25/dense infrastructure required for default execution.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 from neural_search.evaluation.usefulness_benchmark import (
-    BenchmarkReport,
     PairLabel,
     UsefulnessQuery,
     run_usefulness_benchmark,
@@ -18,8 +17,8 @@ from neural_search.evaluation.usefulness_benchmark import (
 from neural_search.retrieval.query_intent import UsefulnessIntent, classify_query_intent
 from neural_search.retrieval.usefulness_scorer import (
     DatasetContext,
-    score_usefulness,
     _jaccard,
+    score_usefulness,
 )
 
 VARIANT_NAMES = (
@@ -185,7 +184,8 @@ def run_ablation(config: AblationConfig) -> AblationReport:
             elif variant == "hybrid_static":
                 ranked = _rank_candidates(q, config.pool, _score_hybrid_static)
             elif variant == "hybrid_intent_aware":
-                fn: ScoringFn = lambda qc, c, i=intent: _score_hybrid_intent_aware(qc, c, i)
+                def fn(qc, c, i=intent):
+                    return _score_hybrid_intent_aware(qc, c, i)
                 ranked = _rank_candidates(q, config.pool, fn)
             elif variant == "latent_usefulness_v08":
                 qctx = _build_query_context(q, config.pool)

@@ -6,8 +6,7 @@ weighted by the user's UsefulnessIntent.
 from __future__ import annotations
 
 import math
-import warnings
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from neural_search.retrieval.query_intent import UsefulnessIntent
@@ -180,7 +179,7 @@ def score_usefulness(
     query_context: DatasetContext,
     candidate: DatasetContext,
     intent: UsefulnessIntent | None = None,
-    graph: "KnowledgeGraph | None" = None,
+    graph: KnowledgeGraph | None = None,
 ) -> UsefulnessScore:
     """Score a candidate dataset against a query context for latent usefulness."""
     if intent is None:

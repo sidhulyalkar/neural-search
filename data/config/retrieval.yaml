@@ -164,6 +164,29 @@ field_embeddings:
     analysis_goals: 0.10
     data_standards: 0.05
 
+coverage_gap:
+  enabled: true
+  db_path: data/coverage/ledger.duckdb
+
+diversity:
+  enabled: true
+  max_per_source: 3
+
+# SPECTER2 hybrid retrieval — requires pre-built embeddings
+# Run: python scripts/eval/run_specter2_comparison.py --build-embeddings
+specter2:
+  enabled: false
+  embeddings_path: data/embeddings/specter2_corpus.jsonl
+  weight: 0.20
+  model: allenai/specter2_base
+
+# LLM query expansion — fallback when rule-based parsing finds no regions/tasks
+# Requires ANTHROPIC_API_KEY environment variable
+llm_expansion:
+  enabled: false
+  model: claude-haiku-4-5-20251001
+  max_tokens: 256
+
 hard_negative_filters:
   enabled: true
 

@@ -2,11 +2,10 @@
 import json
 import tempfile
 from pathlib import Path
-import pytest
+
 from neural_search.evaluation.affordance_validation_v2 import (
-    AffordanceValidationV2,
-    SyntheticCard,
     GroundTruthLabel,
+    SyntheticCard,
     ValidationReport,
     run_validation,
 )
@@ -66,7 +65,7 @@ class TestAffordanceValidationV2:
         labels = _make_labels()
         report = run_validation(cards, labels)
         assert isinstance(report.confusion_table, dict)
-        for aff, table in report.confusion_table.items():
+        for _aff, table in report.confusion_table.items():
             assert "tp" in table
             assert "fp" in table
             assert "fn" in table

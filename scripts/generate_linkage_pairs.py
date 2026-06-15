@@ -61,7 +61,7 @@ def extract_dataset_metadata(graph: dict) -> list[dict]:
     dataset_species = defaultdict(set)
     dataset_regions = defaultdict(set)
 
-    for edge_id, edge in edges.items():
+    for _edge_id, edge in edges.items():
         source = edge.get("source_node_id", "")
         target = edge.get("target_node_id", "")
         edge_type = edge.get("edge_type", "")
@@ -101,7 +101,7 @@ def find_same_task_pairs(datasets: list[dict], n: int = 100) -> list[tuple[str, 
             task_to_datasets[task].append(d["dataset_id"])
 
     pairs = []
-    for task, dids in task_to_datasets.items():
+    for _task, dids in task_to_datasets.items():
         if len(dids) >= 2:
             for i in range(len(dids)):
                 for j in range(i + 1, len(dids)):
@@ -119,7 +119,7 @@ def find_same_modality_pairs(datasets: list[dict], n: int = 100) -> list[tuple[s
             mod_to_datasets[mod].append(d["dataset_id"])
 
     pairs = []
-    for mod, dids in mod_to_datasets.items():
+    for _mod, dids in mod_to_datasets.items():
         if len(dids) >= 2:
             for i in range(min(len(dids), 20)):
                 for j in range(i + 1, min(len(dids), 20)):
@@ -137,7 +137,7 @@ def find_same_species_pairs(datasets: list[dict], n: int = 100) -> list[tuple[st
             species_to_datasets[sp].append(d["dataset_id"])
 
     pairs = []
-    for sp, dids in species_to_datasets.items():
+    for _sp, dids in species_to_datasets.items():
         if len(dids) >= 2:
             for i in range(min(len(dids), 20)):
                 for j in range(i + 1, min(len(dids), 20)):
@@ -155,7 +155,7 @@ def find_same_region_pairs(datasets: list[dict], n: int = 100) -> list[tuple[str
             region_to_datasets[region].append(d["dataset_id"])
 
     pairs = []
-    for region, dids in region_to_datasets.items():
+    for _region, dids in region_to_datasets.items():
         if len(dids) >= 2:
             for i in range(min(len(dids), 15)):
                 for j in range(i + 1, min(len(dids), 15)):

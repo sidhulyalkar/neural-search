@@ -48,6 +48,7 @@ def _dataset(**overrides) -> NormalizedDatasetRecord:
         "description": "Choice, reward, and trial outcome events in OFC.",
         "species": [_label("species", "mouse")],
         "modalities": [_label("modality", "Neuropixels")],
+        "recording_scales": [_label("recording_scale", "single_unit_spikes")],
         "brain_regions": [_label("brain_region", "orbitofrontal_cortex")],
         "tasks": [_label("task", "reversal_learning")],
         "behavioral_events": [
@@ -102,14 +103,21 @@ def test_dataset_subgraph_contains_expected_concept_edges():
     graph = build_dataset_subgraph(dataset)
     dataset_id = dataset_node_id(dataset)
     task_id = make_node_id("task", "reversal_learning")
+    recording_scale_id = make_node_id("recording_scale", "single_unit_spikes")
     analysis_id = make_node_id("analysis_affordance", "q_learning_modeling")
     paper_id = paper_node_id(make_paper_id("openalex", "W123"))
 
     assert dataset_id in graph.nodes
     assert task_id in graph.nodes
+    assert recording_scale_id in graph.nodes
     assert analysis_id in graph.nodes
     assert paper_id in graph.nodes
     assert make_edge_id(dataset_id, "dataset_has_task", task_id) in graph.edges
+    assert make_edge_id(
+        dataset_id,
+        "dataset_has_recording_scale",
+        recording_scale_id,
+    ) in graph.edges
     assert make_edge_id(dataset_id, "dataset_supports_analysis", analysis_id) in graph.edges
     assert make_edge_id(paper_id, "paper_mentions_dataset", dataset_id) in graph.edges
     assert graph.edges[make_edge_id(dataset_id, "dataset_has_task", task_id)].evidence

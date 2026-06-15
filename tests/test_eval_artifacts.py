@@ -6,7 +6,6 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-
 REPORTS = Path("reports/eval")
 GENERATED_TABLES = Path("docs/whitepaper/generated/current_results_tables.tex")
 

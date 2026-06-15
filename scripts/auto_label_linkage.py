@@ -32,7 +32,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from neural_search.evaluation.relatedness_scorer import (
-    RelatednessScorer,
     auto_label_linkage_benchmark,
 )
 

@@ -124,6 +124,12 @@ class BrainRegion(BaseModel):
     label: str
     aliases: list[str] = Field(default_factory=list)
     parents: list[str] = Field(default_factory=list)
+    children: list[str] = Field(default_factory=list)
+    system: str = ""
+    species_scope: list[str] = Field(default_factory=lambda: ["cross_species"])
+    atlas_refs: dict[str, str] = Field(default_factory=dict)
+    species_aliases: dict[str, list[str]] = Field(default_factory=dict)
+    disambiguation_notes: list[str] = Field(default_factory=list)
     strict: bool = False
 
     @field_validator("id", "label")
@@ -134,7 +140,90 @@ class BrainRegion(BaseModel):
             raise ValueError("must not be empty")
         return value
 
-    @field_validator("aliases", "parents")
+    @field_validator("aliases", "parents", "children", "species_scope", "disambiguation_notes")
+    @classmethod
+    def clean_string_list(cls, values: list[str]) -> list[str]:
+        if not isinstance(values, list):
+            raise ValueError("must be a list")
+        cleaned = []
+        for value in values:
+            if not isinstance(value, str):
+                raise ValueError("all entries must be strings")
+            value = value.strip()
+            if value:
+                cleaned.append(value)
+        return cleaned
+
+    @field_validator("system")
+    @classmethod
+    def clean_optional_string(cls, value: str) -> str:
+        return value.strip()
+
+    @field_validator("atlas_refs")
+    @classmethod
+    def clean_atlas_refs(cls, values: dict[str, str]) -> dict[str, str]:
+        if not isinstance(values, dict):
+            raise ValueError("must be a mapping")
+        return {
+            str(key).strip(): str(value).strip()
+            for key, value in values.items()
+            if str(key).strip() and str(value).strip()
+        }
+
+    @field_validator("species_aliases")
+    @classmethod
+    def clean_species_aliases(cls, values: dict[str, list[str]]) -> dict[str, list[str]]:
+        if not isinstance(values, dict):
+            raise ValueError("must be a mapping")
+        cleaned: dict[str, list[str]] = {}
+        for species, aliases in values.items():
+            if not isinstance(aliases, list):
+                raise ValueError("species_aliases values must be lists")
+            cleaned_aliases = [str(alias).strip() for alias in aliases if str(alias).strip()]
+            if cleaned_aliases:
+                cleaned[str(species).strip()] = cleaned_aliases
+        return cleaned
+
+
+class RecordingScale(BaseModel):
+    """How a dataset samples neural information below broad modality level."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str
+    label: str
+    category: str
+    sampling_unit: str
+    signal_form: str
+    temporal_resolution: str
+    spatial_resolution: str
+    compatible_modalities: list[str] = Field(default_factory=list)
+    data_types: list[str] = Field(default_factory=list)
+    aliases: list[str] = Field(default_factory=list)
+    relationship_tags: list[str] = Field(default_factory=list)
+
+    @field_validator(
+        "id",
+        "label",
+        "category",
+        "sampling_unit",
+        "signal_form",
+        "temporal_resolution",
+        "spatial_resolution",
+    )
+    @classmethod
+    def non_empty_string(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be empty")
+        return value
+
+    @field_validator(
+        "compatible_modalities",
+        "data_types",
+        "aliases",
+        "relationship_tags",
+    )
     @classmethod
     def clean_string_list(cls, values: list[str]) -> list[str]:
         if not isinstance(values, list):

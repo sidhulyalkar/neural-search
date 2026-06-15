@@ -191,6 +191,19 @@ function SummaryView({ comparison }: { comparison: ComparisonResult }) {
             </div>
           </div>
         )}
+
+        {(summary.shared_recording_scales || []).length > 0 && (
+          <div className="rounded border border-accent-cyan/30 bg-accent-cyan/5 p-4">
+            <h3 className="text-sm font-medium text-accent-cyan mb-2">Shared Recording Scales</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {(summary.shared_recording_scales || []).map((scale) => (
+                <span key={scale} className="badge bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/30">
+                  {scale.replace(/_/g, ' ')}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Readiness ranking */}
@@ -261,6 +274,18 @@ function SummaryView({ comparison }: { comparison: ComparisonResult }) {
               ))}
             </div>
           </div>
+          {(summary.all_recording_scales || []).length > 0 && (
+            <div>
+              <span className="text-neural-500">All recording scales:</span>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {(summary.all_recording_scales || []).map((s) => (
+                  <span key={s} className="badge bg-neural-800 text-neural-300">
+                    {s.replace(/_/g, ' ')}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

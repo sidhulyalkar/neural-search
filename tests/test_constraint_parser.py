@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import pytest
 from neural_search.retrieval.constraint_parser import (
     ConstraintParser,
     ConstraintType,
     OperatorType,
-    ParsedQuery,
     ParsedTerm,
     apply_negative_filter,
     parse_query,

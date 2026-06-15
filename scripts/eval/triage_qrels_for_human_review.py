@@ -25,7 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
@@ -118,7 +118,8 @@ def _sample_audit(
     boundary = [r for r in consensus if r.get("label") in (1, 2)]
 
     # Sort each stratum by priority score
-    key = lambda r: r.get("_priority_score", 0)
+    def key(r):
+        return r.get("_priority_score", 0)
     label_0.sort(key=key, reverse=True)
     label_3.sort(key=key, reverse=True)
     boundary.sort(key=key, reverse=True)

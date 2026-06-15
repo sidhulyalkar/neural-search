@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 KILLER_QUERY = (
@@ -122,10 +122,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {sq['id']}: {sq['query'][:60]}")
         return 0
 
-    from neural_search.search.core import search_datasets
     from neural_search.ingestion.demo_seed import build_combined_corpus
-    from neural_search.retrieval.set_coverage_scorer import SetCoverageScorer, SetConstraints
     from neural_search.retrieval.role_assignment import assign_role
+    from neural_search.retrieval.set_coverage_scorer import (
+        SetConstraints,
+        SetCoverageScorer,
+    )
+    from neural_search.search.core import search_datasets
 
     print("=" * 60)
     print("Killer Demo — Neural Circuit Cognitive Control")
@@ -260,7 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"    {k}: {v}")
 
     output = {
-        "run_at": datetime.now(timezone.utc).isoformat(),
+        "run_at": datetime.now(UTC).isoformat(),
         "query": KILLER_QUERY,
         "sub_queries": SUB_QUERIES,
         "n_candidates": len(all_results),

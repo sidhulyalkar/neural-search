@@ -141,24 +141,27 @@ def run_harvest(
     refresh: bool = False,
 ) -> dict[str, int]:
     """Run specified adapters and return {source: new_records_added} mapping."""
-    import neural_search.ingestion.dandi  # noqa: F401
-    import neural_search.ingestion.openneuro  # noqa: F401
+    import neural_search.ingestion.allen_brain  # noqa: F401
     import neural_search.ingestion.bluebrain  # noqa: F401
     import neural_search.ingestion.brain_image_library  # noqa: F401
-    import neural_search.ingestion.allen_brain  # noqa: F401
-    import neural_search.ingestion.nemo_archive  # noqa: F401
-    import neural_search.ingestion.ibl  # noqa: F401
     import neural_search.ingestion.crcns  # noqa: F401
-    import neural_search.ingestion.neurovault  # noqa: F401
-    import neural_search.ingestion.gin  # noqa: F401
+    import neural_search.ingestion.dandi  # noqa: F401
     import neural_search.ingestion.ebrains  # noqa: F401
-    import neural_search.ingestion.zenodo  # noqa: F401
-    import neural_search.ingestion.physionet  # noqa: F401
-    import neural_search.ingestion.neuromorpho  # noqa: F401
-    import neural_search.ingestion.osf  # noqa: F401
     import neural_search.ingestion.figshare  # noqa: F401
+    import neural_search.ingestion.gin  # noqa: F401
     import neural_search.ingestion.harvard_dataverse  # noqa: F401
-    from neural_search.ingestion.registry import _REGISTRY, run_adapter  # type: ignore[attr-defined]
+    import neural_search.ingestion.ibl  # noqa: F401
+    import neural_search.ingestion.nemo_archive  # noqa: F401
+    import neural_search.ingestion.neuromorpho  # noqa: F401
+    import neural_search.ingestion.neurovault  # noqa: F401
+    import neural_search.ingestion.openneuro  # noqa: F401
+    import neural_search.ingestion.osf  # noqa: F401
+    import neural_search.ingestion.physionet  # noqa: F401
+    import neural_search.ingestion.zenodo  # noqa: F401
+    from neural_search.ingestion.registry import (  # type: ignore[attr-defined]
+        _REGISTRY,
+        run_adapter,
+    )
 
     results: dict[str, int] = {}
 

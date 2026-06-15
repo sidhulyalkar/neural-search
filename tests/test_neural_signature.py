@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from neural_search.core.neural_signature import (
     CalciumStats,
     FiringRateStats,

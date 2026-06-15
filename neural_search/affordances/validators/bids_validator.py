@@ -442,7 +442,6 @@ class BIDSValidator:
             )
 
             # Check for trial structure
-            has_trial_cols = bool(columns_lower & {c.lower() for c in self.EVENT_COLUMNS_TRIAL})
             result.feature_checks["has_trial_structure"] = BIDSFeatureCheck(
                 feature_name="trial_structure",
                 present=True,  # events.tsv implies trial structure

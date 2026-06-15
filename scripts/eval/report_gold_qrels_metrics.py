@@ -19,7 +19,7 @@ import json
 import math
 import sys
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -155,7 +155,7 @@ def build_report(
 ) -> str:
     n_pairs = len(qrels)
     preliminary = n_pairs < MIN_PAIRS_FOR_CREDIBLE_REPORT
-    generated = datetime.now(timezone.utc).isoformat()
+    generated = datetime.now(UTC).isoformat()
 
     # qrels by query/dataset
     qrels_by_query: dict[str, dict[str, int]] = defaultdict(dict)
