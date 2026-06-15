@@ -1,0 +1,3577 @@
+benchmark_queries:
+- id: can_0001
+  query: Find Go/NoGo datasets with neural recordings and lick events.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q001
+  expected_modalities_any:
+  - calcium_imaging
+  - extracellular_ephys
+  - neuropixels
+  - eeg
+  expected_tasks:
+  - go_nogo
+  expected_behaviors:
+  - lick
+  - choice
+  - reward
+- id: can_0002
+  query: Find reversal learning datasets with reward omission and trial outcomes.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q002
+  expected_tasks:
+  - reversal_learning
+  expected_behaviors:
+  - reward
+  - omission
+  - choice
+- id: can_0003
+  query: Find delay discounting datasets with neural activity and behavior.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q003
+  expected_tasks:
+  - delay_discounting
+  expected_behaviors:
+  - choice
+  - reward
+- id: can_0004
+  query: Find ECoG or iEEG datasets involving reaching or motor control.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q004
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+- id: can_0005
+  query: Find visual decision-making datasets with Neuropixels recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q005
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_tasks:
+  - visual_decision_making
+  - visual_discrimination
+- id: can_0006
+  query: Find datasets where I can decode choice from neural activity.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries.yaml
+  original_id: q006
+  expected_behaviors:
+  - choice
+  expected_analysis_any:
+  - choice_decoding
+  - stimulus_choice_separation
+- id: can_0007
+  query: Find naturalistic vision datasets with pupil or running arousal measurements.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q007
+  expected_tasks:
+  - naturalistic_vision
+  - pupil_arousal
+  expected_behaviors:
+  - pupil
+  - running_speed
+- id: can_0008
+  query: Find motor imagery EEG datasets for BCI classification.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries.yaml
+  original_id: q008
+  expected_modalities_any:
+  - eeg
+  expected_tasks:
+  - motor_imagery
+- id: can_0009
+  query: Find seizure monitoring iEEG datasets with annotated seizure onset.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q009
+  expected_modalities_any:
+  - ieeg
+  - ecog
+  - eeg
+  expected_tasks:
+  - seizure_monitoring
+- id: can_0010
+  query: Find social interaction datasets with behavior video and neural recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q010
+  expected_modalities_any:
+  - behavior_video
+  - pose_tracking
+  - calcium_imaging
+  - extracellular_ephys
+  expected_tasks:
+  - social_interaction
+- id: can_0011
+  query: Find OFC recordings during value-based decision making.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q011
+  expected_tasks:
+  - value_based_decision
+  - reversal_learning
+  - delay_discounting
+  expected_regions_any:
+  - ofc
+  - orbitofrontal_cortex
+  expected_behaviors:
+  - choice
+  - reward
+  - value
+- id: can_0012
+  query: Find mPFC neural activity during working memory tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q012
+  expected_tasks:
+  - working_memory
+  - delayed_match_to_sample
+  expected_regions_any:
+  - mpfc
+  - medial_prefrontal_cortex
+  - prefrontal_cortex
+- id: can_0013
+  query: Find striatum recordings during reward learning with dopamine signals.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q013
+  expected_regions_any:
+  - striatum
+  - dorsal_striatum
+  - ventral_striatum
+  - nucleus_accumbens
+  expected_behaviors:
+  - reward
+  - reward_prediction
+  - dopamine
+- id: can_0014
+  query: Find hippocampus spatial navigation recordings with place cells.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q014
+  expected_tasks:
+  - spatial_navigation
+  - place_cell_recording
+  expected_regions_any:
+  - hippocampus
+  - ca1
+  - ca3
+  - dentate_gyrus
+  expected_behaviors:
+  - spatial_position
+  - navigation
+- id: can_0015
+  query: Find M1 motor cortex recordings during reaching or grasping.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q015
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+  expected_regions_any:
+  - m1
+  - motor_cortex
+  - primary_motor_cortex
+- id: can_0016
+  query: Find fiber photometry datasets with reward-related signals.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q016
+  expected_modalities_any:
+  - fiber_photometry
+  expected_behaviors:
+  - reward
+  - reward_prediction
+  - dopamine
+- id: can_0017
+  query: Find two-photon calcium imaging datasets in visual cortex.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q017
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_regions_any:
+  - visual_cortex
+  - v1
+  - primary_visual_cortex
+- id: can_0018
+  query: Find fMRI datasets during cognitive control tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q018
+  expected_modalities_any:
+  - fmri
+  - functional_mri
+  expected_tasks:
+  - cognitive_control
+  - stroop
+  - flanker
+  - go_nogo
+- id: can_0019
+  query: Find pose tracking datasets for automated behavior analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q019
+  expected_modalities_any:
+  - pose_tracking
+  - behavior_video
+  - deeplabcut
+  - sleap
+  expected_analysis_any:
+  - behavior_classification
+  - pose_estimation
+- id: can_0020
+  query: Find NWB-formatted electrophysiology datasets from DANDI.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q020
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  - ecog
+  - ieeg
+- id: can_0021
+  query: Find BIDS-formatted neuroimaging datasets from OpenNeuro.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q021
+  expected_sources:
+  - openneuro
+  expected_modalities_any:
+  - fmri
+  - eeg
+  - ieeg
+- id: can_0022
+  query: Find datasets suitable for training reward prediction models.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q022
+  expected_behaviors:
+  - reward
+  - reward_prediction
+  - reward_omission
+  expected_analysis_any:
+  - reward_prediction
+  - value_estimation
+  - temporal_difference
+- id: can_0023
+  query: Find datasets with trial-aligned neural activity for event analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q023
+  expected_behaviors:
+  - trial_start
+  - stimulus_onset
+  - response
+  - outcome
+  expected_analysis_any:
+  - event_alignment
+  - trial_averaging
+  - psth
+- id: can_0024
+  query: Find closed-loop BCI datasets with real-time neural feedback.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q024
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  - eeg
+  - extracellular_ephys
+  expected_tasks:
+  - bci_control
+  - motor_imagery
+  - closed_loop_control
+  expected_analysis_any:
+  - real_time_decoding
+  - bci_classification
+- id: can_0025
+  query: Find datasets ready for trial outcome prediction analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q025
+  expected_behaviors:
+  - trial_outcome
+  - correct
+  - error
+  - choice
+  expected_analysis_any:
+  - trial_outcome_prediction
+  - choice_decoding
+- id: can_0026
+  query: Find mouse Neuropixels datasets during decision-making.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q026
+  expected_modalities_any:
+  - neuropixels
+  expected_species:
+  - mouse
+  expected_tasks:
+  - decision_making
+  - visual_decision_making
+  - go_nogo
+- id: can_0027
+  query: Find non-human primate reaching datasets for motor decoding.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries.yaml
+  original_id: q027
+  expected_species:
+  - macaque
+  - rhesus
+  - non_human_primate
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+  expected_analysis_any:
+  - motor_decoding
+  - trajectory_prediction
+- id: can_0028
+  query: Find human iEEG datasets with speech or language tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q028
+  expected_modalities_any:
+  - ieeg
+  - ecog
+  expected_species:
+  - human
+  expected_tasks:
+  - speech
+  - language
+  - auditory_processing
+- id: can_0029
+  query: Find probabilistic reversal learning datasets NOT using fMRI.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q029
+  expected_modalities_any:
+  - calcium_imaging
+  - extracellular_ephys
+  - fiber_photometry
+  expected_tasks:
+  - probabilistic_reversal_learning
+  - reversal_learning
+  hard_negative_modalities:
+  - fmri
+- id: can_0030
+  query: Find visual cortex recordings from mouse NOT using EEG.
+  intent: EXPLORATION
+  source_file: benchmark_queries.yaml
+  original_id: q030
+  expected_modalities_any:
+  - calcium_imaging
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - visual_cortex
+  - v1
+  hard_negative_modalities:
+  - eeg
+  - fmri
+- id: can_0031
+  query: Find OFC reversal learning datasets, but exclude fMRI and pure behavior-only
+    studies.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_001
+  expected_modalities_any:
+  - calcium_imaging
+  - extracellular_ephys
+  - fiber_photometry
+  - neuropixels
+  expected_tasks:
+  - reversal_learning
+  expected_regions_any:
+  - ofc
+  - orbitofrontal_cortex
+  hard_negative_modalities:
+  - fmri
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0032
+  query: Find dopamine reward prediction error datasets but not seizure monitoring,
+    sleep, or auditory tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_002
+  expected_regions_any:
+  - vta
+  - snc
+  - nucleus_accumbens
+  - striatum
+  expected_behaviors:
+  - reward_prediction
+  - dopamine
+  - reward
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0033
+  query: Find visual cortex recordings from mouse NOT using EEG or fMRI.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_003
+  expected_modalities_any:
+  - calcium_imaging
+  - neuropixels
+  - extracellular_ephys
+  - two_photon
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - visual_cortex
+  - v1
+  - primary_visual_cortex
+  hard_negative_modalities:
+  - eeg
+  - fmri
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0034
+  query: Find primate motor cortex reaching data without Utah arrays.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_004
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  - ecog
+  expected_species:
+  - macaque
+  - rhesus
+  - non_human_primate
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+  expected_regions_any:
+  - motor_cortex
+  - m1
+  - primary_motor_cortex
+  hard_negative_modalities:
+  - utah_array
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0035
+  query: Find human speech datasets with iEEG but NOT fMRI studies.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_005
+  expected_modalities_any:
+  - ieeg
+  - ecog
+  expected_species:
+  - human
+  expected_tasks:
+  - speech
+  - language
+  - auditory_processing
+  hard_negative_modalities:
+  - fmri
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0036
+  query: Find reversal learning datasets using electrophysiology, exclude calcium
+    imaging and fiber photometry.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_006
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_tasks:
+  - reversal_learning
+  - probabilistic_reversal_learning
+  hard_negative_modalities:
+  - calcium_imaging
+  - fiber_photometry
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0037
+  query: Find hippocampus spatial navigation NOT from virtual reality or head-fixed
+    paradigms.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_007
+  expected_tasks:
+  - spatial_navigation
+  - place_cell_recording
+  expected_regions_any:
+  - hippocampus
+  - ca1
+  - ca3
+  expected_behaviors:
+  - navigation
+  - spatial_position
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0038
+  query: Find datasets suitable for fitting Q-learning models where choices, rewards,
+    and trial outcomes are explicitly available.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_008
+  expected_tasks:
+  - reversal_learning
+  - probabilistic_learning
+  - delay_discounting
+  expected_behaviors:
+  - choice
+  - reward
+  - trial_outcome
+  expected_analysis_any:
+  - q_learning_modeling
+  - value_estimation
+  - temporal_difference
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0039
+  query: Find motor cortex reaching datasets with continuous kinematics, not just
+    event labels.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_009
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  expected_regions_any:
+  - motor_cortex
+  - primary_motor_cortex
+  - m1
+  expected_behaviors:
+  - kinematics
+  - position
+  - velocity
+  expected_analysis_any:
+  - motor_decoding
+  - trajectory_prediction
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0040
+  query: Find datasets that support trial-aligned neural activity analysis with explicit
+    trial structure.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_010
+  expected_behaviors:
+  - trial_start
+  - stimulus_onset
+  - response
+  - trial_outcome
+  expected_analysis_any:
+  - event_alignment
+  - trial_averaging
+  - psth
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0041
+  query: Find calcium imaging datasets that could support population dynamics analysis
+    but are missing session metadata.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_011
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_analysis_any:
+  - population_dynamics
+  - state_space_modeling
+  - dimensionality_reduction
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0042
+  query: Find datasets suitable for BCI decoding training with labeled neural-behavioral
+    pairs.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_012
+  expected_modalities_any:
+  - eeg
+  - ecog
+  - ieeg
+  - neuropixels
+  expected_tasks:
+  - motor_imagery
+  - bci_control
+  - cursor_control
+  expected_behaviors:
+  - kinematics
+  - movement
+  - cursor_position
+  expected_analysis_any:
+  - motor_decoding
+  - bci_classification
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0043
+  query: Find datasets ready for sleep stage classification with EEG and annotated
+    sleep stages.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_013
+  expected_modalities_any:
+  - eeg
+  - polysomnography
+  expected_tasks:
+  - sleep_stage_classification
+  - sleep_monitoring
+  expected_behaviors:
+  - sleep_stage
+  - rem
+  - nrem
+  - wake
+  expected_analysis_any:
+  - sleep_stage_classification
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0044
+  query: Find datasets with spike sorting completed and ready for functional connectivity
+    analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_014
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_analysis_any:
+  - functional_connectivity
+  - cross_correlation
+  - spike_correlation
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0045
+  query: Find datasets that could support reinforcement learning model fitting but
+    may be missing reward timing.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_015
+  expected_tasks:
+  - reversal_learning
+  - delay_discounting
+  - probabilistic_learning
+  expected_behaviors:
+  - choice
+  - reward
+  expected_analysis_any:
+  - q_learning_modeling
+  - temporal_difference
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0046
+  query: Find datasets about reward in the brain.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_016
+  expected_regions_any:
+  - striatum
+  - ofc
+  - vta
+  - nucleus_accumbens
+  expected_behaviors:
+  - reward
+  - reward_prediction
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0047
+  query: Find neural data from decision tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_017
+  expected_tasks:
+  - decision_making
+  - visual_decision_making
+  - reversal_learning
+  - delay_discounting
+  - go_nogo
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0048
+  query: Find datasets where animals make choices.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_018
+  expected_species:
+  - mouse
+  - rat
+  - macaque
+  expected_behaviors:
+  - choice
+  - decision
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0049
+  query: Find brain recordings during behavior.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_019
+  expected_modalities_any:
+  - calcium_imaging
+  - extracellular_ephys
+  - neuropixels
+  - eeg
+  - ecog
+  - ieeg
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0050
+  query: Find experiments studying how mice learn.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_020
+  expected_species:
+  - mouse
+  expected_tasks:
+  - reversal_learning
+  - motor_learning
+  - probabilistic_learning
+  expected_behaviors:
+  - learning
+  - adaptation
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0051
+  query: Find recordings from the front of the brain.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_021
+  expected_regions_any:
+  - prefrontal_cortex
+  - mpfc
+  - ofc
+  - frontal_cortex
+  - dlpfc
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0052
+  query: Find datasets that might support decoding but are missing behavioral labels.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_022
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  - calcium_imaging
+  expected_analysis_any:
+  - choice_decoding
+  - motor_decoding
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0053
+  query: Find NWB datasets that are missing trial structure metadata.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_023
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0054
+  query: Find datasets with calcium imaging that lack cell ROI segmentation info.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_024
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0055
+  query: Find electrophysiology datasets where spike sorting status is unknown.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_025
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0056
+  query: Find datasets that probably have behavior videos but metadata doesn't confirm
+    it.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_026
+  expected_modalities_any:
+  - behavior_video
+  - pose_tracking
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0057
+  query: Find datasets associated with papers about dopamine and reward prediction
+    error.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_027
+  expected_behaviors:
+  - dopamine
+  - reward_prediction
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0058
+  query: Find papers that used reversal learning paradigms with mouse subjects.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_028
+  expected_species:
+  - mouse
+  expected_tasks:
+  - reversal_learning
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0059
+  query: Find datasets that have been used in published papers about BCI.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_029
+  expected_tasks:
+  - motor_imagery
+  - bci_control
+  expected_analysis_any:
+  - bci_classification
+  - motor_decoding
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0060
+  query: Find recent papers about neuropixels recordings in decision-making.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_030
+  expected_modalities_any:
+  - neuropixels
+  expected_tasks:
+  - decision_making
+  - visual_decision_making
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0061
+  query: Find mouse mPFC calcium imaging during go/no-go task with lick behavior and
+    NWB format.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_031
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_species:
+  - mouse
+  expected_tasks:
+  - go_nogo
+  expected_regions_any:
+  - mpfc
+  - medial_prefrontal_cortex
+  expected_behaviors:
+  - lick
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0062
+  query: Find human iEEG speech production datasets from DANDI with phoneme-level
+    annotations.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_032
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - ieeg
+  - ecog
+  expected_species:
+  - human
+  expected_tasks:
+  - speech
+  - language
+  expected_behaviors:
+  - phoneme
+  - articulation
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0063
+  query: Find primate reaching datasets with Utah array in M1 suitable for population-level
+    analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_033
+  expected_modalities_any:
+  - utah_array
+  expected_species:
+  - macaque
+  - rhesus
+  - non_human_primate
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  expected_regions_any:
+  - m1
+  - motor_cortex
+  expected_analysis_any:
+  - population_dynamics
+  - motor_decoding
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0064
+  query: Find OpenNeuro BIDS EEG motor imagery datasets suitable for left-right hand
+    classification.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_034
+  expected_sources:
+  - openneuro
+  expected_modalities_any:
+  - eeg
+  expected_tasks:
+  - motor_imagery
+  expected_behaviors:
+  - left_hand
+  - right_hand
+  expected_analysis_any:
+  - bci_classification
+  - motor_decoding
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0065
+  query: Find rodent striatum fiber photometry datasets during probabilistic reward
+    learning with reward omission trials.
+  intent: EXPLORATION
+  source_file: benchmark_queries_adversarial.yaml
+  original_id: adv_035
+  expected_modalities_any:
+  - fiber_photometry
+  expected_species:
+  - mouse
+  - rat
+  expected_tasks:
+  - probabilistic_learning
+  - reversal_learning
+  expected_regions_any:
+  - striatum
+  - nucleus_accumbens
+  expected_behaviors:
+  - reward
+  - omission
+  - choice
+  minimum_precision_at_5: 0.0
+  minimum_label_recall_at_10: 0.0
+- id: can_0066
+  query: Find the Steinmetz 2019 Neuropixels visual coding dataset
+  intent: STRICT_LOOKUP
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_lookup_001
+  expected_dataset_ids:
+  - dataset:dandi:000026
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - visual_cortex
+  minimum_precision_at_5: 0.6
+  minimum_label_recall_at_10: 0.5
+- id: can_0067
+  query: DANDI dataset 000020 mouse hippocampus
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_lookup_002
+  expected_dataset_ids:
+  - dataset:dandi:000020
+  expected_sources:
+  - dandi
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - hippocampus
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0068
+  query: OpenNeuro motor imagery EEG BCI dataset ds003505
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_lookup_003
+  expected_dataset_ids:
+  - dataset:openneuro:ds003505
+  expected_sources:
+  - openneuro
+  expected_modalities_any:
+  - eeg
+  expected_tasks:
+  - motor_imagery
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0069
+  query: International Brain Laboratory brain-wide map datasets
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_lookup_004
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - mouse
+  expected_tasks:
+  - visual_decision_making
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.4
+- id: can_0070
+  query: Allen Institute visual coding Neuropixels NWB
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_lookup_005
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - neuropixels
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - visual_cortex
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.4
+- id: can_0071
+  query: Human ECoG recordings in motor cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_modality_001
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  expected_species:
+  - human
+  expected_regions_any:
+  - motor_cortex
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0072
+  query: Mouse calcium imaging prefrontal cortex two-photon
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_modality_002
+  expected_modalities_any:
+  - calcium_imaging
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - prefrontal_cortex
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0073
+  query: Macaque electrophysiology V1 visual cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_modality_003
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_species:
+  - nonhuman_primate
+  expected_regions_any:
+  - visual_cortex
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0074
+  query: Human intracranial EEG hippocampus memory
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_modality_004
+  expected_modalities_any:
+  - ieeg
+  - ecog
+  expected_species:
+  - human
+  expected_regions_any:
+  - hippocampus
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0075
+  query: Mouse fiber photometry striatum reward
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_modality_005
+  expected_modalities_any:
+  - fiber_photometry
+  expected_species:
+  - mouse
+  expected_regions_any:
+  - striatum
+  expected_behaviors:
+  - reward
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0076
+  query: Go/no-go task with licking behavior and neural recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_task_001
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  - neuropixels
+  expected_tasks:
+  - go_nogo
+  expected_behaviors:
+  - lick
+  - response
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0077
+  query: Reversal learning task with choice and reward behavioral events
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_task_002
+  expected_tasks:
+  - reversal_learning
+  - reward_learning
+  expected_behaviors:
+  - choice
+  - reward
+  - trial_outcome
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0078
+  query: Visual decision-making orientation discrimination
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_task_003
+  expected_tasks:
+  - visual_decision_making
+  expected_regions_any:
+  - visual_cortex
+  expected_behaviors:
+  - choice
+  - stimulus_onset
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.4
+- id: can_0079
+  query: Reaching and grasping motor task with kinematics
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_task_004
+  expected_modalities_any:
+  - behavior_tracking
+  expected_tasks:
+  - reaching
+  expected_behaviors:
+  - movement_onset
+  - reach_onset
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0080
+  query: Speech production task with ECoG and phoneme events
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_task_005
+  expected_modalities_any:
+  - ecog
+  - ieeg
+  expected_species:
+  - human
+  expected_tasks:
+  - speech_production
+  expected_behaviors:
+  - speech_onset
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0081
+  query: Datasets suitable for choice decoding analysis
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_affordance_001
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  - neuropixels
+  - ecog
+  expected_behaviors:
+  - choice
+  - response
+  expected_analysis_any:
+  - decoding
+  - choice_decoding
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0082
+  query: Data for Q-learning reinforcement learning modeling with trial outcomes
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_affordance_002
+  expected_tasks:
+  - reversal_learning
+  - reward_learning
+  expected_behaviors:
+  - choice
+  - reward
+  - trial_outcome
+  expected_analysis_any:
+  - q_learning_modeling
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0083
+  query: Datasets for event-aligned neural activity PSTH analysis
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_affordance_003
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  - neuropixels
+  expected_behaviors:
+  - stimulus_onset
+  - reward
+  - response
+  expected_analysis_any:
+  - event_aligned_analysis
+  minimum_precision_at_5: 0.4
+  minimum_label_recall_at_10: 0.5
+- id: can_0084
+  query: Data suitable for encoding model analysis with visual stimuli
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_affordance_004
+  expected_regions_any:
+  - visual_cortex
+  expected_analysis_any:
+  - encoding_modeling
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0085
+  query: Datasets for state-space latent dynamics modeling
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_affordance_005
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  - neuropixels
+  expected_analysis_any:
+  - state_space_modeling
+  - latent_dynamics_modeling
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0086
+  query: What datasets are linked to papers about Neuropixels visual cortex?
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_linking_001
+  expected_modalities_any:
+  - neuropixels
+  expected_regions_any:
+  - visual_cortex
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.3
+- id: can_0087
+  query: Find papers that used DANDI datasets for decision-making research
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_linking_002
+  expected_sources:
+  - dandi
+  expected_tasks:
+  - visual_decision_making
+  - reversal_learning
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.3
+- id: can_0088
+  query: Datasets similar to IBL brain-wide map with multi-region recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_linking_003
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - mouse
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.3
+- id: can_0089
+  query: Published reanalysis-friendly NWB datasets with high-quality metadata
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_linking_004
+  expected_sources:
+  - dandi
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.3
+- id: can_0090
+  query: OpenAlex papers about calcium imaging and behavior tracking integration
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_linking_005
+  expected_modalities_any:
+  - calcium_imaging
+  - behavior_tracking
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.3
+- id: can_0091
+  query: Seizure detection datasets with EEG or iEEG and epilepsy labels
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_scientific_001
+  expected_modalities_any:
+  - eeg
+  - ieeg
+  - ecog
+  expected_tasks:
+  - seizure_monitoring
+  expected_analysis_any:
+  - seizure_detection
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0092
+  query: Sleep staging datasets with EEG and polysomnography
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_scientific_002
+  expected_modalities_any:
+  - eeg
+  expected_tasks:
+  - sleep_staging
+  expected_analysis_any:
+  - sleep_stage_classification
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0093
+  query: Functional connectivity fMRI resting state datasets
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_scientific_003
+  expected_modalities_any:
+  - fmri
+  expected_analysis_any:
+  - functional_connectivity
+  hard_negative_tasks:
+  - sleep_staging
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0094
+  query: BCI motor decoding datasets with reaching kinematics NOT EEG
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_scientific_004
+  expected_tasks:
+  - reaching
+  - motor_imagery
+  expected_behaviors:
+  - movement_onset
+  - reach_onset
+  expected_analysis_any:
+  - motor_decoding
+  - bci_decoding
+  hard_negative_modalities:
+  - eeg
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0095
+  query: Optogenetic stimulation datasets with neural recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_corpus.yaml
+  original_id: rc_scientific_005
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.3
+- id: can_0096
+  query: Find mouse Neuropixels visual decision-making data but not EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_lookup_steinmetz
+  expected_dataset_ids:
+  - dataset:dandi:000026
+  expected_sources:
+  - dandi
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - mouse
+  expected_tasks:
+  - visual_decision_making
+  hard_negative_modalities:
+  - eeg
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.4
+- id: can_0097
+  query: OpenNeuro human EEG motor imagery BCI without Neuropixels
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_bids_bci
+  expected_dataset_ids:
+  - dataset:openneuro:ds003505
+  expected_sources:
+  - openneuro
+  expected_modalities_any:
+  - eeg
+  expected_species:
+  - human
+  expected_tasks:
+  - motor_imagery
+  hard_negative_modalities:
+  - neuropixels
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.4
+- id: can_0098
+  query: Datasets suitable for event aligned analysis with trial events and spikes
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_claim_affordance
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_analysis_any:
+  - event_aligned_analysis
+  - spike_train_analysis
+  minimum_precision_at_5: 0.3
+  minimum_label_recall_at_10: 0.4
+- id: can_0099
+  query: ModelDB hippocampal computational model with simulation outputs but not fMRI
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_modeldb_simulation
+  expected_dataset_ids:
+  - dataset:modeldb:modeldb_87284
+  expected_sources:
+  - modeldb
+  expected_modalities_any:
+  - computational_model
+  - model_output
+  - simulation
+  expected_species:
+  - rat
+  hard_negative_modalities:
+  - fmri
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.3
+- id: can_0100
+  query: cellxgene mouse motor cortex single-cell transcriptomics for cell type mapping
+    without EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_cellxgene_molecular
+  expected_dataset_ids:
+  - dataset:cellxgene:allen_mouse_motor_cortex_cells
+  expected_sources:
+  - cellxgene
+  expected_modalities_any:
+  - single_cell_rna
+  - transcriptomics
+  expected_species:
+  - mouse
+  expected_tasks:
+  - cell_type_mapping
+  hard_negative_modalities:
+  - eeg
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.3
+- id: can_0101
+  query: MICrONS visual cortex connectomics morphology with synapse edges but not
+    EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_real_v07.yaml
+  original_id: real_v07_microns_connectomics
+  expected_dataset_ids:
+  - dataset:microns:minnie65_public
+  expected_sources:
+  - microns
+  expected_modalities_any:
+  - electron_microscopy
+  - morphology
+  - tracing
+  expected_species:
+  - mouse
+  expected_tasks:
+  - circuit_mapping
+  hard_negative_modalities:
+  - eeg
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.3
+- id: can_0102
+  query: connectome morphology tracing for circuit mapping without fMRI
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_connectomics_mapping
+  expected_dataset_ids:
+  - dataset:microns:visual_connectome_v1
+  expected_modalities_any:
+  - electron_microscopy
+  - morphology
+  - tracing
+  expected_analysis_any:
+  - circuit_mapping
+  - connectivity
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0103
+  query: single cell transcriptomics cell type mapping human cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_single_cell_mapping
+  expected_dataset_ids:
+  - dataset:cellxgene:human_cortex_single_cell_v1
+  expected_modalities_any:
+  - single_cell_rna
+  - transcriptomics
+  expected_species:
+  - human
+  expected_analysis_any:
+  - cell_type_mapping
+  - differential_expression
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0104
+  query: mouse patch clamp membrane voltage excitability without fMRI
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_patch_clamp_excitability
+  expected_dataset_ids:
+  - dataset:dandi:patch_clamp_mouse_cortex_v1
+  expected_modalities_any:
+  - patch_clamp
+  - intracellular_ephys
+  expected_species:
+  - mouse
+  expected_analysis_any:
+  - cellular_physiology
+  - excitability_analysis
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0105
+  query: biophysical simulation model parameter inference hippocampus
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_computational_model
+  expected_dataset_ids:
+  - dataset:modeldb:hippocampal_biophysical_model_v1
+  expected_modalities_any:
+  - model_output
+  - simulation
+  expected_regions_any:
+  - hippocampus
+  expected_analysis_any:
+  - parameter_inference
+  - mechanistic_modeling
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0106
+  query: human MEG language time frequency with events
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_meg_time_frequency
+  expected_dataset_ids:
+  - dataset:openneuro:ds_meg_language_v1
+  expected_modalities_any:
+  - meg
+  expected_species:
+  - human
+  expected_analysis_any:
+  - time_frequency
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0107
+  query: human fMRI connectivity behavior without EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_search_intelligence_task23.yaml
+  original_id: task23_fmri_connectivity_no_eeg
+  expected_dataset_ids:
+  - dataset:openneuro:ds_fmri_connectivity_v1
+  expected_modalities_any:
+  - fmri
+  - mri
+  expected_species:
+  - human
+  expected_analysis_any:
+  - connectivity
+  minimum_precision_at_5: 0.2
+  minimum_label_recall_at_10: 0.2
+- id: can_0108
+  query: go nogo task with neural recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_gonogo_001
+  expected_tasks:
+  - go_nogo
+  - response_inhibition
+  expected_behaviors:
+  - licking
+  - lever_press
+  - button_press
+- id: can_0109
+  query: prefrontal cortex go nogo inhibition
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_gonogo_002
+  expected_tasks:
+  - go_nogo
+  expected_behaviors:
+  - response_inhibition
+- id: can_0110
+  query: mouse go nogo calcium imaging
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_gonogo_003
+  expected_species:
+  - mouse
+  - Mus musculus
+  expected_tasks:
+  - go_nogo
+- id: can_0111
+  query: reversal learning electrophysiology
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_reversal_001
+  expected_tasks:
+  - reversal_learning
+  - probabilistic_reversal
+- id: can_0112
+  query: orbitofrontal cortex reward reversal
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_reversal_002
+  expected_tasks:
+  - reversal_learning
+  expected_behaviors:
+  - choice
+  - reward_consumption
+- id: can_0113
+  query: probabilistic reversal learning striatum
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_reversal_003
+  expected_tasks:
+  - probabilistic_reversal
+- id: can_0114
+  query: rodent flexible behavior rule switching
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_reversal_004
+  expected_species:
+  - mouse
+  - rat
+  expected_tasks:
+  - reversal_learning
+  - set_shifting
+  - rule_switching
+- id: can_0115
+  query: delay discounting neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_delay_001
+  expected_tasks:
+  - delay_discounting
+  - intertemporal_choice
+  expected_behaviors:
+  - choice
+  - waiting
+- id: can_0116
+  query: intertemporal choice prefrontal cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_delay_002
+  expected_tasks:
+  - intertemporal_choice
+  - delay_discounting
+- id: can_0117
+  query: impulsivity waiting fiber photometry
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_delay_003
+  expected_tasks:
+  - delay_discounting
+  - waiting_task
+  expected_behaviors:
+  - waiting
+  - impulsive_choice
+- id: can_0118
+  query: two alternative forced choice neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_2afc_001
+  expected_tasks:
+  - two_alternative_forced_choice
+  - 2AFC
+  expected_behaviors:
+  - choice
+  - decision
+- id: can_0119
+  query: evidence accumulation decision making
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_2afc_002
+  expected_tasks:
+  - evidence_accumulation
+  - 2AFC
+  expected_behaviors:
+  - perceptual_decision
+- id: can_0120
+  query: reaction time confidence neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_2afc_003
+  expected_tasks:
+  - 2AFC
+  - confidence_judgment
+  expected_behaviors:
+  - reaction_time
+  - confidence_report
+- id: can_0121
+  query: probabilistic reward learning
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_prob_001
+  expected_tasks:
+  - probabilistic_learning
+  - reward_learning
+  expected_behaviors:
+  - choice
+  - reward_prediction
+- id: can_0122
+  query: reinforcement learning dopamine
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: dm_prob_002
+  expected_tasks:
+  - reinforcement_learning
+- id: can_0123
+  query: visual discrimination task neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_disc_001
+  expected_tasks:
+  - visual_discrimination
+- id: can_0124
+  query: orientation discrimination visual cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_disc_002
+  expected_tasks:
+  - orientation_discrimination
+- id: can_0125
+  query: motion direction discrimination MT
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_disc_003
+  expected_tasks:
+  - motion_discrimination
+- id: can_0126
+  query: contrast detection mouse visual
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_disc_004
+  expected_species:
+  - mouse
+  expected_tasks:
+  - contrast_detection
+  - visual_discrimination
+- id: can_0127
+  query: perceptual decision making parietal
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_perc_001
+  expected_tasks:
+  - perceptual_decision
+- id: can_0128
+  query: sensory evidence accumulation Neuropixels
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_perc_002
+  expected_tasks:
+  - evidence_accumulation
+  - perceptual_decision
+- id: can_0129
+  query: threshold detection psychophysics neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_perc_003
+  expected_tasks:
+  - detection_task
+  - threshold_detection
+  expected_behaviors:
+  - psychophysics
+  - detection
+- id: can_0130
+  query: visual attention neural recording
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_att_001
+  expected_tasks:
+  - visual_attention
+  - attention_task
+  expected_behaviors:
+  - attention
+  - saccade
+- id: can_0131
+  query: selective attention frontal eye field
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_att_002
+  expected_tasks:
+  - selective_attention
+- id: can_0132
+  query: covert attention V4 extrastriate
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: vis_att_003
+  expected_tasks:
+  - covert_attention
+- id: can_0133
+  query: reaching grasping motor cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_reach_001
+  expected_tasks:
+  - reaching
+  - grasping
+- id: can_0134
+  query: arm movement primate electrophysiology
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_reach_002
+  expected_species:
+  - macaque
+  - monkey
+  - primate
+  expected_tasks:
+  - reaching
+  - arm_movement
+- id: can_0135
+  query: hand kinematics neural decoding
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_reach_003
+  expected_tasks:
+  - grasping
+  - hand_movement
+  expected_behaviors:
+  - kinematics
+  - grip
+- id: can_0136
+  query: center out reaching task array
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_reach_004
+  expected_tasks:
+  - center_out
+  - reaching
+- id: can_0137
+  query: motor planning delay period
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_plan_001
+  expected_tasks:
+  - delayed_reach
+  - motor_planning
+  expected_behaviors:
+  - preparation
+  - planning
+- id: can_0138
+  query: preparatory activity premotor cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_plan_002
+  expected_tasks:
+  - motor_preparation
+- id: can_0139
+  query: movement initiation basal ganglia
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_plan_003
+  expected_tasks:
+  - movement_initiation
+- id: can_0140
+  query: motor learning adaptation neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_learn_001
+  expected_tasks:
+  - motor_learning
+  - adaptation
+  expected_behaviors:
+  - adaptation
+  - skill_learning
+- id: can_0141
+  query: visuomotor adaptation cerebellum
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_learn_002
+  expected_tasks:
+  - visuomotor_adaptation
+- id: can_0142
+  query: skill acquisition longitudinal neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: mot_learn_003
+  expected_tasks:
+  - skill_learning
+  expected_behaviors:
+  - learning_curve
+  - performance_improvement
+- id: can_0143
+  query: motor imagery EEG classification
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_mi_001
+  expected_tasks:
+  - motor_imagery
+  expected_behaviors:
+  - imagined_movement
+- id: can_0144
+  query: motor imagery left right hand
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_mi_002
+  expected_tasks:
+  - motor_imagery
+  expected_behaviors:
+  - left_hand_imagery
+  - right_hand_imagery
+- id: can_0145
+  query: imagined movement sensorimotor rhythm
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_mi_003
+  expected_tasks:
+  - motor_imagery
+  expected_behaviors:
+  - mu_rhythm
+  - beta_rhythm
+- id: can_0146
+  query: brain computer interface cursor control
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_pros_001
+  expected_tasks:
+  - cursor_control
+  - BCI
+  expected_behaviors:
+  - cursor_movement
+  - target_acquisition
+- id: can_0147
+  query: neural prosthesis intracortical
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_pros_002
+  expected_tasks:
+  - neural_prosthesis
+- id: can_0148
+  query: closed loop BCI decoder
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_pros_003
+  expected_tasks:
+  - closed_loop_BCI
+  expected_behaviors:
+  - online_control
+  - feedback
+- id: can_0149
+  query: P300 speller BCI
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_assist_001
+  expected_tasks:
+  - P300_speller
+  - oddball
+  expected_behaviors:
+  - spelling
+  - character_selection
+- id: can_0150
+  query: SSVEP BCI frequency tagging
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: bci_assist_002
+  expected_tasks:
+  - SSVEP_BCI
+  expected_behaviors:
+  - frequency_selection
+- id: can_0151
+  query: epilepsy intracranial EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_epi_001
+  expected_tasks:
+  - seizure_monitoring
+  - clinical_monitoring
+- id: can_0152
+  query: seizure detection ECoG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_epi_002
+  expected_tasks:
+  - seizure_detection
+  expected_behaviors:
+  - seizure_onset
+  - ictal_activity
+- id: can_0153
+  query: stereo EEG cognitive task
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_epi_003
+  expected_tasks:
+  - cognitive_task
+- id: can_0154
+  query: human single neuron recording
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_unit_001
+  expected_species:
+  - human
+  - Homo sapiens
+- id: can_0155
+  query: human medial temporal lobe memory
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_unit_002
+  expected_species:
+  - human
+  expected_tasks:
+  - memory_task
+  - recognition
+- id: can_0156
+  query: human intracranial language
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_cog_001
+  expected_species:
+  - human
+  expected_tasks:
+  - language_task
+  - speech
+- id: can_0157
+  query: human frontal lobe working memory iEEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v01.yaml
+  original_id: clin_cog_002
+  expected_species:
+  - human
+  expected_tasks:
+  - working_memory
+- id: can_0158
+  query: temporal difference learning dopamine recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_rl_001
+  expected_dataset_ids: []
+  expected_tasks:
+  - temporal_difference_learning
+  - reversal_learning
+  - classical_conditioning
+  expected_behaviors:
+  - reward
+  - omission
+  - reward_prediction_error
+- id: can_0159
+  query: multi-armed bandit explore exploit neural
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_rl_002
+  expected_dataset_ids: []
+  expected_tasks:
+  - bandit_task
+  - foraging
+  expected_behaviors:
+  - choice
+  - reward
+  - exploration
+- id: can_0160
+  query: actor critic prefrontal striatum
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_rl_003
+  expected_tasks:
+  - actor_critic_task
+  - reinforcement_learning
+- id: can_0161
+  query: model-based planning hippocampus replay
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_rl_004
+  expected_tasks:
+  - model_based_planning
+  - spatial_navigation
+  expected_behaviors:
+  - sharp_wave_ripple
+  - memory
+- id: can_0162
+  query: effort discounting cost benefit choice
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_rl_005
+  expected_tasks:
+  - effort_based_decision
+  - delay_discounting
+  expected_behaviors:
+  - choice
+  - effort_exertion
+  - reward
+- id: can_0163
+  query: random dot motion coherence LIP
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_sdm_001
+  expected_dataset_ids: []
+  expected_tasks:
+  - random_dot_motion
+  - visual_decision_making
+  expected_behaviors:
+  - choice
+  - reaction_time
+  - saccade
+- id: can_0164
+  query: evidence accumulation drift diffusion
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_sdm_002
+  expected_tasks:
+  - two_alternative_forced_choice
+  - random_dot_motion
+  - detection_threshold
+  expected_behaviors:
+  - choice
+  - reaction_time
+  - confidence
+- id: can_0165
+  query: signal detection near threshold visual cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_sdm_003
+  expected_tasks:
+  - detection_threshold
+  - visual_discrimination
+  expected_behaviors:
+  - hit
+  - miss
+  - false_alarm
+  - correct_rejection
+- id: can_0166
+  query: perceptual categorization boundary learning
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_sdm_004
+  expected_tasks:
+  - categorization
+  - visual_discrimination
+  expected_behaviors:
+  - choice
+  - learning
+  - feedback
+- id: can_0167
+  query: confidence metacognition decision uncertainty
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_sdm_005
+  expected_tasks:
+  - two_alternative_forced_choice
+  - visual_decision_making
+  expected_behaviors:
+  - choice
+  - confidence
+  - reaction_time
+- id: can_0168
+  query: center out reaching Utah array motor cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_mc_001
+  expected_dataset_ids: []
+  expected_tasks:
+  - center_out_reaching
+  - reaching
+  expected_behaviors:
+  - kinematics
+  - movement_onset
+- id: can_0169
+  query: motor sequence learning procedural memory
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_mc_002
+  expected_tasks:
+  - sequence_learning
+  - skilled_reaching
+  expected_behaviors:
+  - learning
+  - kinematics
+- id: can_0170
+  query: bimanual coordination interhemispheric
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_mc_003
+  expected_tasks:
+  - bimanual_coordination
+- id: can_0171
+  query: grip force precision grasp somatosensory
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_mc_004
+  expected_tasks:
+  - grasping
+  - force_tracking
+  expected_behaviors:
+  - grip_force
+  - kinematics
+- id: can_0172
+  query: saccade antisaccade frontal eye field
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_mc_005
+  expected_tasks:
+  - oculomotor_task
+  expected_behaviors:
+  - saccade
+  - fixation
+- id: can_0173
+  query: motor imagery left right hand EEG classification
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_bci_001
+  expected_dataset_ids: []
+  expected_tasks:
+  - motor_imagery
+  expected_behaviors:
+  - left_right_hand_imagery
+- id: can_0174
+  query: speech BCI phoneme decoding ECoG
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_bci_002
+  expected_tasks:
+  - speech_bci
+  - speech_production
+  expected_behaviors:
+  - phoneme
+  - speech_onset
+- id: can_0175
+  query: handwriting BCI imagined writing motor cortex
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_bci_003
+  expected_tasks:
+  - handwriting_bci
+  - motor_imagery
+- id: can_0176
+  query: closed loop cursor control intracortical
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_bci_004
+  expected_tasks:
+  - closed_loop_control
+  - joystick_task
+- id: can_0177
+  query: P300 speller assistive BCI
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_bci_005
+  expected_tasks:
+  - p300_bci
+  - oddball
+  expected_behaviors:
+  - attention
+  - choice
+- id: can_0178
+  query: epilepsy seizure onset zone iEEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_clin_001
+  expected_dataset_ids: []
+  expected_tasks:
+  - seizure_monitoring
+  - interictal_monitoring
+  expected_behaviors:
+  - seizure_onset
+  - interictal_spike
+- id: can_0179
+  query: sleep staging polysomnography EEG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_clin_002
+  expected_tasks:
+  - sleep_staging
+  - sleep_wake
+  expected_behaviors:
+  - sleep_stage
+  - spindle
+  - arousal
+- id: can_0180
+  query: interictal spike HFO detection
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_clin_003
+  expected_tasks:
+  - interictal_monitoring
+  - seizure_monitoring
+  expected_behaviors:
+  - interictal_spike
+  - high_frequency_oscillation
+- id: can_0181
+  query: human single neuron medial temporal lobe memory
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_clin_004
+  expected_species:
+  - human
+  expected_tasks:
+  - delayed_match_to_sample
+  - object_recognition
+  - spatial_navigation
+- id: can_0182
+  query: intraoperative mapping awake craniotomy language
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ds_clin_005
+  expected_tasks:
+  - intraoperative_mapping
+  - speech_production
+  - picture_naming
+- id: can_0183
+  query: mouse Neuropixels visual cortex NOT primate
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_species_001
+- id: can_0184
+  query: human intracranial NOT epilepsy patient
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_species_002
+- id: can_0185
+  query: rat electrophysiology hippocampus NOT mouse
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_species_003
+- id: can_0186
+  query: decision making calcium imaging NOT electrophysiology
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_modality_001
+  expected_tasks:
+  - two_alternative_forced_choice
+  - go_nogo
+  - reversal_learning
+- id: can_0187
+  query: motor cortex Utah array NOT ECoG
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_modality_002
+- id: can_0188
+  query: sleep EEG scalp NOT intracranial
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_modality_003
+- id: can_0189
+  query: reversal learning NOT bandit
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_task_001
+- id: can_0190
+  query: working memory NOT spatial navigation
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_task_002
+- id: can_0191
+  query: motor execution NOT motor imagery
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_task_003
+  expected_behaviors:
+  - kinematics
+  - movement_onset
+- id: can_0192
+  query: mouse prefrontal cortex fiber photometry go nogo
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_compound_001
+- id: can_0193
+  query: human ECoG speech production NOT perception
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_compound_002
+- id: can_0194
+  query: NWB format Neuropixels visual cortex 2023 or later
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_compound_003
+- id: can_0195
+  query: neural recordings WITHOUT behavior
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_negative_001
+- id: can_0196
+  query: behavior video WITHOUT neural recordings
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_negative_002
+- id: can_0197
+  query: published dataset WITHOUT linked paper
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: adv_negative_003
+- id: can_0198
+  query: data from International Brain Laboratory
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_paper2data_001
+  expected_sources:
+  - dandi
+  expected_tasks:
+  - two_alternative_forced_choice
+  - visual_decision_making
+- id: can_0199
+  query: data from Steinmetz 2019 Nature
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_paper2data_002
+  expected_sources:
+  - figshare
+  - dandi
+- id: can_0200
+  query: datasets from Allen Institute Visual Coding
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_paper2data_003
+  expected_sources:
+  - dandi
+  - allen_brain_observatory
+- id: can_0201
+  query: BCI data Chang lab UCSF
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_paper2data_004
+  expected_tasks:
+  - speech_production
+  - speech_bci
+- id: can_0202
+  query: dataset Churchland reaching monkey
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_paper2data_005
+  expected_species:
+  - macaque
+  - monkey
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+- id: can_0203
+  query: papers using DANDI 000003
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_data2paper_001
+- id: can_0204
+  query: publications citing OpenNeuro ds000117
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_data2paper_002
+- id: can_0205
+  query: original paper for IBL repeated site dataset
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_data2paper_003
+- id: can_0206
+  query: methodology paper for Neuropixels sleep dataset
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_data2paper_004
+- id: can_0207
+  query: analysis papers reusing Allen Visual Coding data
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_data2paper_005
+- id: can_0208
+  query: similar datasets to Stringer et al spontaneous activity
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_xref_001
+- id: can_0209
+  query: replication datasets for motor imagery BCI
+  intent: REPLICATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_xref_002
+- id: can_0210
+  query: complementary data to speech ECoG paper
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_xref_003
+- id: can_0211
+  query: validation dataset for seizure detection algorithm
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_xref_004
+- id: can_0212
+  query: benchmark comparison hippocampus place cell
+  intent: CROSS_DATASET_COMPARISON
+  source_file: benchmark_queries_v06.yaml
+  original_id: ptd_xref_005
+- id: can_0213
+  query: datasets supporting Q-learning model fitting
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_model_001
+  expected_tasks:
+  - reversal_learning
+  - bandit_task
+  - two_alternative_forced_choice
+- id: can_0214
+  query: temporal difference error analysis ready
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_model_002
+- id: can_0215
+  query: drift diffusion model ready perceptual
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_model_003
+  expected_tasks:
+  - random_dot_motion
+  - visual_discrimination
+  - detection_threshold
+- id: can_0216
+  query: state space model neural population
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_model_004
+- id: can_0217
+  query: choice decoding ready neural
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_decode_001
+  expected_tasks:
+  - two_alternative_forced_choice
+  - go_nogo
+  - bandit_task
+- id: can_0218
+  query: motor trajectory decoding kinematics
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_decode_002
+  expected_tasks:
+  - reaching
+  - center_out_reaching
+  - grasping
+- id: can_0219
+  query: speech phoneme decoding ready
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_decode_003
+  expected_tasks:
+  - speech_production
+  - speech_bci
+- id: can_0220
+  query: sleep stage classification ready EEG
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_decode_004
+  expected_tasks:
+  - sleep_staging
+  - sleep_wake
+- id: can_0221
+  query: seizure detection algorithm ready
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_decode_005
+  expected_tasks:
+  - seizure_monitoring
+- id: can_0222
+  query: spike sorting ready extracellular
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_pipe_001
+- id: can_0223
+  query: pose estimation behavior video
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_pipe_002
+  expected_tasks:
+  - open_field
+  - social_interaction
+  - free_behavior
+- id: can_0224
+  query: functional connectivity multi-region
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_pipe_003
+  expected_tasks:
+  - resting_state
+  - seizure_monitoring
+- id: can_0225
+  query: neural behavior correlation continuous
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_xmod_001
+  expected_tasks:
+  - locomotion
+  - free_behavior
+  - pupil_arousal
+- id: can_0226
+  query: encoding model stimulus features
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_xmod_002
+  expected_tasks:
+  - naturalistic_vision
+  - natural_movie_viewing
+  - receptive_field_mapping
+- id: can_0227
+  query: event aligned PSTH trial averaged
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: aff_xmod_003
+  expected_tasks:
+  - go_nogo
+  - oddball
+  - classical_conditioning
+- id: can_0228
+  query: datasets from labs that published in Nature Neuroscience 2023
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_rel_001
+- id: can_0229
+  query: datasets that share authors with Svoboda lab publications
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_rel_002
+- id: can_0230
+  query: datasets citing same methods papers as IBL
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_rel_003
+- id: can_0231
+  query: datasets from institutions with >5 DANDI contributions
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_rel_004
+- id: can_0232
+  query: find collaborators datasets based on my hippocampus paper
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_hop_001
+- id: can_0233
+  query: datasets using same analysis code as visual cortex studies
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_hop_002
+- id: can_0234
+  query: mouse analogs of human clinical datasets
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_hop_003
+- id: can_0235
+  query: most commonly recorded brain regions in decision making
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_agg_001
+- id: can_0236
+  query: trending modalities in BCI research 2022-2024
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_agg_002
+- id: can_0237
+  query: data standard adoption by domain
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: gr_agg_003
+- id: can_0238
+  query: design auditory reversal learning task for mouse
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_task_001
+- id: can_0239
+  query: standard center-out reaching paradigm primate
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_task_002
+- id: can_0240
+  query: motor imagery BCI paradigm EEG human
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_task_003
+- id: can_0241
+  query: naturalistic foraging task design rodent
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_task_004
+- id: can_0242
+  query: Neuropixels targeting OFC ACC decision making
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_rec_001
+- id: can_0243
+  query: calcium imaging setup prefrontal cortex mouse
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_rec_002
+- id: can_0244
+  query: ECoG grid placement speech motor cortex human
+  intent: EXPLORATION
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_rec_003
+- id: can_0245
+  query: analysis pipeline Q-learning reversal
+  intent: PIPELINE_REUSE
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_ana_001
+- id: can_0246
+  query: spike sorting pipeline Neuropixels kilosort
+  intent: PIPELINE_REUSE
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_ana_002
+- id: can_0247
+  query: seizure detection pipeline iEEG
+  intent: PIPELINE_REUSE
+  source_file: benchmark_queries_v06.yaml
+  original_id: ed_ana_003
+- id: can_0248
+  query: Find calcium imaging datasets in visual cortex with stimulus responses.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q031
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_regions_any:
+  - visual_cortex
+  - v1
+- id: can_0249
+  query: Find Neuropixels recordings in hippocampus with sharp-wave ripples or theta
+    oscillations.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q032
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_regions_any:
+  - hippocampus
+  - ca1
+  - ca3
+- id: can_0250
+  query: Find fMRI datasets of prefrontal cortex during working memory or cognitive
+    control.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q033
+  expected_modalities_any:
+  - fmri
+  expected_tasks:
+  - working_memory
+  - cognitive_control
+  expected_regions_any:
+  - prefrontal_cortex
+  - dlpfc
+  - mpfc
+- id: can_0251
+  query: Find calcium imaging of striatum during reward learning or dopamine release.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q034
+  expected_modalities_any:
+  - calcium_imaging
+  - fiber_photometry
+  expected_regions_any:
+  - striatum
+  - nucleus_accumbens
+  expected_behaviors:
+  - reward
+  - dopamine
+- id: can_0252
+  query: Find amygdala electrophysiology datasets with fear conditioning or anxiety
+    behavior.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q035
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_tasks:
+  - fear_conditioning
+  expected_regions_any:
+  - amygdala
+  - basolateral_amygdala
+- id: can_0253
+  query: Find cerebellar calcium imaging datasets during motor learning or adaptation.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q036
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_tasks:
+  - motor_learning
+  expected_regions_any:
+  - cerebellum
+  - cerebellar_cortex
+- id: can_0254
+  query: Find thalamic recordings during sensory processing or sleep.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q037
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_regions_any:
+  - thalamus
+  - lgn
+  - lateral_geniculate_nucleus
+- id: can_0255
+  query: Find brainstem electrophysiology datasets with locus coeruleus or dopaminergic
+    recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q038
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_regions_any:
+  - brainstem
+  - locus_coeruleus
+  - vta
+- id: can_0256
+  query: Find somatosensory cortex Neuropixels recordings with whisker or tactile
+    stimulation.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q039
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_regions_any:
+  - somatosensory_cortex
+  - barrel_cortex
+- id: can_0257
+  query: Find entorhinal cortex recordings with grid cells or head direction cells.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q040
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_regions_any:
+  - entorhinal_cortex
+  - medial_entorhinal_cortex
+- id: can_0258
+  query: Find motor cortex calcium imaging datasets during movement or motor planning.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q041
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_tasks:
+  - reaching
+  - motor_learning
+  expected_regions_any:
+  - motor_cortex
+  - primary_motor_cortex
+  - m1
+- id: can_0259
+  query: Find parietal cortex fMRI datasets during visuospatial attention or navigation.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q042
+  expected_modalities_any:
+  - fmri
+  expected_tasks:
+  - spatial_attention
+  - spatial_navigation
+  expected_regions_any:
+  - parietal_cortex
+  - posterior_parietal_cortex
+- id: can_0260
+  query: Find mouse calcium imaging datasets during spatial navigation in open field
+    or linear track.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q043
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_species:
+  - mouse
+  - mus_musculus
+  expected_tasks:
+  - spatial_navigation
+  - open_field
+- id: can_0261
+  query: Find rat hippocampus electrophysiology during sleep with replay events.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q044
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_species:
+  - rat
+  - rattus_norvegicus
+  expected_tasks:
+  - sleep_wake
+  expected_regions_any:
+  - hippocampus
+  - ca1
+- id: can_0262
+  query: Find macaque prefrontal cortex recordings during working memory tasks.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q045
+  expected_species:
+  - macaque
+  - macaca_mulatta
+  expected_tasks:
+  - working_memory
+  - delayed_match_to_sample
+  expected_regions_any:
+  - prefrontal_cortex
+  - dlpfc
+- id: can_0263
+  query: Find human EEG datasets during visual perception or P300 responses.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q046
+  expected_modalities_any:
+  - eeg
+  expected_species:
+  - human
+  - homo_sapiens
+  expected_tasks:
+  - visual_perception
+  - p300
+- id: can_0264
+  query: Find zebrafish whole-brain calcium imaging datasets during sensory stimulation.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q047
+  expected_modalities_any:
+  - calcium_imaging
+  - light_sheet
+  expected_species:
+  - zebrafish
+  - danio_rerio
+- id: can_0265
+  query: Find primate visual cortex recordings comparing V1 and V4 responses.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q048
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_species:
+  - macaque
+  - rhesus_macaque
+  expected_regions_any:
+  - visual_cortex
+  - v1
+  - v4
+- id: can_0266
+  query: Find datasets with paired neural recordings and behavior suitable for population
+    dynamics analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q049
+  expected_behaviors:
+  - choice
+  - movement
+  expected_analysis_any:
+  - population_dynamics
+  - dimensionality_reduction
+  - latent_variable
+- id: can_0267
+  query: Find datasets suitable for fitting drift-diffusion models of decision making.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q050
+  expected_tasks:
+  - decision_making
+  - two_alternative_forced_choice
+  expected_behaviors:
+  - reaction_time
+  - choice
+  - confidence
+  expected_analysis_any:
+  - drift_diffusion
+  - evidence_accumulation
+- id: can_0268
+  query: Find large-scale connectomics datasets for synaptic connectivity analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q051
+  expected_modalities_any:
+  - connectomics
+  - electron_microscopy
+  expected_analysis_any:
+  - connectome
+  - synaptic_connectivity
+- id: can_0269
+  query: Find datasets with single-trial neural activity for cross-session decoding.
+  intent: REANALYSIS_FEASIBILITY
+  source_file: benchmark_queries_v2.yaml
+  original_id: q052
+  expected_analysis_any:
+  - cross_session_decoding
+  - neural_manifold
+  - trial_averaging
+- id: can_0270
+  query: Find optogenetics datasets with causal manipulation of specific cell types.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q053
+  expected_modalities_any:
+  - optogenetics
+  expected_analysis_any:
+  - causal_manipulation
+  - circuit_dissection
+- id: can_0271
+  query: Find datasets with multi-region simultaneous recordings for functional connectivity.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q054
+  expected_analysis_any:
+  - functional_connectivity
+  - coherence
+  - cross_correlation
+- id: can_0272
+  query: Find resting-state fMRI datasets for default mode network analysis.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q055
+  expected_modalities_any:
+  - fmri
+  expected_tasks:
+  - resting_state
+  expected_analysis_any:
+  - default_mode_network
+  - resting_state_fmri
+  - ica
+- id: can_0273
+  query: Find datasets with reward and punishment outcomes for reinforcement learning
+    modeling.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q056
+  expected_behaviors:
+  - reward
+  - punishment
+  - outcome
+  expected_analysis_any:
+  - reinforcement_learning
+  - value_estimation
+  - q_learning
+- id: can_0274
+  query: Find neural data with concurrent behavioral video for pose estimation integration.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q057
+  expected_modalities_any:
+  - behavior_video
+  - pose_tracking
+  expected_analysis_any:
+  - pose_estimation
+  - behavior_classification
+- id: can_0275
+  query: Find EEG datasets with independent component analysis ready preprocessing.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q058
+  expected_modalities_any:
+  - eeg
+  expected_analysis_any:
+  - ica
+  - artifact_removal
+  - source_separation
+- id: can_0276
+  query: Find the Steinmetz 2019 Neuropixels dataset across multiple brain regions
+    during visual decision making.
+  intent: STRICT_LOOKUP
+  source_file: benchmark_queries_v2.yaml
+  original_id: q059
+  expected_modalities_any:
+  - neuropixels
+  expected_tasks:
+  - visual_decision_making
+  expected_regions_any:
+  - visual_cortex
+  - striatum
+  - hippocampus
+- id: can_0277
+  query: Find the Allen Brain Observatory calcium imaging dataset with visual stimuli.
+  intent: STRICT_LOOKUP
+  source_file: benchmark_queries_v2.yaml
+  original_id: q060
+  expected_sources:
+  - allen
+  expected_modalities_any:
+  - calcium_imaging
+  expected_regions_any:
+  - visual_cortex
+  - v1
+- id: can_0278
+  query: Find IBL repeated site Neuropixels datasets with trial-by-trial decision
+    data.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q061
+  expected_sources:
+  - ibl
+  expected_modalities_any:
+  - neuropixels
+  expected_tasks:
+  - decision_making
+- id: can_0279
+  query: Find the Human Connectome Project resting-state fMRI dataset.
+  intent: STRICT_LOOKUP
+  source_file: benchmark_queries_v2.yaml
+  original_id: q062
+  expected_modalities_any:
+  - fmri
+  expected_species:
+  - human
+  expected_tasks:
+  - resting_state
+- id: can_0280
+  query: Find Buzsaki lab hippocampus recording datasets with sharp-wave ripples.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q063
+  expected_sources:
+  - buzsaki
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_regions_any:
+  - hippocampus
+  - ca1
+- id: can_0281
+  query: Find NHP reaching datasets from the BrainGate consortium.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q064
+  expected_modalities_any:
+  - extracellular_ephys
+  - ecog
+  expected_species:
+  - macaque
+  - human
+  expected_tasks:
+  - reaching
+  - bci_control
+- id: can_0282
+  query: Find mouse visual cortex datasets with running speed correlations.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q065
+  expected_modalities_any:
+  - calcium_imaging
+  - neuropixels
+  expected_regions_any:
+  - visual_cortex
+  - v1
+  expected_behaviors:
+  - running_speed
+  - locomotion
+- id: can_0283
+  query: Find datasets with hippocampal recordings but NOT in sleeping or resting
+    animals.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q066
+  expected_tasks:
+  - spatial_navigation
+  - decision_making
+  expected_regions_any:
+  - hippocampus
+  - ca1
+  hard_negative_tasks:
+  - sleep_wake
+  - resting_state
+- id: can_0284
+  query: Find fMRI datasets NOT from NeuroVault whole-brain contrast maps.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q067
+  expected_modalities_any:
+  - fmri
+  expected_analysis_any:
+  - roi_analysis
+  - task_fmri
+- id: can_0285
+  query: Find calcium imaging datasets in cortex but NOT using widefield imaging.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q068
+  expected_modalities_any:
+  - calcium_imaging
+  - two_photon
+  expected_regions_any:
+  - visual_cortex
+  - motor_cortex
+  hard_negative_modalities:
+  - widefield_imaging
+  - mesoscope
+- id: can_0286
+  query: Find Neuropixels datasets from rats NOT from mice.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q069
+  expected_modalities_any:
+  - neuropixels
+  - extracellular_ephys
+  expected_species:
+  - rat
+  - rattus_norvegicus
+- id: can_0287
+  query: Find motor cortex datasets with clear trial structure but NOT BCI or prosthetics.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q070
+  expected_tasks:
+  - reaching
+  - motor_learning
+  expected_regions_any:
+  - motor_cortex
+  - m1
+  - primary_motor_cortex
+  hard_negative_tasks:
+  - bci_control
+  - prosthetics
+- id: can_0288
+  query: Find decision-making datasets with dopamine signals but NOT using fMRI.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q071
+  expected_modalities_any:
+  - fiber_photometry
+  - calcium_imaging
+  - extracellular_ephys
+  expected_behaviors:
+  - reward
+  - dopamine
+  hard_negative_modalities:
+  - fmri
+- id: can_0289
+  query: Find primate electrophysiology datasets NOT from Allen Institute.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q072
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_species:
+  - macaque
+  - non_human_primate
+- id: can_0290
+  query: Find EEG cognitive datasets NOT involving motor imagery.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q073
+  expected_modalities_any:
+  - eeg
+  expected_tasks:
+  - working_memory
+  - attention
+  - cognitive_control
+  hard_negative_tasks:
+  - motor_imagery
+- id: can_0291
+  query: Find NWB datasets with raw electrophysiology voltage traces and trial annotations.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q074
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+- id: can_0292
+  query: Find BIDS-compliant fMRI datasets with event files and behavioral data.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q075
+  expected_modalities_any:
+  - fmri
+  expected_behaviors:
+  - choice
+  - response
+- id: can_0293
+  query: Find datasets with both raw neural data and preprocessed spike trains.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q076
+  expected_modalities_any:
+  - extracellular_ephys
+  - neuropixels
+  expected_analysis_any:
+  - spike_sorting
+  - unit_activity
+- id: can_0294
+  query: Find open-access single-unit recordings with behavioral annotations.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q077
+  expected_behaviors:
+  - choice
+  - reward
+  - movement
+  expected_analysis_any:
+  - unit_activity
+  - spike_sorting
+- id: can_0295
+  query: Find datasets with electrode coordinates registered to a standard atlas.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q078
+  expected_analysis_any:
+  - atlas_registration
+  - electrode_localization
+- id: can_0296
+  query: Find auditory cortex recordings with frequency tuning curves.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q079
+  expected_tasks:
+  - auditory_processing
+  - frequency_discrimination
+  expected_regions_any:
+  - auditory_cortex
+  - a1
+- id: can_0297
+  query: Find prefrontal-hippocampal co-recording datasets during memory consolidation.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q080
+  expected_tasks:
+  - working_memory
+  - memory_consolidation
+  expected_regions_any:
+  - prefrontal_cortex
+  - hippocampus
+- id: can_0298
+  query: Find datasets with chronic multi-day recordings from the same electrodes.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q081
+  expected_analysis_any:
+  - chronic_recording
+  - longitudinal
+- id: can_0299
+  query: Find large-scale fMRI datasets with whole-brain coverage and >100 subjects.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q082
+  expected_modalities_any:
+  - fmri
+  expected_analysis_any:
+  - whole_brain
+  - group_analysis
+- id: can_0300
+  query: Find mouse barrel cortex recordings during active whisking.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q083
+  expected_modalities_any:
+  - extracellular_ephys
+  - calcium_imaging
+  expected_regions_any:
+  - barrel_cortex
+  - somatosensory_cortex
+  expected_behaviors:
+  - whisking
+  - tactile
+- id: can_0301
+  query: Find VTA dopamine neuron recordings during reward prediction errors.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q084
+  expected_regions_any:
+  - vta
+  - ventral_tegmental_area
+  expected_behaviors:
+  - reward
+  - reward_prediction_error
+  - dopamine
+- id: can_0302
+  query: Find anterior cingulate cortex datasets with conflict monitoring.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q085
+  expected_tasks:
+  - conflict_monitoring
+  - stroop
+  - flanker
+  expected_regions_any:
+  - acc
+  - anterior_cingulate_cortex
+- id: can_0303
+  query: Find human MEG datasets during language comprehension or semantic processing.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q086
+  expected_modalities_any:
+  - meg
+  expected_species:
+  - human
+  expected_tasks:
+  - language
+  - semantic_processing
+- id: can_0304
+  query: Find spinal cord recording datasets during locomotion.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q087
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_tasks:
+  - locomotion
+  - walking
+  expected_regions_any:
+  - spinal_cord
+- id: can_0305
+  query: Find datasets combining electrophysiology and optogenetics for circuit dissection.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q088
+  expected_modalities_any:
+  - extracellular_ephys
+  - optogenetics
+  expected_analysis_any:
+  - circuit_dissection
+  - causal_manipulation
+- id: can_0306
+  query: Find multi-photon imaging datasets with subcellular resolution dendrite recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q089
+  expected_modalities_any:
+  - two_photon
+  - calcium_imaging
+  expected_analysis_any:
+  - dendritic_computation
+  - subcellular
+- id: can_0307
+  query: Find primate area MT/V5 motion processing datasets.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q090
+  expected_species:
+  - macaque
+  expected_tasks:
+  - motion_discrimination
+  expected_regions_any:
+  - mst
+  - visual_cortex
+- id: can_0308
+  query: Find datasets with simultaneous LFP and single-unit activity during theta
+    rhythms.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q091
+  expected_modalities_any:
+  - lfp
+  - extracellular_ephys
+  expected_regions_any:
+  - hippocampus
+  - prefrontal_cortex
+- id: can_0309
+  query: Find social neuroscience datasets with two-player economic games.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q092
+  expected_modalities_any:
+  - fmri
+  - eeg
+  expected_tasks:
+  - social_interaction
+  - ultimatum_game
+  - prisoner_dilemma
+- id: can_0310
+  query: Find pain or nociception datasets with somatosensory recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q093
+  expected_tasks:
+  - pain
+  - nociception
+  expected_regions_any:
+  - somatosensory_cortex
+  - thalamus
+- id: can_0311
+  query: Find circadian rhythm or homeostatic sleep datasets with long-duration recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q094
+  expected_modalities_any:
+  - eeg
+  - extracellular_ephys
+  expected_tasks:
+  - sleep_wake
+  - circadian
+- id: can_0312
+  query: Find olfactory bulb or piriform cortex datasets during odor discrimination.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q095
+  expected_tasks:
+  - odor_discrimination
+  expected_regions_any:
+  - olfactory_bulb
+  - piriform_cortex
+- id: can_0313
+  query: Find cerebellum purkinje cell recordings during eyeblink conditioning.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q096
+  expected_modalities_any:
+  - extracellular_ephys
+  expected_tasks:
+  - eyeblink_conditioning
+  expected_regions_any:
+  - cerebellum
+  - cerebellar_cortex
+- id: can_0314
+  query: Find retinal ganglion cell recordings with natural image or movie stimuli.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q097
+  expected_tasks:
+  - visual_stimulation
+  - naturalistic_vision
+  expected_regions_any:
+  - retina
+- id: can_0315
+  query: Find attention datasets with frontal-parietal network recordings.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q098
+  expected_tasks:
+  - attention
+  - spatial_attention
+  expected_regions_any:
+  - prefrontal_cortex
+  - parietal_cortex
+- id: can_0316
+  query: Find habit vs goal-directed decision-making datasets with dorsomedial and
+    dorsolateral striatum.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q099
+  expected_tasks:
+  - habit_learning
+  - goal_directed
+  expected_regions_any:
+  - striatum
+  - dorsomedial_striatum
+  - dorsolateral_striatum
+- id: can_0317
+  query: Find mouse visual cortex datasets with orientation tuning under anesthesia.
+  intent: EXPLORATION
+  source_file: benchmark_queries_v2.yaml
+  original_id: q100
+  expected_species:
+  - mouse
+  expected_tasks:
+  - visual_stimulation
+  - orientation_tuning
+  expected_regions_any:
+  - visual_cortex
+  - v1

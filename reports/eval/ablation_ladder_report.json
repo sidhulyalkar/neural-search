@@ -1,0 +1,64 @@
+{
+  "rungs": [
+    {
+      "rung": "bm25",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 12.6,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "bm25_structured",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 15.5,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "dense_bge",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 154.9,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "hybrid_rrf",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 164.8,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "hybrid_graph",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 476.6,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "full",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 492.4,
+      "metrics": {
+        "ndcg@10": 0.0,
+        "query_count": 317
+      }
+    }
+  ]
+}
