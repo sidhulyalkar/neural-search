@@ -702,6 +702,64 @@ class CoverageStore:
             paths[table] = p
         return paths
 
+    def region_dataset_counts(self, *, min_confidence: float = 0.65) -> list[dict[str, Any]]:
+        """All brain regions with their dataset counts. Used to color the Brain Atlas."""
+        sql = f"""
+        SELECT
+            ce.value_id          AS region_id,
+            MAX(o.label)         AS region_label,
+            COUNT(DISTINCT ce.dataset_id) AS n_datasets
+        FROM coverage_entries ce
+        LEFT JOIN ontology_regions o ON o.id = ce.value_id
+        WHERE ce.dimension = 'brain_regions'
+          AND ce.confidence >= {min_confidence}
+        GROUP BY ce.value_id
+        ORDER BY n_datasets DESC
+        """
+        rows = self._conn.sql(sql).fetchall()
+        return [
+            {"region_id": r[0], "region_label": r[1] or r[0], "n_datasets": r[2]}
+            for r in rows
+        ]
+
+    def datasets_for_region(
+        self,
+        region_id: str,
+        *,
+        limit: int = 20,
+        offset: int = 0,
+        min_confidence: float = 0.65,
+    ) -> list[dict[str, Any]]:
+        """Datasets tagged with a specific brain region, ordered by confidence then title."""
+        sql = """
+        SELECT
+            d.dataset_id,
+            d.source,
+            d.title,
+            d.access_tier,
+            ce.confidence
+        FROM coverage_entries ce
+        JOIN datasets d ON d.dataset_id = ce.dataset_id
+        WHERE ce.dimension = 'brain_regions'
+          AND ce.value_id = ?
+          AND ce.confidence >= ?
+        ORDER BY ce.confidence DESC, d.title
+        LIMIT ? OFFSET ?
+        """
+        rows = self._conn.sql(
+            sql, params=[region_id, min_confidence, limit, offset]
+        ).fetchall()
+        return [
+            {
+                "dataset_id": r[0],
+                "source": r[1],
+                "title": r[2],
+                "access_tier": r[3],
+                "confidence": round(float(r[4]), 3),
+            }
+            for r in rows
+        ]
+
     def sql(self, query: str) -> duckdb.DuckDBPyRelation:
         return self._conn.sql(query)
 
