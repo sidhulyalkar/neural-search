@@ -1,6 +1,6 @@
 # Whitepaper Implementation Alignment
 
-Updated: 2026-06-03
+Updated: 2026-06-13
 
 This document tracks which whitepaper claims are currently supported by repository artifacts and which claims still require validation before publication.
 
@@ -15,15 +15,18 @@ This document tracks which whitepaper claims are currently supported by reposito
 
 | Artifact | Current value | Evidence |
 |---|---:|---|
-| Canonical corpus | 10,404 unique records | `data/corpus/normalized/combined_corpus.jsonl` |
-| Dense field embeddings | 60,175 rows | `data/embeddings/real_all.dense.field_embeddings.jsonl` |
+| Live normalized corpus artifact | 7,171 rows / 7,121 unique ids | `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl` |
+| Dense field embeddings | 2,840 rows over 625 records | `data/embeddings/real_all.dense.field_embeddings.jsonl` |
 | Embedding model | BAAI/bge-large-en-v1.5 | embedding rows and provider code |
 | Embedding dimension | 1024 | `data/index/turbovec_dense_1024.index/meta.json` |
-| Indexed ids | 10,404 | `data/index/turbovec_dense_1024.index/meta.json` |
+| Indexed ids | 625 | `data/index/turbovec_dense_1024.index/meta.json` |
 | Turbovec metadata bit width | 4-bit | `data/index/turbovec_dense_1024.index/meta.json` |
-| Recall report | recall@50 = 1.0 | `reports/turbovec_recall.json` |
-| Corpus quality | PASS | `reports/corpus_quality.md` |
-| Tier-2 rejections | 24,160 | `data/corpus/rejected/tier2_rejected.jsonl` |
+| Recall report | recall@50 = 1.0, but report/index sizes need reconciliation | `reports/turbovec_recall.json` |
+| Corpus quality | stale/failing local report; regenerate before citation | `reports/corpus_quality.md` |
+| Tier-2 rejection summary | 24,160 in CSV report; 762 rows in local JSONL | `reports/eval/rejection_summary.csv`, `data/corpus/rejected/tier2_rejected.jsonl` |
+| Field-State memory graph | 2,200 nodes / 3,788 edges | `artifacts/field_state/memory_graph_manifest.json` |
+| Latest field-state update | 0 new / 2 changed / 0 removed records | `artifacts/field_state/snapshots/20260613T053153Z/update_report.md` |
+| Regional coverage map | 223/625 curated-depth records with verified regions | `data/reports/regional_map/regional_map.md` |
 
 ## Core Claims
 
@@ -41,47 +44,51 @@ Evidence:
 
 Limitations:
 
-- The retrieval benchmark has not yet been rerun on the 10,404-record corpus.
+- The retrieval benchmark has not yet been rerun on a frozen expanded-corpus snapshot.
 - Graph artifacts and graph ablation should be regenerated against the current snapshot.
-- The scoring stack needs calibrated BGE weights for the expanded corpus.
+- The corpus, embedding, index, source-distribution, and recall artifacts need reconciliation before final benchmark reporting.
 
 Publication framing:
 
-Use "implemented retrieval architecture" and "current 10K index available"; do not claim final 10K retrieval performance until `reports/real_corpus_10k_eval_report.md` exists.
+Use "implemented retrieval architecture" and "expanded corpus plus current indexed/evaluated slice available"; do not claim final expanded-corpus retrieval performance until a reconciled benchmark report exists.
 
-### Claim 2: Corpus contains 10K+ normalized neuroscience records
+### Claim 2: Corpus contains an expanded normalized neuroscience artifact
 
-Status: Supported
+Status: Supported with artifact-reconciliation caveat
 
 Evidence:
 
-- `data/corpus/normalized/combined_corpus.jsonl`: 10,404 lines
-- `data/index/turbovec_dense_1024.index/meta.json`: 10,404 ids
-- `reports/corpus_quality.md`: corpus checks PASS
+- `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl`: 7,171 rows / 7,121 unique ids
+- `data/index/turbovec_dense_1024.index/meta.json`: 625 ids
+- `data/index/turbovec_dense_1024.index/fallback_vecs.npy`: 625 x 1024 vectors
+- `reports/corpus_quality.md`: stale/failing local report; regenerate before publication citation
 
 Current source counts:
 
 | Source | Records |
 |---|---:|
-| Zenodo | 3,000 |
-| OpenNeuro | 1,749 |
-| NeuroVault | 819 |
-| DANDI | 842 |
+| NeuroVault | 2,000 |
 | NeuroMorpho | 1,000 |
-| Figshare | 800 |
+| DANDI | 848 |
+| Zenodo | 500 |
+| Harvard Dataverse | 500 |
 | Allen | 500 |
-| GIN | 380 |
-| Brain Image Library | 300 |
-| BlueBrain | 300 |
+| GIN | 408 |
+| OpenNeuro | 299 |
+| Figshare | 200 |
+| OSF | 200 |
+| Brain Image Library | 200 |
 | IBL | 198 |
 | CRCNS | 153 |
-| OSF | 321 |
-| Others | 42 |
-| Total | 10,404 |
+| BlueBrain | 100 |
+| Buzsaki Lab | 35 |
+| SPARK | 20 |
+| NEMO | 10 |
+| Total | 7,171 |
 
 Publication framing:
 
-This is the current corpus-scale claim. Older corpus-count claims should remain archived and should not appear in the main whitepaper.
+This is the current live corpus-scale claim. Older 10,404-record claims should remain archived or marked as stale until the manifest/table artifacts are regenerated from a frozen bundle.
 
 ### Claim 3: Corpus expansion includes new and refreshed sources
 
@@ -93,6 +100,16 @@ Evidence:
 - `neural_search/ingestion/figshare.py`
 - `neural_search/ingestion/neuromorpho.py`
 - `neural_search/ingestion/osf.py`
+- `scripts/corpus/fetch_ibl.py`
+- `scripts/corpus/fetch_crcns.py`
+- `scripts/corpus/fetch_neurovault.py`
+- `scripts/corpus/enrich_dandi_metadata.py`
+- `scripts/corpus/enrich_study_targets.py`
+- `scripts/corpus/extract_nwb_electrode_regions.py`
+- `scripts/corpus/extract_nwb_surgery_regions.py`
+- `scripts/corpus/fetch_paper_abstracts.py`
+- `data/reports/regional_map/regional_map.md`
+- `data/corpus/enrichment/regional_signals/regional_signal_report.md`
 - refreshed normalized source files under `data/corpus/normalized/`
 
 Supported changes:
@@ -102,48 +119,55 @@ Supported changes:
 - NeuroMorpho source added with archive-level morphology records.
 - OSF expanded to 39 neuroscience tags, embedded license handling, and persistent identifier support.
 - DANDI, GIN, and OpenNeuro refreshed after modality synonym improvements.
+- IBL, CRCNS, and NeuroVault append scripts add source-specific expansion without a full corpus rebuild.
+- DANDI enrichment scripts refresh rich metadata, study targets, NWB electrode locations, and NWB surgery/experiment-description text.
+- Paper abstract mining adds DOI/CrossRef-derived regional evidence as silver provenance, not human gold.
+- Regional coverage reports distinguish verified regions from candidate-only mentions and generate a regionless review queue.
 
 Limitations:
 
 - Zenodo, Figshare, and OSF remain high-risk heterogeneous sources and need stricter off-topic QA.
 - NeuroMorpho records are archive-level, not individual-neuron records.
+- Regional extraction is still evidence-tiered and partly silver; it needs manual precision audit before strong anatomical recall claims.
 
 ### Claim 4: Dense BGE-large field embeddings and compressed index exist
 
-Status: Supported
+Status: Supported with artifact-reconciliation caveat
 
 Evidence:
 
 - `neural_search/embeddings/dense_provider.py`
 - `neural_search/embeddings/turbovec_index.py`
-- `data/embeddings/real_all.dense.field_embeddings.jsonl`: 60,175 rows
-- `data/index/turbovec_dense_1024.index/meta.json`: 10,404 ids, 1024 dimension, 4-bit metadata
-- `reports/turbovec_recall.json`: recall@50 = 1.0, p50 = 7.24 ms, p95 = 24.47 ms
+- `data/embeddings/real_all.dense.field_embeddings.jsonl`: 2,840 rows over 625 records
+- `data/index/turbovec_dense_1024.index/meta.json`: 625 ids, 1024 dimension, 4-bit metadata
+- `data/index/turbovec_dense_1024.index/fallback_vecs.npy`: 625 x 1024 vectors
+- `reports/turbovec_recall.json`: recall@50 = 1.0, p50 = 7.24 ms, p95 = 24.47 ms; reported index size must be regenerated
 
 Limitations:
 
 - The paper should disclose fallback/exact behavior when the turbovec runtime is not available.
 - Query-time provider and corpus embedding provider must remain locked to the same vector space.
+- Embedding, index, and recall artifacts need to be regenerated together before expanded-corpus retrieval claims.
 - Weight calibration is still preliminary.
 
-### Claim 5: Current 10K retrieval performance is publication-grade
+### Claim 5: Current expanded-corpus retrieval performance is publication-grade
 
 Status: Partial
 
 Evidence:
 
-- No current 10K retrieval benchmark report exists yet.
-- Current supporting artifacts cover corpus scale, corpus quality, embedding/index validation, usefulness correlation, and graph-rank perturbation.
+- No current expanded-corpus retrieval benchmark report exists yet.
+- Current supporting artifacts cover corpus scale, embedding/index validation with caveats, usefulness correlation, and graph-rank perturbation.
 
 Limitations:
 
-- Older retrieval reports predate the 10,404-record corpus and should remain archived.
-- Exact lookup must be validated on the 10K snapshot.
+- Older retrieval reports predate the current expanded-corpus artifact and should remain archived.
+- Exact lookup must be validated on the frozen expanded snapshot.
 - Existing labels are too small and not independently multi-annotated.
 
 Publication framing:
 
-Do not make current ranking-performance claims until `reports/real_corpus_10k_eval_report.md` exists.
+Do not make current ranking-performance claims until a reconciled expanded-corpus benchmark report exists.
 
 ### Claim 6: Latent usefulness scoring is implemented
 
@@ -172,13 +196,13 @@ Status: Partial
 
 Evidence:
 
-- Identifier fields exist and no records lack identifiers in the current quality report.
+- Identifier fields exist in the live corpus artifact, with 7,121 unique ids across 7,171 rows.
 - Constraint and query parsing infrastructure exists.
 
 Limitations:
 
 - `reports/real_corpus_v11_eval_report.md` shows missed direct lookup queries for DANDI and OpenNeuro.
-- A deterministic pinned exact-match lane must be implemented and tested against the 10K snapshot.
+- A deterministic pinned exact-match lane must be implemented and tested against the frozen expanded snapshot.
 
 Publication framing:
 
@@ -199,7 +223,7 @@ Limitations:
 
 - Metadata-based predictions are not yet enough for publication-grade reuse claims.
 - File/content validation against NWB and BIDS datasets is still required.
-- Precision/recall against human or file-inspection labels is not yet reported for the 10K corpus.
+- Precision/recall against human or file-inspection labels is not yet reported for the expanded corpus.
 
 Publication framing:
 
@@ -217,7 +241,7 @@ Evidence:
 Limitations:
 
 - The current ablation report does not show NDCG improvement.
-- Graph artifacts should be rebuilt and validated against the 10K corpus.
+- Graph artifacts should be rebuilt and validated against the frozen expanded corpus.
 - Paper links need better confidence/evidence surfacing.
 
 Publication framing:
@@ -238,7 +262,7 @@ Evidence:
 Limitations:
 
 - Intent classification is still largely heuristic.
-- Per-intent weighting needs 10K evaluation.
+- Per-intent weighting needs expanded-corpus evaluation.
 - Planner/runtime defaults should be verified.
 
 ### Claim 11: Paper-dataset linking is provenance-aware
@@ -253,7 +277,7 @@ Evidence:
 
 Limitations:
 
-- Links should be regenerated for the 10K snapshot.
+- Links should be regenerated for the frozen expanded snapshot.
 - Dataset cards should surface link confidence and evidence.
 - Human review is still needed for high-impact claims.
 
@@ -273,20 +297,51 @@ Limitations:
 - Demo mode and real mode must be impossible to confuse.
 - Health endpoints should expose snapshot id, record count, embedding model, and index status.
 
+### Claim 13: Field-State memory management preserves provenance and human review state
+
+Status: Supported for engineering/artifact integrity; partial for scientific validation
+
+Evidence:
+
+- `neural_search/field_state/memory_graph.py`
+- `neural_search/field_state/graph_store.py`
+- `neural_search/field_state/memory/index.py`
+- `neural_search/field_state/memory/diff.py`
+- `neural_search/field_state/memory/review_overlay.py`
+- `scripts/field_state/update_field_state.py`
+- `scripts/field_state/compare_snapshots.py`
+- `artifacts/field_state/memory_graph_manifest.json`: 2,200 nodes / 3,788 edges
+- `artifacts/field_state/current_manifest.json`: latest snapshot pointer and record hashes
+- `reports/field_state/memory_graph_validation.md`
+
+Supported changes:
+
+- Content-hash change detection over title, description, source id, and source.
+- Versioned snapshot directories containing corpus, memory graph, and index manifests.
+- Obsidian generated/human block separation with review overlays imported into separate JSONL files.
+- Memory index and diff reports for human edits, duplicate ids, schema mismatches, missing markers, and missing notes.
+- Provenance guardrails separating neuro-judge silver labels, downstream user feedback, silver enrichment labels, and human gold labels.
+
+Limitations:
+
+- Current memory graph covers the field-state/evidence-management slice, not every record in the expanded corpus artifact.
+- Memory integrity tests do not prove retrieval relevance or scientific usefulness.
+
 ## Publication Required Before Strong Claims
 
-1. Freeze a 10K snapshot manifest with checksums.
-2. Rerun retrieval benchmarks on the 10,404-record corpus.
+1. Freeze a reconciled expanded-corpus snapshot manifest with checksums.
+2. Rerun retrieval benchmarks on that frozen corpus.
 3. Implement and test exact identifier pinning.
 4. Generate source-by-source metadata completeness and false-positive audits.
 5. Validate affordances against file inspection or human labels.
-6. Rebuild graph and paper-link artifacts for the 10K snapshot.
-7. Generate manuscript metric tables directly from JSON reports.
+6. Rebuild graph and paper-link artifacts for the frozen expanded snapshot.
+7. Audit memory graph coverage so the paper distinguishes the field-state graph from any future full-corpus graph.
+8. Generate manuscript metric tables directly from JSON reports.
 
 ## Current Bottom Line
 
-Neural Search now supports a strong corpus-scale claim: **10,404 unique normalized neuroscience records with 60,175 BGE-large field embeddings and a 10,404-record 1024-dimensional turbovec index.**
+Neural Search now supports a corpus-scale and artifact-management claim with an explicit reconciliation caveat: **a 7,171-row live normalized neuroscience corpus artifact, a 625-record BGE-large indexed/evaluated slice, a 1024-dimensional turbovec vector file, a 675-packet neuro-judge evidence pool, and a versioned Field-State memory graph currently at 2,200 nodes and 3,788 edges.**
 
 The publication claim should not yet be "we have solved reusable neuroscience dataset search." The defensible claim is:
 
-> Neural Search is a 10K-scale, evidence-aware research prototype for experiment-aware neuroscience dataset retrieval, with structured corpus normalization, dense field embeddings, graph/reuse scoring infrastructure, and preliminary retrieval/usefulness validation. The next phase is rigorous 10K-snapshot evaluation, exact-lookup hardening, source-specific extraction QA, and content-validated analysis affordances.
+> Neural Search is an evidence-aware research prototype for experiment-aware neuroscience dataset retrieval, with expanded corpus normalization, dense field embeddings, graph/reuse scoring infrastructure, LLM-assisted silver-label triage, provenance-preserving memory management, and preliminary retrieval/usefulness validation. The next phase is artifact reconciliation, frozen-snapshot evaluation, exact-lookup hardening, source-specific extraction QA, and content-validated analysis affordances.
