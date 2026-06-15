@@ -501,6 +501,16 @@ class CoverageStore:
 
     # ── Analytical queries ───────────────────────────────────────────────────
 
+    _ALLOWED_DIMS = frozenset({
+        "brain_regions", "modalities", "species", "tasks", "recording_scales",
+    })
+
+    @classmethod
+    def _require_dim(cls, value: str) -> str:
+        if value not in cls._ALLOWED_DIMS:
+            raise ValueError(f"Invalid dimension {value!r}; must be one of {sorted(cls._ALLOWED_DIMS)}")
+        return value
+
     def gap_matrix(
         self,
         row_dim: str = "brain_regions",
@@ -510,14 +520,21 @@ class CoverageStore:
         min_confidence: float = 0.65,
     ) -> duckdb.DuckDBPyRelation:
         """Cross-tabulation: row_dim × col_dim dataset counts."""
+        row_dim = self._require_dim(row_dim)
+        col_dim = self._require_dim(col_dim)
+
+        # species_filter is a user-supplied value — bind via parameter, not f-string
+        params: list[Any] = []
         species_clause = ""
         if species_filter:
-            species_clause = f"""
+            species_clause = """
               AND ce_r.dataset_id IN (
                   SELECT dataset_id FROM coverage_entries
-                  WHERE dimension = 'species' AND value_id = '{species_filter}'
-                  AND confidence >= {min_confidence}
+                  WHERE dimension = 'species' AND value_id = ?
+                  AND confidence >= ?
               )"""
+            params = [species_filter, min_confidence]
+
         sql = f"""
         SELECT
             ce_r.value_id  AS {row_dim.rstrip('s')},
@@ -533,7 +550,7 @@ class CoverageStore:
         GROUP BY 1, 2
         ORDER BY 3 DESC
         """
-        return self._conn.sql(sql)
+        return self._conn.sql(sql, params=params) if params else self._conn.sql(sql)
 
     def uncovered_regions(self, *, min_confidence: float = 0.65) -> duckdb.DuckDBPyRelation:
         """Ontology regions with zero corpus datasets."""
@@ -607,6 +624,8 @@ class CoverageStore:
         min_confidence: float = 0.65,
     ) -> duckdb.DuckDBPyRelation:
         """Highest-opportunity (dim_a × dim_b) pairs with zero observed datasets."""
+        dim_a = self._require_dim(dim_a)
+        dim_b = self._require_dim(dim_b)
         sql = f"""
         WITH a_counts AS (
             SELECT value_id, COUNT(DISTINCT dataset_id) AS n
