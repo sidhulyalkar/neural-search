@@ -178,7 +178,7 @@ def generate_queries(existing: list[dict]) -> list[dict]:
         next_id += 1
 
     # Region × modality queries (q031-q042)
-    for region, modality, text, fields in _REGION_MODALITY:
+    for _region, _modality, text, fields in _REGION_MODALITY:
         add(text, fields)
 
     # Cross-species queries (q043-q048)

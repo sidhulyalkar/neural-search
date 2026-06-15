@@ -10,14 +10,13 @@ import time
 from typing import Any
 
 import httpx
+from functools import lru_cache
 
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.dataset_classifier import is_valid_dataset
 from neural_search.ingestion.registry import register
 
 logger = logging.getLogger(__name__)
-
-from functools import lru_cache
 
 
 @lru_cache(maxsize=1)

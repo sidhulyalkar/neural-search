@@ -21,8 +21,6 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from neural_search.coverage.duckdb_store import CoverageStore
-
 DB_PATH = ROOT / "data" / "coverage" / "ledger.duckdb"
 REPORTS_DIR = ROOT / "data" / "reports" / "coverage"
 
@@ -48,6 +46,8 @@ def _rarity(n: int, total: int) -> float:
 
 
 def generate_plan(db_path: Path) -> list[dict[str, Any]]:
+    from neural_search.coverage.duckdb_store import CoverageStore
+
     items: list[dict[str, Any]] = []
 
     with CoverageStore(db_path) as store:
@@ -79,7 +79,7 @@ def generate_plan(db_path: Path) -> list[dict[str, Any]]:
         # ── 2. Low-coverage sources ───────────────────────────────────────────
         source_rows = store.source_coverage_rates().fetchall()
         for row in source_rows:
-            src, n_total, regions_cov, regions_pct = row[0], row[1], row[2], row[3]
+            src, n_total, _regions_cov, regions_pct = row[0], row[1], row[2], row[3]
             if n_total < 10:
                 continue
             if regions_pct < 30.0:
@@ -295,6 +295,8 @@ def main(argv: list[str] | None = None) -> int:
     if not args.db.exists():
         print(f"Ledger not found: {args.db}. Run build_duckdb_ledger.py first.", file=sys.stderr)
         return 1
+
+    from neural_search.coverage.duckdb_store import CoverageStore
 
     print(f"Generating acquisition plan from {args.db}…")
     items = generate_plan(args.db)

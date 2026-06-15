@@ -96,7 +96,7 @@ def _cached_expand(
     logger.debug(
         "LLM expansion for query %r produced: %s",
         query,
-        {k: v for k, v in result.items()},
+        dict(result),
     )
     return result
 

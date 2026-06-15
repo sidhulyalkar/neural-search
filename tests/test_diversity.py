@@ -75,7 +75,7 @@ class TestApplySourceDiversity:
         assert out[0].dataset_id == "d1"
         assert out[1].dataset_id == "d2"
         # d3 and d4 deferred (second from their sources)
-        assert set(r.dataset_id for r in out[2:]) == {"d3", "d4"}
+        assert {r.dataset_id for r in out[2:]} == {"d3", "d4"}
 
     def test_empty_input(self) -> None:
         assert apply_source_diversity([]) == []
