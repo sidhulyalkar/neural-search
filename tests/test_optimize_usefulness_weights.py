@@ -1,6 +1,5 @@
 # tests/test_optimize_usefulness_weights.py
 import json
-import sys
 from pathlib import Path
 
 
