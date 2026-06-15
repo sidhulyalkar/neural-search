@@ -214,6 +214,7 @@ def test_region_dataset_counts_returns_list(tmp_path):
     store.build(corpus_path=test_corpus)
     counts = store.region_dataset_counts()
     assert isinstance(counts, list)
+    assert len(counts) > 0, "visual_cortex should appear above min_confidence threshold"
     for item in counts:
         assert "region_id" in item
         assert "region_label" in item
@@ -235,6 +236,7 @@ def test_datasets_for_region_returns_list(tmp_path):
     store.build(corpus_path=test_corpus)
     results = store.datasets_for_region("visual_cortex")
     assert isinstance(results, list)
+    assert len(results) > 0, "visual_cortex dataset should be found above min_confidence threshold"
     for r in results:
         assert "dataset_id" in r
         assert "source" in r
