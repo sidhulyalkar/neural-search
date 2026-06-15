@@ -21,6 +21,7 @@ _MAX_SCORE = 0.40
 
 # Per-match positive weights
 _MODALITY_MATCH_SCORE = 0.10
+_RECORDING_SCALE_MATCH_SCORE = 0.07
 _SPECIES_MATCH_SCORE = 0.10
 _REGION_MATCH_SCORE = 0.05
 _AFFORDANCE_MATCH_SCORE = 0.08
@@ -33,6 +34,7 @@ _CONTRAINDICATED_PENALTY = 0.10
 
 # Positive edge types used to look up dataset neighbors
 _MODALITY_EDGE = "dataset_has_modality"
+_RECORDING_SCALE_EDGE = "dataset_has_recording_scale"
 _SPECIES_EDGE = "dataset_has_species"
 _REGION_EDGE = "dataset_records_region"
 _AFFORDANCE_EDGE = "dataset_supports_analysis"
@@ -145,6 +147,7 @@ def compute_memory_graph_evidence(
     dataset_id = str(getattr(result, "dataset_id", "") or "")
     empty: dict[str, Any] = {
         "modality_matches": [],
+        "recording_scale_matches": [],
         "species_matches": [],
         "region_matches": [],
         "affordance_matches": [],
@@ -173,6 +176,7 @@ def compute_memory_graph_evidence(
         return matched
 
     modalities: list[str] = list(parsed_query.get("modalities", []))
+    recording_scales: list[str] = list(parsed_query.get("recording_scales", []))
     species: list[str] = list(parsed_query.get("species", []))
     regions: list[str] = list(parsed_query.get("brain_regions", []))
     affordances: list[str] = list(parsed_query.get("affordances", []))
@@ -187,7 +191,7 @@ def compute_memory_graph_evidence(
 
     lacks_edges = store.get_neighbors(node_id, edge_types=[_LACKS_EVIDENCE_EDGE])
 
-    all_q = _query_terms(modalities + species + regions + affordances)
+    all_q = _query_terms(modalities + recording_scales + species + regions + affordances)
     contraindicated: list[str] = []
     for _edge, contra_node in store.get_neighbors(node_id, edge_types=[_CONTRAINDICATED_EDGE]):
         if _node_terms(contra_node) & all_q:
@@ -197,6 +201,10 @@ def compute_memory_graph_evidence(
 
     return {
         "modality_matches": _matched_labels(_MODALITY_EDGE, modalities),
+        "recording_scale_matches": _matched_labels(
+            _RECORDING_SCALE_EDGE,
+            recording_scales,
+        ),
         "species_matches": _matched_labels(_SPECIES_EDGE, species),
         "region_matches": _matched_labels(_REGION_EDGE, regions),
         "affordance_matches": _matched_labels(_AFFORDANCE_EDGE, affordances),
@@ -232,7 +240,7 @@ def compute_memory_graph_score(
         A SearchResult; must have a ``dataset_id`` attribute.
     parsed_query:
         The parsed query dict from ``parse_query``; keys used:
-        ``modalities``, ``species``, ``brain_regions``, ``affordances``,
+        ``modalities``, ``recording_scales``, ``species``, ``brain_regions``, ``affordances``,
         and the raw query text under ``_raw_query`` (optional).
 
     Returns
@@ -257,6 +265,11 @@ def compute_memory_graph_score(
     for _modality in modalities:
         if _has_match(store, node_id, _MODALITY_EDGE, [_modality]):
             score += _MODALITY_MATCH_SCORE
+
+    recording_scales: list[str] = list(parsed_query.get("recording_scales", []))
+    for _scale in recording_scales:
+        if _has_match(store, node_id, _RECORDING_SCALE_EDGE, [_scale]):
+            score += _RECORDING_SCALE_MATCH_SCORE
 
     species: list[str] = list(parsed_query.get("species", []))
     for _sp in species:
@@ -289,7 +302,7 @@ def compute_memory_graph_score(
     score -= evidence_penalty
 
     # Contraindicated penalties: check if any contraindicated neighbor matches query terms
-    all_q = _query_terms(modalities + species + regions + affordances)
+    all_q = _query_terms(modalities + recording_scales + species + regions + affordances)
     for _edge, contra_node in store.get_neighbors(node_id, edge_types=[_CONTRAINDICATED_EDGE]):
         if _node_terms(contra_node) & all_q:
             score -= _CONTRAINDICATED_PENALTY

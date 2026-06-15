@@ -11,6 +11,7 @@ from neural_search.ontology import (
     LabelMatch,
     match_behavior_labels,
     match_brain_regions,
+    match_recording_scales,
     match_tasks,
     normalize_text,
 )
@@ -188,6 +189,9 @@ def extract_dataset_labels(
         tasks=[_to_label(match) for match in match_tasks(combined)],
         behaviors=[_to_label(match) for match in match_behavior_labels(combined)],
         modalities=_match_dictionary(combined, MODALITY_SYNONYMS, "modality"),
+        recording_scales=[
+            _to_label(match) for match in match_recording_scales(combined)
+        ],
         brain_regions=[_to_label(match) for match in match_brain_regions(combined)],
         species=_match_dictionary(combined, SPECIES_SYNONYMS, "species"),
         data_standards=_match_dictionary(combined, DATA_STANDARD_SYNONYMS, "data_standard"),
