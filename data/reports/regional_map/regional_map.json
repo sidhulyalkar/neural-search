@@ -9,6 +9,22 @@
       "verified_record_count": 0
     },
     {
+      "candidate_record_count": 3,
+      "label": "Lateral septum",
+      "region_id": "lateral_septum",
+      "status": "candidate_only",
+      "system": "basal_forebrain",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Medial septum",
+      "region_id": "medial_septum",
+      "status": "candidate_only",
+      "system": "basal_forebrain",
+      "verified_record_count": 0
+    },
+    {
       "candidate_record_count": 1,
       "label": "Dorsal raphe",
       "region_id": "dorsal_raphe",
@@ -34,14 +50,6 @@
     },
     {
       "candidate_record_count": 6,
-      "label": "Ventral tegmental area",
-      "region_id": "ventral_tegmental_area",
-      "status": "candidate_only",
-      "system": "brainstem",
-      "verified_record_count": 0
-    },
-    {
-      "candidate_record_count": 6,
       "label": "Barrel cortex",
       "region_id": "barrel_cortex",
       "status": "candidate_only",
@@ -49,7 +57,7 @@
       "verified_record_count": 0
     },
     {
-      "candidate_record_count": 143,
+      "candidate_record_count": 148,
       "label": "Cortex",
       "region_id": "cortex",
       "status": "candidate_only",
@@ -65,6 +73,30 @@
       "verified_record_count": 0
     },
     {
+      "candidate_record_count": 10,
+      "label": "Primary motor cortex",
+      "region_id": "primary_motor_cortex",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 8,
+      "label": "Primary somatosensory cortex",
+      "region_id": "primary_somatosensory_cortex",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
+      "label": "Supplementary motor area",
+      "region_id": "supplementary_motor_area",
+      "status": "candidate_only",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
       "candidate_record_count": 6,
       "label": "Medial temporal lobe",
       "region_id": "medial_temporal_lobe",
@@ -74,8 +106,16 @@
     },
     {
       "candidate_record_count": 1,
+      "label": "Ventral posterolateral nucleus",
+      "region_id": "ventral_posterolateral_thalamus",
+      "status": "candidate_only",
+      "system": "thalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 1,
       "label": "Ventral posteromedial nucleus",
-      "region_id": "vpm",
+      "region_id": "ventral_posteromedial_thalamus",
       "status": "candidate_only",
       "system": "thalamus",
       "verified_record_count": 0
@@ -98,6 +138,14 @@
     },
     {
       "candidate_record_count": 0,
+      "label": "Nucleus basalis",
+      "region_id": "nucleus_basalis",
+      "status": "uncovered",
+      "system": "basal_forebrain",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
       "label": "Caudate",
       "region_id": "caudate",
       "status": "uncovered",
@@ -108,6 +156,22 @@
       "candidate_record_count": 0,
       "label": "Dorsomedial striatum",
       "region_id": "dorsomedial_striatum",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "External globus pallidus",
+      "region_id": "globus_pallidus_external",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Internal globus pallidus",
+      "region_id": "globus_pallidus_internal",
       "status": "uncovered",
       "system": "basal_ganglia",
       "verified_record_count": 0
@@ -130,6 +194,22 @@
     },
     {
       "candidate_record_count": 0,
+      "label": "Substantia nigra pars compacta",
+      "region_id": "substantia_nigra_pars_compacta",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Substantia nigra pars reticulata",
+      "region_id": "substantia_nigra_pars_reticulata",
+      "status": "uncovered",
+      "system": "basal_ganglia",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
       "label": "Subthalamic nucleus",
       "region_id": "subthalamic_nucleus",
       "status": "uncovered",
@@ -138,8 +218,24 @@
     },
     {
       "candidate_record_count": 0,
+      "label": "Median raphe",
+      "region_id": "median_raphe",
+      "status": "uncovered",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
       "label": "Pons",
       "region_id": "pons",
+      "status": "uncovered",
+      "system": "brainstem",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Red nucleus",
+      "region_id": "red_nucleus",
       "status": "uncovered",
       "system": "brainstem",
       "verified_record_count": 0
@@ -178,6 +274,22 @@
     },
     {
       "candidate_record_count": 0,
+      "label": "Frontal eye field",
+      "region_id": "frontal_eye_field",
+      "status": "uncovered",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Gustatory cortex",
+      "region_id": "gustatory_cortex",
+      "status": "uncovered",
+      "system": "cortical",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
       "label": "Medial superior temporal area",
       "region_id": "mst",
       "status": "uncovered",
@@ -194,10 +306,82 @@
     },
     {
       "candidate_record_count": 0,
+      "label": "Arcuate nucleus",
+      "region_id": "arcuate_nucleus",
+      "status": "uncovered",
+      "system": "hypothalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
       "label": "Lateral hypothalamus",
       "region_id": "lateral_hypothalamus",
       "status": "uncovered",
       "system": "hypothalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Paraventricular hypothalamic nucleus",
+      "region_id": "paraventricular_hypothalamic_nucleus",
+      "status": "uncovered",
+      "system": "hypothalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Suprachiasmatic nucleus",
+      "region_id": "suprachiasmatic_nucleus",
+      "status": "uncovered",
+      "system": "hypothalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Cervical spinal cord",
+      "region_id": "cervical_spinal_cord",
+      "status": "uncovered",
+      "system": "spinal_cord",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Dorsal horn",
+      "region_id": "dorsal_horn",
+      "status": "uncovered",
+      "system": "spinal_cord",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Lumbar spinal cord",
+      "region_id": "lumbar_spinal_cord",
+      "status": "uncovered",
+      "system": "spinal_cord",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Thoracic spinal cord",
+      "region_id": "thoracic_spinal_cord",
+      "status": "uncovered",
+      "system": "spinal_cord",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Ventral horn",
+      "region_id": "ventral_horn",
+      "status": "uncovered",
+      "system": "spinal_cord",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Anterior thalamic nuclei",
+      "region_id": "anterior_thalamic_nuclei",
+      "status": "uncovered",
+      "system": "thalamus",
       "verified_record_count": 0
     },
     {
@@ -212,6 +396,14 @@
       "candidate_record_count": 0,
       "label": "Mediodorsal thalamus",
       "region_id": "mediodorsal_thalamus",
+      "status": "uncovered",
+      "system": "thalamus",
+      "verified_record_count": 0
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Thalamic reticular nucleus",
+      "region_id": "thalamic_reticular_nucleus",
       "status": "uncovered",
       "system": "thalamus",
       "verified_record_count": 0
@@ -286,7 +478,7 @@
       "region_id": "brainstem",
       "status": "verified",
       "system": "brainstem",
-      "verified_record_count": 9
+      "verified_record_count": 10
     },
     {
       "candidate_record_count": 0,
@@ -311,6 +503,14 @@
       "status": "verified",
       "system": "brainstem",
       "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "label": "Ventral tegmental area",
+      "region_id": "vta",
+      "status": "verified",
+      "system": "brainstem",
+      "verified_record_count": 6
     },
     {
       "candidate_record_count": 0,
@@ -406,7 +606,7 @@
       "region_id": "premotor_cortex",
       "status": "verified",
       "system": "cortical",
-      "verified_record_count": 14
+      "verified_record_count": 17
     },
     {
       "candidate_record_count": 0,
@@ -422,7 +622,7 @@
       "region_id": "somatosensory_cortex",
       "status": "verified",
       "system": "cortical",
-      "verified_record_count": 13
+      "verified_record_count": 14
     },
     {
       "candidate_record_count": 0,
@@ -430,7 +630,7 @@
       "region_id": "temporal_cortex",
       "status": "verified",
       "system": "cortical",
-      "verified_record_count": 19
+      "verified_record_count": 21
     },
     {
       "candidate_record_count": 0,
@@ -438,7 +638,7 @@
       "region_id": "v1",
       "status": "verified",
       "system": "cortical",
-      "verified_record_count": 15
+      "verified_record_count": 18
     },
     {
       "candidate_record_count": 0,
@@ -462,7 +662,7 @@
       "region_id": "visual_cortex",
       "status": "verified",
       "system": "cortical",
-      "verified_record_count": 29
+      "verified_record_count": 32
     },
     {
       "candidate_record_count": 0,
@@ -470,7 +670,7 @@
       "region_id": "ca1",
       "status": "verified",
       "system": "hippocampal_formation",
-      "verified_record_count": 12
+      "verified_record_count": 17
     },
     {
       "candidate_record_count": 0,
@@ -478,7 +678,7 @@
       "region_id": "ca3",
       "status": "verified",
       "system": "hippocampal_formation",
-      "verified_record_count": 2
+      "verified_record_count": 3
     },
     {
       "candidate_record_count": 0,
@@ -486,7 +686,7 @@
       "region_id": "dentate_gyrus",
       "status": "verified",
       "system": "hippocampal_formation",
-      "verified_record_count": 1
+      "verified_record_count": 3
     },
     {
       "candidate_record_count": 0,
@@ -494,7 +694,7 @@
       "region_id": "hippocampus",
       "status": "verified",
       "system": "hippocampal_formation",
-      "verified_record_count": 31
+      "verified_record_count": 34
     },
     {
       "candidate_record_count": 0,
@@ -518,7 +718,7 @@
       "region_id": "olfactory_bulb",
       "status": "verified",
       "system": "olfactory",
-      "verified_record_count": 2
+      "verified_record_count": 3
     },
     {
       "candidate_record_count": 0,
@@ -542,7 +742,7 @@
       "region_id": "thalamus",
       "status": "verified",
       "system": "thalamus",
-      "verified_record_count": 9
+      "verified_record_count": 11
     },
     {
       "candidate_record_count": 0,
@@ -570,27 +770,27 @@
       "acc": 1,
       "amygdala": 1,
       "brainstem": 3,
-      "ca1": 8,
-      "ca3": 2,
+      "ca1": 10,
+      "ca3": 3,
       "cerebellum": 1,
       "dentate_gyrus": 1,
       "dorsal_striatum": 1,
       "dorsolateral_striatum": 1,
       "entorhinal_cortex": 2,
-      "hippocampus": 14,
+      "hippocampus": 15,
       "hypothalamus": 3,
       "it": 7,
       "medial_entorhinal_cortex": 2,
       "motor_cortex": 10,
       "mpfc": 2,
-      "neocortex": 2,
+      "neocortex": 5,
       "nucleus_accumbens": 4,
       "ofc": 1,
       "parietal_cortex": 1,
       "pmd": 1,
       "posterior_parietal_cortex": 2,
       "prefrontal_cortex": 4,
-      "premotor_cortex": 3,
+      "premotor_cortex": 5,
       "retrosplenial_cortex": 3,
       "septum": 3,
       "somatosensory_area_2": 1,
@@ -601,40 +801,41 @@
       "temporal_cortex": 2,
       "temporal_lobe": 1,
       "thalamus": 4,
-      "v1": 6,
+      "v1": 8,
       "ventral_striatum": 4,
-      "visual_cortex": 7,
+      "visual_cortex": 8,
       "vta": 3
     },
     "calcium_imaging": {
       "acc": 1,
-      "brainstem": 1,
-      "ca1": 2,
+      "brainstem": 2,
+      "ca1": 4,
       "cerebellum": 1,
+      "dentate_gyrus": 2,
       "dorsal_striatum": 1,
       "dorsolateral_striatum": 1,
-      "hippocampus": 2,
+      "hippocampus": 3,
       "it": 6,
       "motor_cortex": 3,
       "mpfc": 1,
-      "neocortex": 4,
+      "neocortex": 8,
       "nucleus_accumbens": 4,
       "ofc": 1,
-      "olfactory_bulb": 2,
+      "olfactory_bulb": 3,
       "parietal_cortex": 1,
       "piriform_cortex": 2,
       "posterior_parietal_cortex": 1,
       "prefrontal_cortex": 2,
-      "premotor_cortex": 1,
+      "premotor_cortex": 2,
       "retina": 1,
       "retrosplenial_cortex": 3,
       "striatum": 6,
-      "thalamus": 1,
-      "v1": 12,
+      "thalamus": 3,
+      "v1": 15,
       "v2": 2,
       "v4": 1,
       "ventral_striatum": 4,
-      "visual_cortex": 15,
+      "visual_cortex": 16,
       "vta": 3
     },
     "ecog": {
@@ -652,8 +853,8 @@
       "it": 1,
       "motor_cortex": 3,
       "premotor_cortex": 2,
-      "temporal_cortex": 2,
-      "temporal_lobe": 1,
+      "temporal_cortex": 3,
+      "temporal_lobe": 2,
       "visual_cortex": 3
     },
     "emg": {
@@ -665,49 +866,50 @@
     },
     "extracellular_ephys": {
       "acc": 1,
-      "amygdala": 4,
+      "amygdala": 5,
       "basolateral_amygdala": 1,
-      "brainstem": 3,
-      "ca1": 8,
-      "ca3": 2,
+      "brainstem": 4,
+      "ca1": 14,
+      "ca3": 3,
       "cerebellum": 3,
-      "dentate_gyrus": 1,
+      "dentate_gyrus": 3,
       "dmfc": 1,
       "entorhinal_cortex": 3,
-      "hippocampus": 21,
+      "hippocampus": 23,
       "hypothalamus": 4,
       "inferior_colliculus": 1,
-      "it": 10,
+      "it": 11,
       "lateral_geniculate_nucleus": 1,
       "medial_entorhinal_cortex": 2,
-      "motor_cortex": 19,
-      "mpfc": 4,
-      "neocortex": 9,
+      "motor_cortex": 20,
+      "mpfc": 6,
+      "neocortex": 16,
       "parietal_cortex": 3,
       "pmd": 5,
       "posterior_parietal_cortex": 2,
-      "prefrontal_cortex": 7,
-      "premotor_cortex": 9,
+      "prefrontal_cortex": 9,
+      "premotor_cortex": 12,
       "retina": 1,
       "septum": 4,
       "somatosensory_area_2": 1,
-      "somatosensory_cortex": 11,
+      "somatosensory_cortex": 13,
       "spinal_cord": 5,
       "striatum": 2,
       "subiculum": 1,
       "superior_colliculus": 3,
-      "temporal_cortex": 4,
-      "temporal_lobe": 4,
-      "thalamus": 8,
-      "v1": 2,
+      "temporal_cortex": 6,
+      "temporal_lobe": 5,
+      "thalamus": 10,
+      "v1": 5,
       "ventral_striatum": 1,
-      "visual_cortex": 6,
+      "visual_cortex": 9,
       "vta": 3
     },
     "eye_tracking": {
       "entorhinal_cortex": 1,
       "hypothalamus": 1,
       "medial_entorhinal_cortex": 1,
+      "neocortex": 1,
       "prefrontal_cortex": 1,
       "v1": 2,
       "visual_cortex": 2
@@ -745,26 +947,26 @@
       "amygdala": 2,
       "entorhinal_cortex": 1,
       "hippocampus": 1,
-      "temporal_cortex": 1,
-      "temporal_lobe": 1
+      "temporal_cortex": 2,
+      "temporal_lobe": 2
     },
     "lfp": {
-      "amygdala": 1,
+      "amygdala": 2,
       "basolateral_amygdala": 1,
-      "brainstem": 1,
-      "ca1": 8,
-      "ca3": 2,
-      "dentate_gyrus": 1,
+      "brainstem": 2,
+      "ca1": 13,
+      "ca3": 3,
+      "dentate_gyrus": 3,
       "entorhinal_cortex": 2,
-      "hippocampus": 18,
+      "hippocampus": 19,
       "hypothalamus": 3,
       "inferior_colliculus": 1,
-      "it": 5,
+      "it": 6,
       "lateral_geniculate_nucleus": 1,
       "medial_entorhinal_cortex": 2,
       "motor_cortex": 3,
       "mpfc": 6,
-      "neocortex": 4,
+      "neocortex": 5,
       "nucleus_accumbens": 1,
       "ofc": 1,
       "parietal_cortex": 1,
@@ -777,22 +979,24 @@
       "striatum": 1,
       "subiculum": 1,
       "superior_colliculus": 1,
-      "temporal_cortex": 1,
-      "temporal_lobe": 1,
-      "thalamus": 2,
-      "v1": 2,
+      "temporal_cortex": 2,
+      "temporal_lobe": 2,
+      "thalamus": 4,
+      "v1": 3,
       "ventral_striatum": 1,
-      "visual_cortex": 6
+      "visual_cortex": 7
     },
     "meg": {
       "amygdala": 1,
       "temporal_cortex": 1
     },
     "neuropixels": {
-      "brainstem": 1,
+      "brainstem": 2,
+      "ca1": 3,
       "cerebellum": 1,
+      "dentate_gyrus": 2,
       "entorhinal_cortex": 1,
-      "hippocampus": 1,
+      "hippocampus": 2,
       "hypothalamus": 2,
       "it": 2,
       "lateral_geniculate_nucleus": 1,
@@ -802,21 +1006,22 @@
       "retina": 1,
       "striatum": 1,
       "superior_colliculus": 1,
-      "thalamus": 2,
-      "v1": 1,
-      "visual_cortex": 2
+      "thalamus": 4,
+      "v1": 2,
+      "visual_cortex": 5
     },
     "patch_clamp": {
       "hippocampus": 1,
       "it": 1,
-      "motor_cortex": 1,
-      "neocortex": 4,
+      "motor_cortex": 2,
+      "neocortex": 12,
       "spinal_cord": 5,
-      "visual_cortex": 1
+      "v1": 1,
+      "visual_cortex": 3
     },
     "patch_seq": {
       "motor_cortex": 2,
-      "neocortex": 3,
+      "neocortex": 7,
       "visual_cortex": 1
     },
     "pose_tracking": {
@@ -835,7 +1040,8 @@
       "thalamus": 1
     },
     "single_cell_rnaseq": {
-      "motor_cortex": 1
+      "motor_cortex": 2,
+      "neocortex": 2
     },
     "structural_mri": {
       "spinal_cord": 1
@@ -847,51 +1053,51 @@
       "amygdala": 6,
       "auditory_cortex": 1,
       "basolateral_amygdala": 2,
-      "brainstem": 7,
-      "ca1": 12,
-      "ca3": 2,
+      "brainstem": 8,
+      "ca1": 17,
+      "ca3": 3,
       "cerebellum": 4,
-      "dentate_gyrus": 1,
+      "dentate_gyrus": 3,
       "dmfc": 1,
       "dorsal_striatum": 1,
       "dorsolateral_striatum": 1,
       "entorhinal_cortex": 3,
       "globus_pallidus": 1,
-      "hippocampus": 27,
+      "hippocampus": 30,
       "hypothalamus": 4,
       "inferior_colliculus": 1,
-      "it": 16,
+      "it": 17,
       "lateral_geniculate_nucleus": 1,
       "medial_entorhinal_cortex": 2,
       "motor_cortex": 28,
       "mpfc": 8,
-      "neocortex": 15,
+      "neocortex": 32,
       "nucleus_accumbens": 6,
       "ofc": 2,
-      "olfactory_bulb": 2,
+      "olfactory_bulb": 3,
       "parietal_cortex": 4,
       "piriform_cortex": 2,
       "pmd": 7,
       "posterior_parietal_cortex": 4,
       "prefrontal_cortex": 13,
-      "premotor_cortex": 12,
+      "premotor_cortex": 15,
       "retina": 2,
       "retrosplenial_cortex": 3,
       "septum": 4,
       "somatosensory_area_2": 1,
-      "somatosensory_cortex": 13,
+      "somatosensory_cortex": 14,
       "spinal_cord": 6,
       "striatum": 11,
       "subiculum": 1,
       "superior_colliculus": 3,
-      "temporal_cortex": 5,
-      "temporal_lobe": 4,
-      "thalamus": 9,
-      "v1": 15,
+      "temporal_cortex": 7,
+      "temporal_lobe": 5,
+      "thalamus": 11,
+      "v1": 18,
       "v2": 2,
       "v4": 1,
       "ventral_striatum": 8,
-      "visual_cortex": 25,
+      "visual_cortex": 28,
       "vta": 6
     },
     "openneuro": {
@@ -934,30 +1140,33 @@
       "acc": 11,
       "amygdala": 9,
       "auditory_cortex": 3,
-      "brainstem": 2,
+      "brainstem": 3,
+      "ca1": 2,
       "cerebellum": 1,
       "default_mode_network": 1,
+      "dentate_gyrus": 2,
       "dlpfc": 1,
       "entorhinal_cortex": 1,
       "hippocampus": 6,
       "insula": 1,
-      "it": 2,
+      "it": 3,
       "motor_cortex": 10,
       "mpfc": 1,
-      "neocortex": 4,
+      "neocortex": 11,
       "nucleus_accumbens": 1,
       "parietal_cortex": 3,
       "posterior_parietal_cortex": 2,
       "prefrontal_cortex": 2,
       "premotor_cortex": 3,
       "somatosensory_area_2": 1,
-      "somatosensory_cortex": 5,
+      "somatosensory_cortex": 6,
       "striatum": 4,
-      "temporal_cortex": 9,
-      "temporal_lobe": 4,
-      "v1": 1,
+      "temporal_cortex": 11,
+      "temporal_lobe": 5,
+      "thalamus": 2,
+      "v1": 3,
       "ventral_striatum": 1,
-      "visual_cortex": 3
+      "visual_cortex": 5
     },
     "macaque": {
       "dmfc": 1,
@@ -973,15 +1182,15 @@
     },
     "mouse": {
       "acc": 1,
-      "brainstem": 2,
-      "ca1": 5,
-      "ca3": 1,
+      "brainstem": 3,
+      "ca1": 9,
+      "ca3": 2,
       "cerebellum": 3,
-      "dentate_gyrus": 1,
+      "dentate_gyrus": 3,
       "dorsal_striatum": 1,
       "dorsolateral_striatum": 1,
       "entorhinal_cortex": 1,
-      "hippocampus": 9,
+      "hippocampus": 11,
       "hypothalamus": 2,
       "inferior_colliculus": 1,
       "it": 7,
@@ -989,45 +1198,45 @@
       "medial_entorhinal_cortex": 1,
       "motor_cortex": 13,
       "mpfc": 2,
-      "neocortex": 7,
+      "neocortex": 17,
       "ofc": 1,
       "olfactory_bulb": 2,
       "parietal_cortex": 1,
       "piriform_cortex": 2,
       "posterior_parietal_cortex": 2,
       "prefrontal_cortex": 4,
-      "premotor_cortex": 3,
+      "premotor_cortex": 6,
       "retina": 2,
       "retrosplenial_cortex": 2,
-      "somatosensory_cortex": 5,
+      "somatosensory_cortex": 6,
       "spinal_cord": 5,
       "striatum": 3,
       "subiculum": 1,
       "superior_colliculus": 3,
-      "thalamus": 7,
-      "v1": 12,
+      "thalamus": 9,
+      "v1": 15,
       "v2": 1,
       "v4": 1,
-      "visual_cortex": 19,
+      "visual_cortex": 22,
       "vta": 3
     },
     "rat": {
       "amygdala": 1,
       "basolateral_amygdala": 1,
       "brainstem": 1,
-      "ca1": 5,
+      "ca1": 6,
       "entorhinal_cortex": 1,
       "globus_pallidus": 1,
       "hippocampus": 8,
       "hypothalamus": 2,
-      "it": 1,
+      "it": 2,
       "medial_entorhinal_cortex": 1,
       "mpfc": 4,
-      "neocortex": 1,
+      "neocortex": 2,
       "parietal_cortex": 1,
       "prefrontal_cortex": 6,
       "septum": 2,
-      "somatosensory_cortex": 4,
+      "somatosensory_cortex": 5,
       "striatum": 1,
       "ventral_striatum": 1
     },
@@ -1053,6 +1262,7 @@
       "dataset:dandi:000024"
     ],
     "cortex": [
+      "dataset:dandi:000004",
       "dataset:dandi:000005",
       "dataset:dandi:000006",
       "dataset:dandi:000007",
@@ -1064,6 +1274,7 @@
       "dataset:dandi:000016",
       "dataset:dandi:000019",
       "dataset:dandi:000020",
+      "dataset:dandi:000021",
       "dataset:dandi:000023",
       "dataset:dandi:000026",
       "dataset:dandi:000028",
@@ -1071,6 +1282,7 @@
       "dataset:dandi:000036",
       "dataset:dandi:000037",
       "dataset:dandi:000039",
+      "dataset:dandi:000040",
       "dataset:dandi:000041",
       "dataset:dandi:000049",
       "dataset:dandi:000050",
@@ -1095,6 +1307,7 @@
       "dataset:dandi:000166",
       "dataset:dandi:000167",
       "dataset:dandi:000168",
+      "dataset:dandi:000169",
       "dataset:dandi:000172",
       "dataset:dandi:000173",
       "dataset:dandi:000206",
@@ -1149,6 +1362,7 @@
       "dataset:dandi:000563",
       "dataset:dandi:000574",
       "dataset:dandi:000575",
+      "dataset:dandi:000576",
       "dataset:dandi:000579",
       "dataset:dandi:000582",
       "dataset:dandi:000617",
@@ -1206,6 +1420,14 @@
       "dataset:openneuro:ds000208",
       "dataset:openneuro:ds001928"
     ],
+    "lateral_septum": [
+      "dataset:dandi:000213",
+      "dataset:dandi:000218",
+      "dataset:dandi:000233"
+    ],
+    "medial_septum": [
+      "dataset:dandi:000059"
+    ],
     "medial_temporal_lobe": [
       "dataset:dandi:000207",
       "dataset:dandi:000469",
@@ -1240,19 +1462,39 @@
       "dataset:spark:SPARK-MULTI-001",
       "dataset:spark:SPARK-MULTI-002"
     ],
-    "ventral_tegmental_area": [
-      "dataset:dandi:000221",
-      "dataset:dandi:000236",
-      "dataset:dandi:000238",
-      "dataset:dandi:000301",
-      "dataset:dandi:000462",
-      "dataset:dandi:000530"
+    "primary_motor_cortex": [
+      "dataset:dandi:000070",
+      "dataset:dandi:000125",
+      "dataset:dandi:000128",
+      "dataset:dandi:000129",
+      "dataset:dandi:000138",
+      "dataset:dandi:000139",
+      "dataset:dandi:000140",
+      "dataset:dandi:000364",
+      "dataset:dandi:000404",
+      "dataset:dandi:000491"
+    ],
+    "primary_somatosensory_cortex": [
+      "dataset:dandi:000173",
+      "dataset:dandi:000232",
+      "dataset:dandi:000239",
+      "dataset:dandi:000339",
+      "dataset:dandi:000401",
+      "dataset:dandi:000463",
+      "dataset:dandi:000465",
+      "dataset:dandi:000554"
+    ],
+    "supplementary_motor_area": [
+      "dataset:dandi:000469"
+    ],
+    "ventral_posterolateral_thalamus": [
+      "dataset:dandi:000005"
+    ],
+    "ventral_posteromedial_thalamus": [
+      "dataset:dandi:000005"
     ],
     "visual_cortex": [
       "dataset:dandi:000210"
-    ],
-    "vpm": [
-      "dataset:dandi:000005"
     ],
     "whole_brain": [
       "dataset:dandi:000350",
@@ -1265,6 +1507,1382 @@
       "dataset:openneuro:ds002168"
     ]
   },
+  "frontend_regions": [
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000003",
+        "dataset:dandi:000044",
+        "dataset:dandi:000054"
+      ],
+      "label": "Hippocampus",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "emg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "pose_tracking"
+      ],
+      "region_id": "hippocampus",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "hippocampal_formation",
+      "verified_record_count": 34
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000006",
+        "dataset:dandi:000007",
+        "dataset:dandi:000008"
+      ],
+      "label": "Motor cortex",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "ecog",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "patch_clamp",
+        "patch_seq",
+        "pose_tracking",
+        "single_cell_rnaseq"
+      ],
+      "region_id": "motor_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 33
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000005",
+        "dataset:dandi:000008",
+        "dataset:dandi:000016"
+      ],
+      "label": "neocortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "patch_seq",
+        "pose_tracking",
+        "single_cell_rnaseq"
+      ],
+      "region_id": "neocortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 32
+    },
+    {
+      "candidate_record_count": 1,
+      "example_records": [
+        "dataset:dandi:000020",
+        "dataset:dandi:000021",
+        "dataset:dandi:000036"
+      ],
+      "label": "Visual cortex",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "eye_tracking",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "patch_seq"
+      ],
+      "region_id": "visual_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 32
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000469",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds000007"
+      ],
+      "label": "Anterior cingulate cortex",
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri"
+      ],
+      "region_id": "acc",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 26
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000004",
+        "dataset:dandi:000207",
+        "dataset:dandi:000249"
+      ],
+      "label": "Temporal cortex",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "meg"
+      ],
+      "region_id": "temporal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "cortical",
+      "verified_record_count": 21
+    },
+    {
+      "candidate_record_count": 10,
+      "example_records": [
+        "dataset:dandi:000041",
+        "dataset:dandi:000065",
+        "dataset:dandi:000067"
+      ],
+      "label": "Prefrontal cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "eye_tracking",
+        "fmri",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "prefrontal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse",
+        "rat"
+      ],
+      "system": "cortical",
+      "verified_record_count": 19
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236"
+      ],
+      "label": "Striatum",
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fiber_photometry",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "region_id": "striatum",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 19
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000022",
+        "dataset:dandi:000036",
+        "dataset:dandi:000037"
+      ],
+      "label": "Primary visual cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels",
+        "patch_clamp"
+      ],
+      "region_id": "v1",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 18
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000022",
+        "dataset:dandi:000044"
+      ],
+      "label": "Hippocampal CA1",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "emg",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "ca1",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "hippocampal_formation",
+      "verified_record_count": 17
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000010",
+        "dataset:dandi:000036",
+        "dataset:dandi:000041"
+      ],
+      "label": "it",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels",
+        "patch_clamp"
+      ],
+      "region_id": "it",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "drosophila",
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 17
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000006",
+        "dataset:dandi:000007",
+        "dataset:dandi:000010"
+      ],
+      "label": "Premotor cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "pose_tracking"
+      ],
+      "region_id": "premotor_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 17
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000005",
+        "dataset:dandi:000013",
+        "dataset:dandi:000127"
+      ],
+      "label": "Somatosensory cortex",
+      "modalities": [
+        "behavioral",
+        "ecog",
+        "extracellular_ephys",
+        "lfp",
+        "pose_tracking"
+      ],
+      "region_id": "somatosensory_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque",
+        "mouse",
+        "rat"
+      ],
+      "system": "cortical",
+      "verified_record_count": 14
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000061",
+        "dataset:dandi:000113",
+        "dataset:dandi:000207"
+      ],
+      "label": "Amygdala",
+      "modalities": [
+        "behavior_video",
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "meg"
+      ],
+      "region_id": "amygdala",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "rat"
+      ],
+      "system": "amygdala",
+      "verified_record_count": 12
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000005",
+        "dataset:dandi:000007",
+        "dataset:dandi:000009"
+      ],
+      "label": "Thalamus",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "region_id": "thalamus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "thalamus",
+      "verified_record_count": 11
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000218",
+        "dataset:dandi:000243"
+      ],
+      "label": "Brainstem",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "region_id": "brainstem",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ],
+      "system": "brainstem",
+      "verified_record_count": 10
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000067",
+        "dataset:dandi:000447"
+      ],
+      "label": "Medial prefrontal cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri",
+        "lfp"
+      ],
+      "region_id": "mpfc",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "cortical",
+      "verified_record_count": 10
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:openneuro:ds000007",
+        "dataset:openneuro:ds000008",
+        "dataset:openneuro:ds000119"
+      ],
+      "label": "Dorsolateral prefrontal cortex",
+      "modalities": [
+        "fmri"
+      ],
+      "region_id": "dlpfc",
+      "sources": [
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "cortical",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000579",
+        "dataset:openneuro:ds001762"
+      ],
+      "label": "Orbitofrontal cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "fmri",
+        "lfp"
+      ],
+      "region_id": "ofc",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000018",
+        "dataset:dandi:000117",
+        "dataset:dandi:000148"
+      ],
+      "label": "Spinal cord",
+      "modalities": [
+        "events",
+        "extracellular_ephys",
+        "fmri",
+        "patch_clamp",
+        "structural_mri"
+      ],
+      "region_id": "spinal_cord",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "spinal_cord",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236"
+      ],
+      "label": "Ventral striatum",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fiber_photometry",
+        "lfp"
+      ],
+      "region_id": "ventral_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "rat",
+        "zebrafish"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 8
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000070",
+        "dataset:dandi:000125",
+        "dataset:dandi:000128"
+      ],
+      "label": "pmd",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp",
+        "pose_tracking"
+      ],
+      "region_id": "pmd",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 7
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000207",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574"
+      ],
+      "label": "temporal_lobe",
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp"
+      ],
+      "region_id": "temporal_lobe",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 7
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000249",
+        "dataset:openneuro:ds000116",
+        "dataset:openneuro:ds001942"
+      ],
+      "label": "Auditory cortex",
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "region_id": "auditory_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "cortical",
+      "verified_record_count": 6
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000065",
+        "dataset:dandi:000235",
+        "dataset:dandi:000236"
+      ],
+      "label": "Nucleus accumbens",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "fiber_photometry",
+        "lfp"
+      ],
+      "region_id": "nucleus_accumbens",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "zebrafish"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 6
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000221",
+        "dataset:dandi:000236",
+        "dataset:dandi:000238"
+      ],
+      "label": "Ventral tegmental area",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys"
+      ],
+      "region_id": "vta",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "zebrafish"
+      ],
+      "system": "brainstem",
+      "verified_record_count": 6
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000007",
+        "dataset:dandi:000409",
+        "dataset:dandi:000558"
+      ],
+      "label": "Cerebellum",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "region_id": "cerebellum",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "cerebellum",
+      "verified_record_count": 5
+    },
+    {
+      "candidate_record_count": 2,
+      "example_records": [
+        "dataset:dandi:000147",
+        "dataset:dandi:000233",
+        "dataset:dandi:000252"
+      ],
+      "label": "Parietal cortex",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri",
+        "lfp"
+      ],
+      "region_id": "parietal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "cortical",
+      "verified_record_count": 5
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000016",
+        "dataset:dandi:000147",
+        "dataset:dandi:000252"
+      ],
+      "label": "posterior_parietal_cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fmri"
+      ],
+      "region_id": "posterior_parietal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 5
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000218",
+        "dataset:dandi:000233",
+        "dataset:dandi:000409"
+      ],
+      "label": "Hypothalamus",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "region_id": "hypothalamus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "rat"
+      ],
+      "system": "hypothalamus",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:openneuro:ds000133",
+        "dataset:openneuro:ds000140",
+        "dataset:openneuro:ds000208"
+      ],
+      "label": "insula",
+      "modalities": [
+        "fmri"
+      ],
+      "region_id": "insula",
+      "sources": [
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000059",
+        "dataset:dandi:000213",
+        "dataset:dandi:000218"
+      ],
+      "label": "septum",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "region_id": "septum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000301",
+        "dataset:dandi:000530",
+        "dataset:dandi:000563"
+      ],
+      "label": "Superior colliculus",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "superior_colliculus",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "brainstem",
+      "verified_record_count": 4
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000165",
+        "dataset:dandi:000213",
+        "dataset:dandi:000568"
+      ],
+      "label": "Hippocampal CA3",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "region_id": "ca3",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "hippocampal_formation",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000022",
+        "dataset:dandi:000165"
+      ],
+      "label": "Dentate gyrus",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "dentate_gyrus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "hippocampal_formation",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000053",
+        "dataset:dandi:000574",
+        "dataset:dandi:000582"
+      ],
+      "label": "Entorhinal cortex",
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "eye_tracking",
+        "ieeg",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "entorhinal_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "cortical",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000467",
+        "dataset:dandi:000555",
+        "dataset:dandi:000785"
+      ],
+      "label": "Olfactory bulb",
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "region_id": "olfactory_bulb",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "olfactory",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000483",
+        "dataset:dandi:000488",
+        "dataset:dandi:000579"
+      ],
+      "label": "Retrosplenial cortex",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging"
+      ],
+      "region_id": "retrosplenial_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 3
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000061",
+        "dataset:dandi:000113"
+      ],
+      "label": "Basolateral amygdala",
+      "modalities": [
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "region_id": "basolateral_amygdala",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ],
+      "system": "amygdala",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:openneuro:ds001242",
+        "dataset:openneuro:ds002011"
+      ],
+      "label": "Locus coeruleus",
+      "modalities": [
+        "fmri"
+      ],
+      "region_id": "locus_coeruleus",
+      "sources": [
+        "openneuro"
+      ],
+      "species": [],
+      "system": "brainstem",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000053",
+        "dataset:dandi:000582"
+      ],
+      "label": "medial_entorhinal_cortex",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "eye_tracking",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "medial_entorhinal_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse",
+        "rat"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000167",
+        "dataset:dandi:000785"
+      ],
+      "label": "Piriform cortex",
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "region_id": "piriform_cortex",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000563",
+        "dataset:dandi:000617"
+      ],
+      "label": "Retina",
+      "modalities": [
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "retina",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "visual_periphery",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000347",
+        "dataset:dandi:000617"
+      ],
+      "label": "Visual area V2",
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "region_id": "v2",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 2
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:spark:SPARK-FMRI-004"
+      ],
+      "label": "default_mode_network",
+      "modalities": [
+        "fmri"
+      ],
+      "region_id": "default_mode_network",
+      "sources": [
+        "spark"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000130"
+      ],
+      "label": "dmfc",
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "region_id": "dmfc",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "macaque"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000559"
+      ],
+      "label": "Dorsal striatum",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "pose_tracking"
+      ],
+      "region_id": "dorsal_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000559"
+      ],
+      "label": "Dorsolateral striatum",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "pose_tracking"
+      ],
+      "region_id": "dorsolateral_striatum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000476"
+      ],
+      "label": "Globus pallidus",
+      "modalities": [],
+      "region_id": "globus_pallidus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "rat"
+      ],
+      "system": "basal_ganglia",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000248"
+      ],
+      "label": "Inferior colliculus",
+      "modalities": [
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "region_id": "inferior_colliculus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "brainstem",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000563"
+      ],
+      "label": "Lateral geniculate nucleus",
+      "modalities": [
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "region_id": "lateral_geniculate_nucleus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "thalamus",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000127"
+      ],
+      "label": "somatosensory_area_2",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "region_id": "somatosensory_area_2",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "macaque"
+      ],
+      "system": "unassigned",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000056"
+      ],
+      "label": "Subiculum",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "region_id": "subiculum",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "hippocampal_formation",
+      "verified_record_count": 1
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000617"
+      ],
+      "label": "Visual area V4",
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "region_id": "v4",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "cortical",
+      "verified_record_count": 1
+    }
+  ],
   "missing_region_records": [
     {
       "candidate_regions": [
@@ -1281,19 +2899,6 @@
         "rat"
       ],
       "title": "32-CH Local Field Potential Data During Probabilistic Reversal Learning Task"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "extracellular_ephys"
-      ],
-      "record_id": "dataset:dandi:000004",
-      "source": "dandi",
-      "source_id": "000004",
-      "species": [
-        "human"
-      ],
-      "title": "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task"
     },
     {
       "candidate_regions": [],
@@ -1324,20 +2929,6 @@
     },
     {
       "candidate_regions": [],
-      "modalities": [
-        "lfp",
-        "neuropixels"
-      ],
-      "record_id": "dataset:dandi:001079",
-      "source": "dandi",
-      "source_id": "001079",
-      "species": [
-        "mouse"
-      ],
-      "title": "Sharp Wave Ripples in Publicly Available Neuropixels Datasets"
-    },
-    {
-      "candidate_regions": [],
       "modalities": [],
       "record_id": "dataset:dandi:000012",
       "source": "dandi",
@@ -1355,40 +2946,6 @@
         "mouse"
       ],
       "title": "Distributed coding of choice, action and engagement across the mouse brain"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "calcium_imaging",
-        "extracellular_ephys",
-        "lfp",
-        "neuropixels"
-      ],
-      "record_id": "dataset:dandi:000021",
-      "source": "dandi",
-      "source_id": "000021",
-      "species": [
-        "mouse",
-        "human"
-      ],
-      "title": "Allen Institute - Visual Coding - Neuropixels (Brain Observatory 1.1 Stimulus Set)"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "calcium_imaging",
-        "extracellular_ephys",
-        "lfp",
-        "neuropixels"
-      ],
-      "record_id": "dataset:dandi:000022",
-      "source": "dandi",
-      "source_id": "000022",
-      "species": [
-        "mouse",
-        "human"
-      ],
-      "title": "Allen Institute - Visual Coding - Neuropixels (Functional Connectivity Stimulus Set)"
     },
     {
       "candidate_regions": [
@@ -1504,19 +3061,6 @@
       "source_id": "000038",
       "species": [],
       "title": "Testytest"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "neuropixels"
-      ],
-      "record_id": "dataset:dandi:000040",
-      "source": "dandi",
-      "source_id": "000040",
-      "species": [
-        "mouse"
-      ],
-      "title": "Neuropixels recordings in mouse visual system"
     },
     {
       "candidate_regions": [],
@@ -2025,19 +3569,6 @@
     },
     {
       "candidate_regions": [],
-      "modalities": [
-        "neuropixels"
-      ],
-      "record_id": "dataset:dandi:000169",
-      "source": "dandi",
-      "source_id": "000169",
-      "species": [
-        "mouse"
-      ],
-      "title": "Milti-probe Neuropixels recordings in mouse visual system (additional data)"
-    },
-    {
-      "candidate_regions": [],
       "modalities": [],
       "record_id": "dataset:dandi:000170",
       "source": "dandi",
@@ -2055,21 +3586,6 @@
       "title": "Test 1"
     },
     {
-      "candidate_regions": [
-        "cortex"
-      ],
-      "modalities": [
-        "patch_clamp"
-      ],
-      "record_id": "dataset:dandi:000172",
-      "source": "dandi",
-      "source_id": "000172",
-      "species": [
-        "mouse"
-      ],
-      "title": "UHN whole-cell excitability recordings from mouse cortical neurons"
-    },
-    {
       "candidate_regions": [],
       "modalities": [],
       "record_id": "dataset:dandi:000208",
@@ -2079,19 +3595,6 @@
         "mouse"
       ],
       "title": "UHN_mouse_L5_patchclamp"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "patch_seq"
-      ],
-      "record_id": "dataset:dandi:000209",
-      "source": "dandi",
-      "source_id": "000209",
-      "species": [
-        "human"
-      ],
-      "title": "20211223_AIBS_Patchseq_human"
     },
     {
       "candidate_regions": [
@@ -2106,21 +3609,6 @@
         "mouse"
       ],
       "title": "Visual cortical activity in mice performing naturalistic virtual foraging task"
-    },
-    {
-      "candidate_regions": [
-        "cortex"
-      ],
-      "modalities": [
-        "patch_clamp"
-      ],
-      "record_id": "dataset:dandi:000211",
-      "source": "dandi",
-      "source_id": "000211",
-      "species": [
-        "human"
-      ],
-      "title": "UHN whole-cell excitability recordings from human cortical neurons"
     },
     {
       "candidate_regions": [],
@@ -2176,15 +3664,6 @@
     {
       "candidate_regions": [],
       "modalities": [],
-      "record_id": "dataset:dandi:000222",
-      "source": "dandi",
-      "source_id": "000222",
-      "species": [],
-      "title": "O'Hare et al 2022"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [],
       "record_id": "dataset:dandi:000225",
       "source": "dandi",
       "source_id": "000225",
@@ -2215,21 +3694,6 @@
         "drosophila"
       ],
       "title": "Electrophysiological recordings in protein hunger neurons of Drosophila Melanogaster"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "extracellular_ephys",
-        "patch_clamp",
-        "patch_seq"
-      ],
-      "record_id": "dataset:dandi:000228",
-      "source": "dandi",
-      "source_id": "000228",
-      "species": [
-        "human"
-      ],
-      "title": "20220330_AIBS_Patchseq_human"
     },
     {
       "candidate_regions": [],
@@ -2333,38 +3797,6 @@
       "source_id": "000290",
       "species": [],
       "title": "Diaz-Torga_Sfig1"
-    },
-    {
-      "candidate_regions": [
-        "cortex"
-      ],
-      "modalities": [
-        "extracellular_ephys",
-        "patch_clamp"
-      ],
-      "record_id": "dataset:dandi:000292",
-      "source": "dandi",
-      "source_id": "000292",
-      "species": [
-        "mouse"
-      ],
-      "title": "UHN whole-cell patch-clamp excitability recordings from mouse cortical neurons"
-    },
-    {
-      "candidate_regions": [
-        "cortex"
-      ],
-      "modalities": [
-        "extracellular_ephys",
-        "patch_clamp"
-      ],
-      "record_id": "dataset:dandi:000293",
-      "source": "dandi",
-      "source_id": "000293",
-      "species": [
-        "human"
-      ],
-      "title": "UHN whole-cell patch-clamp excitability recordings from human cortical neurons"
     },
     {
       "candidate_regions": [
@@ -2485,22 +3917,6 @@
       "title": "HMV-test"
     },
     {
-      "candidate_regions": [
-        "cortex"
-      ],
-      "modalities": [
-        "extracellular_ephys"
-      ],
-      "record_id": "dataset:dandi:000398",
-      "source": "dandi",
-      "source_id": "000398",
-      "species": [
-        "mouse",
-        "rat"
-      ],
-      "title": "Scalable Thousand Channel Penetrating Microneedle Arrays on Flex for Multimodal and Large Area Coverage BrainMachine Interfaces"
-    },
-    {
       "candidate_regions": [],
       "modalities": [
         "extracellular_ephys"
@@ -2570,20 +3986,6 @@
     {
       "candidate_regions": [],
       "modalities": [
-        "patch_clamp"
-      ],
-      "record_id": "dataset:dandi:000456",
-      "source": "dandi",
-      "source_id": "000456",
-      "species": [
-        "rat",
-        "human"
-      ],
-      "title": "Accelerated signal propagation speed in human neocortical microcircuits"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
         "calcium_imaging"
       ],
       "record_id": "dataset:dandi:000461",
@@ -2600,17 +4002,6 @@
       "source_id": "000466",
       "species": [],
       "title": "Optical Recording Exploratory Data 1"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [
-        "calcium_imaging"
-      ],
-      "record_id": "dataset:dandi:000467",
-      "source": "dandi",
-      "source_id": "000467",
-      "species": [],
-      "title": "Sparse and stereotyped encoding implicates a core glomerulus for ant alarm behavior"
     },
     {
       "candidate_regions": [],
@@ -2707,17 +4098,6 @@
       "source_id": "000490",
       "species": [],
       "title": "test set"
-    },
-    {
-      "candidate_regions": [],
-      "modalities": [],
-      "record_id": "dataset:dandi:000492",
-      "source": "dandi",
-      "source_id": "000492",
-      "species": [
-        "human"
-      ],
-      "title": "Accelerated signal propagation speed in human neocortical microcircuits"
     },
     {
       "candidate_regions": [],
@@ -6020,6 +7400,47 @@
   ],
   "regions": [
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000003",
+        "dataset:dandi:000044",
+        "dataset:dandi:000054",
+        "dataset:dandi:000056",
+        "dataset:dandi:000059",
+        "dataset:dandi:000061",
+        "dataset:dandi:000065",
+        "dataset:dandi:000115"
+      ],
+      "label": "Hippocampus",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "emg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "neuropixels",
+        "patch_clamp",
+        "pose_tracking"
+      ],
+      "record_count": 34,
+      "region_id": "hippocampus",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "hippocampal_formation"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000006",
         "dataset:dandi:000007",
@@ -6030,6 +7451,7 @@
         "dataset:dandi:000019",
         "dataset:dandi:000026"
       ],
+      "label": "Motor cortex",
       "modalities": [
         "audio",
         "behavioral",
@@ -6054,56 +7476,59 @@
         "human",
         "macaque",
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
-        "dataset:dandi:000003",
-        "dataset:dandi:000044",
-        "dataset:dandi:000054",
-        "dataset:dandi:000056",
-        "dataset:dandi:000059",
-        "dataset:dandi:000061",
-        "dataset:dandi:000065",
-        "dataset:dandi:000115"
+        "dataset:dandi:000005",
+        "dataset:dandi:000008",
+        "dataset:dandi:000016",
+        "dataset:dandi:000023",
+        "dataset:dandi:000035",
+        "dataset:dandi:000037",
+        "dataset:dandi:000041",
+        "dataset:dandi:000109"
       ],
+      "label": "neocortex",
       "modalities": [
-        "audio",
         "behavioral",
         "calcium_imaging",
-        "eeg",
-        "emg",
         "extracellular_ephys",
-        "fmri",
-        "ieeg",
+        "eye_tracking",
         "lfp",
         "neuropixels",
         "patch_clamp",
-        "pose_tracking"
+        "patch_seq",
+        "pose_tracking",
+        "single_cell_rnaseq"
       ],
-      "record_count": 31,
-      "region_id": "hippocampus",
+      "record_count": 32,
+      "region_id": "neocortex",
       "sources": [
-        "dandi",
-        "openneuro"
+        "dandi"
       ],
       "species": [
         "human",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 1,
       "example_records": [
         "dataset:dandi:000020",
+        "dataset:dandi:000021",
         "dataset:dandi:000036",
         "dataset:dandi:000037",
         "dataset:dandi:000039",
+        "dataset:dandi:000040",
         "dataset:dandi:000049",
-        "dataset:dandi:000050",
-        "dataset:dandi:000166",
-        "dataset:dandi:000168"
+        "dataset:dandi:000050"
       ],
+      "label": "Visual cortex",
       "modalities": [
         "audio",
         "behavioral",
@@ -6117,7 +7542,7 @@
         "patch_clamp",
         "patch_seq"
       ],
-      "record_count": 29,
+      "record_count": 32,
       "region_id": "visual_cortex",
       "sources": [
         "dandi",
@@ -6127,9 +7552,11 @@
         "human",
         "macaque",
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000469",
         "dataset:dandi:000579",
@@ -6140,6 +7567,7 @@
         "dataset:openneuro:ds000119",
         "dataset:openneuro:ds000120"
       ],
+      "label": "Anterior cingulate cortex",
       "modalities": [
         "behavior_video",
         "behavioral",
@@ -6158,9 +7586,45 @@
       "species": [
         "human",
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000004",
+        "dataset:dandi:000207",
+        "dataset:dandi:000249",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574",
+        "dataset:dandi:000575",
+        "dataset:dandi:000576",
+        "dataset:openneuro:ds000105"
+      ],
+      "label": "Temporal cortex",
+      "modalities": [
+        "audio",
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp",
+        "meg"
+      ],
+      "record_count": 21,
+      "region_id": "temporal_cortex",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "cortical"
+    },
+    {
+      "candidate_record_count": 10,
       "example_records": [
         "dataset:dandi:000041",
         "dataset:dandi:000065",
@@ -6171,6 +7635,7 @@
         "dataset:dandi:000457",
         "dataset:dandi:000469"
       ],
+      "label": "Prefrontal cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6191,9 +7656,11 @@
         "macaque",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000065",
         "dataset:dandi:000235",
@@ -6204,6 +7671,7 @@
         "dataset:dandi:000409",
         "dataset:dandi:000476"
       ],
+      "label": "Striatum",
       "modalities": [
         "behavior_video",
         "behavioral",
@@ -6227,40 +7695,78 @@
         "mouse",
         "rat",
         "zebrafish"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
-        "dataset:dandi:000207",
-        "dataset:dandi:000249",
-        "dataset:dandi:000469",
-        "dataset:dandi:000574",
-        "dataset:dandi:000575",
-        "dataset:openneuro:ds000105",
-        "dataset:openneuro:ds000116",
-        "dataset:openneuro:ds000117"
+        "dataset:dandi:000022",
+        "dataset:dandi:000036",
+        "dataset:dandi:000037",
+        "dataset:dandi:000049",
+        "dataset:dandi:000166",
+        "dataset:dandi:000168",
+        "dataset:dandi:000206",
+        "dataset:dandi:000253"
       ],
+      "label": "Primary visual cortex",
       "modalities": [
-        "audio",
         "behavioral",
-        "eeg",
+        "calcium_imaging",
         "extracellular_ephys",
-        "fmri",
-        "ieeg",
+        "eye_tracking",
         "lfp",
-        "meg"
+        "neuropixels",
+        "patch_clamp"
       ],
-      "record_count": 19,
-      "region_id": "temporal_cortex",
+      "record_count": 18,
+      "region_id": "v1",
       "sources": [
-        "dandi",
-        "openneuro"
+        "dandi"
       ],
       "species": [
-        "human"
-      ]
+        "human",
+        "macaque",
+        "mouse"
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000022",
+        "dataset:dandi:000044",
+        "dataset:dandi:000054",
+        "dataset:dandi:000061",
+        "dataset:dandi:000115",
+        "dataset:dandi:000165",
+        "dataset:dandi:000213"
+      ],
+      "label": "Hippocampal CA1",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "emg",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 17,
+      "region_id": "ca1",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat"
+      ],
+      "system": "hippocampal_formation"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000010",
         "dataset:dandi:000036",
@@ -6271,6 +7777,7 @@
         "dataset:dandi:000294",
         "dataset:dandi:000296"
       ],
+      "label": "it",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6280,7 +7787,7 @@
         "neuropixels",
         "patch_clamp"
       ],
-      "record_count": 16,
+      "record_count": 17,
       "region_id": "it",
       "sources": [
         "dandi"
@@ -6291,81 +7798,22 @@
         "mouse",
         "rat",
         "zebrafish"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
-        "dataset:dandi:000016",
-        "dataset:dandi:000023",
-        "dataset:dandi:000041",
-        "dataset:dandi:000109",
-        "dataset:dandi:000142",
-        "dataset:dandi:000166",
-        "dataset:dandi:000223",
-        "dataset:dandi:000244"
-      ],
-      "modalities": [
-        "behavioral",
-        "calcium_imaging",
-        "extracellular_ephys",
-        "lfp",
-        "neuropixels",
-        "patch_clamp",
-        "patch_seq",
-        "pose_tracking"
-      ],
-      "record_count": 15,
-      "region_id": "neocortex",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "human",
-        "mouse",
-        "rat"
-      ]
-    },
-    {
-      "example_records": [
-        "dataset:dandi:000037",
-        "dataset:dandi:000166",
-        "dataset:dandi:000168",
-        "dataset:dandi:000206",
-        "dataset:dandi:000253",
-        "dataset:dandi:000336",
-        "dataset:dandi:000347",
-        "dataset:dandi:000348"
-      ],
-      "modalities": [
-        "behavioral",
-        "calcium_imaging",
-        "extracellular_ephys",
-        "eye_tracking",
-        "lfp",
-        "neuropixels"
-      ],
-      "record_count": 15,
-      "region_id": "v1",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "human",
-        "macaque",
-        "mouse"
-      ]
-    },
-    {
-      "example_records": [
+        "dataset:dandi:000006",
+        "dataset:dandi:000007",
+        "dataset:dandi:000010",
         "dataset:dandi:000011",
         "dataset:dandi:000070",
         "dataset:dandi:000121",
         "dataset:dandi:000125",
-        "dataset:dandi:000128",
-        "dataset:dandi:000138",
-        "dataset:dandi:000139",
-        "dataset:dandi:000140"
+        "dataset:dandi:000128"
       ],
+      "label": "Premotor cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6375,7 +7823,7 @@
         "lfp",
         "pose_tracking"
       ],
-      "record_count": 14,
+      "record_count": 17,
       "region_id": "premotor_cortex",
       "sources": [
         "dandi",
@@ -6385,9 +7833,11 @@
         "human",
         "macaque",
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000005",
         "dataset:dandi:000013",
@@ -6398,6 +7848,7 @@
         "dataset:dandi:000239",
         "dataset:dandi:000339"
       ],
+      "label": "Somatosensory cortex",
       "modalities": [
         "behavioral",
         "ecog",
@@ -6405,7 +7856,7 @@
         "lfp",
         "pose_tracking"
       ],
-      "record_count": 13,
+      "record_count": 14,
       "region_id": "somatosensory_cortex",
       "sources": [
         "dandi"
@@ -6415,9 +7866,11 @@
         "macaque",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000061",
         "dataset:dandi:000113",
@@ -6428,6 +7881,7 @@
         "dataset:openneuro:ds000117",
         "dataset:spark:SPARK-EYE-001"
       ],
+      "label": "Amygdala",
       "modalities": [
         "behavior_video",
         "behavioral",
@@ -6448,37 +7902,81 @@
       "species": [
         "human",
         "rat"
-      ]
+      ],
+      "system": "amygdala"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
-        "dataset:dandi:000044",
-        "dataset:dandi:000054",
-        "dataset:dandi:000115",
-        "dataset:dandi:000165",
-        "dataset:dandi:000213",
-        "dataset:dandi:000219",
-        "dataset:dandi:000410",
-        "dataset:dandi:000447"
+        "dataset:dandi:000005",
+        "dataset:dandi:000007",
+        "dataset:dandi:000009",
+        "dataset:dandi:000010",
+        "dataset:dandi:000021",
+        "dataset:dandi:000022",
+        "dataset:dandi:000056",
+        "dataset:dandi:000221"
       ],
+      "label": "Thalamus",
       "modalities": [
         "behavioral",
         "calcium_imaging",
-        "emg",
         "extracellular_ephys",
-        "lfp"
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
       ],
-      "record_count": 12,
-      "region_id": "ca1",
+      "record_count": 11,
+      "region_id": "thalamus",
       "sources": [
         "dandi"
       ],
       "species": [
-        "mouse",
-        "rat"
-      ]
+        "human",
+        "mouse"
+      ],
+      "system": "thalamus"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000218",
+        "dataset:dandi:000243",
+        "dataset:dandi:000350",
+        "dataset:dandi:000363",
+        "dataset:dandi:000409",
+        "dataset:dandi:000478",
+        "dataset:dandi:000479"
+      ],
+      "label": "Brainstem",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "lfp",
+        "neuropixels",
+        "pose_tracking"
+      ],
+      "record_count": 10,
+      "region_id": "brainstem",
+      "sources": [
+        "dandi",
+        "openneuro",
+        "spark"
+      ],
+      "species": [
+        "human",
+        "mouse",
+        "rat",
+        "zebrafish"
+      ],
+      "system": "brainstem"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000065",
         "dataset:dandi:000067",
@@ -6489,6 +7987,7 @@
         "dataset:dandi:000785",
         "dataset:dandi:001371"
       ],
+      "label": "Medial prefrontal cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6506,72 +8005,11 @@
         "human",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "cortical"
     },
     {
-      "example_records": [
-        "dataset:dandi:000218",
-        "dataset:dandi:000243",
-        "dataset:dandi:000350",
-        "dataset:dandi:000363",
-        "dataset:dandi:000409",
-        "dataset:dandi:000478",
-        "dataset:dandi:000479",
-        "dataset:openneuro:ds002011"
-      ],
-      "modalities": [
-        "behavioral",
-        "calcium_imaging",
-        "eeg",
-        "extracellular_ephys",
-        "fmri",
-        "lfp",
-        "neuropixels",
-        "pose_tracking"
-      ],
-      "record_count": 9,
-      "region_id": "brainstem",
-      "sources": [
-        "dandi",
-        "openneuro",
-        "spark"
-      ],
-      "species": [
-        "human",
-        "mouse",
-        "rat",
-        "zebrafish"
-      ]
-    },
-    {
-      "example_records": [
-        "dataset:dandi:000005",
-        "dataset:dandi:000007",
-        "dataset:dandi:000009",
-        "dataset:dandi:000010",
-        "dataset:dandi:000056",
-        "dataset:dandi:000221",
-        "dataset:dandi:000409",
-        "dataset:dandi:000444"
-      ],
-      "modalities": [
-        "behavioral",
-        "calcium_imaging",
-        "extracellular_ephys",
-        "lfp",
-        "neuropixels",
-        "pose_tracking"
-      ],
-      "record_count": 9,
-      "region_id": "thalamus",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "mouse"
-      ]
-    },
-    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:openneuro:ds000007",
         "dataset:openneuro:ds000008",
@@ -6582,6 +8020,7 @@
         "dataset:openneuro:ds001762",
         "dataset:openneuro:ds002316"
       ],
+      "label": "Dorsolateral prefrontal cortex",
       "modalities": [
         "fmri"
       ],
@@ -6592,9 +8031,11 @@
       ],
       "species": [
         "human"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000065",
         "dataset:dandi:000579",
@@ -6605,6 +8046,7 @@
         "dataset:openneuro:ds001921",
         "dataset:openneuro:ds001923"
       ],
+      "label": "Orbitofrontal cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6619,9 +8061,11 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000018",
         "dataset:dandi:000117",
@@ -6632,6 +8076,7 @@
         "dataset:openneuro:ds000138",
         "dataset:openneuro:ds001839"
       ],
+      "label": "Spinal cord",
       "modalities": [
         "events",
         "extracellular_ephys",
@@ -6647,9 +8092,11 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "spinal_cord"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000065",
         "dataset:dandi:000235",
@@ -6660,6 +8107,7 @@
         "dataset:dandi:000476",
         "dataset:dandi:000546"
       ],
+      "label": "Ventral striatum",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6676,9 +8124,11 @@
         "human",
         "rat",
         "zebrafish"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000070",
         "dataset:dandi:000125",
@@ -6688,6 +8138,7 @@
         "dataset:dandi:000140",
         "dataset:dandi:000404"
       ],
+      "label": "pmd",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -6701,9 +8152,42 @@
       ],
       "species": [
         "macaque"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000207",
+        "dataset:dandi:000469",
+        "dataset:dandi:000574",
+        "dataset:dandi:000575",
+        "dataset:dandi:000576",
+        "dataset:openneuro:ds001439",
+        "dataset:openneuro:ds001722"
+      ],
+      "label": "temporal_lobe",
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys",
+        "fmri",
+        "ieeg",
+        "lfp"
+      ],
+      "record_count": 7,
+      "region_id": "temporal_lobe",
+      "sources": [
+        "dandi",
+        "openneuro"
+      ],
+      "species": [
+        "human"
+      ],
+      "system": "unassigned"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000249",
         "dataset:openneuro:ds000116",
@@ -6712,6 +8196,7 @@
         "dataset:openneuro:ds002322",
         "dataset:openneuro:ds002382"
       ],
+      "label": "Auditory cortex",
       "modalities": [
         "eeg",
         "fmri"
@@ -6724,9 +8209,11 @@
       ],
       "species": [
         "human"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000065",
         "dataset:dandi:000235",
@@ -6735,6 +8222,7 @@
         "dataset:dandi:000238",
         "dataset:dandi:000351"
       ],
+      "label": "Nucleus accumbens",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6749,36 +8237,11 @@
       "species": [
         "human",
         "zebrafish"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
-      "example_records": [
-        "dataset:dandi:000207",
-        "dataset:dandi:000469",
-        "dataset:dandi:000574",
-        "dataset:dandi:000575",
-        "dataset:openneuro:ds001439",
-        "dataset:openneuro:ds001722"
-      ],
-      "modalities": [
-        "behavioral",
-        "eeg",
-        "extracellular_ephys",
-        "fmri",
-        "ieeg",
-        "lfp"
-      ],
-      "record_count": 6,
-      "region_id": "temporal_lobe",
-      "sources": [
-        "dandi",
-        "openneuro"
-      ],
-      "species": [
-        "human"
-      ]
-    },
-    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000221",
         "dataset:dandi:000236",
@@ -6787,6 +8250,7 @@
         "dataset:dandi:000462",
         "dataset:dandi:000530"
       ],
+      "label": "Ventral tegmental area",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6800,9 +8264,11 @@
       "species": [
         "mouse",
         "zebrafish"
-      ]
+      ],
+      "system": "brainstem"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000007",
         "dataset:dandi:000409",
@@ -6810,6 +8276,7 @@
         "dataset:dandi:000572",
         "dataset:openneuro:ds001971"
       ],
+      "label": "Cerebellum",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6827,9 +8294,11 @@
       "species": [
         "human",
         "mouse"
-      ]
+      ],
+      "system": "cerebellum"
     },
     {
+      "candidate_record_count": 2,
       "example_records": [
         "dataset:dandi:000147",
         "dataset:dandi:000233",
@@ -6837,6 +8306,7 @@
         "dataset:dandi:000579",
         "dataset:openneuro:ds001345"
       ],
+      "label": "Parietal cortex",
       "modalities": [
         "audio",
         "behavioral",
@@ -6855,9 +8325,11 @@
         "human",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000016",
         "dataset:dandi:000147",
@@ -6865,6 +8337,7 @@
         "dataset:dandi:000579",
         "dataset:openneuro:ds000109"
       ],
+      "label": "posterior_parietal_cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -6880,15 +8353,18 @@
       "species": [
         "human",
         "mouse"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000218",
         "dataset:dandi:000233",
         "dataset:dandi:000409",
         "dataset:dandi:000473"
       ],
+      "label": "Hypothalamus",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -6905,15 +8381,18 @@
       "species": [
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "hypothalamus"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:openneuro:ds000133",
         "dataset:openneuro:ds000140",
         "dataset:openneuro:ds000208",
         "dataset:openneuro:ds001928"
       ],
+      "label": "insula",
       "modalities": [
         "fmri"
       ],
@@ -6924,15 +8403,18 @@
       ],
       "species": [
         "human"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000059",
         "dataset:dandi:000213",
         "dataset:dandi:000218",
         "dataset:dandi:000233"
       ],
+      "label": "septum",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -6945,15 +8427,18 @@
       ],
       "species": [
         "rat"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000301",
         "dataset:dandi:000530",
         "dataset:dandi:000563",
         "dataset:openneuro:ds001780"
       ],
+      "label": "Superior colliculus",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -6969,14 +8454,66 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "brainstem"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000165",
+        "dataset:dandi:000213",
+        "dataset:dandi:000568"
+      ],
+      "label": "Hippocampal CA3",
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp"
+      ],
+      "record_count": 3,
+      "region_id": "ca3",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "hippocampal_formation"
+    },
+    {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000021",
+        "dataset:dandi:000022",
+        "dataset:dandi:000165"
+      ],
+      "label": "Dentate gyrus",
+      "modalities": [
+        "behavioral",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_count": 3,
+      "region_id": "dentate_gyrus",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "human",
+        "mouse"
+      ],
+      "system": "hippocampal_formation"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000053",
         "dataset:dandi:000574",
         "dataset:dandi:000582"
       ],
+      "label": "Entorhinal cortex",
       "modalities": [
         "behavioral",
         "eeg",
@@ -6995,14 +8532,38 @@
         "human",
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
+      "example_records": [
+        "dataset:dandi:000467",
+        "dataset:dandi:000555",
+        "dataset:dandi:000785"
+      ],
+      "label": "Olfactory bulb",
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_count": 3,
+      "region_id": "olfactory_bulb",
+      "sources": [
+        "dandi"
+      ],
+      "species": [
+        "mouse"
+      ],
+      "system": "olfactory"
+    },
+    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000483",
         "dataset:dandi:000488",
         "dataset:dandi:000579"
       ],
+      "label": "Retrosplenial cortex",
       "modalities": [
         "behavioral",
         "calcium_imaging"
@@ -7014,13 +8575,16 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000061",
         "dataset:dandi:000113"
       ],
+      "label": "Basolateral amygdala",
       "modalities": [
         "extracellular_ephys",
         "lfp"
@@ -7032,32 +8596,16 @@
       ],
       "species": [
         "rat"
-      ]
+      ],
+      "system": "amygdala"
     },
     {
-      "example_records": [
-        "dataset:dandi:000165",
-        "dataset:dandi:000213"
-      ],
-      "modalities": [
-        "behavioral",
-        "extracellular_ephys",
-        "lfp"
-      ],
-      "record_count": 2,
-      "region_id": "ca3",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "mouse"
-      ]
-    },
-    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:openneuro:ds001242",
         "dataset:openneuro:ds002011"
       ],
+      "label": "Locus coeruleus",
       "modalities": [
         "fmri"
       ],
@@ -7066,13 +8614,16 @@
       "sources": [
         "openneuro"
       ],
-      "species": []
+      "species": [],
+      "system": "brainstem"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000053",
         "dataset:dandi:000582"
       ],
+      "label": "medial_entorhinal_cortex",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -7088,30 +8639,16 @@
       "species": [
         "mouse",
         "rat"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
-      "example_records": [
-        "dataset:dandi:000555",
-        "dataset:dandi:000785"
-      ],
-      "modalities": [
-        "calcium_imaging"
-      ],
-      "record_count": 2,
-      "region_id": "olfactory_bulb",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "mouse"
-      ]
-    },
-    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000167",
         "dataset:dandi:000785"
       ],
+      "label": "Piriform cortex",
       "modalities": [
         "calcium_imaging"
       ],
@@ -7122,13 +8659,16 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000563",
         "dataset:dandi:000617"
       ],
+      "label": "Retina",
       "modalities": [
         "calcium_imaging",
         "extracellular_ephys",
@@ -7142,13 +8682,16 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "visual_periphery"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000347",
         "dataset:dandi:000617"
       ],
+      "label": "Visual area V2",
       "modalities": [
         "calcium_imaging"
       ],
@@ -7160,12 +8703,15 @@
       "species": [
         "macaque",
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:spark:SPARK-FMRI-004"
       ],
+      "label": "default_mode_network",
       "modalities": [
         "fmri"
       ],
@@ -7176,30 +8722,15 @@
       ],
       "species": [
         "human"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
-      "example_records": [
-        "dataset:dandi:000165"
-      ],
-      "modalities": [
-        "behavioral",
-        "extracellular_ephys",
-        "lfp"
-      ],
-      "record_count": 1,
-      "region_id": "dentate_gyrus",
-      "sources": [
-        "dandi"
-      ],
-      "species": [
-        "mouse"
-      ]
-    },
-    {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000130"
       ],
+      "label": "dmfc",
       "modalities": [
         "extracellular_ephys"
       ],
@@ -7210,12 +8741,15 @@
       ],
       "species": [
         "macaque"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000559"
       ],
+      "label": "Dorsal striatum",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -7228,12 +8762,15 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000559"
       ],
+      "label": "Dorsolateral striatum",
       "modalities": [
         "behavioral",
         "calcium_imaging",
@@ -7246,12 +8783,15 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000476"
       ],
+      "label": "Globus pallidus",
       "modalities": [],
       "record_count": 1,
       "region_id": "globus_pallidus",
@@ -7260,12 +8800,15 @@
       ],
       "species": [
         "rat"
-      ]
+      ],
+      "system": "basal_ganglia"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000248"
       ],
+      "label": "Inferior colliculus",
       "modalities": [
         "extracellular_ephys",
         "lfp"
@@ -7277,12 +8820,15 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "brainstem"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000563"
       ],
+      "label": "Lateral geniculate nucleus",
       "modalities": [
         "extracellular_ephys",
         "lfp",
@@ -7295,12 +8841,15 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "thalamus"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000127"
       ],
+      "label": "somatosensory_area_2",
       "modalities": [
         "behavioral",
         "extracellular_ephys"
@@ -7313,12 +8862,15 @@
       "species": [
         "human",
         "macaque"
-      ]
+      ],
+      "system": "unassigned"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000056"
       ],
+      "label": "Subiculum",
       "modalities": [
         "behavioral",
         "extracellular_ephys",
@@ -7331,12 +8883,15 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "hippocampal_formation"
     },
     {
+      "candidate_record_count": 0,
       "example_records": [
         "dataset:dandi:000617"
       ],
+      "label": "Visual area V4",
       "modalities": [
         "calcium_imaging"
       ],
@@ -7347,18 +8902,125 @@
       ],
       "species": [
         "mouse"
-      ]
+      ],
+      "system": "cortical"
     }
   ],
   "summary": {
-    "atlas_target_regions": 69,
-    "atlas_targets_candidate_only": 11,
-    "atlas_targets_uncovered": 16,
-    "atlas_targets_verified": 42,
+    "atlas_target_regions": 94,
+    "atlas_targets_candidate_only": 16,
+    "atlas_targets_uncovered": 35,
+    "atlas_targets_verified": 43,
     "dataset_records": 625,
-    "records_with_verified_regions": 206,
-    "records_without_verified_regions": 419,
-    "region_coverage": 0.3296,
-    "regionless_records_with_candidate_mentions": 18
+    "records_with_verified_regions": 223,
+    "records_without_verified_regions": 402,
+    "region_coverage": 0.3568,
+    "regionless_records_with_candidate_mentions": 13
+  },
+  "system_totals": {
+    "amygdala": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 3,
+      "uncovered_regions": 1,
+      "verified_records": 14,
+      "verified_regions": 2
+    },
+    "basal_forebrain": {
+      "candidate_only_regions": 3,
+      "candidate_records": 5,
+      "target_regions": 4,
+      "uncovered_regions": 1,
+      "verified_records": 0,
+      "verified_regions": 0
+    },
+    "basal_ganglia": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 15,
+      "uncovered_regions": 9,
+      "verified_records": 36,
+      "verified_regions": 6
+    },
+    "brainstem": {
+      "candidate_only_regions": 3,
+      "candidate_records": 7,
+      "target_regions": 11,
+      "uncovered_regions": 3,
+      "verified_records": 23,
+      "verified_regions": 5
+    },
+    "cerebellum": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 4,
+      "uncovered_regions": 3,
+      "verified_records": 5,
+      "verified_regions": 1
+    },
+    "cortical": {
+      "candidate_only_regions": 6,
+      "candidate_records": 190,
+      "target_regions": 28,
+      "uncovered_regions": 4,
+      "verified_records": 228,
+      "verified_regions": 18
+    },
+    "hippocampal_formation": {
+      "candidate_only_regions": 1,
+      "candidate_records": 6,
+      "target_regions": 7,
+      "uncovered_regions": 1,
+      "verified_records": 58,
+      "verified_regions": 5
+    },
+    "hypothalamus": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 5,
+      "uncovered_regions": 4,
+      "verified_records": 4,
+      "verified_regions": 1
+    },
+    "olfactory": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 1,
+      "uncovered_regions": 0,
+      "verified_records": 3,
+      "verified_regions": 1
+    },
+    "spinal_cord": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 6,
+      "uncovered_regions": 5,
+      "verified_records": 8,
+      "verified_regions": 1
+    },
+    "thalamus": {
+      "candidate_only_regions": 2,
+      "candidate_records": 2,
+      "target_regions": 8,
+      "uncovered_regions": 4,
+      "verified_records": 12,
+      "verified_regions": 2
+    },
+    "visual_periphery": {
+      "candidate_only_regions": 0,
+      "candidate_records": 0,
+      "target_regions": 1,
+      "uncovered_regions": 0,
+      "verified_records": 2,
+      "verified_regions": 1
+    },
+    "whole_brain": {
+      "candidate_only_regions": 1,
+      "candidate_records": 8,
+      "target_regions": 1,
+      "uncovered_regions": 0,
+      "verified_records": 0,
+      "verified_regions": 0
+    }
   }
 }
