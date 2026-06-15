@@ -83,9 +83,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     corpus = [
-        json.loads(l)
-        for l in CORPUS_PATH.read_text().strip().splitlines()
-        if l.strip()
+        json.loads(line)
+        for line in CORPUS_PATH.read_text().strip().splitlines()
+        if line.strip()
     ]
     raw_map = _load_raw_dandisets()
     rich_cache = _load_rich_cache()
@@ -152,9 +152,9 @@ def main(argv: list[str] | None = None) -> int:
     logger.info("Updated %d records → %s", len(enriched_map), CORPUS_PATH)
 
     refreshed_corpus = [
-        json.loads(l)
-        for l in CORPUS_PATH.read_text().strip().splitlines()
-        if l.strip()
+        json.loads(line)
+        for line in CORPUS_PATH.read_text().strip().splitlines()
+        if line.strip()
     ]
     total = len(refreshed_corpus)
     with_region = sum(1 for r in refreshed_corpus if _has_region(r))

@@ -18,19 +18,6 @@
   {
     "candidate_regions": [],
     "modalities": [
-      "extracellular_ephys"
-    ],
-    "record_id": "dataset:dandi:000004",
-    "source": "dandi",
-    "source_id": "000004",
-    "species": [
-      "human"
-    ],
-    "title": "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
       "behavior_video",
       "behavioral",
       "extracellular_ephys",
@@ -57,20 +44,6 @@
   },
   {
     "candidate_regions": [],
-    "modalities": [
-      "lfp",
-      "neuropixels"
-    ],
-    "record_id": "dataset:dandi:001079",
-    "source": "dandi",
-    "source_id": "001079",
-    "species": [
-      "mouse"
-    ],
-    "title": "Sharp Wave Ripples in Publicly Available Neuropixels Datasets"
-  },
-  {
-    "candidate_regions": [],
     "modalities": [],
     "record_id": "dataset:dandi:000012",
     "source": "dandi",
@@ -88,40 +61,6 @@
       "mouse"
     ],
     "title": "Distributed coding of choice, action and engagement across the mouse brain"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "calcium_imaging",
-      "extracellular_ephys",
-      "lfp",
-      "neuropixels"
-    ],
-    "record_id": "dataset:dandi:000021",
-    "source": "dandi",
-    "source_id": "000021",
-    "species": [
-      "mouse",
-      "human"
-    ],
-    "title": "Allen Institute - Visual Coding - Neuropixels (Brain Observatory 1.1 Stimulus Set)"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "calcium_imaging",
-      "extracellular_ephys",
-      "lfp",
-      "neuropixels"
-    ],
-    "record_id": "dataset:dandi:000022",
-    "source": "dandi",
-    "source_id": "000022",
-    "species": [
-      "mouse",
-      "human"
-    ],
-    "title": "Allen Institute - Visual Coding - Neuropixels (Functional Connectivity Stimulus Set)"
   },
   {
     "candidate_regions": [
@@ -237,19 +176,6 @@
     "source_id": "000038",
     "species": [],
     "title": "Testytest"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "neuropixels"
-    ],
-    "record_id": "dataset:dandi:000040",
-    "source": "dandi",
-    "source_id": "000040",
-    "species": [
-      "mouse"
-    ],
-    "title": "Neuropixels recordings in mouse visual system"
   },
   {
     "candidate_regions": [],
@@ -758,19 +684,6 @@
   },
   {
     "candidate_regions": [],
-    "modalities": [
-      "neuropixels"
-    ],
-    "record_id": "dataset:dandi:000169",
-    "source": "dandi",
-    "source_id": "000169",
-    "species": [
-      "mouse"
-    ],
-    "title": "Milti-probe Neuropixels recordings in mouse visual system (additional data)"
-  },
-  {
-    "candidate_regions": [],
     "modalities": [],
     "record_id": "dataset:dandi:000170",
     "source": "dandi",
@@ -788,21 +701,6 @@
     "title": "Test 1"
   },
   {
-    "candidate_regions": [
-      "cortex"
-    ],
-    "modalities": [
-      "patch_clamp"
-    ],
-    "record_id": "dataset:dandi:000172",
-    "source": "dandi",
-    "source_id": "000172",
-    "species": [
-      "mouse"
-    ],
-    "title": "UHN whole-cell excitability recordings from mouse cortical neurons"
-  },
-  {
     "candidate_regions": [],
     "modalities": [],
     "record_id": "dataset:dandi:000208",
@@ -812,19 +710,6 @@
       "mouse"
     ],
     "title": "UHN_mouse_L5_patchclamp"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "patch_seq"
-    ],
-    "record_id": "dataset:dandi:000209",
-    "source": "dandi",
-    "source_id": "000209",
-    "species": [
-      "human"
-    ],
-    "title": "20211223_AIBS_Patchseq_human"
   },
   {
     "candidate_regions": [
@@ -839,21 +724,6 @@
       "mouse"
     ],
     "title": "Visual cortical activity in mice performing naturalistic virtual foraging task"
-  },
-  {
-    "candidate_regions": [
-      "cortex"
-    ],
-    "modalities": [
-      "patch_clamp"
-    ],
-    "record_id": "dataset:dandi:000211",
-    "source": "dandi",
-    "source_id": "000211",
-    "species": [
-      "human"
-    ],
-    "title": "UHN whole-cell excitability recordings from human cortical neurons"
   },
   {
     "candidate_regions": [],
@@ -909,15 +779,6 @@
   {
     "candidate_regions": [],
     "modalities": [],
-    "record_id": "dataset:dandi:000222",
-    "source": "dandi",
-    "source_id": "000222",
-    "species": [],
-    "title": "O'Hare et al 2022"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [],
     "record_id": "dataset:dandi:000225",
     "source": "dandi",
     "source_id": "000225",
@@ -948,21 +809,6 @@
       "drosophila"
     ],
     "title": "Electrophysiological recordings in protein hunger neurons of Drosophila Melanogaster"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "extracellular_ephys",
-      "patch_clamp",
-      "patch_seq"
-    ],
-    "record_id": "dataset:dandi:000228",
-    "source": "dandi",
-    "source_id": "000228",
-    "species": [
-      "human"
-    ],
-    "title": "20220330_AIBS_Patchseq_human"
   },
   {
     "candidate_regions": [],
@@ -1066,38 +912,6 @@
     "source_id": "000290",
     "species": [],
     "title": "Diaz-Torga_Sfig1"
-  },
-  {
-    "candidate_regions": [
-      "cortex"
-    ],
-    "modalities": [
-      "extracellular_ephys",
-      "patch_clamp"
-    ],
-    "record_id": "dataset:dandi:000292",
-    "source": "dandi",
-    "source_id": "000292",
-    "species": [
-      "mouse"
-    ],
-    "title": "UHN whole-cell patch-clamp excitability recordings from mouse cortical neurons"
-  },
-  {
-    "candidate_regions": [
-      "cortex"
-    ],
-    "modalities": [
-      "extracellular_ephys",
-      "patch_clamp"
-    ],
-    "record_id": "dataset:dandi:000293",
-    "source": "dandi",
-    "source_id": "000293",
-    "species": [
-      "human"
-    ],
-    "title": "UHN whole-cell patch-clamp excitability recordings from human cortical neurons"
   },
   {
     "candidate_regions": [
@@ -1218,22 +1032,6 @@
     "title": "HMV-test"
   },
   {
-    "candidate_regions": [
-      "cortex"
-    ],
-    "modalities": [
-      "extracellular_ephys"
-    ],
-    "record_id": "dataset:dandi:000398",
-    "source": "dandi",
-    "source_id": "000398",
-    "species": [
-      "mouse",
-      "rat"
-    ],
-    "title": "Scalable Thousand Channel Penetrating Microneedle Arrays on Flex for Multimodal and Large Area Coverage BrainMachine Interfaces"
-  },
-  {
     "candidate_regions": [],
     "modalities": [
       "extracellular_ephys"
@@ -1303,20 +1101,6 @@
   {
     "candidate_regions": [],
     "modalities": [
-      "patch_clamp"
-    ],
-    "record_id": "dataset:dandi:000456",
-    "source": "dandi",
-    "source_id": "000456",
-    "species": [
-      "rat",
-      "human"
-    ],
-    "title": "Accelerated signal propagation speed in human neocortical microcircuits"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
       "calcium_imaging"
     ],
     "record_id": "dataset:dandi:000461",
@@ -1333,17 +1117,6 @@
     "source_id": "000466",
     "species": [],
     "title": "Optical Recording Exploratory Data 1"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [
-      "calcium_imaging"
-    ],
-    "record_id": "dataset:dandi:000467",
-    "source": "dandi",
-    "source_id": "000467",
-    "species": [],
-    "title": "Sparse and stereotyped encoding implicates a core glomerulus for ant alarm behavior"
   },
   {
     "candidate_regions": [],
@@ -1440,17 +1213,6 @@
     "source_id": "000490",
     "species": [],
     "title": "test set"
-  },
-  {
-    "candidate_regions": [],
-    "modalities": [],
-    "record_id": "dataset:dandi:000492",
-    "source": "dandi",
-    "source_id": "000492",
-    "species": [
-      "human"
-    ],
-    "title": "Accelerated signal propagation speed in human neocortical microcircuits"
   },
   {
     "candidate_regions": [],

@@ -15,7 +15,6 @@ import argparse
 import copy
 import json
 import math
-import sys
 from pathlib import Path
 
 SEED_FILE = Path("data/eval/usefulness_seed_pairs.jsonl")
@@ -43,7 +42,9 @@ def _evaluate_weights(
 ) -> float:
     """Score profiles against labeled pairs; return mean NDCG@3 across queries."""
     from neural_search.retrieval.usefulness_scorer import (
-        DatasetContext, UsefulnessIntent, score_usefulness,
+        DatasetContext,
+        UsefulnessIntent,
+        score_usefulness,
     )
 
     total_ndcg, n_queries = 0.0, 0

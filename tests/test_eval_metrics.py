@@ -3,18 +3,22 @@ from __future__ import annotations
 
 import json
 import math
-import tempfile
 from pathlib import Path
 
-import pytest
-
-from scripts.eval.compute_ir_metrics import (
-    dcg, ndcg_at_k, mrr, recall_at_k, precision_at_k, mean,
-    hard_negative_violation_rate, source_skew_at_k, bootstrap_ci,
-    aggregate_metrics, compute_query_metrics, load_qrels,
-)
 from scripts.eval.compute_calibration import compute_ece
-
+from scripts.eval.compute_ir_metrics import (
+    aggregate_metrics,
+    bootstrap_ci,
+    dcg,
+    hard_negative_violation_rate,
+    load_qrels,
+    mean,
+    mrr,
+    ndcg_at_k,
+    precision_at_k,
+    recall_at_k,
+    source_skew_at_k,
+)
 
 # ---------------------------------------------------------------------------
 # DCG / NDCG

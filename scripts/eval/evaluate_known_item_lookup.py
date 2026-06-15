@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -58,15 +57,17 @@ def _load_jsonl(path: Path) -> list[dict]:
 # BM25 (imported from build_pooled_qrels_candidates)
 # ---------------------------------------------------------------------------
 
+from datetime import UTC
+
 from scripts.eval.build_pooled_qrels_candidates import (
-    build_bm25_index,
-    bm25_retrieve,
-    load_embeddings,
-    dense_retrieve_prf,
-    hybrid_rrf,
     _record_id as record_id,
 )
-
+from scripts.eval.build_pooled_qrels_candidates import (
+    bm25_retrieve,
+    build_bm25_index,
+    dense_retrieve_prf,
+    hybrid_rrf,
+)
 
 # ---------------------------------------------------------------------------
 # Source-deduplication re-ranking
@@ -114,7 +115,7 @@ def known_item_boost(
                 boosted.append((ds_id, top_score + 1.0, rec))
         else:
             # Move existing entry to front with boosted score
-            for rid, s, rec in results:
+            for rid, _s, rec in results:
                 if rid == ds_id:
                     boosted.append((rid, top_score + 1.0, rec))
                     break
@@ -282,12 +283,12 @@ def build_report(
     ki_queries: list[dict],
     per_system: dict[str, list[dict]],
 ) -> str:
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     lines: list[str] = []
     lines.append("# Known-Item Lookup Evaluation")
     lines.append("")
-    lines.append(f"Generated: {datetime.now(timezone.utc).isoformat()}")
+    lines.append(f"Generated: {datetime.now(UTC).isoformat()}")
     lines.append(f"Queries: {len(ki_queries)}")
     lines.append("")
     lines.append("---")
@@ -402,8 +403,11 @@ def main() -> None:
 
     emb_index: dict[str, list[float]] = {}
     if not args.no_dense and args.embeddings.exists():
-        from scripts.eval.build_pooled_qrels_candidates import load_embeddings, TARGET_FIELD
-        print(f"Loading embeddings...")
+        from scripts.eval.build_pooled_qrels_candidates import (
+            TARGET_FIELD,
+            load_embeddings,
+        )
+        print("Loading embeddings...")
         emb_index = load_embeddings(args.embeddings, TARGET_FIELD)
         print(f"  {len(emb_index)} embeddings")
 

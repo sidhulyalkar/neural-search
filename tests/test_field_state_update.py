@@ -7,8 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 
 def _make_record(dataset_id: str, title: str = "Test", source: str = "dandi") -> dict:
     return {
@@ -43,7 +41,7 @@ class TestChangeDetection:
         assert len(removed) == 0
 
     def test_changed_record_detected(self) -> None:
-        from scripts.field_state.update_field_state import detect_changes, _record_hash
+        from scripts.field_state.update_field_state import _record_hash, detect_changes
         rec = _make_record("dataset:a:1", "Old Title")
         prev = {"dataset:a:1": _record_hash(rec)}
         updated_rec = _make_record("dataset:a:1", "New Title")
@@ -59,7 +57,7 @@ class TestChangeDetection:
         assert "dataset:a:1" in removed
 
     def test_unchanged_record_not_in_changed(self) -> None:
-        from scripts.field_state.update_field_state import detect_changes, _record_hash
+        from scripts.field_state.update_field_state import _record_hash, detect_changes
         rec = _make_record("dataset:a:1", "Stable Title")
         prev = {"dataset:a:1": _record_hash(rec)}
         new_r, changed_r, removed = detect_changes([rec], prev)

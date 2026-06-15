@@ -7,7 +7,7 @@ import {
   logRetrievalFeedback,
   saveFrontendDataset,
 } from '../api/search'
-import type { FeedbackUsefulness, MemoryGraphEvidence, SearchResultItem, WouldUseForAnalysis } from '../types'
+import type { DimensionMatch, ExplanationGroups, FeedbackUsefulness, MemoryGraphEvidence, RetrievalFeedbackEvent, SearchResultItem, WouldUseForAnalysis } from '../types'
 
 interface DatasetCardProps {
   result: SearchResultItem
@@ -82,9 +82,49 @@ function ListBlock({ title, items }: { title: string; items?: string[] }) {
   )
 }
 
+const DIMENSION_STYLES: Record<string, { tone: 'cyan' | 'violet' | 'amber' | 'green' | 'neutral'; label: string }> = {
+  brain_region: { tone: 'violet', label: 'region' },
+  modality:     { tone: 'cyan',   label: 'modality' },
+  task:         { tone: 'amber',  label: 'task' },
+  species:      { tone: 'green',  label: 'species' },
+  recording_scale: { tone: 'neutral', label: 'scale' },
+}
+
+function DimensionMatchBadges({ groups }: { groups: ExplanationGroups }) {
+  const entries = Object.entries(groups) as [keyof ExplanationGroups, DimensionMatch][]
+  const matched = entries.filter(([, d]) => d.matched.length > 0)
+  const queried_unmatched = entries.filter(([, d]) => d.queried.length > 0 && d.matched.length === 0)
+  if (matched.length === 0 && queried_unmatched.length === 0) return null
+  return (
+    <div className="mt-3 flex flex-wrap gap-1.5">
+      {matched.map(([dim, d]) => {
+        const style = DIMENSION_STYLES[dim] ?? { tone: 'neutral', label: dim }
+        return d.matched.slice(0, 2).map((term) => (
+          <Badge key={`${dim}-${term}`} tone={style.tone}>
+            {style.label}: {term.replace(/_/g, ' ')}
+          </Badge>
+        ))
+      })}
+      {queried_unmatched.map(([dim, d]) => {
+        const style = DIMENSION_STYLES[dim] ?? { tone: 'neutral', label: dim }
+        return (
+          <span
+            key={dim}
+            className="text-xs border rounded px-2 py-0.5 text-neural-600 border-neural-800 bg-neural-900 line-through"
+            title={`Queried ${style.label} not found`}
+          >
+            {style.label}: {d.queried[0]?.replace(/_/g, ' ')}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 function MemoryGraphEvidencePanel({ evidence }: { evidence: MemoryGraphEvidence }) {
   const hasAny =
     evidence.modality_matches.length > 0 ||
+    (evidence.recording_scale_matches || []).length > 0 ||
     evidence.species_matches.length > 0 ||
     evidence.region_matches.length > 0 ||
     evidence.affordance_matches.length > 0 ||
@@ -101,6 +141,11 @@ function MemoryGraphEvidencePanel({ evidence }: { evidence: MemoryGraphEvidence 
         {evidence.modality_matches.map((m) => (
           <span key={m} className="text-xs border rounded px-2 py-0.5 text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5">
             modality: {m.replace(/_/g, ' ')}
+          </span>
+        ))}
+        {(evidence.recording_scale_matches || []).map((s) => (
+          <span key={s} className="text-xs border rounded px-2 py-0.5 text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5">
+            scale: {s.replace(/_/g, ' ')}
           </span>
         ))}
         {evidence.species_matches.map((s) => (
@@ -313,8 +358,8 @@ export function DatasetCard({
     },
   })
 
-  const feedbackMutation = useMutation({
-    mutationFn: (overrides: Partial<Parameters<typeof logRetrievalFeedback>[0]> = {}) => logRetrievalFeedback({
+  const feedbackMutation = useMutation<RetrievalFeedbackEvent, unknown, Partial<Parameters<typeof logRetrievalFeedback>[0]>>({
+    mutationFn: (overrides?: Partial<Parameters<typeof logRetrievalFeedback>[0]>) => logRetrievalFeedback({
       session_id: sessionId,
       query_id: evidence_packet?.query_id || null,
       query_text: queryText || evidence_packet?.query_text || '',
@@ -335,8 +380,8 @@ export function DatasetCard({
     }),
   })
 
-  const saveMutation = useMutation({
-    mutationFn: (exported = false) => saveFrontendDataset({
+  const saveMutation = useMutation<Record<string, unknown>, unknown, boolean | undefined>({
+    mutationFn: (exported?: boolean) => saveFrontendDataset({
       session_id: sessionId,
       query_id: evidence_packet?.query_id || null,
       query_text: queryText || evidence_packet?.query_text || '',
@@ -366,6 +411,7 @@ export function DatasetCard({
   const tags = [
     ...(dataset.species || []).slice(0, 2),
     ...(dataset.modalities || []).slice(0, 2),
+    ...(dataset.recording_scales || []).slice(0, 2),
     ...(dataset.brain_regions || []).slice(0, 2),
     ...(dataset.tasks || []).slice(0, 2),
   ]
@@ -453,6 +499,7 @@ export function DatasetCard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mb-3">
             <MetaLine label="Species" values={dataset.species} />
             <MetaLine label="Modality" values={dataset.modalities} />
+            <MetaLine label="Scale" values={dataset.recording_scales} />
             <MetaLine label="Region" values={dataset.brain_regions} />
             <MetaLine label="Tasks" values={dataset.tasks} />
             <MetaLine label="License" values={dataset.license ? [dataset.license] : []} />
@@ -475,9 +522,16 @@ export function DatasetCard({
 
           {/* Why matched */}
           {why_matched.length > 0 && (
-            <p className="text-xs text-neural-600 mb-3 line-clamp-1">
+            <p className="text-xs text-neural-600 mb-1 line-clamp-1">
               {why_matched.slice(0, 3).join(' · ')}
             </p>
+          )}
+
+          {/* Dimension match badges — region / modality / task / species */}
+          {result.dataset_card_preview?.explanation?.match_summary?.dimension_matches && (
+            <DimensionMatchBadges
+              groups={result.dataset_card_preview.explanation.match_summary.dimension_matches as ExplanationGroups}
+            />
           )}
 
           <div className="flex flex-wrap gap-2 mb-4">
@@ -669,7 +723,7 @@ export function DatasetCard({
               />
               <button
                 type="button"
-                onClick={() => feedbackMutation.mutate()}
+                onClick={() => feedbackMutation.mutate({})}
                 disabled={feedbackMutation.isPending}
                 className="text-xs bg-neural-800 text-neural-200 rounded px-3 py-1.5 hover:bg-neural-700 disabled:opacity-50"
               >

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -27,6 +27,7 @@ class DatasetComparisonItem(BaseModel):
     # Scientific labels
     task_labels: list[str] = Field(default_factory=list)
     modalities: list[str] = Field(default_factory=list)
+    recording_scales: list[str] = Field(default_factory=list)
     species: list[str] = Field(default_factory=list)
     brain_regions: list[str] = Field(default_factory=list)
     behavior_labels: list[str] = Field(default_factory=list)
@@ -76,7 +77,7 @@ class ComparisonResult(BaseModel):
     datasets: list[DatasetComparisonItem]
     field_comparisons: list[FieldComparison] = Field(default_factory=list)
     summary: dict[str, Any] = Field(default_factory=dict)
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 def _extract_comparison_item(
@@ -122,6 +123,7 @@ def _extract_comparison_item(
         license=dataset.get("license"),
         task_labels=dataset.get("tasks", []),
         modalities=dataset.get("modalities", []),
+        recording_scales=dataset.get("recording_scales", []),
         species=dataset.get("species", []),
         brain_regions=dataset.get("brain_regions", []),
         behavior_labels=dataset.get("behaviors", []),
@@ -253,6 +255,7 @@ def compare_datasets(
     list_fields = [
         ("task_labels", "Task Labels"),
         ("modalities", "Modalities"),
+        ("recording_scales", "Recording Scales"),
         ("species", "Species"),
         ("brain_regions", "Brain Regions"),
         ("behavior_labels", "Behavior Labels"),
@@ -336,6 +339,10 @@ def _build_comparison_summary(
     modality_fc = next((fc for fc in field_comparisons if fc.field_name == "modalities"), None)
     shared_modalities = modality_fc.intersection_values if modality_fc else []
 
+    # Find shared recording scales
+    scale_fc = next((fc for fc in field_comparisons if fc.field_name == "recording_scales"), None)
+    shared_recording_scales = scale_fc.intersection_values if scale_fc else []
+
     return {
         "dataset_count": len(datasets),
         "common_fields": [fc.field_label for fc in common_fields],
@@ -357,8 +364,10 @@ def _build_comparison_summary(
         },
         "shared_tasks": shared_tasks,
         "shared_modalities": shared_modalities,
+        "shared_recording_scales": shared_recording_scales,
         "all_tasks": task_fc.union_values if task_fc else [],
         "all_modalities": modality_fc.union_values if modality_fc else [],
+        "all_recording_scales": scale_fc.union_values if scale_fc else [],
     }
 
 
@@ -388,6 +397,11 @@ def generate_comparison_markdown(result: ComparisonResult) -> str:
         lines.append("")
     if summary.get("shared_modalities"):
         lines.append(f"**Shared modalities:** {', '.join(summary['shared_modalities'])}")
+        lines.append("")
+    if summary.get("shared_recording_scales"):
+        lines.append(
+            f"**Shared recording scales:** {', '.join(summary['shared_recording_scales'])}"
+        )
         lines.append("")
 
     # Readiness ranking

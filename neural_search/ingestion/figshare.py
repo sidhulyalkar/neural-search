@@ -15,8 +15,8 @@ import httpx
 
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.dataset_classifier import is_valid_dataset
-from neural_search.ingestion.registry import register
 from neural_search.ingestion.osf import _log_rejection
+from neural_search.ingestion.registry import register
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +45,10 @@ _LICENSE_ID_TO_NAME = {1: "CC BY 4.0", 2: "CC BY-SA 4.0", 1000: "CC0 1.0"}
 def normalize_figshare_item(raw: dict[str, Any], license_override: str | None = None) -> dict[str, Any]:
     """Normalize a figshare article."""
     source_id = str(raw.get("id", ""))
-    title = raw.get("title") or f"figshare {source_id}"
-    description = raw.get("description") or raw.get("abstract") or ""
+    import re as _re
+    _html_re = _re.compile(r"<[^>]+>")
+    title = _html_re.sub("", raw.get("title") or f"figshare {source_id}").strip()
+    description = _html_re.sub(" ", raw.get("description") or raw.get("abstract") or "").strip()
     doi = raw.get("doi") or raw.get("DOI")
     license_info = raw.get("license", {})
     license_name = (

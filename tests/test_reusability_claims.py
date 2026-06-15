@@ -6,12 +6,12 @@ from pathlib import Path
 import pytest
 
 from neural_search.core.claims import (
+    SOURCE_CONFIDENCE_DEFAULTS,
     ClaimPredicate,
     ClaimStore,
     EvidenceSourceType,
     ReusabilityClaim,
     ReviewStatus,
-    SOURCE_CONFIDENCE_DEFAULTS,
     claim_has_modality,
     claim_has_task,
     claim_has_variable,

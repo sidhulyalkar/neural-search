@@ -10,7 +10,6 @@ from neural_search.ingestion.brain_image_library import (
     normalize_bil_record,
 )
 
-
 BIL_RECORD = {
     "Metadata": "2.0",
     "Submission": {

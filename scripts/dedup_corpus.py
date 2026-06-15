@@ -35,7 +35,7 @@ def _normalize_title(title: str) -> str:
 def _doi_key(rec: dict) -> str | None:
     doi = rec.get("doi") or rec.get("DOI") or (rec.get("metadata_json") or {}).get("doi")
     if doi and isinstance(doi, str):
-        return doi.lower().strip().lstrip("https://doi.org/").lstrip("http://doi.org/")
+        return doi.lower().strip().removeprefix("https://doi.org/").removeprefix("http://doi.org/")
     return None
 
 

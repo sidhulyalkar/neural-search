@@ -219,12 +219,21 @@ def generate_explanation(
     quality_grade = _calculate_quality_grade(context)
 
     # Build match summary
+    dimension_matches = {
+        g.category: {
+            "queried": g.query_terms,
+            "matched": g.matched_terms,
+            "quality": g.match_quality,
+        }
+        for g in context.match_groups
+    }
     match_summary = {
         "quality_grade": quality_grade,
         "total_matches": sum(len(g.matched_terms) for g in context.match_groups),
         "categories_matched": [
             g.category for g in context.match_groups if g.matched_terms
         ],
+        "dimension_matches": dimension_matches,
         "score": context.score,
         "has_warnings": bool(context.warnings),
         "missing_metadata_count": len(context.missing_metadata),

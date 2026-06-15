@@ -16,6 +16,7 @@ SUPPORTED_NODE_TYPES = {
     "paper",
     "task",
     "modality",
+    "recording_scale",
     "brain_region",
     "species",
     "taxon_group",
@@ -56,6 +57,7 @@ SUPPORTED_NODE_TYPES = {
 SUPPORTED_EDGE_TYPES = {
     "dataset_has_task",
     "dataset_has_modality",
+    "dataset_has_recording_scale",
     "dataset_records_region",
     "dataset_has_species",
     "dataset_has_behavioral_event",
@@ -107,6 +109,7 @@ SUPPORTED_EDGE_TYPES = {
     "concept_related_to_concept",
     "concept_requires_affordance",
     "query_requires_modality",
+    "query_requires_recording_scale",
     "query_requires_species",
     "query_requires_region",
     "query_requires_task",

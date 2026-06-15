@@ -1,15 +1,16 @@
 """Tests for intent-aware usefulness scorer."""
-import pytest
-from neural_search.retrieval.usefulness_scorer import (
-    DatasetContext,
-    UsefulnessScore,
-    score_usefulness,
-    INTENT_WEIGHT_PROFILES,
+from neural_search.graph.schema import (
+    KnowledgeGraph,
+    KnowledgeGraphEdge,
+    KnowledgeGraphNode,
+    make_edge_id,
+    make_node_id,
 )
 from neural_search.retrieval.query_intent import UsefulnessIntent
-from neural_search.graph.schema import (
-    KnowledgeGraph, KnowledgeGraphNode, KnowledgeGraphEdge,
-    make_node_id, make_edge_id,
+from neural_search.retrieval.usefulness_scorer import (
+    INTENT_WEIGHT_PROFILES,
+    DatasetContext,
+    score_usefulness,
 )
 
 
@@ -47,15 +48,15 @@ class TestScoreBounds:
         assert 0.0 <= score.total_score <= 1.0
 
     def test_perfect_match_scores_high(self):
-        attrs = dict(
-            modalities=["neuropixels"],
-            tasks=["decision_making"],
-            species=["mouse"],
-            brain_regions=["prefrontal_cortex"],
-            affordances=["choice_decoding"],
-            data_standards=["nwb"],
-            quality_score=1.0,
-        )
+        attrs = {
+            "modalities": ["neuropixels"],
+            "tasks": ["decision_making"],
+            "species": ["mouse"],
+            "brain_regions": ["prefrontal_cortex"],
+            "affordances": ["choice_decoding"],
+            "data_standards": ["nwb"],
+            "quality_score": 1.0,
+        }
         q = _ctx(**attrs)
         c = _ctx(**attrs)
         score = score_usefulness(q, c, UsefulnessIntent.STRICT_LOOKUP)

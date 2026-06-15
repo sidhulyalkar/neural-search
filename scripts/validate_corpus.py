@@ -111,12 +111,16 @@ def main(argv: list[str] | None = None) -> int:
 
     all_pass = all(checks.values())
 
+    check_lines = "".join(
+        f'- [{"x" if passed else " "}] {name}\n' for name, passed in checks.items()
+    )
+
     report = f"""# Corpus Quality Report
 
 {table}
 
 ## Checks
-{"".join(f'- [{"x" if v else " "}] {k}\n' for k, v in checks.items())}
+{check_lines}
 **Tier 2 rejections logged:** {tier2_rejections}
 
 **Status: {"PASS" if all_pass else "FAIL"}**

@@ -1,0 +1,295 @@
+# Neural Search Recording Scale Ontology v0.1
+#
+# Sortable/indexable categories for how information is sampled from the brain.
+# These categories sit below modality: "extracellular_ephys" can expose
+# single-unit spikes, multi-unit activity, LFP, and raw voltage, which support
+# different reuse questions.
+
+recording_scales:
+  - id: single_unit_spikes
+    label: Single-unit spikes
+    category: cellular_electrophysiology
+    sampling_unit: isolated neuron
+    signal_form: point_process
+    temporal_resolution: millisecond
+    spatial_resolution: single_cell
+    compatible_modalities: [extracellular_ephys, neuropixels, tetrode, utah_array, ieeg]
+    data_types: [spike_times, sorted_units, waveforms]
+    aliases:
+      - single unit
+      - single-unit
+      - sorted unit
+      - spike times
+      - spike train
+      - isolated neuron
+      - action potentials
+    relationship_tags: [cell_resolved, event_times, spike_sorting, population_decoding]
+
+  - id: multi_unit_activity
+    label: Multi-unit activity
+    category: population_electrophysiology
+    sampling_unit: local neuronal cluster
+    signal_form: point_process_or_rate
+    temporal_resolution: millisecond
+    spatial_resolution: local_population
+    compatible_modalities: [extracellular_ephys, neuropixels, tetrode, utah_array]
+    data_types: [multiunit_spikes, threshold_crossings, firing_rate]
+    aliases:
+      - multi unit
+      - multi-unit
+      - multiunit
+      - mua
+      - threshold crossings
+    relationship_tags: [population_activity, spike_sorting_optional, decoding]
+
+  - id: local_field_potential
+    label: Local field potential
+    category: mesoscopic_electrophysiology
+    sampling_unit: local extracellular field
+    signal_form: continuous_voltage
+    temporal_resolution: millisecond
+    spatial_resolution: local_mesoscale
+    compatible_modalities: [extracellular_ephys, neuropixels, tetrode, lfp, seeg]
+    data_types: [lfp, field_potential, spectral_power]
+    aliases:
+      - lfp
+      - local field potential
+      - field potential
+      - theta oscillation
+      - gamma oscillation
+      - spectral power
+    relationship_tags: [oscillations, phase_coupling, spectral_analysis]
+
+  - id: raw_extracellular_voltage
+    label: Raw extracellular voltage
+    category: channel_electrophysiology
+    sampling_unit: electrode channel
+    signal_form: continuous_voltage
+    temporal_resolution: submillisecond_to_millisecond
+    spatial_resolution: electrode_site
+    compatible_modalities: [extracellular_ephys, neuropixels, tetrode, utah_array]
+    data_types: [raw_voltage, ap_band, continuous_voltage]
+    aliases:
+      - raw voltage
+      - raw traces
+      - ap band
+      - extracellular voltage
+      - continuous ephys
+    relationship_tags: [raw_signal, spike_sorting, preprocessing]
+
+  - id: intracellular_membrane_signal
+    label: Intracellular membrane signal
+    category: intracellular_electrophysiology
+    sampling_unit: single patched cell
+    signal_form: continuous_voltage_or_current
+    temporal_resolution: submillisecond
+    spatial_resolution: single_cell
+    compatible_modalities: [patch_clamp, intracellular_ephys]
+    data_types: [membrane_potential, ionic_current, sweeps]
+    aliases:
+      - membrane potential
+      - current clamp
+      - voltage clamp
+      - whole-cell
+      - patch clamp sweeps
+    relationship_tags: [cell_resolved, excitability, synaptic_analysis]
+
+  - id: calcium_roi_fluorescence
+    label: Calcium ROI fluorescence
+    category: optical_population_imaging
+    sampling_unit: cell or ROI
+    signal_form: fluorescence_timeseries
+    temporal_resolution: frame_rate_seconds_to_hundreds_ms
+    spatial_resolution: cell_or_roi
+    compatible_modalities: [calcium_imaging, two_photon, miniscope]
+    data_types: [fluorescence_timeseries, roi_masks, inferred_spikes]
+    aliases:
+      - calcium roi
+      - roi fluorescence
+      - dff
+      - delta f over f
+      - gcamp traces
+      - inferred spikes
+    relationship_tags: [cell_resolved_or_roi, calcium_transients, population_decoding]
+
+  - id: widefield_fluorescence
+    label: Widefield fluorescence
+    category: mesoscale_optical_imaging
+    sampling_unit: cortical pixel or parcel
+    signal_form: fluorescence_timeseries
+    temporal_resolution: frame_rate_tens_ms
+    spatial_resolution: cortical_mesoscale
+    compatible_modalities: [widefield_imaging, calcium_imaging]
+    data_types: [widefield_movie, cortical_map, fluorescence_timeseries]
+    aliases:
+      - widefield
+      - wide-field
+      - mesoscale imaging
+      - cortical widefield
+    relationship_tags: [mesoscale_map, cortical_dynamics]
+
+  - id: fiber_photometry_trace
+    label: Fiber photometry trace
+    category: bulk_optical_signal
+    sampling_unit: bulk labeled population
+    signal_form: fluorescence_timeseries
+    temporal_resolution: tens_ms_to_seconds
+    spatial_resolution: local_bulk_population
+    compatible_modalities: [fiber_photometry]
+    data_types: [fluorescence_trace, neuromodulator_proxy]
+    aliases:
+      - photometry trace
+      - fiber photometry
+      - bulk fluorescence
+      - dopamine photometry
+    relationship_tags: [bulk_population, neuromodulator_signal, event_aligned]
+
+  - id: eeg_sensor_timeseries
+    label: EEG sensor time series
+    category: noninvasive_electrophysiology
+    sampling_unit: scalp electrode channel
+    signal_form: continuous_voltage
+    temporal_resolution: millisecond
+    spatial_resolution: scalp_sensor
+    compatible_modalities: [eeg, polysomnography]
+    data_types: [voltage_timeseries, erp, spectral_power]
+    aliases:
+      - eeg channel
+      - scalp eeg
+      - erp
+      - eeg time series
+    relationship_tags: [sensor_level, time_frequency, bci]
+
+  - id: meg_sensor_timeseries
+    label: MEG sensor time series
+    category: noninvasive_magnetophysiology
+    sampling_unit: magnetometer or gradiometer
+    signal_form: magnetic_field_timeseries
+    temporal_resolution: millisecond
+    spatial_resolution: sensor_or_source_estimate
+    compatible_modalities: [meg]
+    data_types: [magnetic_field, gradiometer, source_estimate]
+    aliases:
+      - meg channel
+      - magnetometer
+      - gradiometer
+      - meg time series
+    relationship_tags: [sensor_level, source_localization, time_frequency]
+
+  - id: ecog_surface_potential
+    label: ECoG surface potential
+    category: intracranial_field_recording
+    sampling_unit: subdural electrode
+    signal_form: continuous_voltage
+    temporal_resolution: millisecond
+    spatial_resolution: cortical_surface_electrode
+    compatible_modalities: [ecog, ieeg]
+    data_types: [voltage_timeseries, high_gamma, electrode_positions]
+    aliases:
+      - ecog
+      - electrocorticography
+      - subdural grid
+      - cortical surface potential
+      - high gamma
+    relationship_tags: [clinical_ephys, high_gamma, speech_decoding]
+
+  - id: seeg_depth_potential
+    label: SEEG depth potential
+    category: intracranial_field_recording
+    sampling_unit: depth electrode contact
+    signal_form: continuous_voltage
+    temporal_resolution: millisecond
+    spatial_resolution: depth_contact
+    compatible_modalities: [seeg, ieeg]
+    data_types: [voltage_timeseries, depth_recording, seizure_annotations]
+    aliases:
+      - seeg
+      - stereo eeg
+      - depth electrode
+      - intracranial eeg
+      - depth contact
+    relationship_tags: [clinical_ephys, seizure_detection, connectivity]
+
+  - id: bold_voxel_timeseries
+    label: BOLD voxel time series
+    category: hemodynamic_imaging
+    sampling_unit: voxel
+    signal_form: hemodynamic_timeseries
+    temporal_resolution: seconds
+    spatial_resolution: millimeter_voxel
+    compatible_modalities: [fmri, mri]
+    data_types: [bold_timeseries, nifti, activation_map]
+    aliases:
+      - bold
+      - fmri voxel
+      - bold time series
+      - functional mri
+      - activation map
+    relationship_tags: [whole_brain, voxelwise, hemodynamic]
+
+  - id: structural_mri_voxel
+    label: Structural MRI voxel
+    category: anatomical_imaging
+    sampling_unit: anatomical voxel
+    signal_form: image_intensity
+    temporal_resolution: static
+    spatial_resolution: millimeter_voxel
+    compatible_modalities: [mri, diffusion_mri]
+    data_types: [t1w, t2w, diffusion_mri, tractography]
+    aliases:
+      - structural mri
+      - t1w
+      - t2w
+      - diffusion mri
+      - dti
+    relationship_tags: [anatomy, voxelwise, tractography]
+
+  - id: transcriptomic_cell_profile
+    label: Transcriptomic cell profile
+    category: molecular_cell_profile
+    sampling_unit: cell or nucleus
+    signal_form: gene_expression_vector
+    temporal_resolution: static_snapshot
+    spatial_resolution: single_cell_or_nucleus
+    compatible_modalities: [single_cell_rna, single_cell_rnaseq, single_nucleus_rnaseq, transcriptomics]
+    data_types: [gene_counts, cell_metadata, h5ad]
+    aliases:
+      - single cell rna
+      - single-cell transcriptomics
+      - single nucleus rna
+      - gene expression
+      - cell type atlas
+    relationship_tags: [cell_type_mapping, molecular_profile]
+
+  - id: spatial_transcriptomic_spot
+    label: Spatial transcriptomic spot
+    category: molecular_spatial_profile
+    sampling_unit: tissue spot or segmented cell
+    signal_form: spatial_gene_expression
+    temporal_resolution: static_snapshot
+    spatial_resolution: spot_to_cellular
+    compatible_modalities: [spatial_transcriptomics, merfish, visium]
+    data_types: [spatial_counts, coordinates, tissue_image]
+    aliases:
+      - spatial transcriptomics
+      - visium spot
+      - merfish cell
+      - spatial gene expression
+    relationship_tags: [spatial_molecular, cell_type_mapping]
+
+  - id: connectomic_edge
+    label: Connectomic edge
+    category: structural_connectivity
+    sampling_unit: synapse or reconstructed process
+    signal_form: graph_edge
+    temporal_resolution: static_snapshot
+    spatial_resolution: ultrastructural_or_morphological
+    compatible_modalities: [electron_microscopy, morphology, tracing]
+    data_types: [synapses, skeletons, swc, meshes]
+    aliases:
+      - connectome
+      - synapse graph
+      - neuron reconstruction
+      - morphology
+      - tracing
+    relationship_tags: [circuit_structure, morphology, connectivity]

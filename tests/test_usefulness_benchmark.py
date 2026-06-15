@@ -1,18 +1,16 @@
 """Tests for graded usefulness benchmark."""
-import json
-import math
 import pytest
+
 from neural_search.evaluation.usefulness_benchmark import (
-    UsefulnessLabel,
-    UsefulnessQuery,
+    GAIN,
+    BenchmarkReport,
     PairLabel,
-    compute_ndcg_at_k,
+    UsefulnessQuery,
     compute_mrr,
+    compute_ndcg_at_k,
     compute_precision_at_k,
     hard_negative_violation_rate,
     run_usefulness_benchmark,
-    BenchmarkReport,
-    GAIN,
 )
 
 

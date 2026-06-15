@@ -7,8 +7,17 @@ from collections.abc import Iterable
 from difflib import SequenceMatcher
 from typing import TYPE_CHECKING
 
-from neural_search.ontology.loader import get_brain_regions, get_ontology
-from neural_search.ontology.models import BrainRegion, LabelMatch, Ontology
+from neural_search.ontology.loader import (
+    get_brain_regions,
+    get_ontology,
+    get_recording_scales,
+)
+from neural_search.ontology.models import (
+    BrainRegion,
+    LabelMatch,
+    Ontology,
+    RecordingScale,
+)
 
 if TYPE_CHECKING:
     from neural_search.graph.schema import KnowledgeGraph
@@ -43,14 +52,14 @@ ALIASES: dict[str, list[str]] = {
     "widefield_imaging": ["widefield imaging", "widefield", "mesoscale imaging", "wide field"],
     "force_sensor": ["force sensor", "force tracking", "grip force", "force transducer"],
     # Brain regions - core
-    "motor_cortex": ["motor cortex", "m1", "primary motor cortex", "motor control", "primary motor"],
+    "motor_cortex": ["motor cortex", "motor control"],
     "visual_cortex": ["visual cortex", "visual areas", "visual cortical areas"],
-    "somatosensory_cortex": ["somatosensory cortex", "s1", "primary somatosensory", "barrel cortex"],
+    "somatosensory_cortex": ["somatosensory cortex"],
     "parietal_cortex": ["parietal cortex", "ppc", "posterior parietal", "posterior parietal cortex"],
     "OFC": ["ofc", "orbitofrontal", "orbitofrontal cortex"],
     "mPFC": ["mpfc", "medial prefrontal", "medial prefrontal cortex", "prelimbic", "infralimbic"],
     "ACC": ["acc", "anterior cingulate", "anterior cingulate cortex", "cingulate cortex"],
-    "hippocampus": ["hippocampus", "hpc", "ca1", "ca3", "dentate gyrus", "hipp", "hippocampal", "subiculum"],
+    "hippocampus": ["hippocampus", "hpc", "hipp", "hippocampal"],
     "striatum": ["striatum", "striatal", "basal ganglia"],
     "VTA": ["vta", "ventral tegmental area", "midbrain", "dopamine midbrain"],
     "SNc": ["snc", "substantia nigra", "substantia nigra pars compacta", "nigra"],
@@ -192,6 +201,59 @@ def _aliases_for(value: str) -> list[str]:
     return [item for item in values if item]
 
 
+SPECIES_CONTEXT_ALIASES: dict[str, list[str]] = {
+    species: ALIASES[species]
+    for species in (
+        "mouse",
+        "rat",
+        "human",
+        "macaque",
+        "marmoset",
+        "zebrafish",
+        "drosophila",
+    )
+}
+
+
+def _detect_species_context(text: str) -> set[str]:
+    normalized = normalize_text(text)
+    detected: set[str] = set()
+    for species, aliases in SPECIES_CONTEXT_ALIASES.items():
+        if any(_contains_phrase(normalized, alias) for alias in [species, *aliases]):
+            detected.add(species)
+    if "macaque" in detected or "marmoset" in detected:
+        detected.add("non_human_primate")
+    return detected
+
+
+def _species_alias_phrases(region: BrainRegion, detected_species: set[str]) -> list[tuple[str, float, str]]:
+    phrases: list[tuple[str, float, str]] = []
+    for species in sorted(detected_species):
+        for alias in region.species_aliases.get(species, []):
+            phrases.append((alias, 0.95, f"species_alias:{species}"))
+    return phrases
+
+
+def _species_scope_adjusted_match(
+    match: LabelMatch | None,
+    region: BrainRegion,
+    detected_species: set[str],
+) -> LabelMatch | None:
+    if match is None or not detected_species:
+        return match
+    scope = {normalize_text(value).replace(" ", "_") for value in region.species_scope}
+    if not scope or {"cross_species", "generic_mammal"} & scope:
+        return match
+    if detected_species & scope:
+        return match
+    return match.model_copy(
+        update={
+            "confidence": max(round(match.confidence - 0.18, 3), 0.1),
+            "match_type": f"{match.match_type}:species_mismatch",
+        },
+    )
+
+
 def _brain_region_entries(ontology: Ontology) -> dict[str, BrainRegion]:
     entries = {region.id: region for region in get_brain_regions()}
     generic_region_names = {
@@ -225,6 +287,10 @@ def _brain_region_entries(ontology: Ontology) -> dict[str, BrainRegion]:
                 BrainRegion(id=region_name, label=region_name, aliases=aliases),
             )
     return entries
+
+
+def _recording_scale_entries() -> dict[str, RecordingScale]:
+    return {scale.id: scale for scale in get_recording_scales()}
 
 
 def match_tasks(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
@@ -265,16 +331,43 @@ def match_modalities(text: str, ontology: Ontology | None = None) -> list[LabelM
     return sorted(matches, key=lambda item: item.confidence, reverse=True)
 
 
+def match_recording_scales(text: str) -> list[LabelMatch]:
+    """Match neural sampling/recording scale terms such as LFP or single-unit."""
+
+    matches: list[LabelMatch] = []
+    for scale_id, scale in _recording_scale_entries().items():
+        phrases = [
+            (scale.label, 0.98, "label"),
+            (scale_id, 0.96, "id"),
+            (scale.sampling_unit, 0.90, "sampling_unit"),
+            (scale.signal_form, 0.86, "signal_form"),
+        ]
+        phrases.extend((alias, 0.94, "scale_alias") for alias in scale.aliases)
+        phrases.extend((data_type, 0.90, "data_type") for data_type in scale.data_types)
+        match = _best_phrase_match(
+            text,
+            scale_id,
+            scale.label,
+            "recording_scale",
+            phrases,
+        )
+        if match:
+            matches.append(match)
+    return sorted(matches, key=lambda item: item.confidence, reverse=True)
+
+
 def match_brain_regions(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
     ontology = ontology or get_ontology()
     matches: list[LabelMatch] = []
     entries = _brain_region_entries(ontology)
+    detected_species = _detect_species_context(text)
     for region_id, region in entries.items():
         phrases = [
             (region.label, 0.97, "label"),
             (region_id, 0.96, "id"),
         ]
         phrases.extend((alias, 0.94, "region_alias") for alias in region.aliases)
+        phrases.extend(_species_alias_phrases(region, detected_species))
         for alias in _aliases_for(region_id):
             phrases.append((alias, 0.92 if alias != region_id else 0.96, "legacy_alias"))
         match = _best_phrase_match(
@@ -285,6 +378,7 @@ def match_brain_regions(text: str, ontology: Ontology | None = None) -> list[Lab
             phrases,
             allow_fuzzy=False,
         )
+        match = _species_scope_adjusted_match(match, region, detected_species)
         if match:
             matches.append(match)
 
@@ -306,6 +400,73 @@ def match_brain_regions(text: str, ontology: Ontology | None = None) -> list[Lab
                 match_type="parent",
             )
     return sorted(by_id.values(), key=lambda item: item.confidence, reverse=True)
+
+
+def brain_region_children_by_parent(
+    ontology: Ontology | None = None,
+) -> dict[str, list[str]]:
+    """Return child region IDs keyed by parent region ID."""
+
+    ontology = ontology or get_ontology()
+    entries = _brain_region_entries(ontology)
+    children: dict[str, set[str]] = {region_id: set(region.children) for region_id, region in entries.items()}
+    for region in entries.values():
+        for parent_id in region.parents:
+            children.setdefault(parent_id, set()).add(region.id)
+    return {parent: sorted(values) for parent, values in sorted(children.items()) if values}
+
+
+def expand_brain_region_ids(
+    region_ids: Iterable[str],
+    *,
+    include_descendants: bool = True,
+    ontology: Ontology | None = None,
+) -> list[str]:
+    """Expand brain-region IDs through the region hierarchy.
+
+    Parent matches are already emitted by ``match_brain_regions``. This helper
+    handles the opposite direction for broad queries such as "hippocampus",
+    where callers may want CA1, CA2, CA3, dentate gyrus, and other children.
+    """
+
+    ontology = ontology or get_ontology()
+    entries = _brain_region_entries(ontology)
+    requested = [region_id for region_id in region_ids if region_id in entries]
+    expanded: set[str] = set(requested)
+    if not include_descendants:
+        return sorted(expanded)
+
+    children = brain_region_children_by_parent(ontology)
+    stack = list(requested)
+    while stack:
+        parent = stack.pop()
+        for child in children.get(parent, []):
+            if child not in expanded:
+                expanded.add(child)
+                stack.append(child)
+    return sorted(expanded)
+
+
+def expand_brain_region_query(
+    query: str,
+    *,
+    exact: bool = False,
+    ontology: Ontology | None = None,
+) -> dict[str, list[str] | bool]:
+    """Match brain regions and optionally expand broad regions to descendants."""
+
+    ontology = ontology or get_ontology()
+    matches = match_brain_regions(query, ontology)
+    matched_ids = [match.id for match in matches]
+    return {
+        "matched_region_ids": matched_ids,
+        "expanded_region_ids": expand_brain_region_ids(
+            matched_ids,
+            include_descendants=not exact,
+            ontology=ontology,
+        ),
+        "exact": exact,
+    }
 
 
 def match_affordances(text: str, ontology: Ontology | None = None) -> list[LabelMatch]:
@@ -477,6 +638,7 @@ def match_all(text: str, ontology: Ontology | None = None) -> dict[str, list[Lab
         "behaviors": match_behavior_labels(text, ontology),
         "regions": match_brain_regions(text, ontology),
         "modalities": match_modalities(text, ontology),
+        "recording_scales": match_recording_scales(text),
         "affordances": match_affordances(text, ontology),
     }
 
@@ -495,6 +657,9 @@ class OntologyMatcher:
 
     def match_modalities(self, text: str) -> list[LabelMatch]:
         return match_modalities(text, self.ontology)
+
+    def match_recording_scales(self, text: str) -> list[LabelMatch]:
+        return match_recording_scales(text)
 
     def match_brain_regions(self, text: str) -> list[LabelMatch]:
         return match_brain_regions(text, self.ontology)

@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Generate v0.8 usefulness reports from seed data."""
 from pathlib import Path
-from neural_search.evaluation.usefulness_benchmark import load_seed_pairs, run_usefulness_benchmark
+
 from neural_search.evaluation.ablation_runner import (
-    AblationConfig, CandidatePool, run_ablation
+    AblationConfig,
+    CandidatePool,
+    run_ablation,
+)
+from neural_search.evaluation.usefulness_benchmark import (
+    load_seed_pairs,
+    run_usefulness_benchmark,
 )
 from neural_search.retrieval.usefulness_scorer import DatasetContext
 

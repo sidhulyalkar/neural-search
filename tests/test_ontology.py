@@ -1,10 +1,12 @@
 from neural_search.ontology import (
     get_task_by_id,
     load_ontology,
+    load_recording_scales,
     match_all,
     match_behavior_labels,
     match_brain_regions,
     match_modalities,
+    match_recording_scales,
     match_tasks,
     validate_ontology,
 )
@@ -30,6 +32,17 @@ def test_validate_ontology_schema():
         assert isinstance(task.relevant_modalities, list)
         assert isinstance(task.relevant_regions, list)
         assert isinstance(task.suggested_analyses, list)
+
+
+def test_load_recording_scales_schema():
+    scales = load_recording_scales("data/ontology/recording_scales.yaml")
+
+    assert len(scales) >= 10
+    for scale in scales:
+        assert scale.id
+        assert scale.label
+        assert scale.compatible_modalities
+        assert scale.aliases
 
 
 def test_synonym_matching_returns_evidence_and_confidence():
@@ -67,6 +80,17 @@ def test_fuzzy_region_and_modality_matching():
     assert "bci" in modality_ids
 
 
+def test_recording_scale_matching_distinguishes_lfp_and_single_unit():
+    lfp_ids = {match.id for match in match_recording_scales("hippocampus LFP theta oscillations")}
+    unit_ids = {
+        match.id for match in match_recording_scales("PFC single-unit spike times")
+    }
+
+    assert "local_field_potential" in lfp_ids
+    assert "single_unit_spikes" in unit_ids
+    assert "single_unit_spikes" not in lfp_ids
+
+
 def test_match_all_returns_requested_groups():
     matches = match_all(
         "Find reversal learning datasets with OFC recordings and reward omission"
@@ -75,4 +99,11 @@ def test_match_all_returns_requested_groups():
     assert "reversal_learning" in {match.id for match in matches["tasks"]}
     assert {"reward", "omission"} <= {match.id for match in matches["behaviors"]}
     assert "OFC" in {match.id for match in matches["regions"]}
-    assert set(matches) == {"tasks", "behaviors", "regions", "modalities", "affordances"}
+    assert set(matches) == {
+        "tasks",
+        "behaviors",
+        "regions",
+        "modalities",
+        "recording_scales",
+        "affordances",
+    }

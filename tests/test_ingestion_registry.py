@@ -23,7 +23,7 @@ def test_unknown_adapter_raises():
     from neural_search.ingestion.registry import run_adapter
     try:
         run_adapter("definitely_not_registered_xyz123", limit=1)
-        assert False, "should have raised ValueError"
+        raise AssertionError("should have raised ValueError")
     except ValueError as e:
         assert "definitely_not_registered_xyz123" in str(e)
 

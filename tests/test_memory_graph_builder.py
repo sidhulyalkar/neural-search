@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import pytest
-
 from neural_search.field_state.memory_graph import MemoryGraphBuilder
-
 
 _SENTINEL = object()
 

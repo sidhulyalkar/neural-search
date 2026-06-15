@@ -21,7 +21,6 @@ from neural_search.graph.schema import (
     make_node_id,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers to build minimal mock graph stores
 # ---------------------------------------------------------------------------

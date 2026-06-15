@@ -18,7 +18,7 @@ CORPUS_PATH = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09
 
 
 def _load_corpus() -> tuple[list[dict[str, Any]], dict[str, dict]]:
-    records = [json.loads(l) for l in CORPUS_PATH.read_text().strip().split("\n") if l.strip()]
+    records = [json.loads(line) for line in CORPUS_PATH.read_text().strip().split("\n") if line.strip()]
     ds_map: dict[str, dict] = {}
     for r in records:
         ds_map[r["dataset_id"]] = r
@@ -50,8 +50,6 @@ def _print_result(i: int, r: Any, ds_map: dict) -> None:
 
     bd = getattr(r, "score_breakdown", {}) or {}
     mg = bd.get("memory_graph_score", 0)
-    sem = bd.get("field_semantic_score", 0)
-
     ev = getattr(r, "memory_graph_evidence", {}) or {}
     graph_hits = (
         ev.get("modality_matches", []) +

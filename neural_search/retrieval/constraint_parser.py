@@ -368,8 +368,8 @@ def apply_negative_filter(
     filtered = []
     for result in results:
         should_exclude = False
-        for field in text_fields:
-            text = str(result.get(field, "")).lower()
+        for field_name in text_fields:
+            text = str(result.get(field_name, "")).lower()
             for neg_term in negative_lower:
                 if neg_term in text:
                     should_exclude = True

@@ -1,20 +1,26 @@
 """Validated ontology loading and fuzzy matching."""
 
 from neural_search.ontology.loader import (
-    DEFAULT_ONTOLOGY_PATH,
     DEFAULT_BRAIN_REGIONS_PATH,
+    DEFAULT_ONTOLOGY_PATH,
+    DEFAULT_RECORDING_SCALES_PATH,
     OntologyValidationError,
-    get_brain_regions,
     get_all_tasks,
+    get_brain_regions,
     get_ontology,
+    get_recording_scales,
     get_task_by_id,
     load_brain_regions,
     load_ontology,
+    load_recording_scales,
     reload_ontology,
     validate_ontology,
 )
 from neural_search.ontology.matcher import (
     OntologyMatcher,
+    brain_region_children_by_parent,
+    expand_brain_region_ids,
+    expand_brain_region_query,
     expand_query_terms,
     expand_query_terms_with_graph,
     match_affordances,
@@ -22,6 +28,7 @@ from neural_search.ontology.matcher import (
     match_behavior_labels,
     match_brain_regions,
     match_modalities,
+    match_recording_scales,
     match_tasks,
     normalize_text,
 )
@@ -31,6 +38,7 @@ from neural_search.ontology.models import (
     BrainRegion,
     LabelMatch,
     Ontology,
+    RecordingScale,
     Task,
 )
 
@@ -40,11 +48,16 @@ __all__ = [
     "BrainRegion",
     "DEFAULT_BRAIN_REGIONS_PATH",
     "DEFAULT_ONTOLOGY_PATH",
+    "DEFAULT_RECORDING_SCALES_PATH",
     "LabelMatch",
     "Ontology",
     "OntologyMatcher",
     "OntologyValidationError",
+    "RecordingScale",
     "Task",
+    "brain_region_children_by_parent",
+    "expand_brain_region_ids",
+    "expand_brain_region_query",
     "expand_query_terms",
     "expand_query_terms_with_graph",
     "get_all_tasks",
@@ -59,7 +72,10 @@ __all__ = [
     "match_tasks",
     "normalize_text",
     "get_brain_regions",
+    "get_recording_scales",
     "load_brain_regions",
+    "load_recording_scales",
     "reload_ontology",
     "validate_ontology",
+    "match_recording_scales",
 ]

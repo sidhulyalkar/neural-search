@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from neural_search.notebooks.templates import available_templates_for_dataset
@@ -212,6 +212,11 @@ def generate_dataset_card_json(
     tasks = _label_ids_or_dataset(extraction_obj.tasks, dataset, "tasks")
     behaviors = _label_ids_or_dataset(extraction_obj.behaviors, dataset, "behaviors")
     modalities = _label_ids_or_dataset(extraction_obj.modalities, dataset, "modalities")
+    recording_scales = _label_ids_or_dataset(
+        extraction_obj.recording_scales,
+        dataset,
+        "recording_scales",
+    )
     brain_regions = _label_ids_or_dataset(extraction_obj.brain_regions, dataset, "brain_regions")
     species = _label_ids_or_dataset(extraction_obj.species, dataset, "species")
     data_standards = _label_ids_or_dataset(extraction_obj.data_standards, dataset, "data_standards")
@@ -277,6 +282,7 @@ def generate_dataset_card_json(
         data_standard=data_standard,
         species=species,
         modalities=modalities,
+        recording_scales=recording_scales,
         brain_regions=brain_regions,
         tasks=tasks,
         behaviors=behaviors,
@@ -300,6 +306,7 @@ def generate_dataset_card_json(
         },
         neural_data={
             "modalities": modalities,
+            "recording_scales": recording_scales,
             "brain_regions": brain_regions,
             "file_formats": sorted(
                 {
@@ -394,7 +401,7 @@ def generate_dataset_card_json(
             "linked_paper_count": len(linked_papers or []),
             "claim_policy": "Only deterministic labels with evidence are included.",
         },
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
     )
     card.card_markdown = generate_dataset_card_markdown(card)
     card.markdown = card.card_markdown

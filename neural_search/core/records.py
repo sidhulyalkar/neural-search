@@ -15,7 +15,7 @@ Every label/entity includes provenance and confidence.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any, Literal
 
@@ -87,7 +87,7 @@ class ExtractionProvenance(BaseModel):
     extractor_name: str = "unknown"
     extractor_version: str = "v0.0.0"
     extraction_method: str = "rule"     # "rule", "embedding", "llm", "human"
-    extracted_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    extracted_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class ScientificEntity(BaseModel):
@@ -282,7 +282,7 @@ class ScientificRecord(BaseModel):
     # Timestamps
     source_created_at: str | None = None
     source_updated_at: str | None = None
-    ingested_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    ingested_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     last_updated_at: str | None = None
 
     @field_validator("record_id", "source", "source_id", "title")

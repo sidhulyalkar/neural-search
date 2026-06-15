@@ -10,23 +10,22 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
+from pydantic import ValidationError
 
 # Repo root on path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from neural_search.eval.neuro_judge.calibration import CalibrationReport, calibrate
-from neural_search.eval.neuro_judge.consensus import build_consensus, _median_label
+from neural_search.eval.neuro_judge.consensus import build_consensus
 from neural_search.eval.neuro_judge.evidence_packet import (
     NEURO_JUDGE_WATERMARK,
     VALID_LABEL_PROVENANCES,
-    AffordanceMatch,
     ConflictRecord,
     ConsensusResult,
     EvidencePacket,
-    LinkedPaper,
     NeuroJudgment,
 )
 from neural_search.eval.neuro_judge.evidence_retriever import build_evidence_packet
@@ -36,17 +35,12 @@ from neural_search.eval.neuro_judge.judge import (
     LocalHFNeuroJudge,
     MockNeuroJudge,
     NeuroJudgeProtocol,
-    _error_judgment,
     _parse_judgment,
     build_neuro_judge,
 )
 from neural_search.eval.neuro_judge.prompt import (
-    NEURO_RUBRIC,
-    NEURO_RULES,
-    PROMPT_VERSION,
     build_judge_prompt,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
@@ -680,7 +674,7 @@ class TestMetricReporterProvenance:
         assert "NOT PURE HUMAN GOLD" in NEURO_JUDGE_WATERMARK
 
     def test_human_gold_provenance_rejected_in_judgment(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             NeuroJudgment(
                 query_id="q",
                 dataset_id="d",
@@ -690,7 +684,7 @@ class TestMetricReporterProvenance:
             )
 
     def test_human_gold_provenance_rejected_in_consensus(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             ConsensusResult(
                 query_id="q",
                 dataset_id="d",

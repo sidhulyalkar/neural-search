@@ -27,9 +27,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from neural_search.core.neural_signature import (
     NeuralSignatureV1,
-    extract_signature_from_nwb,
-    extract_signature_from_metadata,
     SignatureQuality,
+    extract_signature_from_nwb,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -72,7 +71,7 @@ def extract_signatures(
             # Infer dataset_id from path (DANDI format: DANDI/000XXX/sub-YYY/...)
             parts = nwb_path.parts
             dataset_id = None
-            for j, part in enumerate(parts):
+            for _j, part in enumerate(parts):
                 if part.startswith("000") and len(part) == 6:
                     dataset_id = f"dandi:{part}"
                     break

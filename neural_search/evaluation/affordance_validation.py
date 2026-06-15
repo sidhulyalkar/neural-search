@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -367,7 +367,7 @@ def run_affordance_validation(
     }
 
     return AffordanceValidationReport(
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
         rubric_path=str(rubric),
         total_datasets=len(summaries),
         total_validations=total_validations,

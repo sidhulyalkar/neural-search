@@ -34,7 +34,7 @@ def _qwk(labels_true: list[int], labels_pred: list[int], num_classes: int = 4) -
 
     # Confusion matrix
     conf: list[list[int]] = [[0] * num_classes for _ in range(num_classes)]
-    for t, p in zip(labels_true, labels_pred):
+    for t, p in zip(labels_true, labels_pred, strict=False):
         conf[t][p] += 1
 
     # Weight matrix (quadratic)
@@ -72,7 +72,7 @@ def _confusion_matrix(
     num_classes: int = 4,
 ) -> list[list[int]]:
     conf: list[list[int]] = [[0] * num_classes for _ in range(num_classes)]
-    for t, p in zip(labels_true, labels_pred):
+    for t, p in zip(labels_true, labels_pred, strict=False):
         conf[t][p] += 1
     return conf
 
@@ -172,8 +172,8 @@ def calibrate(
     ]
 
     n = len(pairs)
-    exact = sum(lj == lh for lj, lh in zip(labels_judge, labels_human)) / n
-    within1 = sum(abs(lj - lh) <= 1 for lj, lh in zip(labels_judge, labels_human)) / n
+    exact = sum(lj == lh for lj, lh in zip(labels_judge, labels_human, strict=False)) / n
+    within1 = sum(abs(lj - lh) <= 1 for lj, lh in zip(labels_judge, labels_human, strict=False)) / n
     kappa = _qwk(labels_human, labels_judge)
     conf_matrix = _confusion_matrix(labels_human, labels_judge)
 
@@ -185,7 +185,7 @@ def calibrate(
             human_label=lh,
             judge_rationale=str(j.get("rationale_short", "")),
         )
-        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human)
+        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human, strict=False)
         if lj > lh
     ]
     false_low = [
@@ -196,14 +196,14 @@ def calibrate(
             human_label=lh,
             judge_rationale=str(j.get("rationale_short", "")),
         )
-        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human)
+        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human, strict=False)
         if lj < lh
     ]
 
     # Breakdowns
     def _breakdown(key_fn: Any) -> dict[str, dict[str, float]]:
         buckets: dict[str, list[tuple[int, int]]] = {}
-        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human):
+        for (j, h), lj, lh in zip(pairs, labels_judge, labels_human, strict=False):
             k = key_fn(j, h)
             if k:
                 buckets.setdefault(k, []).append((lj, lh))

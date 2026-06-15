@@ -2,7 +2,6 @@
 from neural_search.retrieval.role_assignment import (
     DatasetRole,
     assign_role,
-    RoleAssignment,
 )
 
 

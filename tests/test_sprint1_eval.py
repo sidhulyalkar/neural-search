@@ -1,13 +1,9 @@
 """Tests for Sprint 1 evaluation scripts: expand_candidate_pool and report_benchmark_metrics."""
 from __future__ import annotations
 
-import json
 import math
 import sys
-import textwrap
 from pathlib import Path
-
-import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -15,7 +11,6 @@ sys.path.insert(0, str(ROOT))
 from scripts.eval.expand_candidate_pool import (
     _candidate_id,
     _record_id,
-    _record_text,
     bm25_score,
     build_bm25_index,
     build_candidate,
@@ -32,7 +27,6 @@ from scripts.eval.report_benchmark_metrics import (
     precision_at_k,
     recall_at_k,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

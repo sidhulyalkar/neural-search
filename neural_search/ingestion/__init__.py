@@ -8,7 +8,6 @@ Connectors:
 - registry: Adapter registry for corpus expansion adapters
 """
 
-from neural_search.ingestion.registry import list_adapters, register, run_adapter
 from neural_search.ingestion.curated import (
     CuratedSource,
     Priority,
@@ -23,6 +22,7 @@ from neural_search.ingestion.curated import (
     summarize_curated_sources,
 )
 from neural_search.ingestion.demo_seed import build_demo_seed, seed_demo_database
+from neural_search.ingestion.registry import list_adapters, register, run_adapter
 
 __all__ = [
     # Adapter registry

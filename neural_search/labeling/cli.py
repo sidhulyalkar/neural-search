@@ -5,7 +5,7 @@ This module provides a CLI for human relevance labeling.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -294,7 +294,7 @@ def run_labeling_from_search(
     Returns:
         Completed LabelingSession
     """
-    session_id = f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
+    session_id = f"session_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
 
     session = create_session_from_search_results(
         session_id=session_id,

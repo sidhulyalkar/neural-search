@@ -101,7 +101,7 @@ class NeuralSearchTurboIndex:
 
         if self._index is not None:
             distances, ids = self._index.search(q, k)
-            return list(zip(ids, distances.tolist()))
+            return list(zip(ids, distances.tolist(), strict=False))
 
         if self._vecs is None:
             return []
@@ -125,7 +125,7 @@ class NeuralSearchTurboIndex:
         logger.info("Saved %d-record index → %s", self.size, p)
 
     @classmethod
-    def load(cls, path: str) -> "NeuralSearchTurboIndex":
+    def load(cls, path: str) -> NeuralSearchTurboIndex:
         """Load index from disk."""
         p = Path(path)
         meta = json.loads((p / "meta.json").read_text())

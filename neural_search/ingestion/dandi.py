@@ -232,14 +232,8 @@ _DANDI_ABOUT_REGION_MAP: dict[str, str] = {
     "retina": "retina",
     # Spinal cord
     "spinal cord": "spinal_cord",
-    # Broad catch-alls
-    "temporal lobe": "temporal_cortex",
-    "frontal lobe": "prefrontal_cortex",
     "parietal lobe": "parietal_cortex",
     "occipital lobe": "visual_cortex",
-    "cortex": "neocortex",
-    "neocortical": "neocortex",
-    "cerebral cortex": "neocortex",
 }
 
 # DANDI keywords → canonical brain region IDs (plain string match)
