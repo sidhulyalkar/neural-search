@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-CORPUS_PATH = Path("data/corpus/normalized/combined_corpus.jsonl")
+CORPUS_PATH = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl")
 EMBEDDINGS_OUT = Path("data/embeddings/real_all.dense.field_embeddings.jsonl")
 INDEX_PATH = Path("data/index/turbovec_dense_1024.index")
 
