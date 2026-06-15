@@ -1004,8 +1004,6 @@ brain_regions:
   - primary motor cortex
   - primary motor
   - motor area 1
-  - m1 cortex
-  - m1
   parents:
   - motor_cortex
   system: cortical

@@ -492,7 +492,7 @@ def parse_query(
             "matches": species_intents,
             "only_query_exclusions": only_species_exclusions,
         },
-        "brain_regions": [match.id for match in brain_region_matches],
+        "brain_regions": [m.id for m in brain_region_matches if m.match_type != "parent"],
         "recording_scales": [match.id for match in recording_scale_matches],
         "analysis": sorted(set(analysis_ids)),
         "task_intent": _match_dumps(task_matches),

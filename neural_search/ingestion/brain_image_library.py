@@ -148,17 +148,17 @@ def _extract_brain_regions(record: dict[str, Any]) -> list[str]:
             if isinstance(item, dict):
                 text_parts.extend(str(value) for value in item.values() if value)
     haystack = " ".join(text_parts)
+    haystack_lower = haystack.lower().replace("_", " ")
+    token_regions = [region for token, region in _BRAIN_REGION_TOKENS.items() if token in haystack_lower]
     try:
         from neural_search.ontology import (
             match_brain_regions,  # lazy import to avoid circular imports
         )
 
         matches = match_brain_regions(haystack)
-        return _dedupe([m.id for m in matches])
+        return _dedupe([m.id for m in matches] + token_regions)
     except Exception:
-        haystack_lower = haystack.lower().replace("_", " ")
-        regions = [region for token, region in _BRAIN_REGION_TOKENS.items() if token in haystack_lower]
-        return _dedupe(regions)
+        return _dedupe(token_regions)
 
 
 def _extract_modalities(dataset: dict[str, Any], instruments: list[Any], images: list[Any]) -> list[str]:
