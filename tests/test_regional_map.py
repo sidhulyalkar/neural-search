@@ -56,6 +56,9 @@ def test_regional_map_tracks_verified_and_candidate_regions():
     assert regional_map["by_source"]["dandi"]["mpfc"] == 1
     assert "hippocampus" in regional_map["candidate_region_mentions"]
     assert "ca1" in regional_map["candidate_region_mentions"]
+    assert "cortical" in regional_map["system_totals"]
+    assert regional_map["frontend_regions"][0]["label"]
+    assert regional_map["frontend_regions"][0]["system"]
 
 
 def test_regional_map_report_includes_review_queue():
@@ -73,6 +76,7 @@ def test_regional_map_report_includes_review_queue():
     report = render_regional_map_report(regional_map)
 
     assert "Regional Coverage Map" in report
+    assert "System Coverage" in report
     assert "barrel_cortex" in report
     assert "dataset:test:barrel" in report
 
