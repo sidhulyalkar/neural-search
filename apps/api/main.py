@@ -1334,8 +1334,41 @@ def _frontend_evaluation_payload(report: Any) -> dict[str, Any]:
 
 
 # ── Coverage gap API ──────────────────────────────────────────────────────────
+# NOTE: No app-wide auth exists; this API is intended to run on localhost only
+# behind an authenticating reverse proxy. Do not expose it directly to the
+# public internet. See deployment docs for proxy configuration.
 
 _COVERAGE_DB_PATH = Path("data/coverage/ledger.duckdb")
+
+_ALLOWED_COVERAGE_DIMS = frozenset({
+    "brain_regions",
+    "modalities",
+    "species",
+    "tasks",
+    "recording_scales",
+})
+
+_SPECIES_ID_RE = re.compile(r"^[a-zA-Z0-9_:\-]{1,64}$")
+
+
+def _validate_dim(name: str, value: str) -> str:
+    if value not in _ALLOWED_COVERAGE_DIMS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid {name!r}: must be one of {sorted(_ALLOWED_COVERAGE_DIMS)}",
+        )
+    return value
+
+
+def _validate_species(value: str | None) -> str | None:
+    if value is None:
+        return None
+    if not _SPECIES_ID_RE.match(value):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid species filter: use alphanumeric/underscore/hyphen/colon IDs only",
+        )
+    return value
 
 
 def _coverage_store() -> Any:
@@ -1402,6 +1435,9 @@ async def get_coverage_gap_matrix(
     limit: int = 50,
 ) -> list[dict[str, Any]]:
     """Top region × modality (or other dimension) dataset counts."""
+    row_dim = _validate_dim("row_dim", row_dim)
+    col_dim = _validate_dim("col_dim", col_dim)
+    species = _validate_species(species)
     with _coverage_store() as store:
         rows = store.gap_matrix(
             row_dim, col_dim, species_filter=species
@@ -1418,6 +1454,8 @@ async def get_dark_pairs(
     limit: int = 20,
 ) -> list[dict[str, Any]]:
     """Highest-opportunity zero-coverage dimension pairs."""
+    dim_a = _validate_dim("dim_a", dim_a)
+    dim_b = _validate_dim("dim_b", dim_b)
     with _coverage_store() as store:
         rows = store.dark_pairs(dim_a, dim_b, top_n=limit).fetchall()
     return [
