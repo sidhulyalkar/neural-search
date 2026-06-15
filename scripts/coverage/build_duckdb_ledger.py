@@ -24,11 +24,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from neural_search.coverage.duckdb_store import CoverageStore
-from neural_search.coverage.ledger import (
-    CoverageLedger,
-)
-
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("build_duckdb_ledger")
 
@@ -58,6 +53,9 @@ def main(argv: list[str] | None = None) -> int:
     if not args.corpus.exists():
         log.error("Corpus path not found: %s", args.corpus)
         return 1
+
+    from neural_search.coverage.duckdb_store import CoverageStore
+    from neural_search.coverage.ledger import CoverageLedger
 
     log.info("Building DuckDB ledger: %s", args.db)
 

@@ -68,7 +68,7 @@ def dandiset_to_dataset_id(dandiset: dict[str, Any]) -> str:
     identifier = dandiset.get("identifier", "")
     if identifier:
         # Normalize: DANDI:000026 → dataset:dandi:000026
-        num = identifier.lstrip("DANDI:").lstrip("0") or "0"
+        num = identifier.removeprefix("DANDI:").lstrip("0") or "0"
         return f"dataset:dandi:{num.zfill(6)}"
     return f"dataset:dandi:unknown_{dandiset.get('id', '')}"
 

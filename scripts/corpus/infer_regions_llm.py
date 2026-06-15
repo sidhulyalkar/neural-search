@@ -364,7 +364,9 @@ def main(argv: list[str] | None = None) -> int:
                 api_key=anthropic_key,
                 **({"base_url": base_url} if base_url else {}),
             )
-            call_llm = lambda t, d: _call_anthropic(client, t, d)
+            def anthropic_call(t: str, d: str) -> list[str]:
+                return _call_anthropic(client, t, d)
+            call_llm = anthropic_call
             provenance = _PROVENANCE_ANTHROPIC
             logger.info("Provider: Anthropic Claude Haiku 4.5")
         except ImportError:
@@ -510,7 +512,7 @@ def main(argv: list[str] | None = None) -> int:
     CORPUS_PATH.write_text("\n".join(output) + "\n")
     logger.info("Updated %d records → %s", updated, CORPUS_PATH)
 
-    refreshed = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    refreshed = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     total = len(refreshed)
     with_region = sum(1 for r in refreshed if _has_region(r))
     logger.info("Brain region coverage: %d/%d = %d%%", with_region, total,

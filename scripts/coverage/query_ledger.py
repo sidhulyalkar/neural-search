@@ -24,16 +24,20 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from neural_search.coverage.duckdb_store import CoverageStore
+if TYPE_CHECKING:
+    from neural_search.coverage.duckdb_store import CoverageStore
 
 DB_PATH = ROOT / "data" / "coverage" / "ledger.duckdb"
 
 
 def _require_db(db_path: Path) -> CoverageStore:
+    from neural_search.coverage.duckdb_store import CoverageStore
+
     if not db_path.exists():
         print(
             f"Ledger not found: {db_path}\n"
