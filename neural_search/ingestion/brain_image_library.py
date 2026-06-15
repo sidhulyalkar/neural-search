@@ -34,6 +34,13 @@ BIL_QUERIES: list[tuple[str, dict[str, str]]] = [
     ("query/instrument", {"microscopetype": "light sheet"}),
     ("query/specimen", {"species": "Mouse"}),
     ("query/specimen", {"species": "Human"}),
+    ("query/specimen", {"preparationtype": "CLARITY"}),
+    ("query/dataset", {"title": "retina"}),
+    ("query/dataset", {"title": "barrel cortex"}),
+    ("query/dataset", {"title": "septum"}),
+    ("query/dataset", {"title": "cerebellum"}),
+    ("query/dataset", {"title": "spinal cord"}),
+    ("query/instrument", {"microscopetype": "confocal"}),
 ]
 
 _SPECIES_MAP = {
@@ -136,13 +143,20 @@ def _extract_species(specimens: list[Any]) -> list[str]:
 
 def _extract_brain_regions(record: dict[str, Any]) -> list[str]:
     text_parts: list[str] = []
-    for section in ("Specimen", "Dataset", "Image"):
+    for section in ("Specimen", "Dataset", "Image", "Instrument", "Submission", "Contributors"):
         for item in _as_list(record.get(section)):
             if isinstance(item, dict):
                 text_parts.extend(str(value) for value in item.values() if value)
-    haystack = " ".join(text_parts).lower().replace("_", " ")
-    regions = [region for token, region in _BRAIN_REGION_TOKENS.items() if token in haystack]
-    return _dedupe(regions)
+    haystack = " ".join(text_parts)
+    try:
+        from neural_search.ontology import match_brain_regions  # lazy import to avoid circular imports
+
+        matches = match_brain_regions(haystack)
+        return _dedupe([m.id for m in matches])
+    except Exception:
+        haystack_lower = haystack.lower().replace("_", " ")
+        regions = [region for token, region in _BRAIN_REGION_TOKENS.items() if token in haystack_lower]
+        return _dedupe(regions)
 
 
 def _extract_modalities(dataset: dict[str, Any], instruments: list[Any], images: list[Any]) -> list[str]:
@@ -310,7 +324,7 @@ def _passes_quality_gate(record: dict[str, Any]) -> bool:
 
 
 @register("brain_image_library")
-def fetch_brain_image_library(limit: int = 300) -> list[dict[str, Any]]:
+def fetch_brain_image_library(limit: int = 500) -> list[dict[str, Any]]:
     """Harvest BIL metadata records from API query/retrieve endpoints."""
     accepted: list[dict[str, Any]] = []
     seen_query_ids: set[str] = set()
