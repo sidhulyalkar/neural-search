@@ -3,10 +3,11 @@
 
 Discovers workers from environment variables in priority order:
 
-  1. OLLAMA_BASE_URL + OLLAMA_MODEL      → local Ollama (recommended for M1 Mac)
-  2. LM_STUDIO_BASE_URL + LM_STUDIO_MODEL → local LM Studio
-  3. OPENROUTER_API_KEY                  → OpenRouter (requires credits)
-  4. KEYWAY_BASE_URL + legacy keys       → keyway proxy (legacy fallback)
+  1. OLLAMA_BASE_URL + OLLAMA_MODEL      → local Ollama (M1 Mac, 1 worker)
+  2. LM_STUDIO_BASE_URL + LM_STUDIO_MODEL → local LM Studio (1 worker)
+  3. GROQ_API_KEY                        → Groq free tier (~400 tok/s, fast!)
+  4. OPENROUTER_API_KEY                  → OpenRouter (requires credits)
+  5. KEYWAY_BASE_URL + legacy keys       → keyway proxy (legacy fallback)
 
 Recommended setup for Apple Silicon (M1/M2/M3):
   # Install Ollama: https://ollama.ai
@@ -90,14 +91,26 @@ _LM_STUDIO_MODEL = os.environ.get("LM_STUDIO_MODEL", "local-model")
 _LM_STUDIO_N_WORKERS = int(os.environ.get("LM_STUDIO_WORKERS", "1"))
 
 # ---------------------------------------------------------------------------
-# OpenRouter config — priority 3
+# Groq config — priority 3 (free tier: 7K req/day, ~400 tok/s, very fast)
+# Get a free key at https://console.groq.com
+# ---------------------------------------------------------------------------
+_GROQ_BASE_URL = os.environ.get("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
+_GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+_GROQ_N_WORKERS = int(os.environ.get("GROQ_WORKERS", "4"))
+
+# Groq free tier: 30 RPM / 131K TPM per model. With 4 workers and ~1500 tokens
+# per request, we stay well within limits. The 7K req/day cap means ~13K pairs
+# takes ~2 days (7K day 1, 6.6K day 2). Run is resumable.
+
+# ---------------------------------------------------------------------------
+# OpenRouter config — priority 4
 # ---------------------------------------------------------------------------
 _OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 _OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 _OPENROUTER_N_WORKERS = int(os.environ.get("OPENROUTER_WORKERS", "4"))
 
 # ---------------------------------------------------------------------------
-# Legacy keyway config — priority 4
+# Legacy keyway config — priority 5
 # ---------------------------------------------------------------------------
 _KEYWAY_BASE_URL = os.environ.get("KEYWAY_BASE_URL", "")
 
@@ -156,7 +169,15 @@ def _discover_workers(base_url: str = "") -> list[WorkerConfig]:  # noqa: C901
             workers.append(WorkerConfig(f"lms-{i}", "lm-studio", lms_url, _LM_STUDIO_MODEL))
         return workers
 
-    # Priority 3: OpenRouter (cloud, requires credits)
+    # Priority 3: Groq (cloud, free tier, very fast ~400 tok/s)
+    groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+    if groq_key:
+        groq_url = base_url or _GROQ_BASE_URL
+        for i in range(_GROQ_N_WORKERS):
+            workers.append(WorkerConfig(f"groq-{i}", groq_key, groq_url, _GROQ_MODEL))
+        return workers
+
+    # Priority 4: OpenRouter (cloud, requires credits)
     or_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if or_key:
         or_url = base_url or _OPENROUTER_BASE_URL
@@ -164,7 +185,7 @@ def _discover_workers(base_url: str = "") -> list[WorkerConfig]:  # noqa: C901
             workers.append(WorkerConfig(f"or-{i}", or_key, or_url, _OPENROUTER_MODEL))
         return workers
 
-    # Priority 4: Legacy keyway proxy
+    # Priority 5: Legacy keyway proxy
     effective_url = base_url or _KEYWAY_BASE_URL
     if not effective_url:
         return workers
@@ -419,16 +440,19 @@ def main(argv: list[str] | None = None) -> int:
     if not workers:
         raise SystemExit(
             "\nNo LLM backend configured. Add ONE of these to .env.local:\n\n"
-            "  # Ollama (local, free — recommended for Apple Silicon)\n"
+            "  # Groq (free tier, fast — RECOMMENDED)\n"
+            "  # Get key: https://console.groq.com (free, instant)\n"
+            "  GROQ_API_KEY=gsk_...\n"
+            "  GROQ_MODEL=llama-3.3-70b-versatile   # default\n"
+            "  GROQ_WORKERS=4\n\n"
+            "  # Ollama (local, free — good for M1 Mac)\n"
             "  OLLAMA_BASE_URL=http://localhost:11434/v1\n"
-            "  OLLAMA_MODEL=qwen2.5:14b-instruct   # or 32b / llama3.3:70b\n"
-            "  OLLAMA_WORKERS=1\n\n"
+            "  OLLAMA_MODEL=qwen2.5:14b-instruct   # 14b is faster than 32b\n\n"
             "  # LM Studio (local, free)\n"
             "  LM_STUDIO_BASE_URL=http://localhost:1234/v1\n"
             "  LM_STUDIO_MODEL=<model-name-from-lm-studio>\n\n"
             "  # OpenRouter (cloud, requires credits)\n"
             "  OPENROUTER_API_KEY=sk-or-v1-...\n"
-            "  OPENROUTER_MODEL=google/gemini-2.5-flash\n"
         )
 
     print(f"\n{'='*60}")
