@@ -23,10 +23,12 @@ def test_syntax():
 
 
 def test_missing_graph_exits_nonzero(tmp_path, monkeypatch):
+    from pathlib import Path
+    repo_root = str(Path(__file__).parent.parent)
     monkeypatch.chdir(tmp_path)
     result = subprocess.run(
         [sys.executable, "-c",
-         "import sys; sys.path.insert(0, '/mnt/c/Users/sidso/Documents/neural-search'); "
+         f"import sys; sys.path.insert(0, {repo_root!r}); "
          "from scripts.ablate_graph_proximity import main; sys.exit(main([]))"],
         capture_output=True, text=True,
     )
@@ -37,9 +39,11 @@ def test_missing_graph_exits_nonzero(tmp_path, monkeypatch):
 # Unit tests for NDCG calculation
 def _import_ndcg():
     import importlib.util
+    from pathlib import Path
+    script_path = Path(__file__).parent.parent / "scripts" / "ablate_graph_proximity.py"
     spec = importlib.util.spec_from_file_location(
         "ablate_graph_proximity",
-        "/mnt/c/Users/sidso/Documents/neural-search/scripts/ablate_graph_proximity.py",
+        str(script_path),
     )
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

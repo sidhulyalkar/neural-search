@@ -1,5 +1,6 @@
 # tests/test_optimize_usefulness_weights.py
 import json
+import sys
 from pathlib import Path
 
 
@@ -16,7 +17,7 @@ def test_optimizer_dry_run(tmp_path):
     result = subprocess.run(
         [sys.executable, "scripts/optimize_usefulness_weights.py", "--dry-run"],
         capture_output=True, text=True,
-        cwd="/mnt/c/Users/sidso/Documents/neural-search",
+        cwd=str(Path(__file__).parent.parent),
     )
     assert result.returncode == 0, result.stderr + result.stdout
     assert "INTENT_WEIGHT_PROFILES" in result.stdout or "dry run" in result.stdout.lower()
@@ -31,7 +32,7 @@ def test_optimizer_produces_valid_weights(tmp_path):
         [sys.executable, "scripts/optimize_usefulness_weights.py",
          "--n-trials", "2", "--out", str(out_file)],
         capture_output=True, text=True,
-        cwd="/mnt/c/Users/sidso/Documents/neural-search",
+        cwd=str(Path(__file__).parent.parent),
     )
     assert result.returncode == 0, result.stderr + result.stdout
     assert out_file.exists(), "Output file not created"
