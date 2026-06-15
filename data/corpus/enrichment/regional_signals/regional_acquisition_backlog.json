@@ -3,18 +3,18 @@
     "example_records": [
       "dataset:dandi:000045",
       "dataset:dandi:000678",
-      "dataset:dandi:001079",
-      "dataset:dandi:000021",
-      "dataset:dandi:000022"
+      "dataset:dandi:000030",
+      "dataset:dandi:000042",
+      "dataset:dandi:000150"
     ],
-    "high_confidence_count": 15,
+    "high_confidence_count": 10,
     "priority": "critical",
     "region": "visual_cortex",
     "sources": [
       "dandi",
       "openneuro"
     ],
-    "suggested_record_count": 16,
+    "suggested_record_count": 11,
     "system": "cortical"
   },
   {
@@ -37,7 +37,7 @@
       "dataset:dandi:000028",
       "dataset:dandi:000043",
       "dataset:dandi:000060",
-      "dataset:dandi:000172"
+      "dataset:dandi:000210"
     ],
     "high_confidence_count": 0,
     "priority": "medium",
@@ -46,7 +46,7 @@
       "dandi",
       "openneuro"
     ],
-    "suggested_record_count": 12,
+    "suggested_record_count": 7,
     "system": "cortical"
   },
   {
@@ -69,20 +69,6 @@
   },
   {
     "example_records": [
-      "dataset:dandi:000004",
-      "dataset:dandi:000468"
-    ],
-    "high_confidence_count": 0,
-    "priority": "medium",
-    "region": "medial_temporal_lobe",
-    "sources": [
-      "dandi"
-    ],
-    "suggested_record_count": 2,
-    "system": "hippocampal_formation"
-  },
-  {
-    "example_records": [
       "dataset:dandi:000024"
     ],
     "high_confidence_count": 1,
@@ -93,19 +79,6 @@
     ],
     "suggested_record_count": 1,
     "system": "basal_forebrain"
-  },
-  {
-    "example_records": [
-      "dataset:dandi:001079"
-    ],
-    "high_confidence_count": 1,
-    "priority": "low",
-    "region": "hippocampus",
-    "sources": [
-      "dandi"
-    ],
-    "suggested_record_count": 1,
-    "system": "hippocampal_formation"
   },
   {
     "example_records": [
@@ -132,6 +105,19 @@
     ],
     "suggested_record_count": 1,
     "system": "brainstem"
+  },
+  {
+    "example_records": [
+      "dataset:dandi:000468"
+    ],
+    "high_confidence_count": 0,
+    "priority": "low",
+    "region": "medial_temporal_lobe",
+    "sources": [
+      "dandi"
+    ],
+    "suggested_record_count": 1,
+    "system": "hippocampal_formation"
   },
   {
     "example_records": [
