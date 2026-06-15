@@ -107,16 +107,22 @@ def build_pool(
 
         n = len(results)
 
-        def _add(rank: int, reason: str) -> None:
-            if rank >= n:
+        def _add(
+            rank: int,
+            reason: str,
+            query_id: str = qid,
+            result_rows: list[dict] = results,
+            max_rank: int = n,
+        ) -> None:
+            if rank >= max_rank:
                 return
-            r = results[rank]
-            key = (qid, r["dataset_id"])
+            r = result_rows[rank]
+            key = (query_id, r["dataset_id"])
             if key in seen:
                 return
             seen.add(key)
             pool_rows.append({
-                "query_id": qid,
+                "query_id": query_id,
                 "dataset_id": r["dataset_id"],
                 "source": r.get("source", ""),
                 "rank": rank + 1,

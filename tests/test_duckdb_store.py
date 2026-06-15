@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import duckdb
 import pytest
 
 from neural_search.coverage.duckdb_store import CoverageStore
@@ -195,5 +196,5 @@ class TestContextManager:
             n = store.sql("SELECT COUNT(*) FROM ontology_regions").fetchone()[0]
             assert n >= 106
         # After close, attempting to use the store should raise
-        with pytest.raises(Exception):
+        with pytest.raises(duckdb.ConnectionException):
             store.sql("SELECT 1")

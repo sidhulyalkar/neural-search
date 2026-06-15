@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
 
     valid_ids = frozenset(r.id for r in get_brain_regions())
 
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     existing_ids: set[str] = {r["source_id"] for r in corpus if r.get("source") == "neuromorpho"}
     logger.info("Existing NeuroMorpho records in corpus: %d", len(existing_ids))
 

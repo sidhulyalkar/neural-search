@@ -25,7 +25,7 @@ def main(argv=None):
     from _fetch_common import append_to_corpus
 
     from neural_search.ingestion.nemo_archive import fetch_nemo_records
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     existing = {r["source_id"] for r in corpus if r.get("source") == "nemo"}
     logger.info("Existing NeMO records: %d", len(existing))
     records = fetch_nemo_records(limit=args.limit)
@@ -33,7 +33,8 @@ def main(argv=None):
     new_records = [r for r in records if r["source_id"] not in existing]
     logger.info("New: %d", len(new_records))
     if not new_records:
-        logger.info("Nothing new"); return 0
+        logger.info("Nothing new")
+        return 0
     append_to_corpus(CORPUS_PATH, corpus, new_records, "NeMO", logger, args.dry_run)
     return 0
 
