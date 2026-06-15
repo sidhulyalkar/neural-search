@@ -60,7 +60,7 @@ sys.path.insert(0, str(_REPO))
 _ENV_LOCAL = _REPO / ".env.local"
 if _ENV_LOCAL.exists():
     from dotenv import load_dotenv
-    load_dotenv(_ENV_LOCAL, override=False)
+    load_dotenv(_ENV_LOCAL, override=True)
 
 from neural_search.eval.neuro_judge.evidence_packet import (  # noqa: E402
     EvidencePacket,

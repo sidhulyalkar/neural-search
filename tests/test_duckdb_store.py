@@ -198,3 +198,45 @@ class TestContextManager:
         # After close, attempting to use the store should raise
         with pytest.raises(duckdb.ConnectionException):
             store.sql("SELECT 1")
+
+
+def test_region_dataset_counts_returns_list(tmp_path):
+    """region_dataset_counts returns a list of dicts with region_id, region_label, n_datasets."""
+    from neural_search.coverage.duckdb_store import CoverageStore
+    store = CoverageStore(tmp_path / "test.duckdb")
+    test_corpus = tmp_path / "corpus.jsonl"
+    test_corpus.write_text(
+        '{"id": "dandi:000001", "source": "dandi", "source_id": "000001", '
+        '"title": "Test dataset", "brain_regions": ["visual_cortex"], '
+        '"modalities": ["ephys"], "species": ["mouse"], "tasks": [], '
+        '"has_behavior": false, "has_raw_data": true}\n'
+    )
+    store.build(corpus_path=test_corpus)
+    counts = store.region_dataset_counts()
+    assert isinstance(counts, list)
+    for item in counts:
+        assert "region_id" in item
+        assert "region_label" in item
+        assert "n_datasets" in item
+        assert isinstance(item["n_datasets"], int)
+
+
+def test_datasets_for_region_returns_list(tmp_path):
+    """datasets_for_region returns datasets tagged with that region."""
+    from neural_search.coverage.duckdb_store import CoverageStore
+    store = CoverageStore(tmp_path / "test.duckdb")
+    test_corpus = tmp_path / "corpus.jsonl"
+    test_corpus.write_text(
+        '{"id": "dandi:000001", "source": "dandi", "source_id": "000001", '
+        '"title": "Visual cortex recording", "brain_regions": ["visual_cortex"], '
+        '"modalities": ["ephys"], "species": ["mouse"], "tasks": [], '
+        '"has_behavior": false, "has_raw_data": true}\n'
+    )
+    store.build(corpus_path=test_corpus)
+    results = store.datasets_for_region("visual_cortex")
+    assert isinstance(results, list)
+    for r in results:
+        assert "dataset_id" in r
+        assert "source" in r
+        assert "title" in r
+        assert "confidence" in r
