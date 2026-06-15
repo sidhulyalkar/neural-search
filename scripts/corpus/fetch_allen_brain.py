@@ -25,11 +25,10 @@ def main(argv=None):
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args(argv)
-    from _fetch_common import append_to_corpus, canonical_region_ids
+    from _fetch_common import append_to_corpus
 
     from neural_search.ingestion.allen_brain import fetch_allen_records
-    valid = canonical_region_ids()
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     existing = {r["source_id"] for r in corpus if r.get("source") == "allen"}
     logger.info("Existing Allen records: %d", len(existing))
     records = fetch_allen_records(limit=args.limit)
@@ -37,7 +36,8 @@ def main(argv=None):
     new_records = [r for r in records if r["source_id"] not in existing]
     logger.info("New: %d", len(new_records))
     if not new_records:
-        logger.info("Nothing new"); return 0
+        logger.info("Nothing new")
+        return 0
     append_to_corpus(CORPUS_PATH, corpus, new_records, "Allen Brain", logger, args.dry_run)
     return 0
 

@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import logging
 import time
+from functools import lru_cache
 from typing import Any
 
 import httpx
-from functools import lru_cache
 
 from neural_search.extraction import extract_dataset_labels
 from neural_search.ingestion.dataset_classifier import is_valid_dataset

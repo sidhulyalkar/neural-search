@@ -30,6 +30,7 @@ import logging
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -80,7 +81,7 @@ def build_specter2_embeddings(corpus_path: Path, out_path: Path) -> None:
             texts = [_corpus_text(r) for r in batch]
             try:
                 embeddings = provider.embed_batch(texts)
-                for rec, emb in zip(batch, embeddings):
+                for rec, emb in zip(batch, embeddings, strict=True):
                     did = str(rec.get("dataset_id") or f"{rec.get('source')}:{rec.get('source_id')}")
                     fout.write(json.dumps({"dataset_id": did, "embedding": emb.tolist()}) + "\n")
                     n_written += 1
@@ -105,7 +106,7 @@ def load_embeddings(path: Path) -> tuple[list[str], list[list[float]]]:
 
 
 def cosine_sim(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = sum(x * x for x in a) ** 0.5
     nb = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
@@ -119,7 +120,7 @@ def retrieve_specter2(
     top_k: int = TOP_K,
 ) -> list[tuple[str, float]]:
     q_emb = provider.embed(query)
-    scores = [(did, cosine_sim(q_emb.tolist(), vec)) for did, vec in zip(ids, vecs)]
+    scores = [(did, cosine_sim(q_emb.tolist(), vec)) for did, vec in zip(ids, vecs, strict=True)]
     scores.sort(key=lambda x: -x[1])
     return scores[:top_k]
 

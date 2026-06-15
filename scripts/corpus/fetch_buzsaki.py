@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
 
     from neural_search.ingestion.buzsaki import fetch_buzsaki_records
 
-    corpus = [json.loads(l) for l in CORPUS_PATH.read_text().strip().splitlines() if l.strip()]
+    corpus = [json.loads(line) for line in CORPUS_PATH.read_text().strip().splitlines() if line.strip()]
     existing_ids: set[str] = {r["source_id"] for r in corpus if r.get("source") == "buzsaki"}
     logger.info("Existing Buzsaki records in corpus: %d", len(existing_ids))
 
