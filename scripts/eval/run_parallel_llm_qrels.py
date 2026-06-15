@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
-"""Parallel LLM qrels labeling with multi-key rotation.
+"""Parallel LLM qrels labeling — OpenRouter, Ollama, or LM Studio.
 
-Spawns one worker thread per API key (up to 12: 6 Opus + 6 Gemini via
-OpenRouter). All workers draw from a shared queue of EvidencePackets and write
-results to a shared checkpoint file under a lock. Fully resumable.
+Discovers workers from environment variables in priority order:
 
-Keys are read from .env.local (or the environment). Supported key names:
-  CLAUDE_OPUS_API_KEY, CLAUDE_OPUS_API_KEY1 … CLAUDE_OPUS_API_KEY5
-  GEMINI_API_KEY1 … GEMINI_API_KEY6
+  1. OLLAMA_BASE_URL + OLLAMA_MODEL      → local Ollama (recommended for M1 Mac)
+  2. LM_STUDIO_BASE_URL + LM_STUDIO_MODEL → local LM Studio
+  3. OPENROUTER_API_KEY                  → OpenRouter (requires credits)
+  4. KEYWAY_BASE_URL + legacy keys       → keyway proxy (legacy fallback)
 
-All workers use the OpenAI-compatible interface against OpenRouter so one
-worker class handles all model families.
+Recommended setup for Apple Silicon (M1/M2/M3):
+  # Install Ollama: https://ollama.ai
+  # Pull a model:
+  #   ollama pull qwen2.5:14b-instruct    # 16 GB RAM
+  #   ollama pull qwen2.5:32b-instruct    # 32 GB RAM
+  #   ollama pull llama3.3:70b-instruct   # 64 GB RAM
+  # Then set in .env.local:
+  #   OLLAMA_BASE_URL=http://localhost:11434/v1
+  #   OLLAMA_MODEL=qwen2.5:14b-instruct
+  #   OLLAMA_WORKERS=1   (1-2 for local inference)
+
+All workers use the OpenAI-compatible interface so one worker class handles
+all backends. Fully resumable — skips already-judged pairs on restart.
 
 Output
 ------
@@ -20,19 +30,16 @@ Output
 Usage
 -----
     # Dry-run: print config, don't call APIs
-    python scripts/eval/run_parallel_llm_qrels.py --dry-run
+    PYTHONPATH=. python scripts/eval/run_parallel_llm_qrels.py --dry-run
 
-    # Run labeling (reads .env.local automatically)
-    /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py
+    # Full run (auto-detects backend from .env.local)
+    PYTHONPATH=. /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py
 
-    # Custom packets + output
-    /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py \\
-        --packets artifacts/ablation_judge/evidence_packets.jsonl \\
-        --out data/qrels/llm_judgments.jsonl \\
-        --workers 12
+    # Smoke test — 5 packets
+    PYTHONPATH=. /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py --limit 5
 
-    # Limit to N packets (for testing)
-    /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py --limit 50
+    # Keep prior error entries instead of re-judging them
+    PYTHONPATH=. /home/sid21/anaconda3/bin/python3 scripts/eval/run_parallel_llm_qrels.py --keep-errors
 """
 from __future__ import annotations
 
@@ -71,20 +78,32 @@ DEFAULT_TREC = Path("data/qrels/qrels.trec")
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RETRY_DELAY = 5.0  # seconds, doubles on each retry
 
-# Base URL for all keys — read from KEYWAY_BASE_URL env var (set in .env.local).
-# All keys (Opus + Gemini) route through the same proxy endpoint.
-# Example: KEYWAY_BASE_URL=https://api.keyway.ai/v1
-_KEYWAY_BASE_URL = (
-    os.environ.get("KEYWAY_BASE_URL")
-    or os.environ.get("OPENROUTER_BASE_URL")
-    or ""
-)
+# ---------------------------------------------------------------------------
+# Local inference (Ollama / LM Studio) — priority 1 & 2
+# ---------------------------------------------------------------------------
+_OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "")
+_OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:14b-instruct")
+_OLLAMA_N_WORKERS = int(os.environ.get("OLLAMA_WORKERS", "1"))
 
-# Model names as registered with the proxy service
+_LM_STUDIO_BASE_URL = os.environ.get("LM_STUDIO_BASE_URL", "")
+_LM_STUDIO_MODEL = os.environ.get("LM_STUDIO_MODEL", "local-model")
+_LM_STUDIO_N_WORKERS = int(os.environ.get("LM_STUDIO_WORKERS", "1"))
+
+# ---------------------------------------------------------------------------
+# OpenRouter config — priority 3
+# ---------------------------------------------------------------------------
+_OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+_OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemini-2.5-flash")
+_OPENROUTER_N_WORKERS = int(os.environ.get("OPENROUTER_WORKERS", "4"))
+
+# ---------------------------------------------------------------------------
+# Legacy keyway config — priority 4
+# ---------------------------------------------------------------------------
+_KEYWAY_BASE_URL = os.environ.get("KEYWAY_BASE_URL", "")
+
 OPUS_MODEL = os.environ.get("OPUS_MODEL_NAME", "anthropic/claude-opus-4-5")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL_NAME", "google/gemini-2.5-flash")
 
-# Env var names for key discovery (order matters: index 0 = no suffix, then 1-6)
 _OPUS_KEY_NAMES = [
     "CLAUDE_OPUS_API_KEY",
     "CLAUDE_OPUS_API_KEY1",
@@ -119,20 +138,46 @@ class WorkerConfig:
         return f"Worker({self.worker_id}, model={self.model}, key={masked})"
 
 
-def _discover_workers(base_url: str = "") -> list[WorkerConfig]:
-    effective_url = base_url or _KEYWAY_BASE_URL
+def _discover_workers(base_url: str = "") -> list[WorkerConfig]:  # noqa: C901
+    """Discover workers in priority order: Ollama → LM Studio → OpenRouter → keyway."""
     workers: list[WorkerConfig] = []
+
+    # Priority 1: Ollama (local, free, Apple Silicon optimized)
+    ollama_url = base_url or _OLLAMA_BASE_URL
+    if ollama_url and "11434" in ollama_url:  # explicit Ollama port check
+        for i in range(_OLLAMA_N_WORKERS):
+            workers.append(WorkerConfig(f"ollama-{i}", "ollama", ollama_url, _OLLAMA_MODEL))
+        return workers
+
+    # Priority 2: LM Studio (local, free)
+    lms_url = base_url or _LM_STUDIO_BASE_URL
+    if lms_url and "1234" in lms_url:
+        for i in range(_LM_STUDIO_N_WORKERS):
+            workers.append(WorkerConfig(f"lms-{i}", "lm-studio", lms_url, _LM_STUDIO_MODEL))
+        return workers
+
+    # Priority 3: OpenRouter (cloud, requires credits)
+    or_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if or_key:
+        or_url = base_url or _OPENROUTER_BASE_URL
+        for i in range(_OPENROUTER_N_WORKERS):
+            workers.append(WorkerConfig(f"or-{i}", or_key, or_url, _OPENROUTER_MODEL))
+        return workers
+
+    # Priority 4: Legacy keyway proxy
+    effective_url = base_url or _KEYWAY_BASE_URL
+    if not effective_url:
+        return workers
     for name in _OPUS_KEY_NAMES:
         key = os.environ.get(name, "").strip()
         if key:
-            wid = f"opus-{len([w for w in workers if 'opus' in w.worker_id])}"
-            workers.append(WorkerConfig(wid, key, effective_url, OPUS_MODEL))
-
+            idx = len([w for w in workers if "opus" in w.worker_id])
+            workers.append(WorkerConfig(f"opus-{idx}", key, effective_url, OPUS_MODEL))
     for name in _GEMINI_KEY_NAMES:
         key = os.environ.get(name, "").strip()
         if key:
-            wid = f"gemini-{len([w for w in workers if 'gemini' in w.worker_id])}"
-            workers.append(WorkerConfig(wid, key, effective_url, GEMINI_MODEL))
+            idx = len([w for w in workers if "gemini" in w.worker_id])
+            workers.append(WorkerConfig(f"gemini-{idx}", key, effective_url, GEMINI_MODEL))
 
     return workers
 
@@ -141,7 +186,12 @@ def _discover_workers(base_url: str = "") -> list[WorkerConfig]:
 # Checkpoint helpers
 # ---------------------------------------------------------------------------
 
-def _load_already_judged(path: Path) -> set[tuple[str, str]]:
+def _load_already_judged(path: Path, skip_errors: bool = True) -> set[tuple[str, str]]:
+    """Return set of (query_id, dataset_id) pairs that are already judged.
+
+    When skip_errors=True (default), error entries (abstain_recommended=True with
+    a judge_error rationale) are excluded so they get re-judged on the next run.
+    """
     if not path.exists():
         return set()
     seen: set[tuple[str, str]] = set()
@@ -150,6 +200,8 @@ def _load_already_judged(path: Path) -> set[tuple[str, str]]:
             continue
         try:
             rec = json.loads(line)
+            if skip_errors and "judge_error" in str(rec.get("rationale_short", "")):
+                continue  # re-judge errors
             seen.add((str(rec["query_id"]), str(rec["dataset_id"])))
         except Exception:  # noqa: BLE001
             pass
@@ -187,7 +239,7 @@ def _judge_packet(
         try:
             response = client.chat.completions.create(
                 model=model,
-                max_tokens=768,
+                max_tokens=1500,
                 temperature=0,
                 messages=[{"role": "user", "content": prompt}],
             )
@@ -312,13 +364,15 @@ def _progress_reporter(
 # ---------------------------------------------------------------------------
 
 def _write_trec_qrels(judgments_path: Path, trec_path: Path) -> int:
-    """Convert judgments JSONL → TREC qrels format."""
+    """Convert judgments JSONL → TREC qrels format, excluding error entries."""
     lines: list[str] = []
     seen: set[tuple[str, str]] = set()
     for line in judgments_path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         rec = json.loads(line)
+        if "judge_error" in str(rec.get("rationale_short", "")):
+            continue  # skip error entries — label=0 here is meaningless
         qid = str(rec["query_id"])
         did = str(rec["dataset_id"])
         label = int(rec.get("label", -1))
@@ -350,7 +404,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-retries", type=int, default=DEFAULT_MAX_RETRIES)
     parser.add_argument("--retry-delay", type=float, default=DEFAULT_RETRY_DELAY)
     parser.add_argument("--base-url", type=str, default="",
-                        help="Override API base URL (reads KEYWAY_BASE_URL env var by default)")
+                        help="Override API base URL (reads OPENROUTER_BASE_URL by default)")
+    parser.add_argument("--keep-errors", action="store_true",
+                        help="Treat prior judge_error entries as done (default: re-judge them)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print config and exit without calling APIs")
     args = parser.parse_args(argv)
@@ -360,13 +416,19 @@ def main(argv: list[str] | None = None) -> int:
     if args.workers:
         workers = workers[: args.workers]
 
-    if not workers[0].base_url if workers else not _KEYWAY_BASE_URL:
+    if not workers:
         raise SystemExit(
-            "\nNo API base URL configured.\n"
-            "Add to .env.local:\n"
-            "  KEYWAY_BASE_URL=https://<keyway-endpoint>/v1\n"
-            "Find the current endpoint at https://x.com/getkeyway or their Discord.\n"
-            "Or pass --base-url <url> on the command line."
+            "\nNo LLM backend configured. Add ONE of these to .env.local:\n\n"
+            "  # Ollama (local, free — recommended for Apple Silicon)\n"
+            "  OLLAMA_BASE_URL=http://localhost:11434/v1\n"
+            "  OLLAMA_MODEL=qwen2.5:14b-instruct   # or 32b / llama3.3:70b\n"
+            "  OLLAMA_WORKERS=1\n\n"
+            "  # LM Studio (local, free)\n"
+            "  LM_STUDIO_BASE_URL=http://localhost:1234/v1\n"
+            "  LM_STUDIO_MODEL=<model-name-from-lm-studio>\n\n"
+            "  # OpenRouter (cloud, requires credits)\n"
+            "  OPENROUTER_API_KEY=sk-or-v1-...\n"
+            "  OPENROUTER_MODEL=google/gemini-2.5-flash\n"
         )
 
     print(f"\n{'='*60}")
@@ -402,7 +464,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # -- Resume: skip already-judged pairs ----------------------------------
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    already_judged = _load_already_judged(args.out)
+    already_judged = _load_already_judged(args.out, skip_errors=not args.keep_errors)
     pending = [
         p for p in all_packets
         if (p.query_id, p.dataset_id) not in already_judged
