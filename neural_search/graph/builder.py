@@ -34,6 +34,7 @@ TAXONOMY_EXTRACTOR_VERSION = "v0.7.0"
 DATASET_LABEL_FIELDS: Mapping[str, tuple[str, str]] = {
     "tasks": ("task", "dataset_has_task"),
     "modalities": ("modality", "dataset_has_modality"),
+    "recording_scales": ("recording_scale", "dataset_has_recording_scale"),
     "brain_regions": ("brain_region", "dataset_records_region"),
     "species": ("species", "dataset_has_species"),
     "behavioral_events": ("behavioral_event", "dataset_has_behavioral_event"),

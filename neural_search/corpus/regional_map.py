@@ -186,6 +186,7 @@ def build_regional_map(
 ) -> dict[str, Any]:
     """Build a machine-readable region coverage map and review queue."""
 
+    target_by_id = {str(target["id"]): target for target in targets}
     by_source: dict[str, Counter[str]] = defaultdict(Counter)
     by_species: dict[str, Counter[str]] = defaultdict(Counter)
     by_modality: dict[str, Counter[str]] = defaultdict(Counter)
@@ -260,7 +261,10 @@ def build_regional_map(
     region_rows = [
         {
             "region_id": region,
+            "label": target_by_id.get(region, {}).get("label", region),
+            "system": target_by_id.get(region, {}).get("system", "unassigned"),
             "record_count": len(record_ids),
+            "candidate_record_count": len(candidate_records.get(region, set())),
             "sources": sorted(region_sources[region]),
             "species": sorted(region_species[region]),
             "modalities": sorted(region_modalities[region]),
@@ -275,6 +279,24 @@ def build_regional_map(
     with_candidates = sum(1 for item in missing_region_records if item["candidate_regions"])
     verified_targets = sum(1 for item in target_rows if item["status"] == "verified")
     candidate_only_targets = sum(1 for item in target_rows if item["status"] == "candidate_only")
+    system_totals: dict[str, dict[str, int]] = {}
+    for row in target_rows:
+        system = str(row["system"])
+        totals = system_totals.setdefault(
+            system,
+            {
+                "target_regions": 0,
+                "verified_regions": 0,
+                "candidate_only_regions": 0,
+                "uncovered_regions": 0,
+                "verified_records": 0,
+                "candidate_records": 0,
+            },
+        )
+        totals["target_regions"] += 1
+        totals[f"{row['status']}_regions"] += 1
+        totals["verified_records"] += int(row["verified_record_count"])
+        totals["candidate_records"] += int(row["candidate_record_count"])
 
     return {
         "summary": {
@@ -297,6 +319,21 @@ def build_regional_map(
         "by_source": _counter_matrix(by_source),
         "by_species": _counter_matrix(by_species),
         "by_modality": _counter_matrix(by_modality),
+        "system_totals": dict(sorted(system_totals.items())),
+        "frontend_regions": [
+            {
+                "region_id": row["region_id"],
+                "label": row["label"],
+                "system": row["system"],
+                "verified_record_count": row["record_count"],
+                "candidate_record_count": row["candidate_record_count"],
+                "species": row["species"],
+                "modalities": row["modalities"],
+                "sources": row["sources"],
+                "example_records": row["example_records"][:3],
+            }
+            for row in region_rows
+        ],
         "candidate_region_mentions": {
             region: sorted(record_ids)
             for region, record_ids in sorted(candidate_records.items())
@@ -343,6 +380,28 @@ def render_regional_map_report(regional_map: dict[str, Any]) -> str:
                 sources=", ".join(row["sources"]) or "-",
                 species=", ".join(row["species"][:6]) or "-",
                 modalities=", ".join(row["modalities"][:6]) or "-",
+            ),
+        )
+
+    lines.extend(
+        [
+            "",
+            "## System Coverage",
+            "",
+            "| System | Targets | Verified | Candidate-only | Uncovered | Verified Records | Candidate Records |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        ],
+    )
+    for system, totals in regional_map.get("system_totals", {}).items():
+        lines.append(
+            "| {system} | {targets} | {verified} | {candidate_only} | {uncovered} | {verified_records} | {candidate_records} |".format(
+                system=system,
+                targets=totals["target_regions"],
+                verified=totals["verified_regions"],
+                candidate_only=totals["candidate_only_regions"],
+                uncovered=totals["uncovered_regions"],
+                verified_records=totals["verified_records"],
+                candidate_records=totals["candidate_records"],
             ),
         )
 
