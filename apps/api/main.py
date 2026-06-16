@@ -1473,6 +1473,49 @@ async def get_dark_pairs(
     ]
 
 
+@app.get("/api/datasets/{dataset_id}/affordances")
+async def get_dataset_affordances(dataset_id: str) -> dict[str, Any]:
+    """Affordance validation results for a dataset (all 15 analysis types)."""
+    from neural_search.affordances.registry import (
+        AFFORDANCE_REGISTRY,
+        detect_features_from_metadata,
+        validate_all_affordances,
+    )
+
+    qa_state = load_qa_state()
+    dataset_dict: dict[str, Any] | None = None
+    for record in _ensure_demo_data():
+        ds = record["dataset"]
+        if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
+            dataset_dict = attach_qa_to_dataset(ds, qa_state)
+            break
+
+    if dataset_dict is None:
+        raise HTTPException(status_code=404, detail=f"Dataset {dataset_id} not found")
+
+    features = detect_features_from_metadata(dataset_dict)
+    results = validate_all_affordances(features)
+
+    affordances = []
+    for r in results:
+        req = AFFORDANCE_REGISTRY.get(r.affordance_id)
+        affordances.append({
+            "affordance_id": r.affordance_id,
+            "label": req.label if req else r.affordance_id,
+            "support_level": r.support_level,
+            "confidence": r.confidence,
+            "found_required_features": r.found_required_features,
+            "missing_required_features": r.missing_required_features,
+            "found_optional_features": r.found_optional_features,
+        })
+
+    return {
+        "dataset_id": dataset_id,
+        "affordances": affordances,
+        "detection_method": features.detection_method,
+    }
+
+
 @app.get("/api/coverage/region-counts")
 async def get_region_counts() -> list[dict[str, Any]]:
     """All brain regions with dataset counts for the Brain Atlas heatmap."""
