@@ -2881,6 +2881,262 @@ tasks:
       - deviant_minus_standard
       - adaptation_analysis
 
+  # ---------------------------------------------------------------------------
+  # Generic / Broad Tasks
+  # ---------------------------------------------------------------------------
+  - id: decision_making
+    label: Decision making
+    category: cognitive
+    definition: >
+      Generic decision-making paradigms not categorized elsewhere.
+    synonyms:
+      - decision making
+      - decision-making task
+      - decision task
+      - perceptual decision
+      - value-based decision
+      - economic decision
+    common_events:
+      - cue_onset
+      - choice
+      - feedback
+      - outcome
+    relevant_regions:
+      - prefrontal_cortex
+      - parietal_cortex
+      - striatum
+    suggested_analyses:
+      - choice_decoding
+      - decision_variable_analysis
+      - outcome_encoding
+
+  - id: visual_stimulation
+    label: Visual stimulation
+    category: sensory
+    definition: >
+      Passive or active presentation of visual stimuli without explicit behavioral task.
+    synonyms:
+      - visual stimulation
+      - visual presentation
+      - visual stimulus
+      - visual evoked response
+      - visual evoked potential
+      - grating stimulation
+      - natural image presentation
+    common_events:
+      - stimulus_onset
+      - stimulus_offset
+      - grating
+      - image_onset
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - eeg
+      - fmri
+    relevant_regions:
+      - V1
+      - visual_cortex
+      - LGN
+    suggested_analyses:
+      - receptive_field_mapping
+      - tuning_curve_analysis
+      - stimulus_decoding
+
+  - id: passive_viewing
+    label: Passive viewing
+    category: sensory
+    definition: >
+      Subject passively views stimuli without motor response required.
+    synonyms:
+      - passive viewing
+      - passive observation
+      - passive exposure
+      - free viewing
+      - passive visual
+    common_events:
+      - stimulus_onset
+      - fixation
+      - stimulus_offset
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - eye_tracking
+      - eeg
+    relevant_regions:
+      - visual_cortex
+      - IT
+      - temporal_cortex
+    suggested_analyses:
+      - neural_encoding
+      - representational_similarity
+      - fixation_analysis
+
+  - id: change_detection
+    label: Change detection
+    category: cognitive
+    definition: >
+      Detect changes in stimulus properties (orientation, color, frequency, etc.).
+    synonyms:
+      - change detection
+      - change detection task
+      - oddball paradigm
+      - mismatch negativity
+      - mmn
+      - oddball detection
+      - novelty detection
+    common_events:
+      - standard_stimulus
+      - change_stimulus
+      - response
+      - deviant_onset
+    relevant_regions:
+      - visual_cortex
+      - auditory_cortex
+      - prefrontal_cortex
+    suggested_analyses:
+      - oddball_response
+      - deviant_detection
+      - change_detection_accuracy
+
+  - id: spontaneous_activity
+    label: Spontaneous activity
+    category: baseline
+    definition: >
+      Recording of spontaneous neural activity without explicit task or stimulus.
+    synonyms:
+      - spontaneous activity
+      - spontaneous firing
+      - baseline activity
+      - resting activity
+      - no task
+      - quiescent
+    common_events:
+      - recording_start
+      - recording_end
+    relevant_modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - lfp
+      - eeg
+    relevant_regions:
+      - cortex
+      - hippocampus
+      - striatum
+    suggested_analyses:
+      - spectral_analysis
+      - burst_detection
+      - correlational_structure
+
+  - id: circuit_mapping
+    label: Circuit mapping
+    category: experimental_method
+    definition: >
+      Electrophysiological or optogenetic mapping of neural circuit connectivity.
+    synonyms:
+      - circuit mapping
+      - connectivity mapping
+      - synaptic mapping
+      - optogenetic mapping
+      - anterograde tracing
+      - retrograde tracing
+      - channelrhodopsin mapping
+    common_events:
+      - stimulation_onset
+      - response_onset
+      - connection_detected
+    relevant_modalities:
+      - extracellular_ephys
+      - optogenetics
+      - tracer_injections
+    relevant_regions:
+      - any_brain_region
+    suggested_analyses:
+      - connection_strength
+      - monosynaptic_analysis
+      - connectivity_matrix
+
+  - id: cell_type_mapping
+    label: Cell type mapping
+    category: experimental_method
+    definition: >
+      Identification and classification of neural cell types.
+    synonyms:
+      - cell type mapping
+      - cell type classification
+      - neuron classification
+      - single-cell classification
+      - transcriptomics
+      - cell typing
+    common_events:
+      - recording_start
+      - cell_isolation
+    relevant_modalities:
+      - extracellular_ephys
+      - patch_clamp
+      - transcriptomics
+      - immunofluorescence
+    relevant_regions:
+      - any_brain_region
+    suggested_analyses:
+      - electrophysiological_classification
+      - morphological_classification
+      - molecular_classification
+
+  - id: current_injection
+    label: Current injection
+    category: experimental_method
+    definition: >
+      Patch-clamp or intracellular current injection to characterize single neurons.
+    synonyms:
+      - current injection
+      - current clamp
+      - patch clamp
+      - whole cell recording
+      - intracellular recording
+      - somatic current injection
+    common_events:
+      - stimulus_onset
+      - current_pulse
+      - spike_response
+      - measurement_end
+    relevant_modalities:
+      - patch_clamp
+      - whole_cell_recording
+      - intracellular_recording
+    relevant_regions:
+      - any_brain_region
+    suggested_analyses:
+      - input_output_curve
+      - membrane_properties
+      - synaptic_responses
+
+  - id: excitability_analysis
+    label: Excitability analysis
+    category: experimental_method
+    definition: >
+      Measurement of neuronal excitability properties (f-I curve, rheobase, AHP, etc.).
+    synonyms:
+      - excitability analysis
+      - excitability
+      - fi curve
+      - f-i curve
+      - rheobase
+      - action potential threshold
+      - intrinsic excitability
+    common_events:
+      - current_step
+      - spike
+      - hyperpolarization
+    relevant_modalities:
+      - patch_clamp
+      - whole_cell_recording
+    relevant_regions:
+      - any_brain_region
+    suggested_analyses:
+      - fi_curve_analysis
+      - rheobase_measurement
+      - spike_adaptation
+
 # Cross-cutting behavior labels. These are not tasks, but should be searchable.
 behavior_labels:
   - id: choice
