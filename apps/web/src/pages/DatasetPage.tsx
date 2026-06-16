@@ -7,8 +7,10 @@ import {
   exportDatasetCard,
   updateDatasetQA,
   getDatasetAffordances,
+  getSimilarDatasets,
   type AffordanceResult,
   type AffordanceSupportLevel,
+  type SimilarDataset,
 } from '../api/search'
 import {
   SpinnerIcon,
@@ -67,6 +69,35 @@ const qaStatusStyles: Record<DatasetQAStatus, string> = {
 
 function formatQAStatus(status: DatasetQAStatus) {
   return status.replace(/_/g, ' ')
+}
+
+const RELATION_COLORS: Record<string, string> = {
+  same_region_same_task: 'text-accent-cyan',
+  same_region_cross_modality: 'text-yellow-400',
+  same_task_cross_species: 'text-emerald-400',
+}
+
+function SimilarDatasetsPanel({ similar }: { similar: SimilarDataset[] }) {
+  return (
+    <section className="card">
+      <h2 className="text-lg font-semibold mb-3">Similar Datasets</h2>
+      <p className="text-xs text-neural-500 mb-3">Related via the knowledge graph.</p>
+      <div className="space-y-2">
+        {similar.map((ds) => (
+          <Link
+            key={ds.dataset_id}
+            to={`/datasets/${encodeURIComponent(ds.dataset_id)}`}
+            className="block py-2 px-2 rounded hover:bg-neural-800/60 transition-colors"
+          >
+            <div className="text-sm text-neural-200 truncate">{ds.title || ds.dataset_id}</div>
+            <div className={`text-xs mt-0.5 ${RELATION_COLORS[ds.relation] ?? 'text-neural-500'}`}>
+              {ds.relation_label}
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  )
 }
 
 const SUPPORT_STYLES: Record<AffordanceSupportLevel, string> = {
@@ -153,6 +184,12 @@ export function DatasetPage() {
   const { data: affordancesData } = useQuery({
     queryKey: ['dataset-affordances', id],
     queryFn: () => getDatasetAffordances(id!),
+    enabled: !!id,
+  })
+
+  const { data: similarData } = useQuery({
+    queryKey: ['dataset-similar', id],
+    queryFn: () => getSimilarDatasets(id!),
     enabled: !!id,
   })
 
@@ -756,6 +793,11 @@ export function DatasetPage() {
           {/* Analysis Affordances */}
           {affordancesData && affordancesData.affordances.length > 0 && (
             <AffordancePanel affordances={affordancesData.affordances} />
+          )}
+
+          {/* Similar Datasets */}
+          {similarData && similarData.similar.length > 0 && (
+            <SimilarDatasetsPanel similar={similarData.similar} />
           )}
 
           {/* Reuse Instructions */}
