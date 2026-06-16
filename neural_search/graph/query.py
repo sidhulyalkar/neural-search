@@ -491,3 +491,70 @@ def rank_related_papers(
         if score > 0:
             related.append(RelatedItem(paper.node_id, score, reasons))
     return sorted(related, key=lambda item: (-item.score, item.node_id))
+
+
+_CROSS_DATASET_EDGE_TYPES: frozenset[str] = frozenset({
+    "same_region_same_task",
+    "same_region_cross_modality",
+    "same_task_cross_species",
+})
+
+_RELATION_LABEL: dict[str, str] = {
+    "same_region_same_task": "same region + task",
+    "same_region_cross_modality": "same region, different modality",
+    "same_task_cross_species": "same task, different species",
+}
+
+
+def find_similar_datasets(
+    graph: KnowledgeGraph,
+    dataset_id: str,
+    *,
+    limit: int = 6,
+    edge_types: frozenset[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Return datasets similar to dataset_id via cross-dataset graph edges.
+
+    Args:
+        graph: Loaded KnowledgeGraph.
+        dataset_id: The source dataset ID (e.g. 'allen:ecephys_715093703').
+        limit: Max results to return.
+        edge_types: Which edge types to traverse (default: all cross-dataset types).
+
+    Returns:
+        List of dicts with keys: dataset_id, title, relation, relation_label, weight.
+        Sorted descending by weight.
+    """
+    allowed = edge_types if edge_types is not None else _CROSS_DATASET_EDGE_TYPES
+    # Construct node_id directly: graph stores datasets as "node:dataset:{source}:{id}"
+    # _dataset_id() normalizes colons to underscores, which breaks archive:id format.
+    node_id = f"node:dataset:{dataset_id}"
+
+    similar: list[dict[str, Any]] = []
+    for edge in _adjacent_edges(graph, node_id):
+        if edge.edge_type not in allowed:
+            continue
+        other_node_id = (
+            edge.target_node_id if edge.source_node_id == node_id else edge.source_node_id
+        )
+        other_node = get_node(graph, other_node_id)
+        if other_node is None:
+            continue
+        # Extract archive dataset_id from node_id: "node:dataset:{source}:{id}"
+        other_dataset_id = other_node_id.removeprefix("node:dataset:")
+        similar.append({
+            "dataset_id": other_dataset_id,
+            "title": other_node.label,
+            "relation": edge.edge_type,
+            "relation_label": _RELATION_LABEL.get(edge.edge_type, edge.edge_type),
+            "weight": edge.confidence,
+        })
+
+    # Deduplicate by dataset_id, keeping highest-weight entry
+    by_id: dict[str, dict[str, Any]] = {}
+    for entry in similar:
+        did = entry["dataset_id"]
+        if did not in by_id or entry["weight"] > by_id[did]["weight"]:
+            by_id[did] = entry
+
+    return sorted(by_id.values(), key=lambda x: -x["weight"])[:limit]

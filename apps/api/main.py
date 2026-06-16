@@ -1516,6 +1516,30 @@ async def get_dataset_affordances(dataset_id: str) -> dict[str, Any]:
     }
 
 
+_graph_cache: dict[str, Any] = {}
+
+
+@app.get("/api/datasets/{dataset_id}/similar")
+async def get_similar_datasets(dataset_id: str, limit: int = 6) -> dict[str, Any]:
+    """Datasets related via cross-dataset knowledge graph edges."""
+    import json
+
+    from neural_search.graph.query import find_similar_datasets
+    from neural_search.graph.schema import KnowledgeGraph
+
+    graph_path = Path("data/graph/neural_search_graph.real_corpus.json")
+    if not graph_path.exists():
+        return {"dataset_id": dataset_id, "similar": [], "source": "graph_unavailable"}
+
+    if "graph" not in _graph_cache:
+        with graph_path.open() as f:
+            raw = json.load(f)
+        _graph_cache["graph"] = KnowledgeGraph.model_validate(raw)
+
+    results = find_similar_datasets(_graph_cache["graph"], dataset_id, limit=limit)
+    return {"dataset_id": dataset_id, "similar": results, "source": "knowledge_graph"}
+
+
 @app.get("/api/coverage/region-counts")
 async def get_region_counts() -> list[dict[str, Any]]:
     """All brain regions with dataset counts for the Brain Atlas heatmap."""
