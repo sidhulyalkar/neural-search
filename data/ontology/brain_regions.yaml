@@ -242,7 +242,7 @@ brain_regions:
   - neostriatum
   parents:
   - striatum
-  strict: true
+  strict: false
 
   atlas_refs:
     uberon: UBERON:0002038
@@ -283,7 +283,7 @@ brain_regions:
   - vstr
   parents:
   - striatum
-  strict: true
+  strict: false
 
   atlas_refs:
     uberon: UBERON:0002039
@@ -1567,3 +1567,221 @@ brain_regions:
   atlas_refs:
     uberon: UBERON:0000966
     allen_ccf_mouse: '304325711'
+
+# ── Speech / Language Regions ──────────────────────────────────────────────
+- id: superior_temporal_gyrus
+  label: Superior temporal gyrus
+  aliases:
+  - superior temporal gyrus
+  - stg
+  - heschl's gyrus
+  - temporal speech cortex
+  - planum temporale
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002769
+    allen_ccf_mouse: null
+
+- id: inferior_frontal_gyrus
+  label: Inferior frontal gyrus
+  aliases:
+  - inferior frontal gyrus
+  - ifg
+  - broca area
+  - broca's area
+  - pars triangularis
+  - pars opercularis
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002998
+    allen_ccf_mouse: null
+
+- id: middle_temporal_gyrus
+  label: Middle temporal gyrus
+  aliases:
+  - middle temporal gyrus
+  - mtg
+  - posterior temporal cortex
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002771
+    allen_ccf_mouse: null
+
+# ── Septum & Habenula ─────────────────────────────────────────────────────
+- id: lateral_habenula
+  label: Lateral habenula
+  aliases:
+  - lateral habenula
+  - lhb
+  - lhab
+  - habenula
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002979
+    allen_ccf_mouse: '186'
+
+- id: medial_habenula
+  label: Medial habenula
+  aliases:
+  - medial habenula
+  - mhb
+  - mhab
+  parents:
+  - lateral_habenula
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0001909
+    allen_ccf_mouse: '194'
+
+# ── Claustrum ─────────────────────────────────────────────────────────────
+- id: claustrum
+  label: Claustrum
+  aliases:
+  - claustrum
+  - claustra
+  - claustral
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002023
+    allen_ccf_mouse: '583'
+
+# ── Auditory Cortex ───────────────────────────────────────────────────────
+- id: primary_auditory_cortex
+  label: Primary auditory cortex
+  aliases:
+  - primary auditory cortex
+  - a1
+  - ai
+  - au
+  - auditory cortex
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0034751
+    allen_ccf_mouse: '1011'
+
+- id: secondary_auditory_cortex
+  label: Secondary auditory cortex
+  aliases:
+  - secondary auditory cortex
+  - a2
+  - auditory association cortex
+  - belt cortex
+  parents:
+  - primary_auditory_cortex
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0034753
+    allen_ccf_mouse: null
+
+# ── Frontal Motor Areas ────────────────────────────────────────────────────
+- id: prelimbic_cortex
+  label: Prelimbic cortex
+  aliases:
+  - prelimbic cortex
+  - pl
+  - prelimbic
+  - prelimbic area
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0016526
+    allen_ccf_mouse: '972'
+
+- id: infralimbic_cortex
+  label: Infralimbic cortex
+  aliases:
+  - infralimbic cortex
+  - il
+  - infralimbic area
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0016527
+    allen_ccf_mouse: '44'
+
+# ── Zona Incerta ──────────────────────────────────────────────────────────
+- id: zona_incerta
+  label: Zona incerta
+  aliases:
+  - zona incerta
+  - zi
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0001896
+    allen_ccf_mouse: '797'
+
+# ── Rhinal Cortex ─────────────────────────────────────────────────────────
+- id: perirhinal_cortex
+  label: Perirhinal cortex
+  aliases:
+  - perirhinal cortex
+  - ect
+  - prc
+  - perirhinal area
+  - area 35
+  - area 36
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0006432
+    allen_ccf_mouse: '918'
+
+- id: postrhinal_cortex
+  label: Postrhinal cortex
+  aliases:
+  - postrhinal cortex
+  - por
+  - postrhinal area
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: null
+    allen_ccf_mouse: '922'
+
+# ── Additional Brainstem Nuclei ───────────────────────────────────────────
+- id: pedunculopontine_nucleus
+  label: Pedunculopontine nucleus
+  aliases:
+  - pedunculopontine nucleus
+  - ppn
+  - pptn
+  - pedunculopontine tegmental nucleus
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0001942
+    allen_ccf_mouse: '1052'
+
+- id: inferior_olive
+  label: Inferior olive
+  aliases:
+  - inferior olive
+  - inferior olivary nucleus
+  - inferior olivary complex
+  - io
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0003003
+    allen_ccf_mouse: '83'
+
+# ── Pontine Nuclei ────────────────────────────────────────────────────────
+- id: pontine_nucleus
+  label: Pontine nucleus
+  aliases:
+  - pontine nucleus
+  - pons nucleus
+  - pontine nuclei
+  - pontine gray
+  parents: []
+  strict: false
+  atlas_refs:
+    uberon: UBERON:0002151
+    allen_ccf_mouse: '931'
