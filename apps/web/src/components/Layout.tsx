@@ -7,6 +7,7 @@ interface LayoutProps {
 
 const navLinks = [
   { path: '/', label: 'Search', exact: true },
+  { path: '/atlas', label: 'Atlas' },
   { path: '/demo', label: 'Demo' },
   { path: '/graph', label: 'Graph' },
   { path: '/ontology', label: 'Ontology' },
