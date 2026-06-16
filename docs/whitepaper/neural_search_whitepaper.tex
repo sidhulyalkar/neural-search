@@ -88,7 +88,7 @@
     \texttt{neural-search@research.org}
 }
 
-\date{June 2026 — updated 14 June 2026}
+\date{June 2026 — updated 15 June 2026}
 
 \begin{document}
 
@@ -98,7 +98,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current live corpus artifact contains 7,171 normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, Harvard Dataverse, Buzsaki Lab, SPARK, and smaller sources. Corpus expansion is implemented as a tiered ingestion and enrichment pipeline: high-volume open repositories are admitted through raw/processed-data, neuroscience-signal, license, and persistent-identifier gates, while curated neuroscience sources and DANDI/NWB enrichers add modality, species, task, paper-link, and brain-region evidence with explicit provenance. The current indexed/evaluated slice is represented by 2,840 BGE-large-en-v1.5 embeddings over 625 records and a 625-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores datasets, papers, concepts, modalities, species, brain regions, tasks, affordances, neuro-judge evidence packets, user feedback signals, and versioned snapshots in a single queryable, exportable, incrementally-updatable graph. The full-corpus knowledge graph (\texttt{neural\_search\_graph.real\_corpus.json}, rebuilt 14~June~2026) contains 7,593 typed nodes and 31,920 typed edges across 7,171 dataset nodes, 118 brain-region nodes, 81 task nodes, 60 modality nodes, and 17 species nodes. In addition to 28,963 base provenance edges, 2,957 explicit cross-dataset relationship edges encode multimodal reuse candidates (\texttt{same\_region\_cross\_modality}: 890), methodological siblings (\texttt{same\_region\_same\_task}: 1,576), and cross-species generalization bridges (\texttt{same\_task\_cross\_species}: 491). A separate field-state memory graph (\texttt{update\_20260613T053153Z}) tracks 2,200 nodes and 3,788 typed edges spanning evidence packets, feedback signals, and curation artifacts for the 629-record reviewed slice. Provenance invariants keep neuro-judge silver labels, CrossRef/NWB-derived silver enrichments, downstream user feedback, and human gold labels separate. A DuckDB-backed coverage ledger (7,176 datasets; 29,561 entries across six dimensions: brain\_regions, modalities, recording\_scales, species, tasks, behavioral\_events) enables gap-analysis queries, source coverage rates, and dark-pair identification. A coverage gap boost adds an additive inverse-log-frequency rarity signal (capped at $+0.10$) to retrieval scores, preferring underrepresented anatomical regions and modalities. A source-diversity post-processor applies a greedy windowed algorithm (default \texttt{max\_per\_source}=3) to prevent single-repository domination of result lists. A SPECTER2 hybrid retrieval module (config-gated, disabled by default) adds scientific paper embedding similarity as an additive signal. An LLM query expansion fallback (Claude Haiku, LRU-cached, fails safe) activates only when rule-based parsing extracts zero brain regions and zero tasks, filling empty queries with structured ontological terms. Structured dimension-match badges in the frontend surface per-dimension evidence quality (full/partial/inferred/none) for every result card. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, computes memory diffs, preserves human review overlays, and generates provisional learning signals without overwriting canonical labels. Current validation artifacts show preliminary usefulness-score separation between relevant and irrelevant results, graph-rank perturbation for 39\% of ranked pairs, and a neuro-judge evidence pool of 675 query--dataset packets. The qrels review workflow has been smoke-tested and currently contains only three adjudicated labels, so no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation step is a frozen expanded-corpus retrieval benchmark with deterministic exact lookup, independent and adjudicated relevance labels, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
+Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current live corpus artifact contains 7,171 normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, Harvard Dataverse, Buzsaki Lab, SPARK, and smaller sources. Corpus expansion is implemented as a tiered ingestion and enrichment pipeline: high-volume open repositories are admitted through raw/processed-data, neuroscience-signal, license, and persistent-identifier gates, while curated neuroscience sources and DANDI/NWB enrichers add modality, species, task, paper-link, and brain-region evidence with explicit provenance. The current indexed/evaluated slice is represented by 2,840 BGE-large-en-v1.5 embeddings over 625 records and a 625-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores datasets, papers, concepts, modalities, species, brain regions, tasks, affordances, neuro-judge evidence packets, user feedback signals, and versioned snapshots in a single queryable, exportable, incrementally-updatable graph. The full-corpus knowledge graph (\texttt{neural\_search\_graph.real\_corpus.json}, rebuilt 14~June~2026) contains 7,593 typed nodes and 31,920 typed edges across 7,171 dataset nodes, 118 brain-region nodes, 81 task nodes, 60 modality nodes, and 17 species nodes. In addition to 28,963 base provenance edges, 2,957 explicit cross-dataset relationship edges encode multimodal reuse candidates (\texttt{same\_region\_cross\_modality}: 890), methodological siblings (\texttt{same\_region\_same\_task}: 1,576), and cross-species generalization bridges (\texttt{same\_task\_cross\_species}: 491). A separate field-state memory graph (\texttt{update\_20260613T053153Z}) tracks 2,200 nodes and 3,788 typed edges spanning evidence packets, feedback signals, and curation artifacts for the 629-record reviewed slice. Provenance invariants keep neuro-judge silver labels, CrossRef/NWB-derived silver enrichments, downstream user feedback, and human gold labels separate. A DuckDB-backed coverage ledger (7,176 datasets; 29,561 entries across six dimensions: brain\_regions, modalities, recording\_scales, species, tasks, behavioral\_events) enables gap-analysis queries, source coverage rates, and dark-pair identification. A coverage gap boost adds an additive inverse-log-frequency rarity signal (capped at $+0.10$) to retrieval scores, preferring underrepresented anatomical regions and modalities. A source-diversity post-processor applies a greedy windowed algorithm (default \texttt{max\_per\_source}=3) to prevent single-repository domination of result lists. A SPECTER2 hybrid retrieval module (config-gated, disabled by default) adds scientific paper embedding similarity as an additive signal. An LLM query expansion fallback (Claude Haiku, LRU-cached, fails safe) activates only when rule-based parsing extracts zero brain regions and zero tasks, filling empty queries with structured ontological terms. Structured dimension-match badges in the frontend surface per-dimension evidence quality (full/partial/inferred/none) for every result card. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, computes memory diffs, preserves human review overlays, and generates provisional learning signals without overwriting canonical labels. Current validation artifacts show preliminary usefulness-score separation between relevant and irrelevant results, graph-rank perturbation for 39\% of ranked pairs, and a neuro-judge evidence pool of 675 query--dataset packets. The qrels review workflow has been smoke-tested and currently contains only three adjudicated labels, so no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation step is a frozen expanded-corpus retrieval benchmark with deterministic exact lookup, independent and adjudicated relevance labels, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances. A Brain Atlas interface at \texttt{/atlas} aggregates per-region dataset counts across 130+ canonical brain region identifiers, enabling spatial browsing of the corpus; brain region coverage is 48.1\% (3,453/7,176 datasets). An Analysis Affordance Panel surfaces per-dataset support levels (HIGH/MED/LOW/UNSUPPORTED) across 21 registered analysis types spanning core experimental methods, population dynamics (latent dynamics modeling, representational similarity analysis), and clinical/BCI types (speech decoding, seizure detection, sleep stage classification, BCI decoding). The broader design goal is to serve as a \textit{Neuronpedia for neuroscience}: a universal shared platform for discovering, discussing, and understanding datasets across all brain regions and timescales, with every retrieval result grounded in structured ontological evidence and knowledge-graph context.
 \end{abstract}
 
 \tableofcontents
@@ -141,6 +141,20 @@ The central thesis of Neural Search is that \textbf{neuroscience search should r
     \item \textbf{Provenance as guardrail}: Assertions carry confidence and extraction lineage.
     \item \textbf{Benchmarks as compass}: Ranking changes are evaluated against reproducible metrics.
 \end{enumerate}
+
+\subsection{Neuronpedia Platform Vision}
+\label{sec:neuronpedia}
+
+The broader design goal of Neural Search is to serve as a \textit{Neuronpedia for neuroscience}: a universal shared platform for discovering, discussing, and understanding neuroscience datasets across all brain regions and timescales. Analogous to how Neuronpedia surfaces neuron-level features from sparse autoencoders, Neural Search surfaces dataset-level experimental affordances grounded in structured ontologies and a knowledge graph.
+
+The platform enables three complementary discovery modes:
+\begin{enumerate}
+    \item \textbf{Query-driven discovery:} Researchers enter a natural-language experimental intent, and the hybrid retrieval engine returns datasets ranked by experiment-to-experiment compatibility.
+    \item \textbf{Atlas-driven browsing:} A Brain Atlas interface renders all 130+ canonical brain regions as a color-coded coverage heatmap; clicking any region reveals the datasets that record from it.
+    \item \textbf{Affordance-driven filtering:} An Analysis Affordance panel on each dataset card shows which of the 21 registered analysis types are structurally supported, with required-feature evidence for each.
+\end{enumerate}
+
+This positions Neural Search not merely as a search engine but as a \textit{corpus intelligence layer} that accelerates the path from research question to validated, analysis-ready dataset.
 
 \subsection{Contributions and Current Scope}
 
@@ -743,6 +757,48 @@ A hyperedge $h = (A, \{r_1, \ldots, r_n\})$ represents that analysis $A$ require
 \end{equation}
 \end{definition}
 
+\subsection{Registered Affordance Types (v1.1)}
+\label{sec:affordance-registry}
+
+Table~\ref{tab:affordances} enumerates the 21 registered analysis affordance types as of June~2026. Types are organised into four categories: core experimental, population dynamics, clinical/BCI, and extended behavioral.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{llp{5.5cm}}
+\toprule
+\textbf{ID} & \textbf{Category} & \textbf{Required signals} \\
+\midrule
+\texttt{event\_aligned\_psth}        & Core experimental & spike times, event timestamps \\
+\texttt{trial\_aligned\_neural}       & Core experimental & neural data, trial structure, event timestamps \\
+\texttt{choice\_decoding}            & Core experimental & neural data, choice labels, trial structure \\
+\texttt{stimulus\_response\_modeling} & Core experimental & neural data, stimulus presentation, timing \\
+\texttt{behavioral\_state\_decoding} & Core experimental & neural data, behavioral state labels \\
+\texttt{q\_learning}                  & Core experimental & trial structure, choice sequence, reward signal \\
+\texttt{motor\_decoding}             & Core experimental & neural data, motor action labels \\
+\texttt{delay\_discounting\_modeling} & Core experimental & choice sequence, delay variable, reward magnitude \\
+\texttt{cross\_session\_generalization} & Core experimental & neural data, multiple sessions \\
+\midrule
+\texttt{dimensionality\_reduction}   & Population dynamics & neural population data, multiple units/voxels \\
+\texttt{functional\_connectivity}    & Population dynamics & multi-channel neural data \\
+\texttt{fmri\_glm\_analysis}         & Population dynamics & fMRI BOLD data, BIDS events \\
+\texttt{trial\_aligned\_calcium}     & Population dynamics & calcium imaging, ROI traces, trial structure \\
+\texttt{latent\_dynamics\_modeling}  & Population dynamics & neural population data, time series \\
+\texttt{representational\_similarity\_analysis} & Population dynamics & neural population, task conditions \\
+\midrule
+\texttt{speech\_decoding}            & Clinical / BCI & neural data, speech events, temporal alignment \\
+\texttt{seizure\_detection}          & Clinical / BCI & neural data, seizure annotations \\
+\texttt{sleep\_stage\_classification} & Clinical / BCI & neural data, sleep stage labels \\
+\texttt{bci\_decoding}               & Clinical / BCI & neural data, BCI context \\
+\midrule
+\texttt{cross\_area\_interaction}    & Extended behavioral & neural data, multiple brain regions, simultaneous recording \\
+\texttt{pose\_neural\_correlation}   & Extended behavioral & neural data, pose tracking data \\
+\bottomrule
+\end{tabular}
+\caption{The 21 registered analysis affordance types in Neural Search v1.1. Each affordance specifies required features, optional features, negative conditions, and validation methods. Support levels (HIGH/MEDIUM/LOW/UNSUPPORTED) depend on whether features are verified from structured NWB/BIDS data or inferred from metadata.}
+\label{tab:affordances}
+\end{table}
+
 \subsection{Affordance Confidence}
 
 \begin{equation}
@@ -930,7 +986,7 @@ Let $\mathcal{C}$ be the corpus of $N$ datasets. The coverage ledger $\mathcal{L
 \begin{equation}
     \mathcal{L} = (\mathcal{C},\; D_{\text{brain\_region}},\; D_{\text{modality}},\; D_{\text{recording\_scale}},\; D_{\text{species}},\; D_{\text{task}},\; D_{\text{behavioral\_event}})
 \end{equation}
-where each $D_{\text{dim}}$ is a mapping from label value to dataset identifier. The current ledger contains 7,176 datasets and 29,561 entries.
+where each $D_{\text{dim}}$ is a mapping from label value to dataset identifier. The current ledger (15~June~2026) contains 7,176 datasets and 29,561 entries across six dimensions: brain region coverage 48.1\% (3,453/7,176 datasets), modality coverage 81.9\%, recording scale 80.6\%, species 72.8\%, and task 23.4\%. The task dimension is the primary coverage gap: many recording datasets carry no explicit task structure, and the 23.4\% rate counts passive recordings classified as \texttt{visual\_stimulation}, \texttt{resting\_state}, and \texttt{spontaneous\_activity} alongside active behavioral tasks.
 \end{definition}
 
 The ledger supports three analytical queries:
@@ -1829,20 +1885,26 @@ These commands produce local JSONL and Markdown artifacts for reviewability. The
 
 The roadmap below orders work by impact on the three core goals: corpus growth, neural coverage, and search accuracy/relevance. Items are grouped into four horizons.
 
-\paragraph{Horizon 1 — Immediate (embedding rebuild + annotation, 1--2 weeks).}
+\paragraph{Horizon 1 — Immediate (affordance/ontology expansion + LLM annotation, June 2026, in progress).}
 
 \begin{enumerate}
-    \item \textbf{Rebuild field embeddings for all 7,171 records.}
-    The existing BGE-large-en-v1.5 embedding cache covers 2,840 records (40\%). Running \texttt{embed\_flat\_corpus.py} against the full corpus (in progress as of 14~June~2026) produces 7,171 × 1,024 field embeddings. This is the prerequisite for full dense retrieval, SPECTER2 fusion, and the turbovec index rebuild.
+    \item \textbf{Expand affordance library to 21 types} (\textit{complete as of 15~June~2026}).
+    Added six new analysis types: speech decoding, seizure detection, sleep stage classification, BCI decoding, latent dynamics modeling, and representational similarity analysis. The \texttt{DatasetFeatures} struct now detects four new signal fields (\texttt{has\_speech\_events}, \texttt{has\_seizure\_annotations}, \texttt{has\_sleep\_stage\_labels}, \texttt{has\_bci\_context}). See Table~\ref{tab:affordances} for the full 21-type registry.
 
-    \item \textbf{Rebuild turbovec vector index.}
-    After embeddings are complete, rebuild the approximate nearest-neighbor index over all 7,171 records. Current index covers only 625 records.
+    \item \textbf{Expand brain region ontology from 106 to 130+ entries} (\textit{complete as of 15~June~2026}).
+    Added superior temporal gyrus, inferior frontal gyrus (Broca area), olfactory bulb, piriform cortex, medial septum, lateral/medial habenula, claustrum, primary auditory cortex, prelimbic and infralimbic cortex, perirhinal and postrhinal cortex, dorsal/ventral striatum, zona incerta, retina, spinal cord, pedunculopontine nucleus, dorsal raphe, and inferior olive. Ontology tests enforce no duplicate IDs and minimum alias coverage.
 
-    \item \textbf{Run human annotation via \texttt{generate\_annotation\_pool.py}.}
-    The annotation pool generator produces $\sim$1,100 stratified (query, dataset) pairs from 100 benchmark queries. Run \texttt{annotate\_candidates.py} to collect 50+ graded qrels. This is the single critical-path blocker for any credible NDCG/MRR claim.
+    \item \textbf{Fix task ontology: add 9 missing high-frequency task IDs.}
+    Nine task IDs in the corpus have no entry in \texttt{behavioral\_task\_ontology.yaml}: \texttt{visual\_stimulation} (492 datasets), \texttt{decision\_making} (196), \texttt{change\_detection} (121), \texttt{passive\_viewing} (72), \texttt{spontaneous\_activity}, \texttt{circuit\_mapping}, \texttt{cell\_type\_mapping}, \texttt{current\_injection}, \texttt{excitability\_analysis}. Adding these entries raises the indexed task space from 87 to 96 IDs.
 
-    \item \textbf{Re-enrich BIL records with updated ontology-backed adapter.}
-    The Brain Image Library adapter now uses \texttt{match\_brain\_regions()} from the ontology. Re-ingesting the 200 BIL records is expected to raise region coverage from 1\% ($2/200$) to $\geq 40\%$.
+    \item \textbf{NLP task enrichment second pass.}
+    A batch script matches dataset titles and descriptions against the expanded 96-entry task alias map. Target: raise task coverage from 23.4\% to $\geq 35\%$ using confidence=0.60 inferred labels.
+
+    \item \textbf{Complete LLM qrels annotation via Ollama Qwen-2.5-14B} (\textit{in progress on MacBook Pro}).
+    Running 13,654 (query, dataset) evidence pairs through local Ollama inference. Once complete, \texttt{compute\_ndcg\_from\_qrels.py} will produce the first publication-grade NDCG@10/MRR/Recall@50 benchmark across the ablation ladder.
+
+    \item \textbf{Expose knowledge graph similar-datasets API.}
+    Surface the 2,957 cross-dataset edges (\texttt{same\_region\_same\_task}: 1,576; \texttt{same\_region\_cross\_modality}: 890; \texttt{same\_task\_cross\_species}: 491) via \texttt{GET /api/datasets/\{id\}/similar}. A Similar Datasets panel on each dataset card will present these neighbors with their relation type and weight.
 \end{enumerate}
 
 \paragraph{Horizon 2 — Short term (corpus coverage, 2--4 weeks).}
