@@ -11,9 +11,11 @@ confidence=0.60 (marked silver/inferred).
 from __future__ import annotations
 
 import argparse
+import logging
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -22,6 +24,9 @@ from neural_search.coverage.duckdb_store import CoverageStore
 
 TASK_ONTOLOGY = Path("data/ontology/behavioral_task_ontology.yaml")
 CONFIDENCE = 0.60
+_MIN_ALIAS_LEN = 4  # discard very short strings that cause too many false matches
+
+log = logging.getLogger(__name__)
 
 
 def _build_alias_map(task_path: Path = TASK_ONTOLOGY) -> dict[str, str]:
@@ -30,7 +35,10 @@ def _build_alias_map(task_path: Path = TASK_ONTOLOGY) -> dict[str, str]:
         data = yaml.safe_load(f)
     alias_map: dict[str, str] = {}
     for task in data.get("tasks", []):
-        task_id = task["id"]
+        task_id = task.get("id", "")
+        if not task_id:
+            log.warning("Skipping task entry with missing id: %s", task)
+            continue
         candidates = [
             task.get("label", ""),
             task_id.replace("_", " "),
@@ -41,7 +49,17 @@ def _build_alias_map(task_path: Path = TASK_ONTOLOGY) -> dict[str, str]:
             if not alias:
                 continue
             normalized = _normalize_text(str(alias)).strip()
-            if len(normalized) >= 4:
+            if len(normalized) < _MIN_ALIAS_LEN:
+                continue
+            if normalized in alias_map and alias_map[normalized] != task_id:
+                log.warning(
+                    "Alias collision: %r maps to both %s and %s; keeping %s",
+                    normalized,
+                    alias_map[normalized],
+                    task_id,
+                    alias_map[normalized],
+                )
+            else:
                 alias_map[normalized] = task_id
     return alias_map
 
@@ -53,66 +71,58 @@ def _normalize_text(text: str) -> str:
 def _match_tasks(text: str, alias_map: dict[str, str]) -> list[tuple[str, float]]:
     """Return (task_id, confidence) for all aliases found in text."""
     normalized = _normalize_text(text)
-    found: dict[str, int] = {}
+    found: set[str] = set()
     for alias, task_id in alias_map.items():
         pattern = r"\b" + re.escape(alias) + r"\b"
         if re.search(pattern, normalized):
-            found[task_id] = max(found.get(task_id, 0), len(alias))
+            found.add(task_id)
     return [(task_id, CONFIDENCE) for task_id in found]
 
 
 def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description="NLP task coverage enrichment")
     parser.add_argument("--dry-run", action="store_true", help="Don't write to DB")
     parser.add_argument("--limit", type=int, default=0, help="Max datasets to process")
     args = parser.parse_args()
 
     alias_map = _build_alias_map()
-    print(f"Loaded {len(alias_map)} task aliases from {len(set(alias_map.values()))} tasks")
+    log.info("Loaded %d task aliases from %d tasks", len(alias_map), len(set(alias_map.values())))
 
-    store = CoverageStore()
+    with CoverageStore() as store:
+        uncovered = store.get_uncovered_datasets(dimension="tasks")
 
-    uncovered = store._conn.execute("""
-        SELECT d.dataset_id, d.title
-        FROM datasets d
-        WHERE d.dataset_id NOT IN (
-            SELECT DISTINCT dataset_id FROM coverage_entries WHERE dimension = 'tasks'
-        )
-        ORDER BY d.dataset_id
-    """).fetchall()
+        if args.limit > 0:
+            uncovered = uncovered[: args.limit]
 
-    if args.limit > 0:
-        uncovered = uncovered[: args.limit]
+        log.info("Datasets without task coverage: %d", len(uncovered))
 
-    print(f"Datasets without task coverage: {len(uncovered)}")
+        entries: list[dict[str, Any]] = []
+        matched_count = 0
 
-    entries: list[dict] = []
-    matched_count = 0
+        for dataset_id, title in uncovered:
+            text = title or ""
+            matches = _match_tasks(text, alias_map)
+            for task_id, conf in matches:
+                entries.append({
+                    "dataset_id": dataset_id,
+                    "dimension": "tasks",
+                    "value_id": task_id,
+                    "confidence": conf,
+                    "provenance": "nlp_enrichment_v1",
+                })
+            if matches:
+                matched_count += 1
 
-    for dataset_id, title in uncovered:
-        text = title or ""
-        matches = _match_tasks(text, alias_map)
-        for task_id, conf in matches:
-            entries.append({
-                "dataset_id": dataset_id,
-                "dimension": "tasks",
-                "value_id": task_id,
-                "confidence": conf,
-                "provenance": "nlp_enrichment_v1",
-            })
-        if matches:
-            matched_count += 1
+        log.info("Datasets matched: %d/%d", matched_count, len(uncovered))
+        log.info("New task entries to insert: %d", len(entries))
 
-    print(f"Datasets matched: {matched_count}/{len(uncovered)}")
-    print(f"New task entries to insert: {len(entries)}")
+        if args.dry_run:
+            log.info("[dry-run] No changes written.")
+        else:
+            inserted = store.add_coverage_entries_batch(entries)
+            log.info("Inserted: %d new entries", inserted)
 
-    if args.dry_run:
-        print("[dry-run] No changes written.")
-    else:
-        inserted = store.add_coverage_entries_batch(entries)
-        print(f"Inserted: {inserted} new entries")
-
-    store.close()
     return 0
 
 

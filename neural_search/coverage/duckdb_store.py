@@ -760,6 +760,20 @@ class CoverageStore:
             for r in rows
         ]
 
+    def get_uncovered_datasets(self, dimension: str = "tasks") -> list[tuple[str, str]]:
+        """Return (dataset_id, title) pairs that have no coverage entry for dimension."""
+        return self._conn.execute(
+            """
+            SELECT d.dataset_id, d.title
+            FROM datasets d
+            WHERE d.dataset_id NOT IN (
+                SELECT DISTINCT dataset_id FROM coverage_entries WHERE dimension = ?
+            )
+            ORDER BY d.dataset_id
+            """,
+            [dimension],
+        ).fetchall()
+
     def add_coverage_entries_batch(
         self,
         entries: list[dict[str, Any]],
