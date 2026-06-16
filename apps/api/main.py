@@ -1471,3 +1471,22 @@ async def get_dark_pairs(
         }
         for r in rows
     ]
+
+
+@app.get("/api/coverage/region-counts")
+async def get_region_counts() -> list[dict[str, Any]]:
+    """All brain regions with dataset counts for the Brain Atlas heatmap."""
+    with _coverage_store() as store:
+        return store.region_dataset_counts()
+
+
+@app.get("/api/coverage/region/{region_id}/datasets")
+async def get_region_datasets(
+    region_id: str,
+    limit: int = 20,
+    offset: int = 0,
+) -> dict[str, Any]:
+    """Datasets tagged with a specific brain region."""
+    with _coverage_store() as store:
+        datasets = store.datasets_for_region(region_id, limit=limit, offset=offset)
+    return {"region_id": region_id, "datasets": datasets, "count": len(datasets)}
