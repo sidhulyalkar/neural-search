@@ -9,6 +9,7 @@ import { EvaluationPage } from './pages/EvaluationPage'
 import { DemoPage } from './pages/DemoPage'
 import { GraphPage } from './pages/GraphPage'
 import { CoveragePage } from './pages/CoveragePage'
+import { BrainAtlasPage } from './pages/BrainAtlasPage'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/demo" element={<DemoPage />} />
         <Route path="/graph" element={<GraphPage />} />
         <Route path="/coverage" element={<CoveragePage />} />
+        <Route path="/atlas" element={<BrainAtlasPage />} />
       </Routes>
     </Layout>
   )
