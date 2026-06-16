@@ -760,6 +760,49 @@ class CoverageStore:
             for r in rows
         ]
 
+    def add_coverage_entries_batch(
+        self,
+        entries: list[dict[str, Any]],
+    ) -> int:
+        """Bulk-insert coverage entries, skipping duplicates.
+
+        Each entry dict must have: dataset_id, dimension, value_id.
+        Optional: confidence (default 0.5), provenance (default 'nlp_enrichment').
+        Returns number of rows actually inserted.
+        """
+        if not entries:
+            return 0
+        rows = []
+        for e in entries:
+            did = e["dataset_id"]
+            dim = e["dimension"]
+            vid = e["value_id"]
+            conf = float(e.get("confidence", 0.5))
+            prov = e.get("provenance", "nlp_enrichment")
+            entry_id = f"coverage:nlp:{did}:{dim}:{vid}"
+            rows.append((
+                entry_id, did, "nlp_enrichment", dim, vid, vid,
+                conf, "silver", "open", "dataset",
+                prov, prov, "nlp_enrichment_v1",
+                None, None, None,
+            ))
+        before = self._conn.execute(
+            "SELECT COUNT(*) FROM coverage_entries"
+        ).fetchone()[0]
+        self._conn.executemany(
+            """INSERT OR IGNORE INTO coverage_entries
+               (entry_id, dataset_id, source, dimension, value_id, label,
+                confidence, evidence_tier, access_tier, analysis_level,
+                source_field, evidence_text, snapshot_id,
+                uberon_id, allen_ccf_mouse_id, ncbitaxon_id)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            rows,
+        )
+        after = self._conn.execute(
+            "SELECT COUNT(*) FROM coverage_entries"
+        ).fetchone()[0]
+        return after - before
+
     def sql(self, query: str) -> duckdb.DuckDBPyRelation:
         return self._conn.sql(query)
 
