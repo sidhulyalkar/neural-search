@@ -222,6 +222,7 @@ def extract_findings_from_corpus(
     *,
     checkpoint_path: Path | None = None,
     max_papers: int | None = None,
+    api_key: str | None = None,
 ) -> int:
     """Process all shards, extract findings, write to out_path as JSONL.
 
@@ -268,7 +269,7 @@ def extract_findings_from_corpus(
                     papers_seen += 1
 
                     if len(batch) >= batch_size:
-                        findings = extract_batch(batch, config)
+                        findings = extract_batch(batch, config, api_key=api_key)
                         for f in findings:
                             out_fh.write(json.dumps(f.__dict__) + "\n")
                             total_findings += 1
@@ -286,7 +287,7 @@ def extract_findings_from_corpus(
 
         # flush remaining batch
         if batch:
-            findings = extract_batch(batch, config)
+            findings = extract_batch(batch, config, api_key=api_key)
             for f in findings:
                 out_fh.write(json.dumps(f.__dict__) + "\n")
                 total_findings += 1
