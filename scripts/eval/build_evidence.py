@@ -31,16 +31,24 @@ def _load_pool(path: Path) -> list[dict]:
     return rows
 
 
+_MIN_RANK_DEFAULT = 1000
+
+
 def _load_corpus_index(path: Path) -> dict[str, dict]:
     index: dict[str, dict] = {}
-    with path.open(encoding="utf-8") as fh:
-        for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            rec = json.loads(line)
-            rid = f"{rec.get('source', '')}:{rec.get('source_id', '')}"
-            index[rid] = rec
+    files = sorted(path.glob("*.jsonl")) if path.is_dir() else [path]
+    for file in files:
+        with file.open(encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                source = rec.get("source", "")
+                source_id = rec.get("source_id", "")
+                if not source or not source_id:
+                    continue
+                index[f"{source}:{source_id}"] = rec
     return index
 
 
@@ -74,7 +82,7 @@ def main() -> None:
                 query=specs[qid],
                 dataset=dataset_evidence_from_record(corpus[rid]),
                 pooled_from=row.get("pooled_from") or [],
-                min_rank=int(row.get("min_rank", 1000)),
+                min_rank=int(row.get("min_rank", _MIN_RANK_DEFAULT)),
                 priority=str(row.get("priority", "normal")),
             )
             out_fh.write(json.dumps(pair.to_dict()) + "\n")
