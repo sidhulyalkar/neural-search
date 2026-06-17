@@ -9,6 +9,7 @@ from neural_search.eval.evidence import (
     dataset_evidence_from_record,
     compute_metadata_completeness,
 )
+from neural_search.eval.query_decomposition import decompose_query, load_query_specs
 
 
 class TestQuerySpec:
@@ -79,3 +80,83 @@ class TestLFVote:
         d = v.to_dict()
         assert d["lf_name"] == "lf_test"
         assert d["label"] == 0
+
+
+class TestQueryDecomposition:
+    def test_extracts_fmri_modality(self):
+        record = {
+            "query_id": "q_0001",
+            "intent": "META_ANALYSIS",
+            "query": "human fMRI reward prediction error reinforcement learning task",
+            "scientific_goal": "Find datasets for meta-analysis.",
+            "required_evidence": ["species", "modality"],
+            "nice_to_have": [],
+            "known_failure_modes": ["resting-state fMRI with reward words in description"],
+        }
+        spec = decompose_query(record)
+        assert "fmri" in spec.required_modalities
+        assert "human" in spec.required_species
+
+    def test_extracts_hard_negatives(self):
+        record = {
+            "query_id": "q_0002",
+            "intent": "MODEL_VALIDATION",
+            "query": "mouse visual cortex calcium imaging",
+            "scientific_goal": "Find mouse calcium datasets.",
+            "required_evidence": [],
+            "nice_to_have": [],
+            "known_failure_modes": [
+                "mouse electrophysiology visual cortex — modality mismatch",
+                "human visual fMRI — species mismatch",
+            ],
+        }
+        spec = decompose_query(record)
+        assert len(spec.hard_negatives) == 2
+        assert "calcium_imaging" in spec.required_modalities
+        assert "mouse" in spec.required_species
+
+    def test_neuropixels_query(self):
+        record = {
+            "query_id": "q_0003",
+            "intent": "PIPELINE_REUSE",
+            "query": "extracellular electrophysiology spike sorting neuropixels single unit",
+            "scientific_goal": "Find ephys datasets.",
+            "required_evidence": ["modality"],
+            "nice_to_have": [],
+            "known_failure_modes": [],
+        }
+        spec = decompose_query(record)
+        assert any(m in spec.required_modalities for m in ["neuropixels", "extracellular_ephys"])
+
+
+class TestPairEvidenceConstruction:
+    def test_pair_evidence_links_query_and_dataset(self):
+        from neural_search.eval.evidence import dataset_evidence_from_record, PairEvidence
+        q_record = {
+            "query_id": "q_0001",
+            "intent": "META_ANALYSIS",
+            "query": "human fMRI reward",
+            "scientific_goal": "meta-analysis",
+            "required_evidence": [],
+            "nice_to_have": [],
+            "known_failure_modes": ["resting state"],
+        }
+        d_record = {
+            "source": "dandi", "source_id": "000004", "title": "Human ephys",
+            "description": None, "species": ["human"], "modalities": ["extracellular_ephys"],
+            "brain_regions": [], "tasks": [], "license": None, "url": None,
+            "has_raw_data": True, "has_processed_data": False,
+            "has_behavior": False, "has_trials": False,
+            "data_standards": [], "metadata_json": {},
+        }
+        spec = decompose_query(q_record)
+        evidence = dataset_evidence_from_record(d_record)
+        pair = PairEvidence(
+            query_id="q_0001", record_id="dandi:000004",
+            query=spec, dataset=evidence,
+            pooled_from=["usefulness"], min_rank=3, priority="high",
+        )
+        d = pair.to_dict()
+        assert d["query_id"] == "q_0001"
+        assert d["dataset"]["record_id"] == "dandi:000004"
+        assert d["query"]["required_species"] == ["human"]
