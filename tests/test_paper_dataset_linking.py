@@ -11,6 +11,7 @@ import pytest
 
 from neural_search.literature.linking import (
     DatasetPaperLink,
+    link_corpus_to_local_literature,
     link_corpus_to_literature,
     lookup_by_doi,
     lookup_by_title,
@@ -404,6 +405,58 @@ class TestLinkCorpusToLiterature:
         result = link_corpus_to_literature(corpus_dir, out_file)
 
         assert len(result) == 2
+
+    def test_local_literature_links_by_doi(self, tmp_path: Path) -> None:
+        corpus_file = tmp_path / "corpus.jsonl"
+        paper_file = tmp_path / "papers.jsonl"
+        out_file = tmp_path / "links.jsonl"
+        _write_corpus(corpus_file, [CORPUS_WITH_DOI])
+        _write_corpus(
+            paper_file,
+            [
+                json.dumps(
+                    {
+                        "paper_id": "paper:openalex:W2741809807",
+                        "source_id": "W2741809807",
+                        "doi": "https://doi.org/10.1038/s41593-020-0636-4",
+                        "title": "A NWB-based dataset and processing pipeline",
+                        "year": 2020,
+                    }
+                )
+            ],
+        )
+
+        links = link_corpus_to_local_literature(corpus_file, paper_file, out_file)
+
+        assert links[0].match_method == "doi_exact"
+        assert links[0].paper_openalex_id == "W2741809807"
+        assert links[0].confidence == 1.0
+
+    def test_local_literature_links_by_title(self, tmp_path: Path) -> None:
+        corpus_file = tmp_path / "corpus.jsonl"
+        paper_file = tmp_path / "papers.jsonl"
+        out_file = tmp_path / "links.jsonl"
+        _write_corpus(corpus_file, [CORPUS_WITHOUT_DOI_FIELD])
+        _write_corpus(
+            paper_file,
+            [
+                json.dumps(
+                    {
+                        "paper_id": "paper:openalex:W_TITLE",
+                        "source_id": "W_TITLE",
+                        "doi": None,
+                        "title": "A fMRI study of working memory",
+                        "year": 2021,
+                    }
+                )
+            ],
+        )
+
+        links = link_corpus_to_local_literature(corpus_file, paper_file, out_file)
+
+        assert links[0].match_method == "title_fuzzy_local"
+        assert links[0].paper_openalex_id == "W_TITLE"
+        assert links[0].confidence >= 0.82
 
     def test_title_fallback_when_doi_returns_none(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch

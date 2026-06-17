@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import difflib
 import json
+import re
 import time
+from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterator
@@ -24,6 +26,28 @@ class DatasetPaperLink:
 _OPENALEX_BASE = "https://api.openalex.org"
 _MAILTO = "sid.soccer.21@gmail.com"
 _RATE_LIMIT_SLEEP = 0.15
+_TITLE_MATCH_THRESHOLD = 0.82
+_MAX_TITLE_CANDIDATES = 250
+_MAX_TOKEN_POSTINGS = 8_000
+_TITLE_STOPWORDS = {
+    "and",
+    "are",
+    "based",
+    "data",
+    "dataset",
+    "datasets",
+    "during",
+    "for",
+    "from",
+    "human",
+    "mouse",
+    "neural",
+    "neuronal",
+    "of",
+    "the",
+    "using",
+    "with",
+}
 
 
 def _http_get(url: str, params: dict | None = None):
@@ -61,6 +85,26 @@ def _parse_doi(doi_url: str | None) -> str | None:
     if not doi_url:
         return None
     return doi_url.replace("https://doi.org/", "").replace("http://doi.org/", "")
+
+
+def _doi_key(doi: str | None) -> str | None:
+    parsed = _parse_doi(doi)
+    return parsed.lower().strip() if parsed else None
+
+
+def _normalize_title(title: str | None) -> str:
+    if not title:
+        return ""
+    return " ".join(re.findall(r"[a-z0-9]+", title.lower()))
+
+
+def _title_tokens(title: str | None) -> list[str]:
+    normalized = _normalize_title(title)
+    return [
+        token
+        for token in normalized.split()
+        if len(token) >= 4 and token not in _TITLE_STOPWORDS
+    ]
 
 
 def lookup_by_doi(doi: str) -> dict | None:
@@ -127,6 +171,20 @@ def _iter_corpus_records(corpus_path: Path) -> Iterator[dict]:
                     yield json.loads(line)
 
 
+def _iter_paper_records(paper_shards: Path) -> Iterator[dict]:
+    paths = (
+        sorted(paper_shards.glob("*.jsonl"))
+        if paper_shards.is_dir()
+        else [paper_shards]
+    )
+    for path in paths:
+        with path.open() as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    yield json.loads(line)
+
+
 def _make_not_found_link(record_id: str) -> DatasetPaperLink:
     return DatasetPaperLink(
         dataset_record_id=record_id,
@@ -137,6 +195,76 @@ def _make_not_found_link(record_id: str) -> DatasetPaperLink:
         match_method="not_found",
         confidence=0.0,
     )
+
+
+class LocalPaperIndex:
+    """DOI and token-candidate index over local normalized OpenAlex shards."""
+
+    def __init__(self, paper_shards: Path) -> None:
+        self.records: list[dict] = []
+        self.doi_index: dict[str, int] = {}
+        self.token_index: dict[str, list[int]] = defaultdict(list)
+        self._build(paper_shards)
+
+    def _build(self, paper_shards: Path) -> None:
+        for record in _iter_paper_records(paper_shards):
+            idx = len(self.records)
+            self.records.append(record)
+            doi = _doi_key(record.get("doi"))
+            if doi and doi not in self.doi_index:
+                self.doi_index[doi] = idx
+            for token in set(_title_tokens(record.get("title"))):
+                self.token_index[token].append(idx)
+
+    def lookup_by_doi(self, doi: str) -> dict | None:
+        key = _doi_key(doi)
+        if not key or key not in self.doi_index:
+            return None
+        return self._hit(self.records[self.doi_index[key]], similarity=1.0)
+
+    def lookup_by_title(self, title: str) -> dict | None:
+        normalized = _normalize_title(title)
+        tokens = _title_tokens(title)
+        if not normalized or not tokens:
+            return None
+
+        candidate_counts: Counter[int] = Counter()
+        for token in tokens:
+            postings = self.token_index.get(token, [])
+            if len(postings) > _MAX_TOKEN_POSTINGS:
+                continue
+            candidate_counts.update(postings)
+
+        if not candidate_counts:
+            return None
+
+        best_record: dict | None = None
+        best_ratio = 0.0
+        for idx, _ in candidate_counts.most_common(_MAX_TITLE_CANDIDATES):
+            record = self.records[idx]
+            paper_title = _normalize_title(record.get("title"))
+            if not paper_title:
+                continue
+            ratio = difflib.SequenceMatcher(None, normalized, paper_title).ratio()
+            if ratio > best_ratio:
+                best_ratio = ratio
+                best_record = record
+
+        if best_record is None or best_ratio < _TITLE_MATCH_THRESHOLD:
+            return None
+        return self._hit(best_record, similarity=best_ratio)
+
+    def _hit(self, record: dict, *, similarity: float) -> dict:
+        source_id = record.get("source_id")
+        if not source_id and record.get("paper_id"):
+            source_id = str(record["paper_id"]).split(":")[-1]
+        return {
+            "openalex_id": source_id or "",
+            "doi": _parse_doi(record.get("doi")),
+            "title": record.get("title"),
+            "year": record.get("year"),
+            "similarity": similarity,
+        }
 
 
 def link_corpus_to_literature(
@@ -161,6 +289,89 @@ def link_corpus_to_literature(
             links.append(link)
 
     return links
+
+
+def link_corpus_to_local_literature(
+    corpus_path: Path,
+    paper_shards: Path,
+    out_path: Path,
+    *,
+    max_records: int | None = None,
+    skip_without_doi: bool = False,
+    progress_every: int | None = None,
+) -> list[DatasetPaperLink]:
+    """Link corpus datasets against locally ingested OpenAlex paper shards."""
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Building local paper index from {paper_shards}...", flush=True)
+    index = LocalPaperIndex(paper_shards)
+    print(f"Local paper index ready: {len(index.records)} papers", flush=True)
+    records = _iter_corpus_records(corpus_path)
+    links: list[DatasetPaperLink] = []
+
+    with out_path.open("w") as out_fh:
+        for i, rec in enumerate(records, start=1):
+            if max_records is not None and i > max_records:
+                break
+            record_id = f"{rec['source']}:{rec['source_id']}"
+            doi = rec.get("doi") or None
+            title = rec.get("title") or ""
+            link = _resolve_local_link(record_id, doi, title, skip_without_doi, index)
+            out_fh.write(json.dumps(asdict(link)) + "\n")
+            links.append(link)
+            if progress_every and i % progress_every == 0:
+                print(f"  Processed {i} records...", flush=True)
+
+    return links
+
+
+def _resolve_local_link(
+    record_id: str,
+    doi: str | None,
+    title: str,
+    skip_without_doi: bool,
+    index: LocalPaperIndex,
+) -> DatasetPaperLink:
+    if doi:
+        hit = index.lookup_by_doi(doi)
+        if hit:
+            return DatasetPaperLink(
+                dataset_record_id=record_id,
+                paper_openalex_id=hit["openalex_id"],
+                paper_doi=hit["doi"],
+                paper_title=hit["title"],
+                paper_year=hit["year"],
+                match_method="doi_exact",
+                confidence=1.0,
+            )
+        hit = index.lookup_by_title(title)
+        if hit:
+            return DatasetPaperLink(
+                dataset_record_id=record_id,
+                paper_openalex_id=hit["openalex_id"],
+                paper_doi=hit["doi"],
+                paper_title=hit["title"],
+                paper_year=hit["year"],
+                match_method="title_fuzzy_local",
+                confidence=min(0.95, max(0.7, hit.get("similarity", 0.82))),
+            )
+        return _make_not_found_link(record_id)
+
+    if skip_without_doi:
+        return _make_not_found_link(record_id)
+
+    hit = index.lookup_by_title(title)
+    if hit:
+        return DatasetPaperLink(
+            dataset_record_id=record_id,
+            paper_openalex_id=hit["openalex_id"],
+            paper_doi=hit["doi"],
+            paper_title=hit["title"],
+            paper_year=hit["year"],
+            match_method="title_fuzzy_local",
+            confidence=min(0.95, max(0.7, hit.get("similarity", 0.82))),
+        )
+    return _make_not_found_link(record_id)
 
 
 def _resolve_link(
