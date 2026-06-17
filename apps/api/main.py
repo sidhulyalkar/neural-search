@@ -63,6 +63,7 @@ _DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "
 FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
 LITERATURE_SHARD_DIR = Path("data/corpus/normalized/openalex_neuro")
 LITERATURE_FINDINGS_PATH = Path("artifacts/literature/findings_v1.jsonl")
+LITERATURE_LINKS_PATH = Path("artifacts/literature/paper_dataset_links.jsonl")
 NEURO_JUDGE_WATERMARK = (
     "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
     "NOT PURE HUMAN GOLD"
@@ -477,6 +478,7 @@ async def search_literature(request: LiteratureSearchRequest) -> LiteratureSearc
         search_papers(
             request.query,
             shard_dir=LITERATURE_SHARD_DIR,
+            links_path=LITERATURE_LINKS_PATH,
             filters=request.filters,
             limit=request.limit,
         )
