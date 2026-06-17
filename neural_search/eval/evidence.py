@@ -104,6 +104,19 @@ def _infer_data_levels(record: dict) -> list[str]:
     return levels
 
 
+def _flatten_str_list(values: list) -> list[str]:
+    """Normalize a list that may contain strings or dicts with an 'id'/'label' key."""
+    result = []
+    for item in values:
+        if isinstance(item, str):
+            result.append(item)
+        elif isinstance(item, dict):
+            canonical = str(item.get("id") or item.get("label") or "")
+            if canonical:
+                result.append(canonical)
+    return result
+
+
 def dataset_evidence_from_record(record: dict) -> DatasetEvidence:
     """Build a DatasetEvidence from a normalized corpus record dict."""
     source = record.get("source", "")
@@ -120,11 +133,11 @@ def dataset_evidence_from_record(record: dict) -> DatasetEvidence:
         source=source,
         title=record.get("title") or "",
         description=record.get("description"),
-        species=list(record.get("species") or []),
-        modalities=list(record.get("modalities") or []),
+        species=_flatten_str_list(list(record.get("species") or [])),
+        modalities=_flatten_str_list(list(record.get("modalities") or [])),
         data_levels=_infer_data_levels(record),
-        tasks=list(record.get("tasks") or []),
-        regions=list(record.get("brain_regions") or []),
+        tasks=_flatten_str_list(list(record.get("tasks") or [])),
+        regions=_flatten_str_list(list(record.get("brain_regions") or [])),
         license=record.get("license"),
         doi=doi,
         url=record.get("url"),
@@ -132,5 +145,5 @@ def dataset_evidence_from_record(record: dict) -> DatasetEvidence:
         metadata_completeness=compute_metadata_completeness(record),
         has_behavior=bool(record.get("has_behavior")),
         has_trials=bool(record.get("has_trials")),
-        data_standards=list(record.get("data_standards") or []),
+        data_standards=_flatten_str_list(list(record.get("data_standards") or [])),
     )
