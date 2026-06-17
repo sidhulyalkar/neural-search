@@ -302,7 +302,7 @@ def main():
     print(f"Total pairs: {benchmark.n_pairs}")
     print(f"Output: {args.output}")
     print("\nNext steps:")
-    print("1. Export pairs for annotation: neural_search.labeling.cli")
+    print("1. Export pairs for annotation: (neural_search.labeling.cli was removed)")
     print("2. Collect 2+ annotator labels per pair")
     print("3. Compute agreement and adjudicate disagreements")
 
