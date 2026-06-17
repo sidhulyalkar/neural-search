@@ -4,6 +4,7 @@ import json
 import os
 import re
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -60,6 +61,8 @@ from neural_search.search import search_datasets
 # (useful for CI and quick local demos). Default: full combined corpus.
 _DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
 FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
+LITERATURE_SHARD_DIR = Path("data/corpus/normalized/openalex_neuro")
+LITERATURE_FINDINGS_PATH = Path("artifacts/literature/findings_v1.jsonl")
 NEURO_JUDGE_WATERMARK = (
     "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
     "NOT PURE HUMAN GOLD"
@@ -149,6 +152,23 @@ class FrontendSearchResponse(BaseModel):
     total_count: int
     results: list[FrontendSearchResult]
     search_time_ms: float | None = None
+
+
+class LiteratureSearchRequest(BaseModel):
+    """Search request for paper and finding literature results."""
+    query: str
+    result_types: list[str] = Field(default_factory=lambda: ["papers", "findings"])
+    limit: int = Field(default=10, ge=1, le=50)
+    filters: dict[str, Any] = Field(default_factory=dict)
+
+
+class LiteratureSearchResponse(BaseModel):
+    """Paper/finding search response."""
+    query: str
+    papers: list[dict[str, Any]] = Field(default_factory=list)
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    total_papers: int = 0
+    total_findings: int = 0
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -441,6 +461,45 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
         total_count=len(frontend_results),
         results=frontend_results,
         search_time_ms=elapsed,
+    )
+
+
+@app.post("/api/literature/search", response_model=LiteratureSearchResponse)
+async def search_literature(request: LiteratureSearchRequest) -> LiteratureSearchResponse:
+    """Search literature papers and extracted findings."""
+    if not request.query.strip():
+        raise HTTPException(status_code=400, detail="Enter a literature search query.")
+
+    from neural_search.literature.search import search_findings, search_papers
+
+    requested = {item.strip().lower() for item in request.result_types}
+    papers = (
+        search_papers(
+            request.query,
+            shard_dir=LITERATURE_SHARD_DIR,
+            filters=request.filters,
+            limit=request.limit,
+        )
+        if "papers" in requested
+        else []
+    )
+    findings = (
+        search_findings(
+            request.query,
+            findings_path=LITERATURE_FINDINGS_PATH,
+            filters=request.filters,
+            limit=request.limit,
+        )
+        if "findings" in requested
+        else []
+    )
+
+    return LiteratureSearchResponse(
+        query=request.query,
+        papers=[asdict(paper) for paper in papers],
+        findings=[asdict(finding) for finding in findings],
+        total_papers=len(papers),
+        total_findings=len(findings),
     )
 
 
