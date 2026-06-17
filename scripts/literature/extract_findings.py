@@ -21,12 +21,41 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 # Allow running from repo root without installing the package
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+_REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_REPO))
 
 from neural_search.literature.finding_extractor import (
     extract_findings_from_corpus,
     load_config,
 )
+
+_KEY_NAMES = ("CLAUDE_OPUS_API_KEY", "ANTHROPIC_API_KEY")
+
+
+def _load_env_local(path: Path = _REPO / ".env.local") -> None:
+    """Load simple KEY=value entries from .env.local without logging secrets."""
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
+def _resolve_anthropic_api_key() -> str | None:
+    """Return an Anthropic-compatible API key from supported env names."""
+    _load_env_local()
+    for key_name in _KEY_NAMES:
+        value = os.environ.get(key_name)
+        if value:
+            os.environ["ANTHROPIC_API_KEY"] = value
+            return value
+    return None
 
 
 def _parse_args() -> argparse.Namespace:
@@ -66,8 +95,11 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     args = _parse_args()
 
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        logger.warning("ANTHROPIC_API_KEY not set — no findings will be extracted.")
+    api_key = _resolve_anthropic_api_key()
+    if not api_key:
+        logger.warning(
+            "No Anthropic key found — set ANTHROPIC_API_KEY or CLAUDE_OPUS_API_KEY."
+        )
         sys.exit(0)
 
     config = load_config(args.config)
@@ -102,6 +134,7 @@ def main() -> None:
         args.out,
         checkpoint_path=checkpoint_path,
         max_papers=args.max_papers,
+        api_key=api_key,
     )
 
     logger.info("Done. Extracted %d findings -> %s", total, args.out)
