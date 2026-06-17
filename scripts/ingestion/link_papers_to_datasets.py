@@ -15,6 +15,7 @@ from neural_search.literature.linking import (
     DatasetPaperLink,
     _iter_corpus_records,
     _resolve_link,
+    link_corpus_to_local_literature,
 )
 
 
@@ -45,6 +46,12 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip records that have no DOI (no title-based fallback).",
     )
+    parser.add_argument(
+        "--paper-shards",
+        type=Path,
+        default=None,
+        help="Local OpenAlex JSONL shard file/dir. If provided, avoid API calls.",
+    )
     return parser.parse_args()
 
 
@@ -67,6 +74,22 @@ def main() -> None:
         sys.exit(1)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.paper_shards is not None:
+        if not args.paper_shards.exists():
+            print(f"ERROR: paper shards do not exist: {args.paper_shards}", file=sys.stderr)
+            sys.exit(1)
+        links = link_corpus_to_local_literature(
+            corpus_path,
+            args.paper_shards,
+            out_path,
+            max_records=args.max_records,
+            skip_without_doi=args.skip_without_doi,
+            progress_every=500,
+        )
+        _summarize(links)
+        print(f"Output written to: {out_path}")
+        return
 
     records = _iter_corpus_records(corpus_path)
     if args.max_records is not None:
