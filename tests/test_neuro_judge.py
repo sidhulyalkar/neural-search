@@ -329,6 +329,19 @@ class TestStrictJSONParsing:
         j = _parse_judgment(text, self._pkt(), "mock", "v1")
         assert j.label == 1
 
+    def test_trailing_text_after_json_parsed(self) -> None:
+        # Models sometimes append commentary after the JSON object, which made
+        # json.loads raise "Extra data: line N column 1". Grab the first object.
+        text = json.dumps({"label": 2, "confidence": 0.8}) + "\n\nThis dataset is a good match."
+        j = _parse_judgment(text, self._pkt(), "mock", "v1")
+        assert j.label == 2
+        assert j.confidence == 0.8
+
+    def test_leading_prose_before_json_parsed(self) -> None:
+        text = "Here is my judgment:\n" + json.dumps({"label": 3, "confidence": 0.9})
+        j = _parse_judgment(text, self._pkt(), "mock", "v1")
+        assert j.label == 3
+
 
 # ===========================================================================
 # 4. Mocked model judging (8 tests)
