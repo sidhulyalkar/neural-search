@@ -70,6 +70,20 @@ def test_literature_search_endpoint(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(api_main, "LITERATURE_SHARD_DIR", shard_dir)
     monkeypatch.setattr(api_main, "LITERATURE_FINDINGS_PATH", findings_path)
+    links_path = tmp_path / "paper_dataset_links.jsonl"
+    links_path.write_text(
+        json.dumps(
+            {
+                "dataset_record_id": "dandi:000001",
+                "paper_openalex_id": "W1",
+                "match_method": "title_fuzzy_local",
+                "confidence": 0.95,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(api_main, "LITERATURE_LINKS_PATH", links_path)
 
     async def run_flow():
         response = await api_main.search_literature(
@@ -78,6 +92,7 @@ def test_literature_search_endpoint(tmp_path, monkeypatch):
         assert response.total_papers == 1
         assert response.total_findings == 1
         assert response.papers[0]["result_type"] == "paper"
+        assert response.papers[0]["linked_datasets"] == ["dandi:000001"]
         assert response.findings[0]["result_type"] == "finding"
 
     asyncio.run(run_flow())

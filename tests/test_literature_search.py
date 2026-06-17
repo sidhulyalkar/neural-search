@@ -46,6 +46,45 @@ def test_search_papers_returns_ranked_results(tmp_path):
     assert results[0].why_matched
 
 
+def test_search_papers_adds_linked_datasets_from_links_artifact(tmp_path):
+    shard = tmp_path / "tier1_batch_0000.jsonl"
+    links = tmp_path / "paper_dataset_links.jsonl"
+    _write_jsonl(
+        shard,
+        [
+            {
+                "paper_id": "paper:openalex:W1",
+                "source_id": "W1",
+                "title": "Hippocampal theta supports spatial memory",
+                "abstract": "Theta rhythms in CA1 predict navigation choices.",
+                "citation_count": 250,
+            }
+        ],
+    )
+    _write_jsonl(
+        links,
+        [
+            {
+                "dataset_record_id": "dandi:000001",
+                "paper_openalex_id": "W1",
+                "paper_doi": "10.123/theta",
+                "paper_title": "Hippocampal theta supports spatial memory",
+                "paper_year": 2020,
+                "match_method": "title_fuzzy_local",
+                "confidence": 0.95,
+            }
+        ],
+    )
+
+    results = search_papers(
+        "hippocampal theta memory",
+        shard_dir=tmp_path,
+        links_path=links,
+    )
+
+    assert results[0].linked_datasets == ["dandi:000001"]
+
+
 def test_search_papers_empty_shards_returns_empty(tmp_path):
     assert search_papers("hippocampus", shard_dir=tmp_path / "missing", limit=5) == []
 

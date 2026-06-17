@@ -11,6 +11,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable, Literal
 
+from neural_search.normalized import make_paper_id
+
 TOKEN_RE = re.compile(r"[A-Za-z0-9_+-]+")
 
 
@@ -69,6 +71,24 @@ def _iter_jsonl(path: Path) -> Iterable[dict[str, Any]]:
                     continue
                 if isinstance(payload, dict):
                     yield payload
+
+
+@lru_cache(maxsize=8)
+def _load_linked_datasets(links_path_str: str) -> dict[str, list[str]]:
+    path = Path(links_path_str)
+    if not path.exists():
+        return {}
+    linked: dict[str, list[str]] = {}
+    for record in _iter_jsonl(path):
+        dataset_id = str(record.get("dataset_record_id") or "")
+        openalex_id = str(record.get("paper_openalex_id") or "")
+        if not dataset_id or not openalex_id or record.get("match_method") == "not_found":
+            continue
+        paper_id = openalex_id if openalex_id.startswith("paper:") else make_paper_id("openalex", openalex_id)
+        linked.setdefault(paper_id, [])
+        if dataset_id not in linked[paper_id]:
+            linked[paper_id].append(dataset_id)
+    return linked
 
 
 def _norm_set(values: Any) -> set[str]:
@@ -185,6 +205,7 @@ def search_papers(
     *,
     limit: int = 10,
     shard_dir: Path,
+    links_path: Path | None = None,
     filters: dict[str, Any] | None = None,
 ) -> list[PaperResult]:
     """Search OpenAlex paper shards using weighted lexical relevance."""
@@ -194,6 +215,7 @@ def search_papers(
         return []
 
     records, idf = _load_index(str(shard_dir), ("title", "abstract", "venue", "topics"))
+    linked_by_paper = _load_linked_datasets(str(links_path)) if links_path else {}
     scored: list[tuple[float, PaperResult]] = []
     for record in records:
         if not _passes_paper_filters(record, filters):
@@ -208,11 +230,18 @@ def search_papers(
             continue
         abstract = record.get("abstract")
         snippet = abstract[:300] if isinstance(abstract, str) and abstract else None
+        paper_id = str(record.get("paper_id") or "")
+        linked_datasets = list(record.get("linked_datasets") or [])
+        linked_datasets.extend(
+            dataset_id
+            for dataset_id in linked_by_paper.get(paper_id, [])
+            if dataset_id not in linked_datasets
+        )
         scored.append(
             (
                 score,
                 PaperResult(
-                    paper_id=str(record.get("paper_id") or ""),
+                    paper_id=paper_id,
                     title=str(record.get("title") or ""),
                     abstract_snippet=snippet,
                     year=record.get("year"),
@@ -222,7 +251,7 @@ def search_papers(
                     url=record.get("url"),
                     relevance_score=round(score, 6),
                     why_matched=_why(query_tokens, matched_fields),
-                    linked_datasets=list(record.get("linked_datasets") or []),
+                    linked_datasets=linked_datasets,
                     top_findings=list(record.get("top_findings") or [])[:2],
                 ),
             )
