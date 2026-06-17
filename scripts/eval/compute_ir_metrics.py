@@ -276,10 +276,23 @@ def main(argv: list[str] | None = None) -> int:
         default=False,
         help="Required when using silver qrels. Acknowledges labels are not expert-validated.",
     )
+    parser.add_argument(
+        "--qrels-tier",
+        choices=["gold", "silver", "bronze"],
+        default=None,
+        help="Tier label for this qrels file (used for warnings and report tagging).",
+    )
     args = parser.parse_args(argv)
 
     if not args.runs:
         parser.error("At least one --run file is required.")
+
+    if args.qrels_tier and args.qrels_tier != "gold":
+        sys.stderr.write(
+            f"WARNING: Using {args.qrels_tier.upper()} qrels. "
+            f"Results from {args.qrels_tier} labels should NOT be cited as "
+            f"scientific validation. Use gold qrels for whitepaper claims.\n"
+        )
 
     # Silver/neuro-judge guard — require explicit acknowledgement
     if (_is_silver_path(args.qrels) or _is_neuro_judge_path(args.qrels)) and not args.allow_silver:
@@ -340,6 +353,9 @@ def main(argv: list[str] | None = None) -> int:
             "status": "computed",
             "runs": all_run_reports,
         }
+
+    report["qrels_tier"] = args.qrels_tier or "unknown"
+    report["qrels_path"] = str(args.qrels)
 
     # Watermark non-human-label reports
     if _is_silver_path(args.qrels):
