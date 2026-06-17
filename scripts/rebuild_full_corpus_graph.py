@@ -320,6 +320,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=GRAPH_OUT)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--min-confidence", type=float, default=0.4)
+    parser.add_argument(
+        "--literature-shards",
+        type=Path,
+        default=ROOT / "data" / "corpus" / "normalized" / "openalex_neuro",
+    )
+    parser.add_argument(
+        "--paper-links",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "paper_dataset_links.jsonl",
+    )
+    parser.add_argument(
+        "--findings",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "findings_v1.jsonl",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
@@ -358,6 +373,23 @@ def main(argv: list[str] | None = None) -> int:
     log.info("Adding cross-dataset relationship edges ...")
     n_cross = _add_cross_dataset_edges(graph, datasets)
 
+    literature_stats: dict[str, int] = {}
+    finding_stats: dict[str, int] = {}
+    if args.literature_shards.exists():
+        from neural_search.literature.kg_builder import add_papers_from_shards
+
+        links_path = args.paper_links if args.paper_links.exists() else None
+        log.info("Adding literature paper nodes from %s ...", args.literature_shards)
+        literature_stats = add_papers_from_shards(graph, args.literature_shards, links_path)
+        log.info("Literature stats: %s", literature_stats)
+
+    if args.findings.exists():
+        from neural_search.literature.kg_builder import add_findings_to_graph
+
+        log.info("Adding finding nodes from %s ...", args.findings)
+        finding_stats = add_findings_to_graph(graph, args.findings)
+        log.info("Finding stats: %s", finding_stats)
+
     log.info(
         "Final graph: %d nodes, %d edges (+%d cross-dataset)",
         len(graph.nodes), len(graph.edges), n_cross,
@@ -371,6 +403,8 @@ def main(argv: list[str] | None = None) -> int:
         "skipped_records": skipped,
         "min_confidence": args.min_confidence,
         "cross_dataset_edges": n_cross,
+        "literature_stats": literature_stats,
+        "finding_stats": finding_stats,
         "builder_script": "scripts/rebuild_full_corpus_graph.py",
         "builder_version": "v1.0.0",
     })
