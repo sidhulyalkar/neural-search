@@ -159,15 +159,15 @@ class BrainRegion(BaseModel):
     def clean_optional_string(cls, value: str) -> str:
         return value.strip()
 
-    @field_validator("atlas_refs")
+    @field_validator("atlas_refs", mode="before")
     @classmethod
-    def clean_atlas_refs(cls, values: dict[str, str]) -> dict[str, str]:
+    def clean_atlas_refs(cls, values: dict[str, Any]) -> dict[str, str]:
         if not isinstance(values, dict):
             raise ValueError("must be a mapping")
         return {
             str(key).strip(): str(value).strip()
             for key, value in values.items()
-            if str(key).strip() and str(value).strip()
+            if value is not None and str(key).strip() and str(value).strip()
         }
 
     @field_validator("species_aliases")
