@@ -30,9 +30,14 @@ from neural_search.evaluation.calibration import (
     compute_calibration_metrics,
     explain_calibration,
 )
-from neural_search.evaluation.relevance import (
-    RELEVANCE_SCORES,
-)
+# Relevance string → numeric score mapping (migrated from deleted evaluation.relevance)
+RELEVANCE_SCORES: dict[str, int] = {
+    "exact": 3,
+    "highly_relevant": 2,
+    "partially": 1,
+    "not_relevant": 0,
+    "hard_negative": -1,
+}
 from neural_search.search import search_datasets
 
 # Paths
