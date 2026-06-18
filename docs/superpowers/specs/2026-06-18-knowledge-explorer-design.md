@@ -425,6 +425,117 @@ These design choices are deliberate to keep the system open:
 
 ---
 
+## BrainKnow-Inspired Additions
+
+Informed by the Linked Brain Data / BrainKnow system (linked-brain-data.org, arXiv:2403.04346).
+BrainKnow contains 3.6M relationships across 37K concepts from 1.8M PubMed articles, with SPARQL
+querying, OWL reasoning, and NeuroMorpho morphology data — but an entirely outdated JSP UI with
+no modern visualization, no dataset discovery, and no ML-powered search. These additions fold in
+their strongest ideas while keeping our core differentiators (actual downloadable datasets,
+experiment-aware search, finding extraction, 3D interactive KG).
+
+### Addition 1 — Ontology Tree Sidebar
+
+A collapsible tree panel alongside the filter sidebar in KnowledgeExplorerPage. Mirrors
+BrainKnow's tree visualization but driven by our existing ontology endpoint.
+
+**Hierarchy:**
+```
+Brain Systems (8)
+  └─ Regions (~100)
+       └─ Sub-regions
+            └─ Cell Types (pyramidal, interneuron, granule…)
+                 └─ Molecules (neurotransmitters, receptors, markers)
+```
+
+**Behavior:** Clicking any tree node sets the graph filter and zooms the Explorer to that
+subgraph. Expanding a node fetches its children from `/api/ontology`. The tree and the graph
+filter panel stay in sync — selecting a region in the tree highlights it in the filter panel
+and vice versa.
+
+**New component:** `apps/web/src/components/graph/OntologyTreePanel.tsx`
+**Data source:** Existing `/api/ontology` endpoint + brain_region_index already in ontology
+
+---
+
+### Addition 2 — Insight Synthesis Panel
+
+Replaces BrainKnow's raw SPARQL + OWL reasoning demo with an LLM-powered "What does the field
+say about X?" interface. Accessible from a "Synthesize" button in the NodeDetailPanel when a
+region or finding cluster is selected.
+
+**Input:** Selected node (region / finding cluster) or free-text concept
+**Output:**
+- Consensus direction badge (↑ increase · ↓ decrease · ↔ mixed · — insufficient)
+- Consensus strength score (0–1)
+- 3–5 supporting finding snippets
+- 3–5 contradicting finding snippets (if any)
+- LLM-synthesized paragraph: "Based on N findings across M papers, the current consensus is…"
+- Open datasets related to this concept (linked via paper_dataset_links)
+- "View in Knowledge Graph →" deep-link
+
+**Implementation:** Claude API call (haiku-4-5, low cost) using the top findings from
+`/api/literature/findings?region=X` as context. Streamed response rendered as markdown.
+
+**New component:** `apps/web/src/components/graph/InsightSynthesisPanel.tsx`
+**New endpoint:** `POST /api/literature/synthesize` — accepts `{concept, region, species, task}`,
+returns `{consensus, findings_for, findings_against, synthesis_text, related_datasets}`
+
+---
+
+### Addition 3 — Morphology Layer
+
+A new `LayerMode` value (`morphology`) in the Knowledge Explorer. Surfaces cell-type nodes from
+NeuroMorpho datasets already in our corpus, positioned between region nodes and finding clusters
+in the biological scale hierarchy.
+
+**Node types added in this layer:**
+
+| Type | Color | Source | Examples |
+|------|-------|--------|---------|
+| Cell type | teal `#2dd4bf` | NeuroMorpho metadata | pyramidal, PV interneuron, granule cell |
+| Morphology record | teal dim | NeuroMorpho dataset metadata | individual reconstructed cell |
+
+**Edges added:**
+- Region → Cell type (anatomical containment)
+- Cell type → Dataset (dataset contains morphology records of this cell type)
+- Cell type → Finding cluster (findings that mention this cell type)
+
+**Hover tooltip on cell type node:** species, brain layer, dendrite span (µm), axon length (µm),
+reconstruction quality, [→ dataset card]
+
+**Data source:** NeuroMorpho records already ingested in corpus (filter `source=neuromorpho`).
+Morphology metadata (cell_type, layer, dendrite_total_length, axon_total_length) extracted from
+dataset metadata fields.
+
+**No new backend scripts needed** — existing corpus data is sufficient. New graph layer filter
+added to `/api/graph/subgraph?layers=morphology`.
+
+---
+
+### Addition 4 — Biological Scale Axis
+
+Inspired by BrainKnow's multi-scale data philosophy. The Explorer gains a vertical "scale" axis
+concept — nodes are implicitly organized from macro to micro:
+
+```
+Behavior / Disease  (top — most abstract)
+  Circuit / Region
+    Cell Type
+      Molecule / Receptor
+        Gene / Pathway      (bottom — most specific)
+```
+
+In 3D Explorer mode, the y-axis loosely maps to this scale. Molecule nodes cluster lower,
+behavior/disease nodes cluster higher, regions in the middle. This emerges naturally from the
+force simulation if we assign a `scale_level` (0–4) to each node type and add a weak y-directed
+force proportional to it.
+
+**Implementation:** Single additional force in ExplorerGraph (`d3-force` `forceY` with strength
+0.1, target = `node.scale_level * 80`). No data changes needed.
+
+---
+
 ## Out of Scope (v1)
 
 - User-saved custom views (serialize filter state to URL params only)
@@ -433,3 +544,5 @@ These design choices are deliberate to keep the system open:
 - 3D brain atlas overlay (future: align region nodes to anatomical coordinates)
 - Collaborative annotation on graph nodes
 - LiteraturePage full build (stub only in v1, full in sprint 2)
+- Full SPARQL endpoint (BrainKnow feature; our graph API covers researcher use cases without requiring SPARQL knowledge)
+- Gene/pathway nodes (BrainKnow covers these; we add in a future sprint when gene data enters the corpus)
