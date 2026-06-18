@@ -10,8 +10,11 @@ import pytest
 
 from neural_search.literature.finding_extractor import (
     FindingRecord,
+    LLMProviderConfig,
+    _repair_json,
     build_prompt,
     extract_batch,
+    extract_batch_ollama,
     extract_findings_from_corpus,
     load_config,
     parse_findings,
@@ -482,3 +485,144 @@ class TestExtractFindingsFromCorpus:
         lines = out_path.read_text().strip().splitlines()
         assert len(lines) == 1
         assert json.loads(lines[0])["paper_id"] == "W011"
+
+
+# ---------------------------------------------------------------------------
+# TestRepairJson
+# ---------------------------------------------------------------------------
+
+
+class TestRepairJson:
+    def test_plain_json_unchanged(self) -> None:
+        text = '[{"finding_text": "Test."}]'
+        assert _repair_json(text) == text
+
+    def test_strips_json_code_fence(self) -> None:
+        wrapped = '```json\n[{"finding_text": "Test."}]\n```'
+        result = _repair_json(wrapped)
+        assert result == '[{"finding_text": "Test."}]'
+
+    def test_strips_plain_code_fence(self) -> None:
+        wrapped = '```\n[{"finding_text": "Test."}]\n```'
+        result = _repair_json(wrapped)
+        assert result == '[{"finding_text": "Test."}]'
+
+    def test_extracts_array_from_prose(self) -> None:
+        text = 'Here are the findings:\n[{"finding_text": "Test."}]\nDone.'
+        result = _repair_json(text)
+        assert result.startswith("[")
+        assert result.endswith("]")
+
+    def test_empty_array_returned_as_is(self) -> None:
+        assert _repair_json("[]") == "[]"
+
+    def test_fenced_empty_array(self) -> None:
+        result = _repair_json("```json\n[]\n```")
+        assert result == "[]"
+
+    def test_parse_findings_handles_fenced_output(self) -> None:
+        fenced = '```json\n' + VALID_FINDING_JSON + '\n```'
+        findings = parse_findings("W_fence", None, fenced, "local-model")
+        assert len(findings) == 1
+        assert findings[0].paper_id == "W_fence"
+
+
+# ---------------------------------------------------------------------------
+# TestExtractBatchOllama
+# ---------------------------------------------------------------------------
+
+
+class TestExtractBatchOllama:
+    def _make_ollama_response(self, content: str) -> MagicMock:
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status.return_value = None
+        mock_resp.json.return_value = {"message": {"content": content}}
+        return mock_resp
+
+    def test_returns_findings_on_valid_response(self) -> None:
+        papers = [
+            {
+                "paper_id": "W_olla_001",
+                "paper_doi": "10.1/test",
+                "title": "Hippocampal Theta",
+                "abstract": "Theta oscillations increase during spatial navigation.",
+            }
+        ]
+        mock_resp = self._make_ollama_response(VALID_FINDING_JSON)
+
+        with patch("requests.post", return_value=mock_resp):
+            findings = extract_batch_ollama(
+                papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
+            )
+
+        assert len(findings) == 1
+        assert findings[0].paper_id == "W_olla_001"
+        assert findings[0].extraction_model == "qwen2.5:7b-instruct-q4_K_M"
+
+    def test_skips_papers_without_abstract(self) -> None:
+        papers = [
+            {"paper_id": "W_olla_002", "paper_doi": None, "title": "T", "abstract": ""},
+        ]
+        with patch("requests.post") as mock_post:
+            findings = extract_batch_ollama(
+                papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
+            )
+        mock_post.assert_not_called()
+        assert findings == []
+
+    def test_handles_fenced_json_response(self) -> None:
+        fenced = "```json\n" + VALID_FINDING_JSON + "\n```"
+        papers = [
+            {
+                "paper_id": "W_olla_003",
+                "paper_doi": None,
+                "title": "T",
+                "abstract": "Some abstract.",
+            }
+        ]
+        mock_resp = self._make_ollama_response(fenced)
+
+        with patch("requests.post", return_value=mock_resp):
+            findings = extract_batch_ollama(
+                papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
+            )
+
+        assert len(findings) == 1
+
+    def test_api_error_skips_paper(self) -> None:
+        papers = [
+            {
+                "paper_id": "W_olla_004",
+                "paper_doi": None,
+                "title": "T",
+                "abstract": "Some abstract.",
+            }
+        ]
+        with patch("requests.post", side_effect=OSError("connection refused")):
+            findings = extract_batch_ollama(
+                papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
+            )
+
+        assert findings == []
+
+    def test_uses_correct_ollama_endpoint(self) -> None:
+        papers = [
+            {
+                "paper_id": "W_olla_005",
+                "paper_doi": None,
+                "title": "T",
+                "abstract": "Some abstract.",
+            }
+        ]
+        mock_resp = self._make_ollama_response("[]")
+
+        with patch("requests.post", return_value=mock_resp) as mock_post:
+            extract_batch_ollama(
+                papers,
+                SAMPLE_CONFIG,
+                model="qwen2.5:7b-instruct-q4_K_M",
+                base_url="http://localhost:11434",
+            )
+
+        call_url = mock_post.call_args[0][0]
+        assert call_url == "http://localhost:11434/api/chat"
