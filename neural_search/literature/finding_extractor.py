@@ -45,6 +45,15 @@ class FindingRecord:
     extracted_at: str
 
 
+@dataclass(frozen=True)
+class LLMProviderConfig:
+    name: str
+    kind: str  # "anthropic" | "openai_compatible"
+    api_key: str
+    model: str
+    base_url: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
@@ -84,6 +93,30 @@ def _validate_direction(direction: str) -> str:
     return direction if direction in VALID_DIRECTIONS else "other"
 
 
+def _repair_json(text: str) -> str:
+    """Strip markdown fences and extract the first JSON array from LLM output.
+
+    Local models frequently wrap JSON in ```json ... ``` blocks or add prose
+    before/after the array. This function recovers the raw JSON in those cases.
+    """
+    text = text.strip()
+
+    # Strip fenced code blocks: ```json ... ``` or ``` ... ```
+    import re
+    fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
+    if fence_match:
+        text = fence_match.group(1).strip()
+
+    # If the text still doesn't start with '[', find the first '[' .. last ']'
+    if not text.startswith("["):
+        start = text.find("[")
+        end = text.rfind("]")
+        if start != -1 and end != -1 and end > start:
+            text = text[start : end + 1]
+
+    return text
+
+
 def parse_findings(
     paper_id: str,
     paper_doi: str | None,
@@ -93,9 +126,11 @@ def parse_findings(
     """Parse JSON array from LLM response into FindingRecord list.
 
     Returns [] on parse failure — logs a warning, never raises.
+    Applies _repair_json() to handle markdown fences from local models.
     """
+    cleaned = _repair_json(response_text)
     try:
-        raw: list[dict[str, Any]] = json.loads(response_text)
+        raw: list[dict[str, Any]] = json.loads(cleaned)
     except (json.JSONDecodeError, ValueError):
         logger.warning("parse_findings: invalid JSON for paper %s", paper_id)
         return []
@@ -195,6 +230,149 @@ def extract_batch(
     return all_findings
 
 
+def extract_batch_openai_compatible(
+    papers: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    api_key: str,
+    base_url: str,
+    model: str,
+) -> list[FindingRecord]:
+    """Extract findings using an OpenAI-compatible chat completions endpoint."""
+    try:
+        import openai
+    except ImportError:  # pragma: no cover
+        logger.warning("extract_batch_openai_compatible: openai package not installed")
+        return []
+
+    max_tokens: int = config.get("max_tokens", 512)
+    temperature: float = config.get("temperature", 0.0)
+    client = openai.OpenAI(api_key=api_key, base_url=base_url)
+    all_findings: list[FindingRecord] = []
+
+    for paper in papers:
+        abstract = paper.get("abstract", "")
+        if not abstract:
+            continue
+
+        paper_id: str = paper.get("paper_id", "")
+        paper_doi: str | None = paper.get("paper_doi")
+        title: str = paper.get("title", "")
+        system_prompt, user_message = build_prompt(title, abstract, config)
+
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message},
+                ],
+            )
+            response_text = response.choices[0].message.content or ""
+        except Exception:
+            logger.warning(
+                "extract_batch_openai_compatible: API error for paper %s via %s, skipping",
+                paper_id,
+                model,
+            )
+            continue
+
+        all_findings.extend(parse_findings(paper_id, paper_doi, response_text, model))
+
+    return all_findings
+
+
+def extract_batch_ollama(
+    papers: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    model: str,
+    base_url: str = "http://localhost:11434",
+) -> list[FindingRecord]:
+    """Extract findings using the Ollama native /api/chat endpoint via requests.
+
+    Handles JSON repair for models that wrap output in markdown fences.
+    """
+    try:
+        import requests as req
+    except ImportError:
+        logger.warning("extract_batch_ollama: requests package not installed")
+        return []
+
+    max_tokens: int = config.get("max_tokens", 512)
+    temperature: float = config.get("temperature", 0.0)
+    chat_url = base_url.rstrip("/") + "/api/chat"
+    all_findings: list[FindingRecord] = []
+
+    for paper in papers:
+        abstract = paper.get("abstract", "")
+        if not abstract:
+            continue
+
+        paper_id: str = paper.get("paper_id", "")
+        paper_doi: str | None = paper.get("paper_doi")
+        title: str = paper.get("title", "")
+        system_prompt, user_message = build_prompt(title, abstract, config)
+
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": user_message})
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "num_predict": max_tokens,
+            },
+        }
+
+        try:
+            resp = req.post(chat_url, json=payload, timeout=120)
+            resp.raise_for_status()
+            data = resp.json()
+            response_text: str = data.get("message", {}).get("content", "")
+        except Exception as exc:
+            logger.warning("extract_batch_ollama: error for paper %s: %s", paper_id, exc)
+            continue
+
+        all_findings.extend(parse_findings(paper_id, paper_doi, response_text, model))
+
+    return all_findings
+
+
+def extract_batch_with_provider(
+    papers: list[dict[str, Any]],
+    config: dict[str, Any],
+    provider: LLMProviderConfig,
+) -> list[FindingRecord]:
+    """Extract findings with a specific configured provider."""
+    if provider.kind == "anthropic":
+        provider_config = {**config, "model": provider.model}
+        return extract_batch(papers, provider_config, api_key=provider.api_key)
+    if provider.kind == "openai_compatible":
+        return extract_batch_openai_compatible(
+            papers,
+            config,
+            api_key=provider.api_key,
+            base_url=provider.base_url or "",
+            model=provider.model,
+        )
+    if provider.kind == "ollama":
+        return extract_batch_ollama(
+            papers,
+            config,
+            model=provider.model,
+            base_url=provider.base_url or "http://localhost:11434",
+        )
+    logger.warning("Unknown LLM provider kind: %s", provider.kind)
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Corpus-level extraction
 # ---------------------------------------------------------------------------
@@ -223,6 +401,7 @@ def extract_findings_from_corpus(
     checkpoint_path: Path | None = None,
     max_papers: int | None = None,
     api_key: str | None = None,
+    provider: LLMProviderConfig | None = None,
 ) -> int:
     """Process all shards, extract findings, write to out_path as JSONL.
 
@@ -241,8 +420,10 @@ def extract_findings_from_corpus(
     batch: list[dict[str, Any]] = []
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    # Append mode: preserve findings from previous runs when resuming
+    open_mode = "a" if (checkpoint_path is not None and checkpoint_path.exists()) else "w"
 
-    with out_path.open("w") as out_fh:
+    with out_path.open(open_mode) as out_fh:
         for shard_path in corpus_shards:
             if not shard_path.exists():
                 continue
@@ -269,12 +450,18 @@ def extract_findings_from_corpus(
                     papers_seen += 1
 
                     if len(batch) >= batch_size:
-                        findings = extract_batch(batch, config, api_key=api_key)
+                        batch_ids = {p.get("paper_id", "") for p in batch}
+                        findings = (
+                            extract_batch_with_provider(batch, config, provider)
+                            if provider is not None
+                            else extract_batch(batch, config, api_key=api_key)
+                        )
                         for f in findings:
                             out_fh.write(json.dumps(f.__dict__) + "\n")
                             total_findings += 1
-                            if checkpoint_path is not None:
-                                processed_ids.add(f.paper_id)
+                        if checkpoint_path is not None:
+                            processed_ids.update(batch_ids)
+                            _save_checkpoint(checkpoint_path, processed_ids)
                         batch = []
 
                         if papers_seen % 100 == 0:
@@ -287,12 +474,17 @@ def extract_findings_from_corpus(
 
         # flush remaining batch
         if batch:
-            findings = extract_batch(batch, config, api_key=api_key)
+            batch_ids = {p.get("paper_id", "") for p in batch}
+            findings = (
+                extract_batch_with_provider(batch, config, provider)
+                if provider is not None
+                else extract_batch(batch, config, api_key=api_key)
+            )
             for f in findings:
                 out_fh.write(json.dumps(f.__dict__) + "\n")
                 total_findings += 1
-                if checkpoint_path is not None:
-                    processed_ids.add(f.paper_id)
+            if checkpoint_path is not None:
+                processed_ids.update(batch_ids)
 
     if checkpoint_path is not None:
         _save_checkpoint(checkpoint_path, processed_ids)
