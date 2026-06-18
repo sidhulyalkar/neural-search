@@ -7,11 +7,14 @@ Schema: {"nodes": [...], "links": [...]}
 from __future__ import annotations
 
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
 CONSENSUS_PATH = REPO_ROOT / "artifacts/literature/relationships/consensus_summaries.jsonl"
 EDGES_PATH = REPO_ROOT / "artifacts/literature/relationships/finding_edges.jsonl"
 LINKS_PATH = REPO_ROOT / "artifacts/literature/paper_dataset_links.jsonl"
@@ -78,6 +81,9 @@ _REGION_TO_SYSTEM: dict[str, str] = {}
 for sys_id, sys_data in BRAIN_SYSTEMS.items():
     for r in sys_data["regions"]:
         _REGION_TO_SYSTEM[r.lower()] = sys_id
+
+# Lazy corpus cache to avoid repeated slow loads in tests
+_CORPUS_CACHE: list | None = None
 
 
 def assign_system(region: str) -> str:
@@ -227,10 +233,11 @@ def build_graph(max_edges: int | None = None) -> dict[str, Any]:
 
     # Dataset nodes (from corpus)
     try:
-        import sys as _sys
-        _sys.path.insert(0, str(REPO_ROOT))
-        from neural_search.ingestion.demo_seed import build_combined_corpus
-        corpus = build_combined_corpus()
+        global _CORPUS_CACHE
+        if _CORPUS_CACHE is None:
+            from neural_search.ingestion.demo_seed import build_combined_corpus
+            _CORPUS_CACHE = build_combined_corpus()
+        corpus = _CORPUS_CACHE
     except Exception:
         corpus = []
 
