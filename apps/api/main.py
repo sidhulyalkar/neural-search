@@ -115,6 +115,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from apps.api.graph_router import router as graph_router
+app.include_router(graph_router)
+
 
 # Health check
 @app.get("/healthz")
