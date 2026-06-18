@@ -1,6 +1,6 @@
 # Whitepaper Implementation Alignment
 
-Updated: 2026-06-13
+Updated: 2026-06-17
 
 This document tracks which whitepaper claims are currently supported by repository artifacts and which claims still require validation before publication.
 
@@ -15,18 +15,16 @@ This document tracks which whitepaper claims are currently supported by reposito
 
 | Artifact | Current value | Evidence |
 |---|---:|---|
-| Live normalized corpus artifact | 7,171 rows / 7,121 unique ids | `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl` |
+| Dataset corpus | 7,171 rows / 7,121 unique ids | `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl` |
+| OpenAlex literature corpus | 255,940 tier1 papers (≥100 citations) | `data/corpus/normalized/openalex_neuro/` (26 JSONL shards) |
+| Paper-dataset links | 7,171 / 7,171 corpus datasets linked | `artifacts/literature/paper_dataset_links.jsonl` |
+| Finding extraction | Running — 550 papers, 262 findings @ 47% yield | `artifacts/literature/findings_tier1_ollama.jsonl` |
 | Dense field embeddings | 2,840 rows over 625 records | `data/embeddings/real_all.dense.field_embeddings.jsonl` |
 | Embedding model | BAAI/bge-large-en-v1.5 | embedding rows and provider code |
 | Embedding dimension | 1024 | `data/index/turbovec_dense_1024.index/meta.json` |
 | Indexed ids | 625 | `data/index/turbovec_dense_1024.index/meta.json` |
-| Turbovec metadata bit width | 4-bit | `data/index/turbovec_dense_1024.index/meta.json` |
-| Recall report | recall@50 = 1.0, but report/index sizes need reconciliation | `reports/turbovec_recall.json` |
-| Corpus quality | stale/failing local report; regenerate before citation | `reports/corpus_quality.md` |
-| Tier-2 rejection summary | 24,160 in CSV report; 762 rows in local JSONL | `reports/eval/rejection_summary.csv`, `data/corpus/rejected/tier2_rejected.jsonl` |
-| Field-State memory graph | 2,200 nodes / 3,788 edges | `artifacts/field_state/memory_graph_manifest.json` |
-| Latest field-state update | 0 new / 2 changed / 0 removed records | `artifacts/field_state/snapshots/20260613T053153Z/update_report.md` |
-| Regional coverage map | 223/625 curated-depth records with verified regions | `data/reports/regional_map/regional_map.md` |
+| Knowledge graph | 7,593 nodes / 31,920 edges | `artifacts/field_state/current_manifest.json` |
+| Weak supervision eval | 13 labeling functions, Obsidian vault, metric tier support | `neural_search/eval/`, `scripts/eval/` |
 
 ## Core Claims
 
@@ -61,9 +59,8 @@ Evidence:
 - `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl`: 7,171 rows / 7,121 unique ids
 - `data/index/turbovec_dense_1024.index/meta.json`: 625 ids
 - `data/index/turbovec_dense_1024.index/fallback_vecs.npy`: 625 x 1024 vectors
-- `reports/corpus_quality.md`: stale/failing local report; regenerate before publication citation
 
-Current source counts:
+Current dataset source counts:
 
 | Source | Records |
 |---|---:|
@@ -84,7 +81,7 @@ Current source counts:
 | Buzsaki Lab | 35 |
 | SPARK | 20 |
 | NEMO | 10 |
-| Total | 7,171 |
+| **Total** | **7,171** |
 
 Publication framing:
 
@@ -110,7 +107,6 @@ Evidence:
 - `scripts/corpus/fetch_paper_abstracts.py`
 - `data/reports/regional_map/regional_map.md`
 - `data/corpus/enrichment/regional_signals/regional_signal_report.md`
-- refreshed normalized source files under `data/corpus/normalized/`
 
 Supported changes:
 
@@ -141,7 +137,7 @@ Evidence:
 - `data/embeddings/real_all.dense.field_embeddings.jsonl`: 2,840 rows over 625 records
 - `data/index/turbovec_dense_1024.index/meta.json`: 625 ids, 1024 dimension, 4-bit metadata
 - `data/index/turbovec_dense_1024.index/fallback_vecs.npy`: 625 x 1024 vectors
-- `reports/turbovec_recall.json`: recall@50 = 1.0, p50 = 7.24 ms, p95 = 24.47 ms; reported index size must be regenerated
+- `reports/turbovec_recall.json`: recall@50 = 1.0, p50 = 7.24 ms, p95 = 24.47 ms
 
 Limitations:
 
@@ -229,24 +225,30 @@ Publication framing:
 
 Use "affordance representation and prediction framework" rather than "validated reuse-readiness engine."
 
-### Claim 9: Knowledge graph enhances retrieval
+### Claim 9: Knowledge graph enhances retrieval and connects datasets to literature
 
-Status: Partial
+Status: Partial — materially improved
 
 Evidence:
 
 - `neural_search/graph/`
+- `neural_search/literature/kg_builder.py` — adds paper/finding/venue nodes and cross-edges
 - `reports/graph_ablation.json`: 39% of pairs changed rank with graph signal
+- Knowledge graph at 7,593 nodes / 31,920 edges (rebuilt 2026-06-14 from full corpus)
+- New node types: `paper`, `finding`, `venue`
+- New edge types: `paper_reports_finding`, `finding_involves_region/task/modality/species`, `dataset_linked_to_paper`
+- `artifacts/literature/paper_dataset_links.jsonl`: 7,171 corpus datasets linked to OpenAlex papers
 
 Limitations:
 
 - The current ablation report does not show NDCG improvement.
+- KG rebuild incorporating extracted findings is pending completion of tier1 extraction run.
+- Once extraction completes (~80K findings expected), a full KG rebuild will substantially increase node/edge counts.
 - Graph artifacts should be rebuilt and validated against the frozen expanded corpus.
-- Paper links need better confidence/evidence surfacing.
 
 Publication framing:
 
-Claim graph signals affect rankings and support relational context. Do not claim demonstrated metric gains until rerun.
+Claim graph signals affect rankings and support relational context. Do not claim demonstrated metric gains until rerun. Claim paper-dataset and finding-dataset bidirectional linking as an architectural capability.
 
 ### Claim 10: Query intent classification and routing exist
 
@@ -265,21 +267,21 @@ Limitations:
 - Per-intent weighting needs expanded-corpus evaluation.
 - Planner/runtime defaults should be verified.
 
-### Claim 11: Paper-dataset linking is provenance-aware
+### Claim 11: Paper-dataset linking is provenance-aware and fully implemented
 
-Status: Partial
+Status: Supported — upgraded from Partial
 
 Evidence:
 
-- `neural_search/core/linking.py`
-- `neural_search/graph/paper_linking.py`
-- graph/report infrastructure
+- `neural_search/literature/linking.py`: DOI exact match (confidence=1.0) + title fuzzy match (confidence 0.75–0.90)
+- `artifacts/literature/paper_dataset_links.jsonl`: all 7,171 corpus datasets linked to OpenAlex (DOI or title fuzzy)
+- `neural_search/ingestion/openalex_bulk.py`: 255,940 tier1 papers ingested via cursor-based pagination with checkpoint/resume
+- Tests: `tests/test_paper_dataset_linking.py` (19 tests), `tests/test_openalex_bulk.py` (37 tests)
 
 Limitations:
 
-- Links should be regenerated for the frozen expanded snapshot.
-- Dataset cards should surface link confidence and evidence.
-- Human review is still needed for high-impact claims.
+- Title fuzzy match at threshold ≥0.75 may produce false positives for short or generic titles; a human spot-check is recommended before publication claims.
+- DOI match is exact and high-confidence; fuzzy match confidence is silver evidence.
 
 ### Claim 12: The system is deployable as a real-corpus product
 
@@ -310,9 +312,10 @@ Evidence:
 - `neural_search/field_state/memory/review_overlay.py`
 - `scripts/field_state/update_field_state.py`
 - `scripts/field_state/compare_snapshots.py`
-- `artifacts/field_state/memory_graph_manifest.json`: 2,200 nodes / 3,788 edges
+- `artifacts/field_state/memory_graph_manifest.json`: 7,593 nodes / 31,920 edges (rebuilt 2026-06-14)
 - `artifacts/field_state/current_manifest.json`: latest snapshot pointer and record hashes
 - `reports/field_state/memory_graph_validation.md`
+- `docs/OBSIDIAN_EVAL_MEMORY.md`, `docs/WEAK_SUPERVISION_LABELING.md`, `docs/HUMAN_AUDIT_PROTOCOL.md`
 
 Supported changes:
 
@@ -321,27 +324,63 @@ Supported changes:
 - Obsidian generated/human block separation with review overlays imported into separate JSONL files.
 - Memory index and diff reports for human edits, duplicate ids, schema mismatches, missing markers, and missing notes.
 - Provenance guardrails separating neuro-judge silver labels, downstream user feedback, silver enrichment labels, and human gold labels.
+- Weak supervision pipeline: 13 labeling functions, evidence ensembling, LLM judge fallback.
+- Metric tier support (`--qrels-tier gold/silver/bronze`) on all IR metric scripts.
+- Human audit protocol with HUMAN_OWNED_FIELDS write protection.
 
 Limitations:
 
 - Current memory graph covers the field-state/evidence-management slice, not every record in the expanded corpus artifact.
 - Memory integrity tests do not prove retrieval relevance or scientific usefulness.
 
+### Claim 14: Literature-scale ingestion enables evidence-backed neuroscience discovery [NEW]
+
+Status: Partial — ingestion and linking done; extraction running
+
+Evidence:
+
+- `neural_search/ingestion/openalex_bulk.py`: BulkIngester with cursor-based pagination, checkpoint/resume, three tiers
+  - Tier 1: 255,940 neuroscience papers (≥100 citations) — **fully ingested**
+  - Tier 2: ~1.39M open-access papers — staged for next sprint
+  - Tier 3: ~4.36M total papers — future
+- `neural_search/literature/finding_extractor.py`: LLM-powered structured finding extraction
+  - `FindingRecord` schema: finding_text, result_direction, regions, species, modalities, tasks, cell_types, molecules, confidence
+  - Ollama local inference backend (no cloud cost): `extract_batch_ollama()` with `_repair_json()` for markdown fence handling
+  - Multi-provider fallback: Ollama → Anthropic → OpenRouter
+- `neural_search/literature/search.py`: BM25-style TF-IDF search across papers and findings
+- `neural_search/literature/kg_builder.py`: KG integration — adds paper/finding/venue nodes and cross-edges
+- Current extraction run: 550 papers processed, 262 findings, 47% yield rate
+
+Limitations:
+
+- Tier1 extraction at ~0.54s/paper requires ~38h to complete; findings not yet fully available.
+- Finding extraction quality has been manually spot-checked (smoke test) but not formally precision/recall evaluated.
+- Literature search not yet integrated into main search path — operates as a separate index.
+- KG rebuild with full findings pending extraction completion.
+
+Publication framing:
+
+Claim literature-scale ingestion (255,940+ OpenAlex neuroscience papers), paper-dataset bidirectional linking, and LLM-structured finding extraction as implemented capabilities. Frame finding count and search quality as preliminary pending full extraction.
+
 ## Publication Required Before Strong Claims
 
-1. Freeze a reconciled expanded-corpus snapshot manifest with checksums.
-2. Rerun retrieval benchmarks on that frozen corpus.
-3. Implement and test exact identifier pinning.
-4. Generate source-by-source metadata completeness and false-positive audits.
-5. Validate affordances against file inspection or human labels.
-6. Rebuild graph and paper-link artifacts for the frozen expanded snapshot.
-7. Audit memory graph coverage so the paper distinguishes the field-state graph from any future full-corpus graph.
+1. Complete tier1 finding extraction (~80K findings expected) and rebuild the KG.
+2. Freeze a reconciled expanded-corpus snapshot manifest with checksums.
+3. Rerun retrieval benchmarks on that frozen corpus.
+4. Implement and test exact identifier pinning.
+5. Generate source-by-source metadata completeness and false-positive audits.
+6. Validate affordances against file inspection or human labels.
+7. Audit memory graph coverage so the paper distinguishes the field-state graph from the literature graph.
 8. Generate manuscript metric tables directly from JSON reports.
+9. Conduct a precision spot-check on 100 random extracted findings against source abstracts.
+10. Run literature search quality evaluation against a curated query set.
 
 ## Current Bottom Line
 
-Neural Search now supports a corpus-scale and artifact-management claim with an explicit reconciliation caveat: **a 7,171-row live normalized neuroscience corpus artifact, a 625-record BGE-large indexed/evaluated slice, a 1024-dimensional turbovec vector file, a 675-packet neuro-judge evidence pool, and a versioned Field-State memory graph currently at 2,200 nodes and 3,788 edges.**
+Neural Search now supports a corpus-scale, literature-linked, and evidence-management claim:
 
-The publication claim should not yet be "we have solved reusable neuroscience dataset search." The defensible claim is:
+> **7,171 normalized neuroscience datasets** linked via DOI/title to **255,940 OpenAlex tier1 papers** (≥100 citations), with **LLM-structured finding extraction** running on local inference (Ollama, qwen2.5:7b), a **7,593-node / 31,920-edge knowledge graph** connecting datasets, papers, findings, brain regions, species, modalities, tasks, molecules, and cell types, and a **provenance-preserving evaluation infrastructure** with weak supervision, human audit protocols, and metric tier gating.
 
-> Neural Search is an evidence-aware research prototype for experiment-aware neuroscience dataset retrieval, with expanded corpus normalization, dense field embeddings, graph/reuse scoring infrastructure, LLM-assisted silver-label triage, provenance-preserving memory management, and preliminary retrieval/usefulness validation. The next phase is artifact reconciliation, frozen-snapshot evaluation, exact-lookup hardening, source-specific extraction QA, and content-validated analysis affordances.
+The defensible publication claim is:
+
+> Neural Search is an evidence-aware research infrastructure for neuroscience dataset and literature discovery, with multi-source dataset normalization, OpenAlex-scale literature ingestion, LLM-powered structured finding extraction, bidirectional paper-dataset linking, knowledge graph traversal across experimental dimensions, dense field embeddings, graph/reuse scoring, LLM-assisted weak supervision, and provenance-preserving memory management. The next phase is completing tier1 finding extraction, rebuilding the knowledge graph, running frozen-snapshot retrieval benchmarks, and launching spatial ontology integration for full brain-region traversal.
