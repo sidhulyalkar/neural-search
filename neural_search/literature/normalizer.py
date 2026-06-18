@@ -259,6 +259,156 @@ _TASK_CANONICAL: dict[str, str] = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Cell types
+# ---------------------------------------------------------------------------
+
+_CELL_TYPE_CANONICAL: dict[str, str] = {
+    # Neurons (generic)
+    "neurons": "neuron",
+    "neurones": "neuron",
+    "nerve cells": "neuron",
+    # Pyramidal
+    "pyramidal neurons": "pyramidal cell",
+    "pyramidal neuron": "pyramidal cell",
+    "pyramidal cells": "pyramidal cell",
+    # Interneurons
+    "interneurons": "interneuron",
+    "inhibitory neurons": "interneuron",
+    "gaba neurons": "GABAergic interneuron",
+    "gabaergic neurons": "GABAergic interneuron",
+    "parvalbumin neurons": "parvalbumin interneuron",
+    "pv neurons": "parvalbumin interneuron",
+    "pv interneurons": "parvalbumin interneuron",
+    "somatostatin neurons": "somatostatin interneuron",
+    "sst neurons": "somatostatin interneuron",
+    # Dopaminergic
+    "dopaminergic neurons": "dopaminergic neuron",
+    "dopamine neurons": "dopaminergic neuron",
+    "da neurons": "dopaminergic neuron",
+    # Cholinergic
+    "cholinergic neurons": "cholinergic neuron",
+    # Serotonergic
+    "serotonergic neurons": "serotonergic neuron",
+    "5-ht neurons": "serotonergic neuron",
+    # Noradrenergic
+    "noradrenergic neurons": "noradrenergic neuron",
+    "norepinephrine neurons": "noradrenergic neuron",
+    # Specific types
+    "place cells": "place cell",
+    "grid cells": "grid cell",
+    "border cells": "border cell",
+    "head direction cells": "head direction cell",
+    "purkinje cells": "Purkinje cell",
+    "granule cells": "granule cell",
+    "motor neurons": "motor neuron",
+    "motoneurons": "motor neuron",
+    "sensory neurons": "sensory neuron",
+    "retinal ganglion cells": "retinal ganglion cell",
+    "ganglion cells": "retinal ganglion cell",
+    "neural stem cells": "neural stem cell",
+    # Glia
+    "microglial cells": "microglia",
+    "microglial": "microglia",
+    "astrocytes": "astrocyte",
+    "oligodendrocytes": "oligodendrocyte",
+    "glial cells": "glia",
+    "endothelial cells": "endothelial cell",
+    "macrophages": "macrophage",
+}
+
+
+def normalize_cell_types(cell_types: list[str]) -> tuple[list[str], bool]:
+    result = []
+    changed = False
+    seen: set[str] = set()
+    for ct in cell_types:
+        canonical = _CELL_TYPE_CANONICAL.get(ct.lower().strip(), ct.strip())
+        if canonical not in seen:
+            seen.add(canonical)
+            result.append(canonical)
+        if canonical != ct:
+            changed = True
+    return result, changed
+
+
+# ---------------------------------------------------------------------------
+# Molecules
+# ---------------------------------------------------------------------------
+
+_MOLECULE_CANONICAL: dict[str, str] = {
+    # Neurotransmitters
+    "dopamine": "dopamine",
+    "da": "dopamine",
+    "serotonin": "serotonin",
+    "5-ht": "serotonin",
+    "5ht": "serotonin",
+    "norepinephrine": "norepinephrine",
+    "noradrenaline": "norepinephrine",
+    "ne": "norepinephrine",
+    "glutamate": "glutamate",
+    "gaba": "GABA",
+    "gamma-aminobutyric acid": "GABA",
+    "acetylcholine": "acetylcholine",
+    "ach": "acetylcholine",
+    # Receptors
+    "nmda receptor": "NMDA receptor",
+    "nmda receptors": "NMDA receptor",
+    "ampa receptor": "AMPA receptor",
+    "ampa receptors": "AMPA receptor",
+    "d1 receptor": "D1 receptor",
+    "d2 receptor": "D2 receptor",
+    "gaba-a receptor": "GABA-A receptor",
+    "gaba-b receptor": "GABA-B receptor",
+    # Neuropeptides
+    "bdnf": "BDNF",
+    "brain-derived neurotrophic factor": "BDNF",
+    "ngf": "NGF",
+    "nerve growth factor": "NGF",
+    "oxytocin": "oxytocin",
+    "vasopressin": "vasopressin",
+    "substance p": "substance P",
+    # Calcium
+    "ca2+": "calcium",
+    "ca2": "calcium",
+    "calcium ions": "calcium",
+    # Disease proteins
+    "α-synuclein": "alpha-synuclein",
+    "alpha-synuclein": "alpha-synuclein",
+    "tau protein": "tau",
+    "amyloid beta": "amyloid-beta",
+    "aβ": "amyloid-beta",
+    "abeta": "amyloid-beta",
+    "tdp-43": "TDP-43",
+    # Kinases
+    "erk": "ERK",
+    "erk1/2": "ERK",
+    "mapk": "MAPK",
+    "camkii": "CaMKII",
+    "pkc": "PKC",
+    "pka": "PKA",
+    # Inflammatory
+    "il-6": "IL-6",
+    "il-1β": "IL-1beta",
+    "tnf-α": "TNF-alpha",
+    "tnf-alpha": "TNF-alpha",
+}
+
+
+def normalize_molecules(molecules: list[str]) -> tuple[list[str], bool]:
+    result = []
+    changed = False
+    seen: set[str] = set()
+    for m in molecules:
+        canonical = _MOLECULE_CANONICAL.get(m.lower().strip(), m.strip())
+        if canonical not in seen:
+            seen.add(canonical)
+            result.append(canonical)
+        if canonical != m:
+            changed = True
+    return result, changed
+
+
 def normalize_tasks(tasks: list[str]) -> tuple[list[str], bool]:
     result = []
     changed = False
@@ -374,6 +524,18 @@ def normalize_finding(record: dict[str, Any]) -> dict[str, Any]:
     if task_changed:
         changes["tasks_original"] = out["tasks"]
         out["tasks"] = norm_tasks
+
+    # --- cell types ---
+    norm_cells, cell_changed = normalize_cell_types(list(out.get("cell_types", [])))
+    if cell_changed:
+        changes["cell_types_original"] = out["cell_types"]
+        out["cell_types"] = norm_cells
+
+    # --- molecules ---
+    norm_mols, mol_changed = normalize_molecules(list(out.get("molecules", [])))
+    if mol_changed:
+        changes["molecules_original"] = out["molecules"]
+        out["molecules"] = norm_mols
 
     # --- quality flags ---
     flags = compute_quality_flags(out, generic)

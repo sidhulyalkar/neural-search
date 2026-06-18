@@ -15,6 +15,14 @@ import yaml
 logger = logging.getLogger(__name__)
 
 VALID_DIRECTIONS = {"increase", "decrease", "no_change", "correlation", "mechanism", "other"}
+VALID_CLAIM_TYPES = {
+    "correlation", "causal", "comparative", "mechanistic",
+    "null", "computational", "clinical", "descriptive", "other",
+}
+VALID_TIMESCALES = {
+    "millisecond", "second", "minute", "hour", "day", "chronic", "unknown",
+}
+VALID_EVIDENCE_STRENGTHS = {"direct", "indirect", "computational", "clinical", "review"}
 
 try:
     import anthropic
@@ -29,6 +37,7 @@ except ImportError:  # pragma: no cover
 
 @dataclass
 class FindingRecord:
+    # --- core fields (v1, always present) ---
     paper_id: str
     paper_doi: str | None
     finding_id: str
@@ -43,6 +52,14 @@ class FindingRecord:
     confidence: float
     extraction_model: str
     extracted_at: str
+    # --- enriched fields (v2, optional — None when absent) ---
+    claim_type: str | None = None
+    subject: str | None = None
+    object: str | None = None       # noqa: A003 — matches domain vocabulary
+    condition: str | None = None
+    magnitude: str | None = None
+    timescale: str | None = None
+    evidence_strength: str | None = None
 
 
 @dataclass(frozen=True)
@@ -147,6 +164,28 @@ def parse_findings(
             continue
         confidence = _clamp(float(item.get("confidence", 0.0)))
         direction = _validate_direction(str(item.get("result_direction", "other")))
+
+        # v2 optional fields — only stored when present and valid
+        raw_claim_type = item.get("claim_type")
+        claim_type = (
+            str(raw_claim_type) if raw_claim_type in VALID_CLAIM_TYPES else "other"
+        ) if raw_claim_type else None
+
+        raw_timescale = item.get("timescale")
+        timescale = (
+            str(raw_timescale) if raw_timescale in VALID_TIMESCALES else "unknown"
+        ) if raw_timescale else None
+
+        raw_evidence = item.get("evidence_strength")
+        evidence_strength = (
+            str(raw_evidence) if raw_evidence in VALID_EVIDENCE_STRENGTHS else None
+        ) if raw_evidence else None
+
+        magnitude = str(item["magnitude"]) if item.get("magnitude") else None
+        subject = str(item["subject"]) if item.get("subject") else None
+        obj = str(item["object"]) if item.get("object") else None
+        condition = str(item["condition"]) if item.get("condition") else None
+
         records.append(
             FindingRecord(
                 paper_id=paper_id,
@@ -163,6 +202,14 @@ def parse_findings(
                 confidence=confidence,
                 extraction_model=model,
                 extracted_at=extracted_at,
+                # v2 enriched fields
+                claim_type=claim_type,
+                subject=subject,
+                object=obj,
+                condition=condition,
+                magnitude=magnitude,
+                timescale=timescale,
+                evidence_strength=evidence_strength,
             )
         )
 
