@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 
-import pytest
+from neural_search.literature.normalizer import (
+    normalize_cell_types,
+    normalize_molecules,
+)
 from neural_search.literature.relationship_builder import (
     build_consensus_summaries,
     build_cross_finding_edges,
     build_region_cooccurrence_edges,
 )
-from neural_search.literature.normalizer import normalize_cell_types, normalize_molecules
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

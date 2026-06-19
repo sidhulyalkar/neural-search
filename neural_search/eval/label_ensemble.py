@@ -8,7 +8,8 @@ Tier definitions:
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from datetime import UTC
 
 from neural_search.eval.evidence import LFVote
 
@@ -97,7 +98,7 @@ def make_qrel(
     tier: str,
 ) -> dict:
     """Return a JSONL-ready qrel dict."""
-    from datetime import datetime, timezone
+    from datetime import datetime
     return {
         "query_id": query_id,
         "record_id": record_id,
@@ -107,7 +108,7 @@ def make_qrel(
         "provenance": result.provenance,
         "hard_negative_triggered": result.hard_negative_triggered,
         "disagreement": round(result.disagreement, 4),
-        "created": datetime.now(timezone.utc).isoformat(),
+        "created": datetime.now(UTC).isoformat(),
     }
 
 

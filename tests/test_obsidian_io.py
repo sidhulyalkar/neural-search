@@ -1,10 +1,6 @@
 """Tests for Obsidian vault I/O — frontmatter roundtrip and write-safety."""
 from __future__ import annotations
 
-from pathlib import Path
-
-import pytest
-
 from neural_search.obsidian.io import parse_note, read_note, safe_write_note
 
 

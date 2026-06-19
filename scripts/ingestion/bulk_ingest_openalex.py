@@ -18,6 +18,7 @@ Dry run (fetch one page, print stats, exit):
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
 import time
@@ -26,20 +27,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from neural_search.ingestion.openalex_bulk import (
-    TIER_FILTERS,
-    BulkIngester,
-    normalize_bulk_work,
     OPENALEX_BASE,
     POLITE_EMAIL,
-    SELECT_FIELDS,
-    PAGE_SIZE,
+    TIER_FILTERS,
+    BulkIngester,
 )
 
-try:
-    import httpx
-    _HAS_HTTPX = True
-except ImportError:
-    _HAS_HTTPX = False
+_HAS_HTTPX = importlib.util.find_spec("httpx") is not None
 
 
 def _dry_run(tier: str) -> None:

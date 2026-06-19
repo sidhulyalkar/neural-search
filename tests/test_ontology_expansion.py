@@ -1,6 +1,7 @@
 """Tests verifying ontology expansion in brain_regions.yaml and behavioral_task_ontology.yaml."""
-import yaml
 from pathlib import Path
+
+import yaml
 
 BRAIN_REGIONS_PATH = Path("data/ontology/brain_regions.yaml")
 TASK_ONTOLOGY_PATH = Path("data/ontology/behavioral_task_ontology.yaml")

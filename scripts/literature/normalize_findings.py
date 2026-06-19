@@ -31,7 +31,10 @@ logger = logging.getLogger(__name__)
 # Allow running from the repo root
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from neural_search.literature.normalizer import deduplicate_findings, normalize_finding
+from neural_search.literature.normalizer import (  # noqa: E402
+    deduplicate_findings,
+    normalize_finding,
+)
 
 
 def _parse_args() -> argparse.Namespace:

@@ -18,12 +18,10 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any
 
 import yaml
 
 from neural_search.eval.evidence import PairEvidence
-
 
 _JUDGMENT_SCHEMA = {
     "label": int,

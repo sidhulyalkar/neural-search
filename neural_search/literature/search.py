@@ -6,10 +6,11 @@ import json
 import math
 import re
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable, Literal
+from typing import Any, Literal
 
 from neural_search.normalized import make_paper_id
 

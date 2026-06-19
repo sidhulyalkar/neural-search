@@ -1,7 +1,7 @@
 """Frontmatter dataclasses and Markdown renderers for the Obsidian vault."""
 from __future__ import annotations
 
-from datetime import date
+from datetime import UTC, date
 
 import yaml
 
@@ -77,7 +77,7 @@ def annotation_card_frontmatter(
     audit_status: str = "pending",
     judge_version: str = "lf_v1",
 ) -> dict:
-    from datetime import datetime, timezone
+    from datetime import datetime
     return {
         "type": "annotation",
         "annotation_id": annotation_id,
@@ -88,7 +88,7 @@ def annotation_card_frontmatter(
         "source": source,
         "audit_status": audit_status,
         "judge_version": judge_version,
-        "created": datetime.now(timezone.utc).date().isoformat(),
+        "created": datetime.now(UTC).date().isoformat(),
         "tags": ["annotation", "audit"],
     }
 

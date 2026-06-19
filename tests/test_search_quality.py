@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import pytest
 
-from neural_search.eval.label_ensemble import compute_hard_negative_violations
 from neural_search.evaluation.benchmark import load_benchmark_queries
 from neural_search.search import search_datasets
 

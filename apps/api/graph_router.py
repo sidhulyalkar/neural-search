@@ -281,9 +281,6 @@ async def get_dataset_neighborhood(dataset_id: str) -> dict[str, Any]:
         if lnk.get("dataset_record_id") == dataset_id and lnk.get("paper_openalex_id")
     ]
 
-    # consensus for this dataset's typical brain regions (via paper links or cluster graph)
-    paper_ids = {lnk["paper_openalex_id"] for lnk in paper_links}
-
     # Try to get dataset from corpus to find its brain_regions
     from neural_search.ingestion.demo_seed import build_combined_corpus  # type: ignore
     try:

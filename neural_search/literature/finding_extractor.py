@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 import logging
 import os
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -156,7 +156,7 @@ def parse_findings(
         logger.warning("parse_findings: expected list for paper %s", paper_id)
         return []
 
-    extracted_at = datetime.now(tz=timezone.utc).isoformat()
+    extracted_at = datetime.now(tz=UTC).isoformat()
     records: list[FindingRecord] = []
 
     for idx, item in enumerate(raw):

@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 _REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO))
 
-from neural_search.literature.finding_extractor import (
+from neural_search.literature.finding_extractor import (  # noqa: E402
     LLMProviderConfig,
-    extract_findings_from_corpus,
     extract_batch_with_provider,
+    extract_findings_from_corpus,
     load_config,
 )
 

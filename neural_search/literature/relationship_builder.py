@@ -24,9 +24,10 @@ from __future__ import annotations
 import json
 import logging
 from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +136,7 @@ def build_cross_finding_edges(
     edges: list[FindingEdge] = []
     seen_pairs: set[frozenset[str]] = set()
 
-    for (region, _task_group), group in region_task_index.items():
+    for (_region, _task_group), group in region_task_index.items():
         if len(group) < 2:
             continue
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 from neural_search.literature.normalizer import (
     compute_quality_flags,
     deduplicate_findings,

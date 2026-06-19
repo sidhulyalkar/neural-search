@@ -16,7 +16,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from neural_search.obsidian.io import safe_write_note
-from neural_search.obsidian.templates import annotation_card_body, annotation_card_frontmatter
+from neural_search.obsidian.templates import (
+    annotation_card_body,
+    annotation_card_frontmatter,
+)
 
 
 def main() -> None:

@@ -1,14 +1,10 @@
 """Tests for Obsidian vault export scripts."""
 from __future__ import annotations
 
-import json
 import subprocess
 import sys
-from pathlib import Path
 
-import pytest
 from neural_search.eval.evidence import DatasetEvidence, QuerySpec
-from neural_search.obsidian.io import read_note
 from neural_search.obsidian.templates import (
     dataset_card_body,
     dataset_card_frontmatter,

@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.graph_router import router as graph_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
@@ -115,7 +116,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-from apps.api.graph_router import router as graph_router
 app.include_router(graph_router)
 
 

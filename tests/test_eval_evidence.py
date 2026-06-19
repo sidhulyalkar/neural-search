@@ -1,15 +1,14 @@
 """Tests for evidence data models."""
 from __future__ import annotations
-import pytest
+
 from neural_search.eval.evidence import (
-    QuerySpec,
-    DatasetEvidence,
-    PairEvidence,
     LFVote,
-    dataset_evidence_from_record,
+    PairEvidence,
+    QuerySpec,
     compute_metadata_completeness,
+    dataset_evidence_from_record,
 )
-from neural_search.eval.query_decomposition import decompose_query, load_query_specs
+from neural_search.eval.query_decomposition import decompose_query
 
 
 class TestQuerySpec:
@@ -131,7 +130,7 @@ class TestQueryDecomposition:
 
 class TestPairEvidenceConstruction:
     def test_pair_evidence_links_query_and_dataset(self):
-        from neural_search.eval.evidence import dataset_evidence_from_record, PairEvidence
+        from neural_search.eval.evidence import dataset_evidence_from_record
         q_record = {
             "query_id": "q_0001",
             "intent": "META_ANALYSIS",

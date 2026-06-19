@@ -7,9 +7,9 @@ import json
 import re
 import time
 from collections import Counter, defaultdict
+from collections.abc import Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterator
 
 
 @dataclass
@@ -55,8 +55,8 @@ def _http_get(url: str, params: dict | None = None):
         import httpx
         return httpx.get(url, params=params, timeout=10)
     except ImportError:
-        import urllib.request
         import urllib.parse
+        import urllib.request
 
         if params:
             url = url + "?" + urllib.parse.urlencode(params)

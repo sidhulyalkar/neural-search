@@ -1,22 +1,14 @@
 """Tests for all 13 deterministic labeling functions."""
 from __future__ import annotations
 
-import pytest
 from neural_search.eval.evidence import DatasetEvidence, LFVote, PairEvidence, QuerySpec
 from neural_search.eval.labeling_functions import (
-    lf_analysis_affordance,
-    lf_data_level_required,
     lf_hard_negative,
     lf_license_reusable,
-    lf_meta_analysis_depth,
     lf_metadata_completeness,
-    lf_partial_modality,
-    lf_pipeline_reuse,
     lf_raw_data_available,
-    lf_region_constraint,
     lf_required_modality,
     lf_species_constraint,
-    lf_task_constraint,
     run_all_lfs,
 )
 

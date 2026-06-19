@@ -17,7 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from neural_search.eval.evidence import dataset_evidence_from_record, PairEvidence
+from neural_search.eval.evidence import PairEvidence, dataset_evidence_from_record
 from neural_search.eval.query_decomposition import load_query_specs
 
 

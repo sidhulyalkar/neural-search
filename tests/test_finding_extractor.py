@@ -10,7 +10,6 @@ import pytest
 
 from neural_search.literature.finding_extractor import (
     FindingRecord,
-    LLMProviderConfig,
     _repair_json,
     build_prompt,
     extract_batch,
