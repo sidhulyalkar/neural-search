@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import {
   fetchFindings,
@@ -45,6 +46,23 @@ export function KnowledgeExplorerPage() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
   const [legendOpen, setLegendOpen] = useState(false)
   const [companionSlugs, setCompanionSlugs] = useState<string[]>([])
+
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    const datasetParam = searchParams.get('dataset')
+    if (!datasetParam) return
+    setViewMode('explorer')
+    setSelectedNode({
+      id: `dataset:${datasetParam}`,
+      type: 'dataset',
+      label: datasetParam,
+      scale_level: 3,
+      size: 10,
+      color: '#22d3ee',
+      meta: { source: '', readiness: 0, brain_regions: [] },
+    })
+  }, [searchParams])
 
   // Galaxy layout (static file, loads once)
   const { data: galaxyLayout } = useQuery({
