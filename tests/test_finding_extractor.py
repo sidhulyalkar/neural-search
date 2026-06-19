@@ -10,6 +10,7 @@ import pytest
 
 from neural_search.literature.finding_extractor import (
     FindingRecord,
+    _ensure_list,
     _repair_json,
     build_prompt,
     extract_batch,
@@ -230,6 +231,23 @@ class TestParseFindings:
     def test_none_doi_stored(self) -> None:
         findings = parse_findings("W7", None, VALID_FINDING_JSON, "m")
         assert findings[0].paper_doi is None
+
+    def test_list_valued_optional_fields_do_not_crash(self) -> None:
+        # LLM sometimes returns lists for scalar optional fields; must not raise TypeError
+        list_fields = json.dumps([{
+            "brain_region": "hippocampus",
+            "result_direction": "increase",
+            "finding_summary": "Test finding",
+            "confidence": 0.8,
+            "species": "rat",
+            "timescale": ["acute", "chronic"],
+            "claim_type": ["mechanistic", "correlational"],
+            "evidence_strength": ["strong", "moderate"],
+        }])
+        findings = parse_findings("W99", None, list_fields, "m")
+        assert len(findings) == 1
+        # First element of each list should be used (if valid) or fall back to default
+        assert findings[0].timescale in (None, "acute", "unknown")
 
 
 # ---------------------------------------------------------------------------
@@ -604,6 +622,22 @@ class TestExtractBatchOllama:
 
         assert findings == []
 
+    def test_species_string_coerced_to_list(self) -> None:
+        """Regression: LLM returning "rat" must not become ['r','a','t']."""
+        response = json.dumps([{
+            "finding_text": "Test finding.",
+            "result_direction": "increase",
+            "regions": ["hippocampus"],
+            "species": "rat",   # bare string, not a list
+            "modalities": [], "tasks": [], "cell_types": [], "molecules": [],
+            "confidence": 0.9,
+        }])
+        mock_resp = self._make_ollama_response(response)
+        papers = [{"paper_id": "W_str", "paper_doi": None, "title": "T", "abstract": "A."}]
+        with patch("requests.post", return_value=mock_resp):
+            findings = extract_batch_ollama(papers, SAMPLE_CONFIG, model="m")
+        assert findings[0].species == ["rat"]
+
     def test_uses_correct_ollama_endpoint(self) -> None:
         papers = [
             {
@@ -625,3 +659,62 @@ class TestExtractBatchOllama:
 
         call_url = mock_post.call_args[0][0]
         assert call_url == "http://localhost:11434/api/chat"
+
+
+# ---------------------------------------------------------------------------
+# TestEnsureList — regression for bare-string species/regions from v2 LLM
+# ---------------------------------------------------------------------------
+
+
+class TestEnsureList:
+    def test_string_becomes_single_item_list(self) -> None:
+        assert _ensure_list("rat") == ["rat"]
+
+    def test_list_passthrough(self) -> None:
+        assert _ensure_list(["rat", "mouse"]) == ["rat", "mouse"]
+
+    def test_empty_string_returns_empty_list(self) -> None:
+        assert _ensure_list("") == []
+
+    def test_none_returns_empty_list(self) -> None:
+        assert _ensure_list(None) == []
+
+    def test_list_with_none_items_filtered(self) -> None:
+        assert _ensure_list(["rat", None, "mouse"]) == ["rat", "mouse"]
+
+    def test_whitespace_only_string_returns_empty(self) -> None:
+        assert _ensure_list("   ") == []
+
+    def test_string_is_stripped(self) -> None:
+        assert _ensure_list("  human  ") == ["human"]
+
+    def test_parse_findings_species_as_string(self) -> None:
+        """End-to-end: parse_findings must not character-split species strings."""
+        response = json.dumps([{
+            "finding_text": "Neurons in hippocampus fire during navigation.",
+            "result_direction": "increase",
+            "regions": ["hippocampus"],
+            "species": "mouse",   # v2 LLM often returns this as a bare string
+            "modalities": ["electrophysiology"],
+            "tasks": [],
+            "cell_types": [],
+            "molecules": [],
+            "confidence": 0.9,
+        }])
+        findings = parse_findings("W_regress", None, response, "qwen2.5")
+        assert findings[0].species == ["mouse"]
+
+    def test_parse_findings_regions_as_string(self) -> None:
+        response = json.dumps([{
+            "finding_text": "Test.",
+            "result_direction": "increase",
+            "regions": "hippocampus",  # bare string
+            "species": ["rat"],
+            "modalities": [],
+            "tasks": [],
+            "cell_types": [],
+            "molecules": [],
+            "confidence": 0.8,
+        }])
+        findings = parse_findings("W_regress2", None, response, "qwen2.5")
+        assert findings[0].regions == ["hippocampus"]

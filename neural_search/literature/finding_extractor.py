@@ -110,6 +110,18 @@ def _validate_direction(direction: str) -> str:
     return direction if direction in VALID_DIRECTIONS else "other"
 
 
+def _ensure_list(value: Any) -> list[str]:
+    """Return a list of non-empty strings, coercing a bare string to a single-item list.
+
+    Handles the case where an LLM returns "rat" instead of ["rat"].
+    """
+    if isinstance(value, list):
+        return [str(v) for v in value if v is not None and str(v).strip()]
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    return []
+
+
 def _repair_json(text: str) -> str:
     """Strip markdown fences and extract the first JSON array from LLM output.
 
@@ -167,16 +179,22 @@ def parse_findings(
 
         # v2 optional fields — only stored when present and valid
         raw_claim_type = item.get("claim_type")
+        if isinstance(raw_claim_type, list):
+            raw_claim_type = raw_claim_type[0] if raw_claim_type else None
         claim_type = (
             str(raw_claim_type) if raw_claim_type in VALID_CLAIM_TYPES else "other"
         ) if raw_claim_type else None
 
         raw_timescale = item.get("timescale")
+        if isinstance(raw_timescale, list):
+            raw_timescale = raw_timescale[0] if raw_timescale else None
         timescale = (
             str(raw_timescale) if raw_timescale in VALID_TIMESCALES else "unknown"
         ) if raw_timescale else None
 
         raw_evidence = item.get("evidence_strength")
+        if isinstance(raw_evidence, list):
+            raw_evidence = raw_evidence[0] if raw_evidence else None
         evidence_strength = (
             str(raw_evidence) if raw_evidence in VALID_EVIDENCE_STRENGTHS else None
         ) if raw_evidence else None
@@ -193,12 +211,12 @@ def parse_findings(
                 finding_id=f"{paper_id}:f{idx}",
                 finding_text=str(item.get("finding_text", "")),
                 result_direction=direction,
-                regions=list(item.get("regions", [])),
-                species=list(item.get("species", [])),
-                modalities=list(item.get("modalities", [])),
-                tasks=list(item.get("tasks", [])),
-                cell_types=list(item.get("cell_types", [])),
-                molecules=list(item.get("molecules", [])),
+                regions=_ensure_list(item.get("regions")),
+                species=_ensure_list(item.get("species")),
+                modalities=_ensure_list(item.get("modalities")),
+                tasks=_ensure_list(item.get("tasks")),
+                cell_types=_ensure_list(item.get("cell_types")),
+                molecules=_ensure_list(item.get("molecules")),
                 confidence=confidence,
                 extraction_model=model,
                 extracted_at=extracted_at,
