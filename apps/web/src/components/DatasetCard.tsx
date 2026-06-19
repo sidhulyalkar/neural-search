@@ -8,6 +8,7 @@ import {
   saveFrontendDataset,
 } from '../api/search'
 import type { DimensionMatch, ExplanationGroups, FeedbackUsefulness, MemoryGraphEvidence, RetrievalFeedbackEvent, SearchResultItem, WouldUseForAnalysis } from '../types'
+import { RelatedFindingsPanel } from './graph/RelatedFindingsPanel'
 
 interface DatasetCardProps {
   result: SearchResultItem
@@ -341,6 +342,7 @@ export function DatasetCard({
   } = result
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [rawJsonOpen, setRawJsonOpen] = useState(false)
+  const [relatedFindingsOpen, setRelatedFindingsOpen] = useState(false)
   const [usefulness, setUsefulness] = useState<FeedbackUsefulness>('unsure')
   const [wouldUse, setWouldUse] = useState<WouldUseForAnalysis>('maybe')
   const [reasonTags, setReasonTags] = useState<string[]>([])
@@ -610,6 +612,13 @@ export function DatasetCard({
             </button>
 
             <button
+              onClick={(e) => { e.preventDefault(); setRelatedFindingsOpen((v) => !v) }}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              {relatedFindingsOpen ? 'Close findings' : 'Related findings'}
+            </button>
+
+            <button
               onClick={(e) => {
                 e.preventDefault()
                 saveMutation.mutate(false)
@@ -667,6 +676,14 @@ export function DatasetCard({
               result={result}
               rawJsonOpen={rawJsonOpen}
               onRawJsonToggle={() => setRawJsonOpen((value) => !value)}
+            />
+          )}
+
+          {relatedFindingsOpen && (
+            <RelatedFindingsPanel
+              datasetId={dataset.id}
+              brainRegions={dataset.brain_regions}
+              linkedPapers={linked_papers ?? []}
             />
           )}
 
