@@ -47,7 +47,7 @@ export function fetchSubgraph(params: {
 }
 
 export function fetchTopicGraph(slug: string): Promise<TopicGraphResponse> {
-  return get(`/api/graph/topic/${slug}`)
+  return get(`/api/graph/topic/${encodeURIComponent(slug)}`)
 }
 
 export function fetchSuggestedViews(): Promise<SuggestedView[]> {
