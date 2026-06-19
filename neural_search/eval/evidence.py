@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 
-
 _COMPLETENESS_FIELDS = [
     "title", "description", "species", "modalities", "brain_regions",
     "tasks", "license", "url", "has_raw_data",

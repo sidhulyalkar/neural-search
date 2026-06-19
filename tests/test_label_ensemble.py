@@ -1,12 +1,12 @@
 """Tests for label ensemble and qrels tier assignment."""
 from __future__ import annotations
-import pytest
+
 from neural_search.eval.evidence import LFVote
 from neural_search.eval.label_ensemble import (
+    EnsembleResult,
     aggregate_votes,
     assign_tier,
     compute_audit_priority,
-    EnsembleResult,
 )
 
 

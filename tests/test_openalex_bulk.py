@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -13,7 +12,6 @@ from neural_search.ingestion.openalex_bulk import (
     normalize_bulk_work,
     reconstruct_abstract,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

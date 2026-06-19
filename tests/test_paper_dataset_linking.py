@@ -5,14 +5,14 @@ from __future__ import annotations
 import json
 from dataclasses import fields
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
 from neural_search.literature.linking import (
     DatasetPaperLink,
-    link_corpus_to_local_literature,
     link_corpus_to_literature,
+    link_corpus_to_local_literature,
     lookup_by_doi,
     lookup_by_title,
 )
@@ -344,7 +344,7 @@ class TestLinkCorpusToLiterature:
 
         link_corpus_to_literature(corpus_file, out_file)
 
-        lines = [l for l in out_file.read_text().splitlines() if l.strip()]
+        lines = [line for line in out_file.read_text().splitlines() if line.strip()]
         assert len(lines) == 1
         record = json.loads(lines[0])
         assert record["dataset_record_id"] == "dandi:000004"

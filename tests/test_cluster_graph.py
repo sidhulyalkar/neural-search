@@ -1,14 +1,12 @@
-import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scripts.literature.build_cluster_graph import (
-    BRAIN_SYSTEMS,
     DIRECTION_COLORS,
-    build_graph,
     assign_system,
+    build_graph,
 )
 
 

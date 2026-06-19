@@ -1,14 +1,12 @@
 """Tests for the 6 new affordance types added in the expansion sprint."""
 
-import pytest
 from neural_search.affordances.registry import (
-    DatasetFeatures,
     DataFormat,
+    DatasetFeatures,
     detect_features_from_metadata,
-    validate_affordance,
     list_affordances,
+    validate_affordance,
 )
-
 
 # ── Registry completeness ────────────────────────────────────────────────────
 

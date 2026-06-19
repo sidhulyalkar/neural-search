@@ -181,7 +181,7 @@ def lf_metadata_completeness(pair: PairEvidence) -> LFVote:
 
 
 def lf_analysis_affordance(pair: PairEvidence) -> LFVote:
-    affordances = set(str(a).lower() for a in pair.query.analysis_affordances)
+    affordances = {str(a).lower() for a in pair.query.analysis_affordances}
     if not affordances:
         return LFVote("lf_analysis_affordance", 0, 0.0, "No affordances specified.", abstain=True)
 

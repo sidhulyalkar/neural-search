@@ -1,9 +1,8 @@
 """Tests for qrels tier generation."""
 from __future__ import annotations
+
 import json
-import tempfile
 from pathlib import Path
-import pytest
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -28,7 +27,8 @@ class TestQrelsTierSeparation:
         silver = tmp_path / "qrels_silver.jsonl"
         bronze = tmp_path / "qrels_bronze.jsonl"
 
-        import subprocess, sys
+        import subprocess
+        import sys
         pair_evidence = [
             {
                 "query_id": "q1", "record_id": "dandi:1",

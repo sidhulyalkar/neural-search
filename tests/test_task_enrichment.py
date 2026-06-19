@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
-from enrich_task_coverage import _build_alias_map, _match_tasks, CONFIDENCE
+from enrich_task_coverage import CONFIDENCE, _build_alias_map, _match_tasks
 
 
 class TestTaskEnrichmentLogic:

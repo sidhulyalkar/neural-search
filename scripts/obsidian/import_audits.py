@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -69,7 +69,7 @@ def main() -> None:
             "provenance": ["human_audit"],
             "hard_negative_triggered": False,
             "disagreement": 0.0,
-            "created": datetime.now(timezone.utc).isoformat(),
+            "created": datetime.now(UTC).isoformat(),
         }
         imported += 1
 

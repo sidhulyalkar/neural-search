@@ -31,7 +31,7 @@ for r in sorted(rates, key=lambda x: -x[1])[:10]:
 # dark_pairs returns DuckDBPyRelation: (dim_a_value, dim_b_value, n_observed,
 # a_marginal, b_marginal, opportunity_score)
 dark = store.dark_pairs(top_n=5).fetchall()
-print(f"\nTop dark pairs (unexplored region×modality combos):")
+print("\nTop dark pairs (unexplored region×modality combos):")
 for p in dark:
     print(f"  {p[0]} × {p[1]}: opportunity={p[5]:.2f}")
 

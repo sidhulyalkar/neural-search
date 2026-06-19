@@ -14,7 +14,12 @@ from neural_search.literature.relationship_builder import (
     build_cross_finding_edges,
     build_region_cooccurrence_edges,
 )
-from neural_search.literature.search import FindingResult, PaperResult, search_findings, search_papers
+from neural_search.literature.search import (
+    FindingResult,
+    PaperResult,
+    search_findings,
+    search_papers,
+)
 
 __all__ = [
     "FindingResult",

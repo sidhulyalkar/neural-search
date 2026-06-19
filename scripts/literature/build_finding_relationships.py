@@ -18,6 +18,7 @@ import argparse
 import json
 import logging
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -25,13 +26,12 @@ logger = logging.getLogger(__name__)
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from neural_search.literature.relationship_builder import (
+from neural_search.literature.relationship_builder import (  # noqa: E402
     build_consensus_summaries,
     build_cross_finding_edges,
     build_region_cooccurrence_edges,
     write_edges_jsonl,
 )
-from dataclasses import asdict
 
 
 def _parse_args() -> argparse.Namespace:
