@@ -236,14 +236,17 @@ async def get_suggested_views() -> list[dict[str, Any]]:
 async def get_consensus(region: str = Query(""), limit: int = Query(200, le=500)) -> list[dict[str, Any]]:
     rows = _get_consensus()
     if region:
-        rows = [r for r in rows if region.lower() in r["region"].lower()]
+        rows = [r for r in rows if r.get("region") and region.lower() in r["region"].lower()]
     return [
         {
-            "region": r["region"], "direction": r["direction"],
-            "task": r.get("task"), "n_findings": r["n_findings"],
-            "n_papers": r["n_papers"], "consensus_strength": r["consensus_strength"],
+            "region": r.get("region", ""),
+            "direction": r.get("direction", ""),
+            "task": r.get("task"),
+            "n_findings": r.get("n_findings", 0),
+            "n_papers": r.get("n_papers", 0),
+            "consensus_strength": r.get("consensus_strength", 0.0),
         }
-        for r in sorted(rows, key=lambda x: -x["n_findings"])[:limit]
+        for r in sorted(rows, key=lambda x: -x.get("n_findings", 0))[:limit]
     ]
 
 
