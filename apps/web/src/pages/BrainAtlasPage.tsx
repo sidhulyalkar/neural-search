@@ -128,7 +128,7 @@ function RegionPanel({ regionId, regionLabel }: { regionId: string; regionLabel:
               <span className="text-xs text-neural-500 font-mono">{ds.source}</span>
               <span className="text-xs text-neural-700">·</span>
               <span className="text-xs text-neural-500">
-                {(ds.confidence * 100).toFixed(0)}% conf
+                {((ds.confidence ?? 0) * 100).toFixed(0)}% conf
               </span>
               {ds.access_tier && (
                 <>
