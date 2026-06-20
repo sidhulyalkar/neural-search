@@ -59,9 +59,9 @@ export function ExplorerGraph({ graphData, mode, onNodeClick, highlightIds }: Ex
       <ForceGraph2D
         {...commonProps}
         nodeCanvasObject={(node, ctx, globalScale) => {
-          const n = node as GraphNode & { x: number; y: number }
-          const r = Math.sqrt(n.size) * NODE_REL_SIZE
-          ctx.beginPath()
+          const n = node as GraphNode & { x?: number; y?: number }
+          if (n.x === undefined || n.y === undefined) return
+          const r = Math.sqrt(n.size || 0) * NODE_REL_SIZE
           ctx.arc(n.x, n.y, r, 0, 2 * Math.PI)
           ctx.fillStyle = nodeColor(node)
           ctx.fill()
