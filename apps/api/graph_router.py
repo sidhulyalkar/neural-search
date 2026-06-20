@@ -29,7 +29,7 @@ _links_rows: list[dict[str, Any]] | None = None
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
 
 
