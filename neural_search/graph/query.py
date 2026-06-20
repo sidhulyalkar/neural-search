@@ -547,7 +547,7 @@ def find_similar_datasets(
             "title": other_node.label,
             "relation": edge.edge_type,
             "relation_label": _RELATION_LABEL.get(edge.edge_type, edge.edge_type),
-            "weight": edge.confidence,
+            "weight": edge.weight,
         })
 
     # Deduplicate by dataset_id, keeping highest-weight entry
