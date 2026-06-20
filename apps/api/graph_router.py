@@ -39,7 +39,7 @@ def _get_cluster_graph() -> dict[str, Any]:
         if not CLUSTER_GRAPH_PATH.exists():
             _cluster_graph = {"nodes": [], "links": []}
         else:
-            _cluster_graph = json.loads(CLUSTER_GRAPH_PATH.read_text())
+            _cluster_graph = json.loads(CLUSTER_GRAPH_PATH.read_text(encoding="utf-8"))
     return _cluster_graph
 
 
