@@ -1596,9 +1596,8 @@ async def get_similar_datasets(dataset_id: str, limit: int = 6) -> dict[str, Any
         return {"dataset_id": dataset_id, "similar": [], "source": "graph_unavailable"}
 
     if "graph" not in _graph_cache:
-    if "graph" not in _graph_cache:
         with graph_path.open(encoding="utf-8") as f:
-            raw = json.load(f)
+            _graph_cache["graph"] = KnowledgeGraph.model_validate(json.load(f))
 
     results = find_similar_datasets(_graph_cache["graph"], dataset_id, limit=limit)
     return {"dataset_id": dataset_id, "similar": results, "source": "knowledge_graph"}

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -315,13 +314,19 @@ async def get_dataset_neighborhood(dataset_id: str) -> dict[str, Any]:
         if r["region"].lower() in dataset_regions
     ][:6]
 
-    # Related datasets sharing regions via paper links
-    related: list[dict[str, Any]] = []
-    region_dataset_map: dict[str, list[str]] = defaultdict(list)
+    # Related datasets: other datasets linked to the same papers
+    paper_ids = {lnk["paper_openalex_id"] for lnk in paper_links}
+    related_map: dict[str, dict[str, Any]] = {}
     for lnk in links_data:
-        did = lnk.get("dataset_record_id", "")
-        if did and did != dataset_id:
-            region_dataset_map[lnk.get("paper_openalex_id", "")].append(did)
+        pid = lnk.get("paper_openalex_id")
+        did = lnk.get("dataset_record_id")
+        if pid in paper_ids and did and did != dataset_id:
+            related_map[did] = {
+                "dataset_id": did,
+                "title": lnk.get("paper_title") or did,
+                "shared_regions": [],
+            }
+    related = list(related_map.values())
 
     return {
         "dataset_id": dataset_id,
