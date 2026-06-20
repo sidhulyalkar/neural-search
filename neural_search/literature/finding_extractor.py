@@ -356,14 +356,14 @@ def extract_batch_ollama(
     model: str,
     base_url: str = "http://localhost:11434",
 ) -> list[FindingRecord]:
-    """Extract findings using the Ollama native /api/chat endpoint via requests.
+    """Extract findings using the Ollama native /api/chat endpoint via httpx.
 
     Handles JSON repair for models that wrap output in markdown fences.
     """
     try:
-        import requests as req
+        import httpx as req
     except ImportError:
-        logger.warning("extract_batch_ollama: requests package not installed")
+        logger.warning("extract_batch_ollama: httpx package not installed")
         return []
 
     max_tokens: int = config.get("max_tokens", 512)
