@@ -43,7 +43,7 @@ export function NodeDetailPanel({ node, findings, consensus, onClose }: NodeDeta
   if (!node) return null
 
   const searchQuery = node.type === 'finding_cluster'
-    ? `${(node.meta.region as string) ?? ''} ${(node.meta.direction as string) ?? ''}`.trim()
+    ? `${(node.meta?.region as string) ?? ''} ${(node.meta?.direction as string) ?? ''}`.trim()
     : node.type === 'region'
     ? (node.label ?? '')
     : node.type === 'dataset'
@@ -65,14 +65,14 @@ export function NodeDetailPanel({ node, findings, consensus, onClose }: NodeDeta
             {/* Finding cluster details */}
             {node.type === 'finding_cluster' && (
               <div className="flex flex-wrap gap-4 text-xs text-neural-400">
-                <span>{node.meta.n_findings as number} findings</span>
-                <span>{node.meta.n_papers as number} papers</span>
-                <span className={DIRECTION_COLORS[node.meta.direction as string] ?? ''}>
-                  {DIRECTION_LABELS[node.meta.direction as string] ?? node.meta.direction as string}
+                <span>{(node.meta?.n_findings as number) ?? 0} findings</span>
+                <span>{(node.meta?.n_papers as number) ?? 0} papers</span>
+                <span className={DIRECTION_COLORS[node.meta?.direction as string] ?? ''}>
+                  {DIRECTION_LABELS[node.meta?.direction as string] ?? node.meta?.direction as string}
                 </span>
                 <span>consensus strength</span>
                 <div className="w-32">
-                  <ConsensusMiniBar strength={node.meta.consensus_strength as number ?? 0} />
+                  <ConsensusMiniBar strength={(node.meta?.consensus_strength as number) ?? 0} />
                 </div>
               </div>
             )}
@@ -94,15 +94,15 @@ export function NodeDetailPanel({ node, findings, consensus, onClose }: NodeDeta
             {/* Dataset details */}
             {node.type === 'dataset' && (
               <div className="text-xs text-neural-500">
-                Source: {(node.meta.source as string) ?? '—'} · Readiness: {(node.meta.readiness as number) ?? 0}
+                Source: {(node.meta?.source as string) ?? '—'} · Readiness: {(node.meta?.readiness as number) ?? 0}
               </div>
             )}
 
             {/* Paper details */}
             {node.type === 'paper' && (
               <div className="text-xs text-neural-500">
-                {(node.meta.year as number) ? `${node.meta.year as number} · ` : ''}
-                {(node.meta.doi as string) ?? ''}
+                {(node.meta?.year as number) ? `${node.meta?.year as number} · ` : ''}
+                {(node.meta?.doi as string) ?? ''}
               </div>
             )}
 
