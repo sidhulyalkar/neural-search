@@ -1,0 +1,36 @@
+{
+  "cutoff": 10,
+  "gold": {
+    "note": "gold qrels not available"
+  },
+  "silver": {
+    "total_queries_with_hn": 0,
+    "total_hard_negatives": 0,
+    "violated_queries": 0,
+    "violation_rate": 0.0,
+    "by_query": {},
+    "by_source": {}
+  },
+  "bronze": {
+    "total_queries_with_hn": 12,
+    "total_hard_negatives": 131,
+    "violated_queries": 6,
+    "violation_rate": 0.5,
+    "by_query": {
+      "q_0001": 1,
+      "q_0002": 10,
+      "q_0003": 10,
+      "q_0007": 5,
+      "q_0009": 2,
+      "q_0011": 2
+    },
+    "by_source": {
+      "osf": 1,
+      "allen": 10,
+      "crcns": 10,
+      "neurovault": 6,
+      "openneuro": 1,
+      "zenodo": 2
+    }
+  }
+}

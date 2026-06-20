@@ -1,0 +1,27 @@
+tiers:
+  tier1:
+    description: "High-impact papers (>=100 citations)"
+    filter: "concepts.id:C169760540,type:article,cited_by_count:>99"
+    estimated_count: 255940
+    priority: 1
+
+  tier2:
+    description: "Open-access papers with abstracts"
+    filter: "concepts.id:C169760540,type:article,has_abstract:true,open_access.is_oa:true"
+    estimated_count: 1389240
+    priority: 2
+    depends_on: tier1
+
+  tier3:
+    description: "All neuroscience articles"
+    filter: "concepts.id:C169760540,type:article"
+    estimated_count: 4360916
+    priority: 3
+    depends_on: tier2
+
+settings:
+  page_size: 200
+  rate_limit_delay: 0.12
+  shard_size: 10000
+  polite_email: "neuralsearch@example.com"
+  select_fields: "id,doi,title,abstract_inverted_index,publication_year,concepts,cited_by_count,authorships,primary_location,open_access,topics"

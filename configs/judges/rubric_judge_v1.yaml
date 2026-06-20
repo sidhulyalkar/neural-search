@@ -1,0 +1,37 @@
+# Rubric Judge v1 — configuration for LLM-based relevance judging
+version: "1.0"
+
+# Which provider / model to use.
+# Requires the corresponding SDK to be installed.
+provider: anthropic
+model: claude-haiku-4-5-20251001    # cheapest capable model
+
+# Self-consistency: run each pair N times and take majority label.
+# 1 = no self-consistency (faster, cheaper).
+n_runs: 1
+
+# Weight applied to LLM votes in the ensemble (vs LF votes at 1.0×).
+llm_weight: 1.5
+
+# Max pairs to judge (cost guard). Set to null for no limit.
+max_pairs: 500
+
+# Rubric text injected verbatim into the system prompt.
+rubric: |
+  You are a neuroscience dataset relevance judge. Given a research query and a
+  dataset description, assign a relevance label on a 0–3 scale:
+
+    3 — Highly relevant: dataset directly supports the query intent.
+        All required modalities, species, and data levels are present.
+    2 — Partially relevant: dataset partially supports the query.
+        Some required properties are present but not all.
+    1 — Weakly relevant: dataset is tangentially related but would
+        require substantial pre-processing or adaptation.
+    0 — Not relevant: dataset does not match the query constraints.
+        Hard negative: superficially similar but actually wrong
+        (e.g., wrong species, wrong modality).
+
+  STRICT RULES:
+  - Label 0 if ANY hard negative pattern is clearly present.
+  - Never infer properties that are not stated in the evidence.
+  - Output ONLY valid JSON — no prose before or after.

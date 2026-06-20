@@ -27,6 +27,8 @@ class TestBrainRegionAtlasRefs:
     HUMAN_PRIMATE_ONLY = frozenset({
         "dlPFC", "dmFC", "mst", "lip", "aip",
         "broca_area", "wernicke_area",
+        # Primate neocortical gyri with no direct mouse Allen CCF homologue
+        "superior_temporal_gyrus", "inferior_frontal_gyrus", "middle_temporal_gyrus",
         # Spinal cord segments not in Allen CCF mouse atlas
         "spinal_cord", "cervical_spinal_cord", "thoracic_spinal_cord",
         "lumbar_spinal_cord", "dorsal_horn", "ventral_horn",

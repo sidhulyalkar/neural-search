@@ -46,6 +46,26 @@ export type DarkPair = {
   dim_b: string
 }
 
+export type RegionCount = {
+  region_id: string
+  region_label: string
+  n_datasets: number
+}
+
+export type RegionDataset = {
+  dataset_id: string
+  source: string
+  title: string
+  access_tier: string | null
+  confidence: number
+}
+
+export type RegionDatasetsResponse = {
+  region_id: string
+  datasets: RegionDataset[]
+  count: number
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`)
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
@@ -70,5 +90,15 @@ export const coverageApi = {
     if (params?.dimB) q.set('dim_b', params.dimB)
     if (params?.limit) q.set('limit', String(params.limit))
     return get<DarkPair[]>(`/api/coverage/dark-pairs?${q}`)
+  },
+  regionCounts: () => get<RegionCount[]>('/api/coverage/region-counts'),
+  regionDatasets: (regionId: string, params?: { limit?: number; offset?: number }) => {
+    const q = new URLSearchParams()
+    if (params?.limit != null) q.set('limit', String(params.limit))
+    if (params?.offset != null) q.set('offset', String(params.offset))
+    const qs = q.toString() ? `?${q}` : ''
+    return get<RegionDatasetsResponse>(
+      `/api/coverage/region/${encodeURIComponent(regionId)}/datasets${qs}`
+    )
   },
 }
