@@ -567,7 +567,7 @@ class TestExtractBatchOllama:
         ]
         mock_resp = self._make_ollama_response(VALID_FINDING_JSON)
 
-        with patch("requests.post", return_value=mock_resp):
+        with patch("httpx.post", return_value=mock_resp):
             findings = extract_batch_ollama(
                 papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
             )
@@ -580,7 +580,7 @@ class TestExtractBatchOllama:
         papers = [
             {"paper_id": "W_olla_002", "paper_doi": None, "title": "T", "abstract": ""},
         ]
-        with patch("requests.post") as mock_post:
+        with patch("httpx.post") as mock_post:
             findings = extract_batch_ollama(
                 papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
             )
@@ -599,7 +599,7 @@ class TestExtractBatchOllama:
         ]
         mock_resp = self._make_ollama_response(fenced)
 
-        with patch("requests.post", return_value=mock_resp):
+        with patch("httpx.post", return_value=mock_resp):
             findings = extract_batch_ollama(
                 papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
             )
@@ -615,7 +615,7 @@ class TestExtractBatchOllama:
                 "abstract": "Some abstract.",
             }
         ]
-        with patch("requests.post", side_effect=OSError("connection refused")):
+        with patch("httpx.post", side_effect=OSError("connection refused")):
             findings = extract_batch_ollama(
                 papers, SAMPLE_CONFIG, model="qwen2.5:7b-instruct-q4_K_M"
             )
@@ -634,7 +634,7 @@ class TestExtractBatchOllama:
         }])
         mock_resp = self._make_ollama_response(response)
         papers = [{"paper_id": "W_str", "paper_doi": None, "title": "T", "abstract": "A."}]
-        with patch("requests.post", return_value=mock_resp):
+        with patch("httpx.post", return_value=mock_resp):
             findings = extract_batch_ollama(papers, SAMPLE_CONFIG, model="m")
         assert findings[0].species == ["rat"]
 
@@ -649,7 +649,7 @@ class TestExtractBatchOllama:
         ]
         mock_resp = self._make_ollama_response("[]")
 
-        with patch("requests.post", return_value=mock_resp) as mock_post:
+        with patch("httpx.post", return_value=mock_resp) as mock_post:
             extract_batch_ollama(
                 papers,
                 SAMPLE_CONFIG,

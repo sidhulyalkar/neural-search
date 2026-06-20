@@ -1677,7 +1677,7 @@ brain_regions:
   strict: false
   atlas_refs:
     uberon: UBERON:0034753
-    allen_ccf_mouse: null
+    allen_ccf_mouse: '1011'
 
 # ── Frontal Motor Areas ────────────────────────────────────────────────────
 - id: prelimbic_cortex
@@ -1742,7 +1742,7 @@ brain_regions:
   parents: []
   strict: false
   atlas_refs:
-    uberon: null
+    uberon: UBERON:0034751
     allen_ccf_mouse: '922'
 
 # ── Additional Brainstem Nuclei ───────────────────────────────────────────
