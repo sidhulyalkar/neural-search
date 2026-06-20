@@ -9,10 +9,10 @@
 
 ## Checks
 - [ ] total_usable >= 4000
-- [ ] tier2_rejection_log_exists
-- [ ] tier2_rejection_log_non_empty
+- [x] tier2_rejection_log_exists
+- [x] tier2_rejection_log_non_empty
 - [x] no_records_without_identifier
 
-**Tier 2 rejections logged:** 0
+**Tier 2 rejections logged:** 762
 
 **Status: FAIL**

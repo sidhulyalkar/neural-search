@@ -148,6 +148,11 @@ class NormalizedPaperRecord(BaseModel):
     raw_payload_path: str | None = None
     created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     extractor_version: str = "v0.3.0"
+    citation_count: int = 0
+    venue: str | None = None
+    concept_ids: list[str] = Field(default_factory=list)
+    open_access_url: str | None = None
+    topics: list[str] = Field(default_factory=list)
 
     @field_validator("paper_id", "source", "source_id", "title", "extractor_version")
     @classmethod

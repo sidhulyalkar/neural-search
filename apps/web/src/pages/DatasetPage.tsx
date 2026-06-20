@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getDataset, generateNotebook, exportDatasetCard, updateDatasetQA } from '../api/search'
+import {
+  getDataset,
+  generateNotebook,
+  exportDatasetCard,
+  updateDatasetQA,
+  getDatasetAffordances,
+  getSimilarDatasets,
+  type AffordanceResult,
+  type AffordanceSupportLevel,
+  type SimilarDataset,
+} from '../api/search'
 import {
   SpinnerIcon,
   ExternalLinkIcon,
@@ -61,6 +71,104 @@ function formatQAStatus(status: DatasetQAStatus) {
   return status.replace(/_/g, ' ')
 }
 
+const RELATION_COLORS: Record<string, string> = {
+  same_region_same_task: 'text-accent-cyan',
+  same_region_cross_modality: 'text-yellow-400',
+  same_task_cross_species: 'text-emerald-400',
+}
+
+function SimilarDatasetsPanel({ similar }: { similar: SimilarDataset[] }) {
+  return (
+    <section className="card">
+      <h2 className="text-lg font-semibold mb-3">Similar Datasets</h2>
+      <p className="text-xs text-neural-500 mb-3">Related via the knowledge graph.</p>
+      <div className="space-y-2">
+        {similar.map((ds) => (
+          <Link
+            key={ds.dataset_id}
+            to={`/datasets/${encodeURIComponent(ds.dataset_id)}`}
+            className="block py-2 px-2 rounded hover:bg-neural-800/60 transition-colors"
+          >
+            <div className="text-sm text-neural-200 truncate">{ds.title || ds.dataset_id}</div>
+            <div className={`text-xs mt-0.5 ${RELATION_COLORS[ds.relation] ?? 'text-neural-500'}`}>
+              {ds.relation_label}
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+const SUPPORT_STYLES: Record<AffordanceSupportLevel, string> = {
+  high: 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30',
+  medium: 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/30',
+  low: 'bg-orange-500/10 text-orange-300 border border-orange-500/30',
+  unsupported: 'bg-neural-800 text-neural-500',
+  unknown: 'bg-neural-800 text-neural-600',
+}
+
+const SUPPORT_LABEL: Record<AffordanceSupportLevel, string> = {
+  high: 'HIGH',
+  medium: 'MED',
+  low: 'LOW',
+  unsupported: '—',
+  unknown: '?',
+}
+
+function AffordancePanel({ affordances }: { affordances: AffordanceResult[] }) {
+  const [expanded, setExpanded] = useState<string | null>(null)
+
+  const sorted = [...affordances].sort((a, b) => {
+    const order: AffordanceSupportLevel[] = ['high', 'medium', 'low', 'unsupported', 'unknown']
+    return order.indexOf(a.support_level) - order.indexOf(b.support_level)
+  })
+
+  return (
+    <section className="card">
+      <h2 className="text-lg font-semibold mb-4">Analysis Affordances</h2>
+      <p className="text-xs text-neural-500 mb-3">
+        Which analyses this dataset structurally supports, based on metadata.
+      </p>
+      <div className="space-y-1.5">
+        {sorted.map((a) => (
+          <div key={a.affordance_id}>
+            <button
+              type="button"
+              onClick={() => setExpanded((prev) => (prev === a.affordance_id ? null : a.affordance_id))}
+              className="w-full flex items-center justify-between gap-2 py-1.5 px-2 rounded hover:bg-neural-800/60 transition-colors text-left"
+            >
+              <span className="text-sm text-neural-300 truncate">{a.label}</span>
+              <span className={`text-xs font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${SUPPORT_STYLES[a.support_level]}`}>
+                {SUPPORT_LABEL[a.support_level]}
+              </span>
+            </button>
+            {expanded === a.affordance_id && (
+              <div className="ml-2 mb-1 px-2 py-2 bg-neural-900 rounded text-xs space-y-1.5 border border-neural-800">
+                {a.found_required_features.length > 0 && (
+                  <div>
+                    <span className="text-emerald-400">✓ </span>
+                    <span className="text-neural-400">{a.found_required_features.join(', ')}</span>
+                  </div>
+                )}
+                {a.missing_required_features.length > 0 && (
+                  <div>
+                    <span className="text-red-400">✗ missing: </span>
+                    <span className="text-neural-500">{a.missing_required_features.join(', ')}</span>
+                  </div>
+                )}
+                <div className="text-neural-600">
+                  conf: {(a.confidence * 100).toFixed(0)}%
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function DatasetPage() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
@@ -70,6 +178,18 @@ export function DatasetPage() {
   const { data: card, isLoading, error } = useQuery({
     queryKey: ['dataset', id],
     queryFn: () => getDataset(id!),
+    enabled: !!id,
+  })
+
+  const { data: affordancesData } = useQuery({
+    queryKey: ['dataset-affordances', id],
+    queryFn: () => getDatasetAffordances(id!),
+    enabled: !!id,
+  })
+
+  const { data: similarData } = useQuery({
+    queryKey: ['dataset-similar', id],
+    queryFn: () => getSimilarDatasets(id!),
     enabled: !!id,
   })
 
@@ -668,6 +788,16 @@ export function DatasetPage() {
                 </div>
               )}
             </section>
+          )}
+
+          {/* Analysis Affordances */}
+          {affordancesData && affordancesData.affordances.length > 0 && (
+            <AffordancePanel affordances={affordancesData.affordances} />
+          )}
+
+          {/* Similar Datasets */}
+          {similarData && similarData.similar.length > 0 && (
+            <SimilarDatasetsPanel similar={similarData.similar} />
           )}
 
           {/* Reuse Instructions */}

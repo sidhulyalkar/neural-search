@@ -4,6 +4,7 @@ import json
 import os
 import re
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.graph_router import router as graph_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
@@ -60,6 +62,9 @@ from neural_search.search import search_datasets
 # (useful for CI and quick local demos). Default: full combined corpus.
 _DEMO_MODE = os.getenv("NEURAL_SEARCH_DEMO_MODE", "").lower() in ("1", "true", "yes")
 FRONTEND_ARTIFACT_DIR = Path("artifacts/frontend")
+LITERATURE_SHARD_DIR = Path("data/corpus/normalized/openalex_neuro")
+LITERATURE_FINDINGS_PATH = Path("artifacts/literature/findings_v1.jsonl")
+LITERATURE_LINKS_PATH = Path("artifacts/literature/paper_dataset_links.jsonl")
 NEURO_JUDGE_WATERMARK = (
     "PRELIMINARY NEURO-JUDGE EVALUATION — RAG-GROUNDED LLM LABELS, "
     "NOT PURE HUMAN GOLD"
@@ -111,6 +116,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(graph_router)
+
 
 # Health check
 @app.get("/healthz")
@@ -149,6 +156,23 @@ class FrontendSearchResponse(BaseModel):
     total_count: int
     results: list[FrontendSearchResult]
     search_time_ms: float | None = None
+
+
+class LiteratureSearchRequest(BaseModel):
+    """Search request for paper and finding literature results."""
+    query: str
+    result_types: list[str] = Field(default_factory=lambda: ["papers", "findings"])
+    limit: int = Field(default=10, ge=1, le=50)
+    filters: dict[str, Any] = Field(default_factory=dict)
+
+
+class LiteratureSearchResponse(BaseModel):
+    """Paper/finding search response."""
+    query: str
+    papers: list[dict[str, Any]] = Field(default_factory=list)
+    findings: list[dict[str, Any]] = Field(default_factory=list)
+    total_papers: int = 0
+    total_findings: int = 0
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -441,6 +465,46 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
         total_count=len(frontend_results),
         results=frontend_results,
         search_time_ms=elapsed,
+    )
+
+
+@app.post("/api/literature/search", response_model=LiteratureSearchResponse)
+async def search_literature(request: LiteratureSearchRequest) -> LiteratureSearchResponse:
+    """Search literature papers and extracted findings."""
+    if not request.query.strip():
+        raise HTTPException(status_code=400, detail="Enter a literature search query.")
+
+    from neural_search.literature.search import search_findings, search_papers
+
+    requested = {item.strip().lower() for item in request.result_types}
+    papers = (
+        search_papers(
+            request.query,
+            shard_dir=LITERATURE_SHARD_DIR,
+            links_path=LITERATURE_LINKS_PATH,
+            filters=request.filters,
+            limit=request.limit,
+        )
+        if "papers" in requested
+        else []
+    )
+    findings = (
+        search_findings(
+            request.query,
+            findings_path=LITERATURE_FINDINGS_PATH,
+            filters=request.filters,
+            limit=request.limit,
+        )
+        if "findings" in requested
+        else []
+    )
+
+    return LiteratureSearchResponse(
+        query=request.query,
+        papers=[asdict(paper) for paper in papers],
+        findings=[asdict(finding) for finding in findings],
+        total_papers=len(papers),
+        total_findings=len(findings),
     )
 
 
@@ -1471,3 +1535,88 @@ async def get_dark_pairs(
         }
         for r in rows
     ]
+
+
+@app.get("/api/datasets/{dataset_id}/affordances")
+async def get_dataset_affordances(dataset_id: str) -> dict[str, Any]:
+    """Affordance validation results for a dataset (all 15 analysis types)."""
+    from neural_search.affordances.registry import (
+        AFFORDANCE_REGISTRY,
+        detect_features_from_metadata,
+        validate_all_affordances,
+    )
+
+    qa_state = load_qa_state()
+    dataset_dict: dict[str, Any] | None = None
+    for record in _ensure_demo_data():
+        ds = record["dataset"]
+        if ds.get("id") == dataset_id or ds.get("source_id") == dataset_id:
+            dataset_dict = attach_qa_to_dataset(ds, qa_state)
+            break
+
+    if dataset_dict is None:
+        raise HTTPException(status_code=404, detail=f"Dataset {dataset_id} not found")
+
+    features = detect_features_from_metadata(dataset_dict)
+    results = validate_all_affordances(features)
+
+    affordances = []
+    for r in results:
+        req = AFFORDANCE_REGISTRY.get(r.affordance_id)
+        affordances.append({
+            "affordance_id": r.affordance_id,
+            "label": req.label if req else r.affordance_id,
+            "support_level": r.support_level,
+            "confidence": r.confidence,
+            "found_required_features": r.found_required_features,
+            "missing_required_features": r.missing_required_features,
+            "found_optional_features": r.found_optional_features,
+        })
+
+    return {
+        "dataset_id": dataset_id,
+        "affordances": affordances,
+        "detection_method": features.detection_method,
+    }
+
+
+_graph_cache: dict[str, Any] = {}
+
+
+@app.get("/api/datasets/{dataset_id}/similar")
+async def get_similar_datasets(dataset_id: str, limit: int = 6) -> dict[str, Any]:
+    """Datasets related via cross-dataset knowledge graph edges."""
+    import json
+
+    from neural_search.graph.query import find_similar_datasets
+    from neural_search.graph.schema import KnowledgeGraph
+
+    graph_path = Path("data/graph/neural_search_graph.real_corpus.json")
+    if not graph_path.exists():
+        return {"dataset_id": dataset_id, "similar": [], "source": "graph_unavailable"}
+
+    if "graph" not in _graph_cache:
+        with graph_path.open(encoding="utf-8") as f:
+            _graph_cache["graph"] = KnowledgeGraph.model_validate(json.load(f))
+
+    results = find_similar_datasets(_graph_cache["graph"], dataset_id, limit=limit)
+    return {"dataset_id": dataset_id, "similar": results, "source": "knowledge_graph"}
+
+
+@app.get("/api/coverage/region-counts")
+async def get_region_counts() -> list[dict[str, Any]]:
+    """All brain regions with dataset counts for the Brain Atlas heatmap."""
+    with _coverage_store() as store:
+        return store.region_dataset_counts()
+
+
+@app.get("/api/coverage/region/{region_id}/datasets")
+async def get_region_datasets(
+    region_id: str,
+    limit: int = 20,
+    offset: int = 0,
+) -> dict[str, Any]:
+    """Datasets tagged with a specific brain region."""
+    with _coverage_store() as store:
+        datasets = store.datasets_for_region(region_id, limit=limit, offset=offset)
+    return {"region_id": region_id, "datasets": datasets, "count": len(datasets)}

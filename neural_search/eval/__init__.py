@@ -1,1 +1,1 @@
-# neural_search.eval
+"""Weak-supervision evaluation package."""

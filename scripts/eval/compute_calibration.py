@@ -132,7 +132,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=Path("reports/eval/calibration_report.json"))
     parser.add_argument("--n-bins", type=int, default=10)
     parser.add_argument("--relevant-threshold", type=int, default=2)
+    parser.add_argument(
+        "--qrels-tier",
+        choices=["gold", "silver", "bronze"],
+        default=None,
+    )
     args = parser.parse_args(argv)
+
+    if args.qrels_tier and args.qrels_tier != "gold":
+        import sys as _sys
+        _sys.stderr.write(
+            f"WARNING: Calibration computed on {args.qrels_tier.upper()} qrels. "
+            f"Do not report these calibration figures as final.\n"
+        )
 
     qrels = load_qrels(args.qrels)
     run_rows = load_scored_run(args.run)

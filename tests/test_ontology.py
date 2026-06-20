@@ -10,6 +10,7 @@ from neural_search.ontology import (
     match_tasks,
     validate_ontology,
 )
+from neural_search.ontology.models import BrainRegion
 
 
 def test_load_ontology_has_expected_tasks():
@@ -43,6 +44,18 @@ def test_load_recording_scales_schema():
         assert scale.label
         assert scale.compatible_modalities
         assert scale.aliases
+
+
+def test_brain_region_drops_null_atlas_refs():
+    region = BrainRegion.model_validate(
+        {
+            "id": "test_region",
+            "label": "Test region",
+            "atlas_refs": {"allen_ccf_mouse": None, "uberon": "UBERON:123"},
+        }
+    )
+
+    assert region.atlas_refs == {"uberon": "UBERON:123"}
 
 
 def test_synonym_matching_returns_evidence_and_confidence():

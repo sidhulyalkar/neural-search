@@ -1,0 +1,18 @@
+{
+  "input_findings": 12609,
+  "duplicates_removed": 0,
+  "output_findings": 12609,
+  "records_normalized": 5607,
+  "species_changed": 3508,
+  "region_changed": 2759,
+  "task_changed": 358,
+  "quality_flag_counts": {
+    "no_species": 3988,
+    "no_region": 3086,
+    "generic_region_only": 1459,
+    "low_confidence": 1115,
+    "meta_language": 4
+  },
+  "clean_findings": 5371,
+  "clean_pct": 42.6
+}

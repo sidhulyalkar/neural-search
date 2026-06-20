@@ -240,3 +240,50 @@ export async function exportComparisonJson(datasetIds: string[]): Promise<Blob> 
 
   return response.blob()
 }
+
+export type AffordanceSupportLevel = 'high' | 'medium' | 'low' | 'unsupported' | 'unknown'
+
+export type AffordanceResult = {
+  affordance_id: string
+  label: string
+  support_level: AffordanceSupportLevel
+  confidence: number
+  found_required_features: string[]
+  missing_required_features: string[]
+  found_optional_features: string[]
+}
+
+export type DatasetAffordancesResponse = {
+  dataset_id: string
+  affordances: AffordanceResult[]
+  detection_method: string
+}
+
+export async function getDatasetAffordances(datasetId: string): Promise<DatasetAffordancesResponse> {
+  return fetchJSON<DatasetAffordancesResponse>(
+    `${API_BASE}/datasets/${encodeURIComponent(datasetId)}/affordances`
+  )
+}
+
+export type SimilarDataset = {
+  dataset_id: string
+  title: string
+  relation: string
+  relation_label: string
+  weight: number
+}
+
+export type SimilarDatasetsResponse = {
+  dataset_id: string
+  similar: SimilarDataset[]
+  source: string
+}
+
+export async function getSimilarDatasets(
+  datasetId: string,
+  limit = 6
+): Promise<SimilarDatasetsResponse> {
+  return fetchJSON<SimilarDatasetsResponse>(
+    `${API_BASE}/datasets/${encodeURIComponent(datasetId)}/similar?limit=${limit}`
+  )
+}

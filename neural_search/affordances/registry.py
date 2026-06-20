@@ -518,6 +518,171 @@ CROSS_SESSION_GENERALIZATION = AffordanceRequirement(
 )
 
 
+SPEECH_DECODING = AffordanceRequirement(
+    affordance_id="speech_decoding",
+    label="Speech decoding",
+    description="Decode speech content or articulatory parameters from neural activity",
+    required_features=[
+        "neural_data",
+        "speech_events",
+        "temporal_alignment",
+    ],
+    optional_features=[
+        "continuous_neural_data",
+        "multiple_subjects",
+        "stimulus_timing",
+        "trial_structure",
+    ],
+    negative_conditions=[
+        "no_speech_data",
+        "only_summary_statistics",
+    ],
+    validation_methods=["nwb_units_check", "bids_events_check"],
+    example_use_cases=[
+        "Decode phonemes from ECoG high-gamma",
+        "Build a speech neuroprosthesis decoder",
+        "Map articulatory features to cortical activity",
+    ],
+)
+
+SEIZURE_DETECTION = AffordanceRequirement(
+    affordance_id="seizure_detection",
+    label="Seizure detection",
+    description="Detect seizure onset and offset from neural recordings",
+    required_features=[
+        "neural_data",
+        "seizure_annotations",
+    ],
+    optional_features=[
+        "continuous_neural_data",
+        "multiple_sessions",
+        "multiple_subjects",
+        "channel_locations",
+    ],
+    negative_conditions=[
+        "no_seizure_labels",
+        "only_summary_statistics",
+    ],
+    validation_methods=["nwb_behavior_check", "bids_events_check"],
+    example_use_cases=[
+        "Train a clinical seizure detector",
+        "Identify ictal vs interictal patterns",
+        "Localize seizure onset zones",
+    ],
+)
+
+SLEEP_STAGE_CLASSIFICATION = AffordanceRequirement(
+    affordance_id="sleep_stage_classification",
+    label="Sleep stage classification",
+    description="Classify sleep stages (NREM, REM, wake) from neural data",
+    required_features=[
+        "neural_data",
+        "sleep_stage_labels",
+    ],
+    optional_features=[
+        "continuous_neural_data",
+        "multiple_sessions",
+        "behavioral_state_labels",
+        "channel_locations",
+    ],
+    negative_conditions=[
+        "no_sleep_labels",
+        "only_summary_statistics",
+        "single_state_only",
+    ],
+    validation_methods=["bids_events_check", "nwb_behavior_check"],
+    example_use_cases=[
+        "Automated polysomnography scoring",
+        "Study slow-wave vs REM neural dynamics",
+        "Classify vigilance states across species",
+    ],
+)
+
+BCI_DECODING = AffordanceRequirement(
+    affordance_id="bci_decoding",
+    label="BCI decoding",
+    description="Decode intended actions or control signals from neural activity for brain-computer interfaces",
+    required_features=[
+        "neural_data",
+        "bci_context",
+    ],
+    optional_features=[
+        "motor_action_labels",
+        "continuous_neural_data",
+        "trial_structure",
+        "multiple_sessions",
+        "sorted_units",
+    ],
+    negative_conditions=[
+        "no_bci_context",
+        "only_summary_statistics",
+    ],
+    validation_methods=["nwb_units_check", "bids_events_check"],
+    example_use_cases=[
+        "P300 speller neural decoding",
+        "Motor imagery classification",
+        "SSVEP frequency decoding",
+        "Cursor control from ECoG",
+    ],
+)
+
+LATENT_DYNAMICS_MODELING = AffordanceRequirement(
+    affordance_id="latent_dynamics_modeling",
+    label="Latent dynamics modeling",
+    description="Fit latent-variable dynamical systems models (GPFA, LFADS, SLDS) to neural population activity",
+    required_features=[
+        "neural_population_data",
+        "multiple_units_or_voxels",
+        "continuous_or_trial_data",
+    ],
+    optional_features=[
+        "trial_structure",
+        "event_timestamps",
+        "sorted_units",
+        "time_series",
+    ],
+    negative_conditions=[
+        "single_neuron_only",
+        "only_summary_statistics",
+        "only_event_counts",
+    ],
+    validation_methods=["nwb_units_count_check"],
+    example_use_cases=[
+        "Fit GPFA to motor cortex population",
+        "Apply LFADS to infer latent trajectories",
+        "Model rotational dynamics during movement",
+    ],
+)
+
+REPRESENTATIONAL_SIMILARITY_ANALYSIS = AffordanceRequirement(
+    affordance_id="representational_similarity_analysis",
+    label="Representational similarity analysis",
+    description="Compute and compare neural representational geometry across conditions or datasets",
+    required_features=[
+        "neural_population_data",
+        "multiple_units_or_voxels",
+        "task_events_or_conditions",
+    ],
+    optional_features=[
+        "stimulus_timing",
+        "multiple_conditions",
+        "trial_structure",
+        "sorted_units",
+        "fmri_bold_data",
+    ],
+    negative_conditions=[
+        "single_neuron_only",
+        "only_summary_statistics",
+    ],
+    validation_methods=["nwb_units_count_check", "fmri_check"],
+    example_use_cases=[
+        "Compare representational geometry across brain areas",
+        "RSA between neural and model representations",
+        "Test invariance to stimulus transformations",
+    ],
+)
+
+
 # =============================================================================
 # Affordance Registry
 # =============================================================================
@@ -540,6 +705,14 @@ AFFORDANCE_REGISTRY: dict[str, AffordanceRequirement] = {
     "motor_decoding": MOTOR_DECODING,
     "trial_aligned_neural_analysis": TRIAL_ALIGNED_NEURAL_ANALYSIS,
     "cross_session_generalization": CROSS_SESSION_GENERALIZATION,
+    # Clinical and BCI affordances
+    "speech_decoding": SPEECH_DECODING,
+    "seizure_detection": SEIZURE_DETECTION,
+    "sleep_stage_classification": SLEEP_STAGE_CLASSIFICATION,
+    "bci_decoding": BCI_DECODING,
+    # Population dynamics
+    "latent_dynamics_modeling": LATENT_DYNAMICS_MODELING,
+    "representational_similarity_analysis": REPRESENTATIONAL_SIMILARITY_ANALYSIS,
 }
 
 
@@ -578,6 +751,10 @@ class DatasetFeatures:
     has_fmri: bool = False
     has_eeg: bool = False
     has_ecog: bool = False
+    has_speech_events: bool = False      # speech production/perception events
+    has_seizure_annotations: bool = False  # seizure onset/offset labels
+    has_sleep_stage_labels: bool = False   # NREM/REM/wake/SWS labels
+    has_bci_context: bool = False          # motor imagery or intended action
     unit_count: int = 0
     channel_count: int = 0
 
@@ -690,6 +867,31 @@ def detect_features_from_metadata(
     features.has_outcome_labels = bool(behavioral_events & reward_events)
     features.has_event_timestamps = len(behavioral_events) > 0
     features.event_types = list(behavioral_events)
+
+    seizure_events = {"seizure", "ictal", "preictal", "interictal", "seizure_onset",
+                      "seizure_offset", "epileptic", "epilepsy"}
+    features.has_seizure_annotations = bool(behavioral_events & seizure_events)
+
+    sleep_events = {"sleep", "nrem", "rem", "slow_wave", "sleep_stage", "wake",
+                    "sleep_spindle", "arousal", "sws", "polysomnography", "hypnogram"}
+    features.has_sleep_stage_labels = bool(behavioral_events & sleep_events)
+
+    speech_events = {"speech", "phoneme", "word", "articulation", "vocalization",
+                     "phonetic", "sentence", "syllable", "speech_onset"}
+    features.has_speech_events = bool(behavioral_events & speech_events)
+
+    task_labels_lower: list[str] = []
+    for t in dataset.get("task_labels", []) + dataset.get("tasks", []):
+        if isinstance(t, str):
+            task_labels_lower.append(t.lower())
+        elif hasattr(t, "label"):
+            task_labels_lower.append(t.label.lower())
+    bci_events = {"bci", "imagined_movement", "motor_imagery", "cursor_control",
+                  "intended_action", "p300", "ssvep", "neurofeedback"}
+    features.has_bci_context = (
+        bool(behavioral_events & bci_events)
+        or any("bci" in t or "motor_imagery" in t for t in task_labels_lower)
+    )
 
     # Trial structure from usability flags
     usability = dataset.get("usability", {})
@@ -954,6 +1156,12 @@ def _get_feature_checks() -> dict[str, Any]:
             for value in f.event_types
         ),
         "multiple_subjects": lambda _: True,
+        # New clinical/BCI signal checks
+        "speech_events": lambda f: f.has_speech_events,
+        "seizure_annotations": lambda f: f.has_seizure_annotations,
+        "sleep_stage_labels": lambda f: f.has_sleep_stage_labels,
+        "bci_context": lambda f: f.has_bci_context,
+        "time_series": lambda f: f.has_spike_times or f.has_lfp or f.has_eeg or f.has_calcium_imaging,
     }
 
 
@@ -999,4 +1207,8 @@ def _get_negative_checks() -> dict[str, Any]:
         # Session negatives
         "single_session_only": lambda f: f.session_count <= 1,
         "no_session_labels": lambda f: not f.has_session_labels and f.session_count <= 1,
+        "no_speech_data": lambda f: not f.has_speech_events,
+        "no_seizure_labels": lambda f: not f.has_seizure_annotations,
+        "no_sleep_labels": lambda f: not f.has_sleep_stage_labels,
+        "no_bci_context": lambda f: not f.has_bci_context,
     }
