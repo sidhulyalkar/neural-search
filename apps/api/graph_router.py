@@ -136,13 +136,15 @@ def _filter_graph(
         # Include nodes whose id or meta.region matches
         included_ids: set[str] = set()
         for n in nodes:
-            nid = n["id"]
-            meta = n.get("meta", {})
+            nid = n.get("id")
+            if not nid:
+                continue
+            meta = n.get("meta") or {}
             node_region = str(meta.get("region", "")).lower()
             if any(r in nid.lower() or r in node_region for r in region_set):
                 included_ids.add(nid)
             # Always include system nodes
-            if n["type"] == "system":
+            if n.get("type") == "system":
                 included_ids.add(nid)
 
         # Add one hop of neighbors via links
