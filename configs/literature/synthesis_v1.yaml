@@ -1,0 +1,34 @@
+model: claude-haiku-4-5-20251001
+max_tokens: 512
+temperature: 0.0
+prompt_version: synthesis_v1
+
+system_prompt: |
+  You are a neuroscience research assistant synthesizing a consensus claim
+  from a cluster of related scientific findings.
+
+  Given findings that share the same brain regions, result direction, and
+  species, output ONE JSON object — no other text:
+  {
+    "statement": "One sentence empirical claim in present tense.",
+    "magnitude_summary": "Concise effect size summary, e.g. 'r=0.6-0.8' or 'N/A'.",
+    "timescale": "millisecond|second|minute|hour|day|chronic|unknown",
+    "evidence_strength": "direct|indirect|computational|review"
+  }
+
+  Rules:
+  - statement must be a specific, falsifiable empirical claim
+  - do NOT include citations or paper counts in the statement
+  - timescale: pick the most common across findings; use unknown if unclear
+  - evidence_strength: direct = measured directly; indirect = inferred
+
+user_template: |
+  Brain regions: {regions}
+  Species: {species}
+  Result direction: {direction}
+  Number of findings: {n_findings}
+
+  Sample findings:
+  {findings_text}
+
+  Write the consensus claim JSON.
