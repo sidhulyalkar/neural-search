@@ -1,0 +1,12 @@
+# configs/literature/validation_v1.yaml
+prompt_version: validation_v1
+description: >
+  Used by detect_contradictions.py to validate claim pairs.
+  This config documents the contradiction detection logic.
+  Contradiction = opposing directions (increase vs decrease)
+  sharing at least one brain region.
+opposing_direction_pairs:
+  - [increase, decrease]
+  - [decrease, increase]
+min_shared_regions: 1
+contested_threshold: 1   # any contradiction → contested status
