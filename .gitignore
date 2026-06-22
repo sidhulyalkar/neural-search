@@ -104,6 +104,8 @@ data/index/
 data/graph/
 data/corpus/normalized/
 data/corpus/rejected/
+data/ontology/
+artifacts/claims/
 artifacts/field_state/*.jsonl
 artifacts/field_state/concept_memory/*.jsonl
 artifacts/field_state/concept_memory/concept_graph.json

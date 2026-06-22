@@ -22,7 +22,7 @@ ALLEN_API_URL = (
     "https://api.brain-map.org/api/v2/data/query.json"
     "?criteria=model::Structure,rma::criteria,[graph_id$eq1]"
     ",rma::options[num_rows$eqall]"
-    "&only=[id,name,acronym,parent_structure_id]"
+    "[only$eq'id,name,acronym,parent_structure_id']"
 )
 DEFAULT_CACHE = Path("data/ontology/allen_ccf.json")
 
