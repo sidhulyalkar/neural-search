@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-
 from scripts.eval.build_corpus_from_packets import build_corpus_records
 
 
