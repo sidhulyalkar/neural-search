@@ -145,6 +145,14 @@ eval-qrels:
 		--judgments data/qrels/llm_judgments.jsonl
 	python scripts/eval/build_eval_claim_ledger.py
 	python scripts/eval/check_eval_regression_gate.py
+	python scripts/eval/analyze_failures.py \
+		--qrels data/qrels/qrels.canonical.jsonl \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--runs-dir reports/eval/runs \
+		--judgments data/qrels/llm_judgments.jsonl \
+		--out reports/eval/failure_analysis.md \
+		--json-out reports/eval/failure_analysis.json \
+		--top-k 10
 
 # Generate compilation report
 reports:
