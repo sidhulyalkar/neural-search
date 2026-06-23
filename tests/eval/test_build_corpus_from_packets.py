@@ -29,3 +29,4 @@ def test_dedup_and_field_mapping():
     assert r["brain_regions"] == ["hippocampus"]
     assert r["data_standards"] == ["nwb"]
     assert r["title"] == "Hippocampus ephys"
+    assert r["description"] == "theta"
