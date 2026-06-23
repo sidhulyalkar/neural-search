@@ -4,11 +4,15 @@
 The evidence packets are the same source the qrels were built from, so a corpus
 derived from them is guaranteed to cover exactly the judged datasets. One record
 per unique dataset_id; fields renamed to what SparseIndex expects.
+
+Usage:
+    PYTHONPATH=. python scripts/eval/build_corpus_from_packets.py   # run from repo root
 """
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -44,6 +48,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     args = ap.parse_args(argv)
 
+    if not args.packets.exists():
+        print(f"Packets file not found: {args.packets}", file=sys.stderr)
+        return 1
     packets = [json.loads(l) for l in args.packets.read_text(encoding="utf-8").splitlines() if l.strip()]
     records = build_corpus_records(packets)
     args.out.parent.mkdir(parents=True, exist_ok=True)
