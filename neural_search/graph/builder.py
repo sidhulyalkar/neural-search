@@ -18,6 +18,12 @@ from neural_search.graph.schema import (
     validate_graph,
 )
 from neural_search.normalized import NormalizedRecord
+from neural_search.ontology.cognitive_atlas import get_cogat_match
+from neural_search.ontology.loader import (
+    get_region_atlas_refs,
+    get_region_id_by_alias,
+    get_task_id_by_alias,
+)
 from neural_search.schemas import (
     AnalysisAffordance,
     EvidenceLabel,
@@ -236,6 +242,43 @@ def _paper_node(record: NormalizedPaperRecord | str) -> KnowledgeGraphNode:
     )
 
 
+def _region_crosswalk_properties(label: EvidenceLabel) -> dict[str, Any]:
+    """Resolve an EvidenceLabel to atlas_refs via alias lookup.
+
+    ``label.id`` is a compound ``label:<type>:<slug>`` ID (see
+    make_evidence_label_id), not the bare ontology region ID, so this goes
+    through the alias index on ``label.label`` rather than a direct
+    get_region_atlas_refs(label.id) lookup, which would silently miss.
+    """
+    canonical_id = get_region_id_by_alias(label.label) or get_region_id_by_alias(label.id)
+    if canonical_id is None:
+        return {}
+    atlas_refs = get_region_atlas_refs(canonical_id)
+    if not atlas_refs:
+        return {}
+    return {"canonical_region_id": canonical_id, "atlas_refs": atlas_refs}
+
+
+def _task_crosswalk_properties(label: EvidenceLabel) -> dict[str, Any]:
+    """Resolve an EvidenceLabel to a validated Cognitive Atlas match, if any.
+
+    Same compound-ID caveat as _region_crosswalk_properties: label.id is not
+    the bare ontology task ID, so this resolves through the alias index.
+    """
+    canonical_id = get_task_id_by_alias(label.label) or get_task_id_by_alias(label.id)
+    if canonical_id is None:
+        return {}
+    match = get_cogat_match(canonical_id)
+    if match is None:
+        return {}
+    return {
+        "canonical_task_id": canonical_id,
+        "cogat_id": match.cogat_id,
+        "cogat_label": match.cogat_label,
+        "cogat_match_type": match.match_type,
+    }
+
+
 def _concept_node(
     node_type: str,
     label: EvidenceLabel,
@@ -250,13 +293,18 @@ def _concept_node(
         source_id=source_id,
         source_field=source_field,
     )
+    properties: dict[str, Any] = {"label_type": label.label_type}
+    if node_type == "brain_region":
+        properties.update(_region_crosswalk_properties(label))
+    elif node_type == "task":
+        properties.update(_task_crosswalk_properties(label))
     return KnowledgeGraphNode(
         node_id=_concept_node_id(node_type, label),
         node_type=node_type,
         label=label.label,
         aliases=_dedupe([label.id, label.label, label.evidence_text or ""]),
         source_ids=[source_id],
-        properties={"label_type": label.label_type},
+        properties=properties,
         evidence=[evidence],
         confidence=label.confidence,
         created_at=_now(),

@@ -35,6 +35,26 @@ def _opposite_directions(a: str, b: str) -> bool:
     return _OPPOSITE.get(a) == b
 
 
+# Aggregated typed-field keys checked before flagging a claim-level
+# contradiction: if both claims populate the same key with no overlapping
+# value, they're describing different mechanistic contexts (e.g. different
+# injury models) and sharing a region + opposite direction isn't actually
+# opposing evidence. No effect on claims where the field is empty on either
+# side — older, un-enriched findings keep today's region-only behavior.
+_CLAIM_CONTRADICTION_CONTEXT_FIELDS: tuple[str, ...] = ("frequency_bands", "injury_models")
+
+
+def _claim_context_mismatch(
+    a: dict[str, Any], b: dict[str, Any], fields: tuple[str, ...]
+) -> bool:
+    for field_name in fields:
+        vals_a = set(a.get(field_name) or [])
+        vals_b = set(b.get(field_name) or [])
+        if vals_a and vals_b and not (vals_a & vals_b):
+            return True
+    return False
+
+
 def _cluster_key(finding: dict[str, Any]) -> tuple[str, ...]:
     regions = tuple(sorted(finding.get("regions_normalized") or finding.get("regions") or []))
     direction = finding.get("result_direction", "other")
@@ -67,7 +87,7 @@ def cluster_findings(
         buckets[key].append(f)
 
     clusters = []
-    for key, group in buckets.items():
+    for _key, group in buckets.items():
         if len(group) < min_size:
             continue
         regions = list(dict.fromkeys(
@@ -75,12 +95,26 @@ def cluster_findings(
         ))
         species = list(dict.fromkeys(s for f in group for s in (f.get("species") or [])))
         direction = group[0].get("result_direction", "other")
+        # Aggregated typed-field context (Phase 6) — union across the
+        # cluster's findings, used by detect_contradictions() to avoid
+        # cross-contradicting claims about different mechanistic contexts
+        # (e.g. different injury models) that happen to share a region and
+        # an opposing direction. Empty when no finding in the cluster
+        # populated the field — older, un-enriched findings don't block this.
+        frequency_bands = sorted({
+            b for f in group for b in (f.get("frequency_band") or [])
+        })
+        injury_models = sorted({
+            m for f in group for m in (f.get("injury_model") or [])
+        })
         cluster = {
             "regions": regions,
             "direction": direction,
             "species": species,
             "n_findings": len(group),
             "findings": group,
+            "frequency_bands": frequency_bands,
+            "injury_models": injury_models,
         }
         cluster["cluster_id"] = _claim_id_from_cluster(cluster)
         clusters.append(cluster)
@@ -151,6 +185,8 @@ def synthesize_claim(
         "direction": cluster["direction"],
         "regions": cluster["regions"],
         "species": cluster["species"],
+        "frequency_bands": cluster.get("frequency_bands", []),
+        "injury_models": cluster.get("injury_models", []),
         "consensus_confidence": round(
             sum(f.get("confidence", 0.0) for f in cluster["findings"]) / cluster["n_findings"], 3
         ),
@@ -185,6 +221,8 @@ def detect_contradictions(claims: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue
             shared_regions = set(a["regions"]) & set(b["regions"])
             if not shared_regions:
+                continue
+            if _claim_context_mismatch(a, b, _CLAIM_CONTRADICTION_CONTEXT_FIELDS):
                 continue
             if b["claim_id"] not in a["contradicted_by"]:
                 a["contradicted_by"].append(b["claim_id"])

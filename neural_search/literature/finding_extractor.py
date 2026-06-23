@@ -12,6 +12,8 @@ from typing import Any
 
 import yaml
 
+from neural_search.literature.evidence_span import locate_evidence_span
+
 logger = logging.getLogger(__name__)
 
 VALID_DIRECTIONS = {"increase", "decrease", "no_change", "correlation", "mechanism", "other"}
@@ -60,6 +62,11 @@ class FindingRecord:
     magnitude: str | None = None
     timescale: str | None = None
     evidence_strength: str | None = None
+    # --- evidence span (optional — set when the abstract text is available) ---
+    char_start: int | None = None
+    char_end: int | None = None
+    sentence_id: int | None = None
+    span_match_method: str | None = None
 
 
 @dataclass(frozen=True)
@@ -151,11 +158,15 @@ def parse_findings(
     paper_doi: str | None,
     response_text: str,
     model: str,
+    abstract: str = "",
 ) -> list[FindingRecord]:
     """Parse JSON array from LLM response into FindingRecord list.
 
     Returns [] on parse failure — logs a warning, never raises.
     Applies _repair_json() to handle markdown fences from local models.
+    When ``abstract`` is provided, locates each finding's supporting span
+    within it via ``locate_evidence_span`` and populates char_start/char_end/
+    sentence_id/span_match_method.
     """
     cleaned = _repair_json(response_text)
     try:
@@ -204,12 +215,15 @@ def parse_findings(
         obj = str(item["object"]) if item.get("object") else None
         condition = str(item["condition"]) if item.get("condition") else None
 
+        finding_text = str(item.get("finding_text", ""))
+        span = locate_evidence_span(abstract, finding_text) if abstract else None
+
         records.append(
             FindingRecord(
                 paper_id=paper_id,
                 paper_doi=paper_doi,
                 finding_id=f"{paper_id}:f{idx}",
-                finding_text=str(item.get("finding_text", "")),
+                finding_text=finding_text,
                 result_direction=direction,
                 regions=_ensure_list(item.get("regions")),
                 species=_ensure_list(item.get("species")),
@@ -228,6 +242,10 @@ def parse_findings(
                 magnitude=magnitude,
                 timescale=timescale,
                 evidence_strength=evidence_strength,
+                char_start=span.char_start if span else None,
+                char_end=span.char_end if span else None,
+                sentence_id=span.sentence_id if span else None,
+                span_match_method=span.match_method if span else None,
             )
         )
 
@@ -289,7 +307,7 @@ def extract_batch(
             logger.warning("extract_batch: API error for paper %s, skipping", paper_id)
             continue
 
-        findings = parse_findings(paper_id, paper_doi, response_text, model)
+        findings = parse_findings(paper_id, paper_doi, response_text, model, abstract=abstract)
         all_findings.extend(findings)
 
     return all_findings
@@ -344,7 +362,9 @@ def extract_batch_openai_compatible(
             )
             continue
 
-        all_findings.extend(parse_findings(paper_id, paper_doi, response_text, model))
+        all_findings.extend(
+            parse_findings(paper_id, paper_doi, response_text, model, abstract=abstract)
+        )
 
     return all_findings
 
@@ -405,7 +425,9 @@ def extract_batch_ollama(
             logger.warning("extract_batch_ollama: error for paper %s: %s", paper_id, exc)
             continue
 
-        all_findings.extend(parse_findings(paper_id, paper_doi, response_text, model))
+        all_findings.extend(
+            parse_findings(paper_id, paper_doi, response_text, model, abstract=abstract)
+        )
 
     return all_findings
 

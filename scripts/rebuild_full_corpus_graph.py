@@ -335,6 +335,17 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=ROOT / "artifacts" / "literature" / "findings_v1.jsonl",
     )
+    parser.add_argument(
+        "--finding-edges",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "relationships" / "finding_edges.jsonl",
+        help="supports/contradicts edges from scripts/literature/build_finding_relationships.py",
+    )
+    parser.add_argument(
+        "--region-cooccurrence",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "relationships" / "region_cooccurrence.jsonl",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
@@ -390,6 +401,27 @@ def main(argv: list[str] | None = None) -> int:
         finding_stats = add_findings_to_graph(graph, args.findings)
         log.info("Finding stats: %s", finding_stats)
 
+    relationship_stats: dict[str, int] = {}
+    region_cooccurrence_stats: dict[str, int] = {}
+    if args.finding_edges.exists():
+        from neural_search.literature.relationship_kg_builder import (
+            add_finding_relationships_to_graph,
+            add_region_cooccurrence_to_graph,
+        )
+
+        log.info("Adding finding relationship edges from %s ...", args.finding_edges)
+        relationship_stats = add_finding_relationships_to_graph(graph, args.finding_edges)
+        log.info("Finding relationship stats: %s", relationship_stats)
+
+        if args.region_cooccurrence.exists():
+            log.info(
+                "Adding region co-occurrence edges from %s ...", args.region_cooccurrence
+            )
+            region_cooccurrence_stats = add_region_cooccurrence_to_graph(
+                graph, args.region_cooccurrence
+            )
+            log.info("Region co-occurrence stats: %s", region_cooccurrence_stats)
+
     log.info(
         "Final graph: %d nodes, %d edges (+%d cross-dataset)",
         len(graph.nodes), len(graph.edges), n_cross,
@@ -405,6 +437,8 @@ def main(argv: list[str] | None = None) -> int:
         "cross_dataset_edges": n_cross,
         "literature_stats": literature_stats,
         "finding_stats": finding_stats,
+        "relationship_stats": relationship_stats,
+        "region_cooccurrence_stats": region_cooccurrence_stats,
         "builder_script": "scripts/rebuild_full_corpus_graph.py",
         "builder_version": "v1.0.0",
     })

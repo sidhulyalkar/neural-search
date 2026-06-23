@@ -18,6 +18,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from neural_search.literature.typed_finding_extractor import enrich_finding
+
 # ---------------------------------------------------------------------------
 # Species
 # ---------------------------------------------------------------------------
@@ -500,7 +502,7 @@ def normalize_finding(record: dict[str, Any]) -> dict[str, Any]:
     Returns a new dict (the original is never mutated).  Changes are
     recorded in `_normalized` and quality issues in `quality_flags`.
     """
-    out = dict(record)  # shallow copy; lists below are replaced
+    out = enrich_finding(record)  # merges the 27 typed extension fields in
     changes: dict[str, Any] = {}
 
     # --- species ---

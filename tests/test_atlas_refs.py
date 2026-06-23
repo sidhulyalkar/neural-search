@@ -5,6 +5,7 @@ from neural_search.ontology.loader import (
     get_brain_regions,
     get_region_allen_ccf_id,
     get_region_atlas_refs,
+    get_region_id_by_alias,
     get_region_uberon_id,
     get_regions_by_allen_ccf,
     get_regions_by_uberon,
@@ -90,6 +91,31 @@ class TestGetRegionAtlasRefs:
 
     def test_allen_helper_returns_none_for_unknown(self):
         assert get_region_allen_ccf_id("not_a_real_region") is None
+
+
+class TestGetRegionIdByAlias:
+    def test_canonical_id_resolves_to_itself(self):
+        assert get_region_id_by_alias("hippocampus") == "hippocampus"
+
+    def test_case_insensitive_match(self):
+        assert get_region_id_by_alias("Hippocampus") == "hippocampus"
+
+    def test_label_resolves_to_canonical_id(self):
+        regions = {r.id: r for r in get_brain_regions()}
+        ca1 = regions["ca1"]
+        assert get_region_id_by_alias(ca1.label) == "ca1"
+
+    def test_alias_resolves_to_canonical_id(self):
+        regions = {r.id: r for r in get_brain_regions()}
+        vta = regions["vta"]
+        assert vta.aliases, "expected VTA to have at least one alias for this test"
+        assert get_region_id_by_alias(vta.aliases[0]) == "vta"
+
+    def test_unknown_text_returns_none(self):
+        assert get_region_id_by_alias("not a real region at all") is None
+
+    def test_whitespace_is_stripped(self):
+        assert get_region_id_by_alias("  hippocampus  ") == "hippocampus"
 
 
 class TestReverseAtlasLookup:

@@ -34,6 +34,9 @@ SUPPORTED_NODE_TYPES = {
     "recording_context",
     "finding",
     "claim",
+    "frequency_band",
+    "temporal_pattern",
+    "spatial_frame",
     "experimental_design",
     "analysis_method",
     "institution",
@@ -54,6 +57,17 @@ SUPPORTED_NODE_TYPES = {
     "feedback_signal",
     "curation_issue",
     "snapshot_manifest",
+    # Spectral phenotype / aperiodic reanalysis node types
+    "spectral_estimate",
+    "aperiodic_component",
+    "periodic_peak",
+    "spectral_run",
+    "spectral_qc_assessment",
+    "spectral_feature_bundle",
+    "task_state_epoch",
+    "channel",
+    "electrode",
+    "probe",
 }
 
 SUPPORTED_EDGE_TYPES = {
@@ -102,6 +116,12 @@ SUPPORTED_EDGE_TYPES = {
     "claim_supported_by_dataset",
     "claim_supported_by_paper",
     "claim_derived_from_finding",
+    "finding_supports_finding",
+    "finding_contradicts_finding",
+    "region_co_occurs_with_region",
+    "finding_has_frequency_band",
+    "finding_has_temporal_pattern",
+    "finding_has_spatial_frame",
     "experimental_design_requires_task",
     "experimental_design_requires_modality",
     "experimental_design_requires_behavior",
@@ -132,6 +152,21 @@ SUPPORTED_EDGE_TYPES = {
     "feedback_marks_result",
     "snapshot_contains_node",
     "snapshot_contains_edge",
+    # Spectral phenotype / aperiodic reanalysis edge types
+    "dataset_has_spectral_feature_bundle",
+    "dataset_has_spectral_estimate",
+    "spectral_estimate_generated_by_run",
+    "spectral_estimate_has_aperiodic_component",
+    "spectral_estimate_has_periodic_peak",
+    "spectral_estimate_has_qc_assessment",
+    "spectral_estimate_measured_in_region",
+    "spectral_estimate_measured_during_state",
+    "spectral_estimate_measured_from_channel",
+    "aperiodic_component_estimated_by_method",
+    "periodic_peak_estimated_by_method",
+    "dataset_reanalyzable_by_pipeline",
+    "dataset_missing_aperiodic_requirement",
+    "dataset_supports_aperiodic_reanalysis",
 }
 
 TOKEN_RE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -223,6 +258,15 @@ class GraphEvidence(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     extractor_name: str
     extractor_version: str
+    char_start: int | None = Field(default=None, ge=0)
+    char_end: int | None = Field(default=None, ge=0)
+    sentence_id: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_span_order(self) -> GraphEvidence:
+        if self.char_start is not None and self.char_end is not None and self.char_end < self.char_start:
+            raise ValueError("char_end cannot be before char_start")
+        return self
 
     @field_validator("evidence_id", "source_id", "extractor_name", "extractor_version")
     @classmethod

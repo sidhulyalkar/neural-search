@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 
 from neural_search.graph.query import get_neighbors
 from neural_search.graph.schema import (
@@ -10,6 +11,30 @@ from neural_search.graph.schema import (
     KnowledgeGraphEdge,
     make_edge_id,
 )
+
+# dataset_similar_to_dataset is the one latent (derived-not-observed) edge
+# type the graph currently produces. Lifecycle metadata keeps it from being
+# mistaken for an observed/asserted relationship: review_status tracks human
+# curation, calibration_bin buckets confidence for calibration studies, and
+# refresh_due flags when the underlying concept overlap should be
+# recomputed (e.g. after new dataset metadata lands).
+SIMILARITY_DERIVATION_METHOD = "shared_concept_jaccard"
+SIMILARITY_REFRESH_INTERVAL_DAYS = 90
+
+
+def _calibration_bin(score: float) -> str:
+    """Bucket a similarity score for calibration tracking, relative to the
+    default min_similarity=0.4 acceptance threshold."""
+    if score >= 0.75:
+        return "high"
+    if score >= 0.55:
+        return "medium"
+    return "low"
+
+
+def _refresh_due(*, from_time: datetime | None = None) -> str:
+    base = from_time or datetime.now(UTC)
+    return (base + timedelta(days=SIMILARITY_REFRESH_INTERVAL_DAYS)).isoformat()
 
 
 @dataclass
@@ -259,6 +284,10 @@ def build_similarity_edges(
                         "shared_modalities": sim.shared_modalities,
                         "shared_regions": sim.shared_regions,
                         "explanation": sim.explanation,
+                        "derivation_method": SIMILARITY_DERIVATION_METHOD,
+                        "review_status": "unreviewed",
+                        "calibration_bin": _calibration_bin(sim.similarity_score),
+                        "refresh_due": _refresh_due(),
                     },
                 )
                 edges.append(edge)
