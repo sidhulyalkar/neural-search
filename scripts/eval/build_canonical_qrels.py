@@ -24,6 +24,9 @@ def canonicalize(judgments: list[dict[str, Any]]) -> tuple[list[str], list[dict[
     trec: list[str] = []
     rows: list[dict[str, Any]] = []
     for rec in judgments:
+        # Error rows are written by run_parallel_llm_qrels with rationale_short
+        # prefixed "judge_error: ..."; matching that substring is the established
+        # convention for detecting them (there is no dedicated error field).
         if "judge_error" in str(rec.get("rationale_short", "")):
             continue
         qid, did = str(rec["query_id"]), str(rec["dataset_id"])
@@ -50,7 +53,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     judgments = [json.loads(l) for l in args.judgments.read_text(encoding="utf-8").splitlines() if l.strip()]
     trec, rows = canonicalize(judgments)
+    n_in = len(judgments)
+    n_errors = sum(1 for r in judgments if "judge_error" in str(r.get("rationale_short", "")))
+    n_dropped = n_in - len(rows)
+    print(f"Read {n_in} judgments; dropped {n_dropped} ({n_errors} judge_error, "
+          f"{n_dropped - n_errors} dup/invalid-label).")
     args.trec.parent.mkdir(parents=True, exist_ok=True)
+    args.jsonl.parent.mkdir(parents=True, exist_ok=True)
     args.trec.write_text("\n".join(trec) + "\n", encoding="utf-8")
     with args.jsonl.open("w", encoding="utf-8") as f:
         for r in rows:
