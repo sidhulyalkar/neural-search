@@ -28,6 +28,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 # ---------------------------------------------------------------------------
 # Data classes
 # ---------------------------------------------------------------------------
@@ -42,6 +44,9 @@ class FalsePositive:
     relevance: int
     rationale: str = ""
     hard_negative_violation: bool = False
+    failure_modes: list[str] = field(default_factory=list)
+    required_dimensions_missing: list[str] = field(default_factory=list)
+    missing_information: list[str] = field(default_factory=list)
     variant: str = ""
 
 
@@ -51,6 +56,8 @@ class FalseNegative:
     record_id: str
     relevance: int
     best_rank: int | None  # None = not retrieved at all in top-K
+    required_dimensions_missing: list[str] = field(default_factory=list)
+    missing_information: list[str] = field(default_factory=list)
     variant: str = ""
 
 
@@ -64,6 +71,11 @@ class FailureReport:
     source_fn_counts: Counter = field(default_factory=Counter)
     intent_fp_counts: Counter = field(default_factory=Counter)
     intent_fn_counts: Counter = field(default_factory=Counter)
+    fp_failure_mode_counts: Counter = field(default_factory=Counter)
+    fp_mismatch_counts: Counter = field(default_factory=Counter)
+    fp_metadata_missing_counts: Counter = field(default_factory=Counter)
+    fp_hard_negative_failure_counts: Counter = field(default_factory=Counter)
+    fn_metadata_missing_counts: Counter = field(default_factory=Counter)
 
 
 # ---------------------------------------------------------------------------
@@ -85,6 +97,35 @@ def _load_jsonl(path: Path) -> list[dict]:
     return records
 
 
+def _load_queries(path: Path) -> dict[str, dict[str, Any]]:
+    """Load query metadata from JSONL, YAML list, or YAML wrapper."""
+    if not path.exists():
+        return {}
+    if path.suffix.lower() in {".yaml", ".yml"}:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        if isinstance(data, dict):
+            rows = []
+            for value in data.values():
+                if isinstance(value, list):
+                    rows = value
+                    break
+        elif isinstance(data, list):
+            rows = data
+        else:
+            rows = []
+    else:
+        rows = _load_jsonl(path)
+
+    queries: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        qid = str(row.get("query_id") or row.get("id") or "")
+        if qid:
+            queries[qid] = row
+    return queries
+
+
 def _load_qrels(
     path: Path,
 ) -> tuple[dict[str, dict[str, int]], dict[str, dict[str, Any]]]:
@@ -101,10 +142,33 @@ def _load_qrels(
         rel = int(row.get("relevance", row.get("label", 0)))
         scores[qid][did] = rel
         meta[qid][did] = {
-            "rationale": row.get("rationale", ""),
-            "hard_negative_violation": bool(row.get("hard_negative_violation", False)),
+            "rationale": row.get("rationale") or row.get("rationale_short", ""),
+            "hard_negative_violation": bool(
+                row.get("hard_negative_violation", row.get("hard_negative_detected", False))
+            ),
         }
     return dict(scores), dict(meta)
+
+
+def _load_judgment_meta(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
+    """Load explanatory neuro-judge metadata keyed by (query_id, dataset_id)."""
+    meta: dict[tuple[str, str], dict[str, Any]] = {}
+    for row in _load_jsonl(path):
+        if "judge_error" in str(row.get("rationale_short", "")):
+            continue
+        qid = str(row.get("query_id", ""))
+        did = str(row.get("dataset_id") or row.get("record_id", ""))
+        if not qid or not did:
+            continue
+        meta[(qid, did)] = {
+            "rationale": row.get("rationale_short", ""),
+            "hard_negative_violation": bool(row.get("hard_negative_detected", False)),
+            "failure_modes": list(row.get("failure_modes") or []),
+            "required_dimensions_missing": list(row.get("required_dimensions_missing") or []),
+            "missing_information": list(row.get("missing_information") or []),
+            "evidence_against": list(row.get("evidence_against") or []),
+        }
+    return meta
 
 
 def _load_runs(
@@ -124,12 +188,74 @@ def _load_runs(
                 variant_runs[qid].append((rank, rid, score))
         for qid in variant_runs:
             variant_runs[qid].sort(key=lambda x: x[0])
-        runs[variant] = dict(variant_runs)
+        if variant_runs:
+            runs[variant] = dict(variant_runs)
     return runs
 
 
 def _source_prefix(record_id: str) -> str:
     return record_id.split(":")[0] if ":" in record_id else "unknown"
+
+
+def _merge_meta(
+    qrel_meta: dict[str, dict[str, Any]],
+    judgment_meta: dict[tuple[str, str], dict[str, Any]],
+    query_id: str,
+    record_id: str,
+) -> dict[str, Any]:
+    merged = dict(qrel_meta.get(record_id, {}))
+    merged.update(judgment_meta.get((query_id, record_id), {}))
+    return merged
+
+
+def _mismatch_buckets(failure_modes: list[str], missing_dims: list[str]) -> set[str]:
+    text = " ".join([*failure_modes, *missing_dims]).lower()
+    buckets: set[str] = set()
+    if "modality" in text or "neural_record" in text:
+        buckets.add("modality_mismatch")
+    if "species" in text:
+        buckets.add("species_mismatch")
+    if "task" in text:
+        buckets.add("task_mismatch")
+    if "region" in text or "brain_region" in text:
+        buckets.add("brain_region_mismatch")
+    if "behavior" in text or "event" in text or "lick" in text:
+        buckets.add("behavioral_event_mismatch")
+    if "raw" in text:
+        buckets.add("raw_data_missing")
+    return buckets
+
+
+def _hard_negative_buckets(failure_modes: list[str], hard_negative: bool) -> set[str]:
+    buckets: set[str] = set()
+    for mode in failure_modes:
+        lower = mode.lower()
+        if "hard_negative" in lower or "hard-negative" in lower:
+            buckets.add(mode)
+    if hard_negative and not buckets:
+        buckets.add("hard_negative_detected")
+    return buckets
+
+
+def _normalize_missing_dimension(value: str) -> str:
+    lower = value.lower()
+    if "species" in lower:
+        return "species"
+    if "modality" in lower or "modalities" in lower or "eeg" in lower or "ieeg" in lower or "ecog" in lower or "neuropixels" in lower or "calcium" in lower or "lfp" in lower:
+        return "modality"
+    if "brain_region" in lower or "brain region" in lower or "region" in lower or "cortex" in lower or "hippocampus" in lower or "striatum" in lower:
+        return "brain_region"
+    if "task" in lower or "tasks" in lower:
+        return "task"
+    if "affordance" in lower or "analysis" in lower or "decoding" in lower or "connectivity" in lower:
+        return "affordance"
+    if "raw" in lower:
+        return "raw_data"
+    if "behavior" in lower or "event" in lower or "lick" in lower or "choice" in lower or "reward" in lower:
+        return "behavioral_event"
+    if "standard" in lower or "format" in lower or "bids" in lower or "nwb" in lower:
+        return "data_standard"
+    return "other"
 
 
 # ---------------------------------------------------------------------------
@@ -142,6 +268,7 @@ def _analyze_variant(
     ranked: dict[str, list[tuple[int, str, float]]],
     qrel_scores: dict[str, dict[str, int]],
     qrel_meta: dict[str, dict[str, Any]],
+    judgment_meta: dict[tuple[str, str], dict[str, Any]],
     query_intent: dict[str, str],
     top_k: int,
 ) -> FailureReport:
@@ -162,7 +289,10 @@ def _analyze_variant(
                 continue
             rel = qrels[rid]
             if rel <= 1:
-                m = meta.get(rid, {})
+                m = _merge_meta(meta, judgment_meta, query_id, rid)
+                failure_modes = list(m.get("failure_modes") or [])
+                missing_dims = list(m.get("required_dimensions_missing") or [])
+                missing_info = list(m.get("missing_information") or [])
                 fp = FalsePositive(
                     query_id=query_id,
                     record_id=rid,
@@ -171,6 +301,9 @@ def _analyze_variant(
                     relevance=rel,
                     rationale=m.get("rationale", ""),
                     hard_negative_violation=m.get("hard_negative_violation", False),
+                    failure_modes=failure_modes,
+                    required_dimensions_missing=missing_dims,
+                    missing_information=missing_info,
                     variant=variant,
                 )
                 report.false_positives.append(fp)
@@ -178,6 +311,14 @@ def _analyze_variant(
                     report.hn_violations.append(fp)
                 report.source_fp_counts[_source_prefix(rid)] += 1
                 report.intent_fp_counts[intent] += 1
+                for mode in failure_modes:
+                    report.fp_failure_mode_counts[mode] += 1
+                for bucket in _mismatch_buckets(failure_modes, missing_dims):
+                    report.fp_mismatch_counts[bucket] += 1
+                for dim in missing_dims:
+                    report.fp_metadata_missing_counts[_normalize_missing_dimension(dim)] += 1
+                for bucket in _hard_negative_buckets(failure_modes, fp.hard_negative_violation):
+                    report.fp_hard_negative_failure_counts[bucket] += 1
 
         # False negatives: relevant but not in top-K
         for did, rel in qrels.items():
@@ -188,16 +329,23 @@ def _analyze_variant(
             # Check if retrieved beyond top-K
             all_ranked = {rid: rank for rank, rid, _ in rows}
             best_rank = all_ranked.get(did)
+            m = _merge_meta(meta, judgment_meta, query_id, did)
+            missing_dims = list(m.get("required_dimensions_missing") or [])
+            missing_info = list(m.get("missing_information") or [])
             fn = FalseNegative(
                 query_id=query_id,
                 record_id=did,
                 relevance=rel,
                 best_rank=best_rank,
+                required_dimensions_missing=missing_dims,
+                missing_information=missing_info,
                 variant=variant,
             )
             report.false_negatives.append(fn)
             report.source_fn_counts[_source_prefix(did)] += 1
             report.intent_fn_counts[intent] += 1
+            for dim in missing_dims:
+                report.fn_metadata_missing_counts[_normalize_missing_dimension(dim)] += 1
 
     return report
 
@@ -304,7 +452,101 @@ def _render_markdown(reports: list[FailureReport], queries_count: int) -> str:
                 lines.append(f"| {intent} | {fp_n} | {fn_n} |")
             lines.append("")
 
+        if report.fp_mismatch_counts:
+            lines.append("### False-Positive Mismatch Breakdown\n")
+            lines.append("| Mismatch bucket | Count |")
+            lines.append("|-----------------|-------|")
+            for bucket, count in report.fp_mismatch_counts.most_common():
+                lines.append(f"| {bucket} | {count} |")
+            lines.append("")
+
+        if report.fp_metadata_missing_counts or report.fn_metadata_missing_counts:
+            lines.append("### Metadata Missingness Breakdown\n")
+            lines.append("| Missing dimension | FP Count | FN Count |")
+            lines.append("|-------------------|----------|----------|")
+            dims = set(report.fp_metadata_missing_counts) | set(report.fn_metadata_missing_counts)
+            for dim in sorted(dims):
+                lines.append(
+                    f"| {dim} | {report.fp_metadata_missing_counts.get(dim, 0)} "
+                    f"| {report.fn_metadata_missing_counts.get(dim, 0)} |"
+                )
+            lines.append("")
+
+        if report.fp_failure_mode_counts:
+            lines.append("### Top False-Positive Failure Modes\n")
+            lines.append("| Failure mode | Count |")
+            lines.append("|--------------|-------|")
+            for mode, count in report.fp_failure_mode_counts.most_common(20):
+                lines.append(f"| {mode} | {count} |")
+            lines.append("")
+
+        if report.fp_hard_negative_failure_counts:
+            lines.append("### Hard-Negative Failure Modes\n")
+            lines.append("| Hard-negative failure mode | Count |")
+            lines.append("|----------------------------|-------|")
+            for mode, count in report.fp_hard_negative_failure_counts.most_common():
+                lines.append(f"| {mode} | {count} |")
+            lines.append("")
+
     return "\n".join(lines)
+
+
+def _counter_dict(counter: Counter) -> dict[str, int]:
+    return {str(k): int(v) for k, v in counter.items()}
+
+
+def _reports_to_json(reports: list[FailureReport], queries_count: int, top_k: int) -> dict[str, Any]:
+    variants: dict[str, Any] = {}
+    for report in reports:
+        variants[report.variant] = {
+            "top_k": top_k,
+            "false_positive_count": len(report.false_positives),
+            "false_negative_count": len(report.false_negatives),
+            "hard_negative_violation_count": len(report.hn_violations),
+            "source_fp_counts": _counter_dict(report.source_fp_counts),
+            "source_fn_counts": _counter_dict(report.source_fn_counts),
+            "intent_fp_counts": _counter_dict(report.intent_fp_counts),
+            "intent_fn_counts": _counter_dict(report.intent_fn_counts),
+            "fp_mismatch_counts": _counter_dict(report.fp_mismatch_counts),
+            "fp_metadata_missing_counts": _counter_dict(report.fp_metadata_missing_counts),
+            "fn_metadata_missing_counts": _counter_dict(report.fn_metadata_missing_counts),
+            "fp_failure_mode_counts": _counter_dict(report.fp_failure_mode_counts),
+            "fp_hard_negative_failure_counts": _counter_dict(report.fp_hard_negative_failure_counts),
+            "top_false_positives": [
+                {
+                    "query_id": fp.query_id,
+                    "record_id": fp.record_id,
+                    "rank": fp.rank,
+                    "relevance": fp.relevance,
+                    "source": _source_prefix(fp.record_id),
+                    "hard_negative_violation": fp.hard_negative_violation,
+                    "failure_modes": fp.failure_modes,
+                    "required_dimensions_missing": fp.required_dimensions_missing,
+                    "missing_information": fp.missing_information,
+                    "rationale": fp.rationale,
+                }
+                for fp in sorted(report.false_positives, key=lambda x: x.rank)[:100]
+            ],
+            "top_false_negatives": [
+                {
+                    "query_id": fn.query_id,
+                    "record_id": fn.record_id,
+                    "relevance": fn.relevance,
+                    "source": _source_prefix(fn.record_id),
+                    "best_rank": fn.best_rank,
+                    "required_dimensions_missing": fn.required_dimensions_missing,
+                    "missing_information": fn.missing_information,
+                }
+                for fn in sorted(
+                    report.false_negatives,
+                    key=lambda x: (-(x.relevance), x.best_rank or 10**9),
+                )[:100]
+            ],
+        }
+    return {
+        "queries_count": queries_count,
+        "variants": variants,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -317,6 +559,8 @@ def analyze_failures(
     queries_path: Path,
     runs_dir: Path,
     out_path: Path,
+    json_out_path: Path | None = None,
+    judgments_path: Path | None = None,
     top_k: int = 10,
 ) -> int:
     qrel_scores, qrel_meta = _load_qrels(qrels_path)
@@ -329,13 +573,12 @@ def analyze_failures(
         print(f"Placeholder written to {out_path}")
         return 0
 
-    # Load query intents
-    query_intent: dict[str, str] = {}
-    for row in _load_jsonl(queries_path):
-        qid = str(row.get("query_id", ""))
-        intent = str(row.get("intent", "UNKNOWN"))
-        if qid:
-            query_intent[qid] = intent
+    queries = _load_queries(queries_path)
+    query_intent = {
+        qid: str(row.get("intent", "UNKNOWN"))
+        for qid, row in queries.items()
+    }
+    judgment_meta = _load_judgment_meta(judgments_path) if judgments_path else {}
 
     runs = _load_runs(runs_dir, depth=top_k * 5)
     if not runs:
@@ -348,16 +591,27 @@ def analyze_failures(
             ranked=ranked,
             qrel_scores=qrel_scores,
             qrel_meta=qrel_meta,
+            judgment_meta=judgment_meta,
             query_intent=query_intent,
             top_k=top_k,
         )
         reports.append(report)
 
-    markdown = _render_markdown(reports, queries_count=len(query_intent))
+    markdown = _render_markdown(reports, queries_count=len(query_intent) or len(qrel_scores))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tmp = out_path.with_suffix(".tmp")
     tmp.write_text(markdown, encoding="utf-8")
     tmp.replace(out_path)
+    if json_out_path:
+        json_out_path.parent.mkdir(parents=True, exist_ok=True)
+        json_out_path.write_text(
+            json.dumps(
+                _reports_to_json(reports, queries_count=len(query_intent) or len(qrel_scores), top_k=top_k),
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        print(f"Failure analysis JSON written to {json_out_path}")
     print(f"Failure analysis written to {out_path}")
     return 0
 
@@ -376,6 +630,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--out", type=Path, default=Path("reports/eval/benchmark_v1_failures.md")
     )
+    parser.add_argument(
+        "--json-out", type=Path, default=Path("reports/eval/benchmark_v1_failures.json")
+    )
+    parser.add_argument(
+        "--judgments", type=Path, default=Path("data/qrels/llm_judgments.jsonl")
+    )
     parser.add_argument("--top-k", type=int, default=10)
     args = parser.parse_args(argv)
 
@@ -384,6 +644,8 @@ def main(argv: list[str] | None = None) -> int:
         queries_path=args.queries,
         runs_dir=args.runs_dir,
         out_path=args.out,
+        json_out_path=args.json_out,
+        judgments_path=args.judgments,
         top_k=args.top_k,
     )
 

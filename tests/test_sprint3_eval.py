@@ -292,6 +292,86 @@ class TestEvalClaimLedgerAndGate:
         assert failed["passed"] is False
 
 
+class TestFailureAnalysis:
+    def test_canonical_failure_breakdowns_use_judge_metadata(self, tmp_path: Path) -> None:
+        from scripts.eval.analyze_failures import analyze_failures
+
+        qrels = tmp_path / "qrels.jsonl"
+        qrels.write_text(
+            json.dumps({"query_id": "q001", "dataset_id": "d_bad", "label": 0}) + "\n"
+            + json.dumps({"query_id": "q001", "dataset_id": "d_good", "label": 2}) + "\n"
+        )
+        queries = tmp_path / "queries.yaml"
+        queries.write_text(
+            yaml.safe_dump(
+                {
+                    "benchmark_queries": [
+                        {"id": "q001", "query": "mouse ephys task", "intent": "EXPLORATION"}
+                    ]
+                }
+            )
+        )
+        runs = tmp_path / "runs"
+        runs.mkdir()
+        (runs / "hybrid_rrf.jsonl").write_text(
+            json.dumps({"query_id": "q001", "record_id": "d_bad", "rank": 1, "score": 1.0}) + "\n"
+        )
+        judgments = tmp_path / "judgments.jsonl"
+        judgments.write_text(
+            json.dumps(
+                {
+                    "query_id": "q001",
+                    "dataset_id": "d_bad",
+                    "label": 0,
+                    "rationale_short": "wrong species and missing task",
+                    "failure_modes": ["wrong_species", "missing_task"],
+                    "required_dimensions_missing": ["species", "tasks"],
+                    "missing_information": ["task details"],
+                    "hard_negative_detected": True,
+                }
+            )
+            + "\n"
+            + json.dumps(
+                {
+                    "query_id": "q001",
+                    "dataset_id": "d_good",
+                    "label": 2,
+                    "rationale_short": "useful but missing raw data",
+                    "failure_modes": [],
+                    "required_dimensions_missing": ["raw_data"],
+                    "missing_information": ["raw data availability"],
+                    "hard_negative_detected": False,
+                }
+            )
+            + "\n"
+        )
+        out = tmp_path / "failures.md"
+        json_out = tmp_path / "failures.json"
+
+        rc = analyze_failures(
+            qrels_path=qrels,
+            queries_path=queries,
+            runs_dir=runs,
+            out_path=out,
+            json_out_path=json_out,
+            judgments_path=judgments,
+            top_k=1,
+        )
+
+        assert rc == 0
+        report = json.loads(json_out.read_text())
+        variant = report["variants"]["hybrid_rrf"]
+        assert variant["false_positive_count"] == 1
+        assert variant["false_negative_count"] == 1
+        assert variant["intent_fp_counts"]["EXPLORATION"] == 1
+        assert variant["source_fp_counts"]["unknown"] == 1
+        assert variant["fp_mismatch_counts"]["species_mismatch"] == 1
+        assert variant["fp_mismatch_counts"]["task_mismatch"] == 1
+        assert variant["fp_metadata_missing_counts"]["species"] == 1
+        assert variant["fn_metadata_missing_counts"]["raw_data"] == 1
+        assert "False-Positive Mismatch Breakdown" in out.read_text()
+
+
 class TestAcquisitionPlan:
     def test_plan_generates_items(self) -> None:
         from scripts.coverage.generate_acquisition_plan import generate_plan
