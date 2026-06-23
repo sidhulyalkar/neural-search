@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval eval-qrels reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -127,6 +127,24 @@ benchmark:
 
 # Alias for benchmark
 eval: benchmark
+
+eval-qrels:
+	python scripts/eval/compute_ndcg_from_qrels.py \
+		--qrels data/qrels/qrels.canonical.trec \
+		--runs-dir reports/eval/runs
+	python scripts/eval/compute_bootstrap_ci.py \
+		--qrels data/qrels/qrels.canonical.jsonl \
+		--runs reports/eval/runs/bm25.jsonl reports/eval/runs/bm25_structured.jsonl reports/eval/runs/dense_bge.jsonl reports/eval/runs/hybrid_rrf.jsonl \
+		--out reports/eval/bootstrap_ci_report.json \
+		--n-bootstrap 2000
+	python scripts/eval/report_intent_stratification.py \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--qrels data/qrels/qrels.canonical.trec \
+		--runs-dir reports/eval/runs
+	python scripts/eval/report_dual_judge_reliability.py \
+		--judgments data/qrels/llm_judgments.jsonl
+	python scripts/eval/build_eval_claim_ledger.py
+	python scripts/eval/check_eval_regression_gate.py
 
 # Generate compilation report
 reports:

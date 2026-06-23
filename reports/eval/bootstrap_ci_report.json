@@ -1,0 +1,298 @@
+{
+  "n_bootstrap": 2000,
+  "ci_level": 0.95,
+  "n_queries": 317,
+  "n_labeled_pairs": 13654,
+  "systems": {
+    "bm25": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.6566,
+          "ci_low": 0.6322,
+          "ci_high": 0.6807,
+          "std": 0.2261,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6559,
+          "ci_low": 0.627,
+          "ci_high": 0.6831,
+          "std": 0.2581,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.8795,
+          "ci_low": 0.8529,
+          "ci_high": 0.906,
+          "std": 0.2461,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.795,
+          "ci_low": 0.7666,
+          "ci_high": 0.8215,
+          "std": 0.2525,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.4366,
+          "ci_low": 0.4215,
+          "ci_high": 0.4513,
+          "std": 0.1385,
+          "n_queries": 317
+        }
+      }
+    },
+    "bm25_structured": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.6361,
+          "ci_low": 0.6073,
+          "ci_high": 0.6629,
+          "std": 0.2586,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6326,
+          "ci_low": 0.6014,
+          "ci_high": 0.6617,
+          "std": 0.2797,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.8587,
+          "ci_low": 0.8271,
+          "ci_high": 0.8882,
+          "std": 0.2902,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.7817,
+          "ci_low": 0.7495,
+          "ci_high": 0.8107,
+          "std": 0.2887,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.4295,
+          "ci_low": 0.4113,
+          "ci_high": 0.4465,
+          "std": 0.1608,
+          "n_queries": 317
+        }
+      }
+    },
+    "dense_bge": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.5708,
+          "ci_low": 0.5464,
+          "ci_high": 0.5939,
+          "std": 0.2144,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6009,
+          "ci_low": 0.5732,
+          "ci_high": 0.6274,
+          "std": 0.2472,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.8829,
+          "ci_low": 0.8558,
+          "ci_high": 0.9089,
+          "std": 0.2508,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.7521,
+          "ci_low": 0.7224,
+          "ci_high": 0.7823,
+          "std": 0.2657,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.3419,
+          "ci_low": 0.329,
+          "ci_high": 0.3552,
+          "std": 0.1227,
+          "n_queries": 317
+        }
+      }
+    },
+    "hybrid_rrf": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.6667,
+          "ci_low": 0.6421,
+          "ci_high": 0.6893,
+          "std": 0.2143,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6779,
+          "ci_low": 0.65,
+          "ci_high": 0.7036,
+          "std": 0.2473,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.9209,
+          "ci_low": 0.8983,
+          "ci_high": 0.943,
+          "std": 0.2126,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.8177,
+          "ci_low": 0.7912,
+          "ci_high": 0.8442,
+          "std": 0.2479,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.425,
+          "ci_low": 0.4115,
+          "ci_high": 0.4389,
+          "std": 0.1283,
+          "n_queries": 317
+        }
+      }
+    }
+  },
+  "pairwise_significance": [
+    {
+      "n": 317,
+      "a_wins": 81,
+      "b_wins": 72,
+      "ties": 164,
+      "p_value_approx": 0.4669,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25",
+      "system_b": "bm25_structured"
+    },
+    {
+      "n": 317,
+      "a_wins": 29,
+      "b_wins": 21,
+      "ties": 267,
+      "p_value_approx": 0.2579,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25",
+      "system_b": "bm25_structured"
+    },
+    {
+      "n": 317,
+      "a_wins": 201,
+      "b_wins": 112,
+      "ties": 4,
+      "p_value_approx": 0.0,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "bm25",
+      "system_b": "dense_bge"
+    },
+    {
+      "n": 317,
+      "a_wins": 46,
+      "b_wins": 48,
+      "ties": 223,
+      "p_value_approx": 0.8366,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25",
+      "system_b": "dense_bge"
+    },
+    {
+      "n": 317,
+      "a_wins": 139,
+      "b_wins": 162,
+      "ties": 16,
+      "p_value_approx": 0.1849,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25",
+      "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 23,
+      "b_wins": 48,
+      "ties": 246,
+      "p_value_approx": 0.003,
+      "significant_at_05": true,
+      "metric": "mrr",
+      "system_a": "bm25",
+      "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 194,
+      "b_wins": 119,
+      "ties": 4,
+      "p_value_approx": 0.0,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "bm25_structured",
+      "system_b": "dense_bge"
+    },
+    {
+      "n": 317,
+      "a_wins": 48,
+      "b_wins": 55,
+      "ties": 214,
+      "p_value_approx": 0.4904,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25_structured",
+      "system_b": "dense_bge"
+    },
+    {
+      "n": 317,
+      "a_wins": 139,
+      "b_wins": 167,
+      "ties": 11,
+      "p_value_approx": 0.1095,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25_structured",
+      "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 29,
+      "b_wins": 53,
+      "ties": 235,
+      "p_value_approx": 0.008,
+      "significant_at_05": true,
+      "metric": "mrr",
+      "system_a": "bm25_structured",
+      "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 85,
+      "b_wins": 225,
+      "ties": 7,
+      "p_value_approx": 0.0,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "dense_bge",
+      "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 21,
+      "b_wins": 40,
+      "ties": 256,
+      "p_value_approx": 0.015,
+      "significant_at_05": true,
+      "metric": "mrr",
+      "system_a": "dense_bge",
+      "system_b": "hybrid_rrf"
+    }
+  ]
+}

@@ -139,6 +139,158 @@ class TestBootstrapCI:
         assert "system_b" in data["systems"]
         assert len(data["pairwise_significance"]) > 0
 
+    def test_load_run_accepts_record_id(self, tmp_path: Path) -> None:
+        from scripts.eval.compute_bootstrap_ci import load_run
+
+        run = tmp_path / "run.jsonl"
+        run.write_text(
+            json.dumps({"query_id": "q001", "record_id": "source:item 1", "rank": 2}) + "\n"
+            + json.dumps({"query_id": "q001", "record_id": "source:item 0", "rank": 1}) + "\n"
+        )
+        assert load_run(run) == {"q001": ["source:item 0", "source:item 1"]}
+
+
+class TestComputeNdcgFromQrels:
+    def test_trec_loader_preserves_space_bearing_dataset_ids(self, tmp_path: Path) -> None:
+        from scripts.eval.compute_ndcg_from_qrels import _load_qrels
+
+        qrels = tmp_path / "qrels.trec"
+        qrels.write_text("q001 0 neuromorpho:Physio Lab - Medical Faculty - UoI 2\n")
+        assert _load_qrels(qrels) == {
+            "q001": {"neuromorpho:Physio Lab - Medical Faculty - UoI": 2}
+        }
+
+
+class TestIntentStratification:
+    def test_reports_metrics_by_intent(self, tmp_path: Path) -> None:
+        from scripts.eval.report_intent_stratification import main
+
+        queries = tmp_path / "queries.yaml"
+        queries.write_text(
+            yaml.safe_dump(
+                {
+                    "benchmark_queries": [
+                        {"id": "q001", "query": "find datasets", "intent": "EXPLORATION"},
+                        {"id": "q002", "query": "decode choice", "intent": "REANALYSIS_FEASIBILITY"},
+                    ]
+                }
+            )
+        )
+        qrels = tmp_path / "qrels.trec"
+        qrels.write_text("q001 0 d1 2\nq001 0 d2 0\nq002 0 d3 1\nq002 0 d4 0\n")
+        runs_dir = tmp_path / "runs"
+        runs_dir.mkdir()
+        (runs_dir / "bm25.jsonl").write_text(
+            json.dumps({"query_id": "q001", "record_id": "d1", "rank": 1}) + "\n"
+            + json.dumps({"query_id": "q002", "record_id": "d4", "rank": 1}) + "\n"
+            + json.dumps({"query_id": "q002", "record_id": "d3", "rank": 2}) + "\n"
+        )
+        out = tmp_path / "intent.json"
+        md = tmp_path / "intent.md"
+
+        rc = main([
+            "--queries", str(queries),
+            "--qrels", str(qrels),
+            "--runs-dir", str(runs_dir),
+            "--out", str(out),
+            "--md", str(md),
+        ])
+
+        assert rc == 0
+        report = json.loads(out.read_text())
+        assert report["systems"]["bm25"]["EXPLORATION"]["n_queries"] == 1
+        assert report["systems"]["bm25"]["EXPLORATION"]["ndcg@10"] == pytest.approx(1.0)
+        assert report["systems"]["bm25"]["REANALYSIS_FEASIBILITY"]["mrr"] == pytest.approx(0.5)
+        assert "REANALYSIS_FEASIBILITY" in md.read_text()
+
+
+class TestDualJudgeReliability:
+    def test_reports_pairwise_qwk_for_overlapping_judges(self) -> None:
+        from scripts.eval.report_dual_judge_reliability import compute_reliability
+
+        records = [
+            {"query_id": "q1", "dataset_id": "d1", "label": 0, "judge_model": "judge_a"},
+            {"query_id": "q1", "dataset_id": "d1", "label": 0, "judge_model": "judge_b"},
+            {"query_id": "q1", "dataset_id": "d2", "label": 1, "judge_model": "judge_a"},
+            {"query_id": "q1", "dataset_id": "d2", "label": 2, "judge_model": "judge_b"},
+        ]
+
+        report = compute_reliability(records)
+
+        stats = report["pairwise"]["judge_a :: judge_b"]
+        assert report["estimable"] is True
+        assert stats["n_overlap"] == 2
+        assert stats["exact_agreement"] == pytest.approx(0.5)
+        assert -1.0 <= stats["quadratic_weighted_kappa"] <= 1.0
+
+    def test_marks_qwk_not_estimable_without_overlap(self) -> None:
+        from scripts.eval.report_dual_judge_reliability import compute_reliability
+
+        report = compute_reliability([
+            {"query_id": "q1", "dataset_id": "d1", "label": 0, "judge_model": "judge_a"},
+            {"query_id": "q1", "dataset_id": "d2", "label": 1, "judge_model": "judge_b"},
+        ])
+
+        assert report["estimable"] is False
+        assert report["pairs_with_two_or_more_judges"] == 0
+        assert report["pairwise"] == {}
+
+
+class TestEvalClaimLedgerAndGate:
+    def test_claim_ledger_marks_hybrid_claims_and_qwk_caveat(self) -> None:
+        from scripts.eval.build_eval_claim_ledger import build_ledger
+
+        ndcg = {
+            "bm25": {"judged_queries": 317, "ndcg@10": 0.60, "mrr": 0.80, "recall@50": 0.50},
+            "dense_bge": {"judged_queries": 317, "ndcg@10": 0.50, "mrr": 0.70, "recall@50": 0.40},
+            "hybrid_rrf": {"judged_queries": 317, "ndcg@10": 0.70, "mrr": 0.90, "recall@50": 0.60},
+        }
+        bootstrap = {
+            "n_labeled_pairs": 1000,
+            "pairwise_significance": [
+                {
+                    "system_a": "dense_bge",
+                    "system_b": "hybrid_rrf",
+                    "metric": "ndcg@10",
+                    "a_wins": 1,
+                    "b_wins": 10,
+                    "significant_at_05": True,
+                },
+                {
+                    "system_a": "dense_bge",
+                    "system_b": "hybrid_rrf",
+                    "metric": "mrr",
+                    "a_wins": 1,
+                    "b_wins": 10,
+                    "significant_at_05": True,
+                },
+            ],
+        }
+
+        ledger = {row["claim_id"]: row for row in build_ledger(ndcg, bootstrap, {"systems": {"bm25": {}}}, {"estimable": False})}
+
+        assert ledger["claim_hybrid_rrf_beats_bm25"]["evidence_level"] == "partially_supported"
+        assert ledger["claim_hybrid_rrf_beats_dense_bge"]["evidence_level"] == "supported"
+        assert ledger["claim_dual_judge_qwk"]["evidence_level"] == "not_estimable"
+
+    def test_regression_gate_passes_current_shape_and_fails_hybrid_regression(self) -> None:
+        from scripts.eval.check_eval_regression_gate import check_gate
+
+        ndcg = {
+            "bm25": {"judged_queries": 317, "ndcg@10": 0.60, "mrr": 0.80, "recall@50": 0.50},
+            "bm25_structured": {"judged_queries": 317},
+            "dense_bge": {"judged_queries": 317},
+            "hybrid_rrf": {"judged_queries": 317, "ndcg@10": 0.70, "mrr": 0.90, "recall@50": 0.60},
+        }
+
+        passed = check_gate(ndcg, {"n_labeled_pairs": 12000}, {"estimable": False}, 300, 10000)
+        assert passed["passed"] is True
+        assert passed["warnings"]
+
+        ndcg["hybrid_rrf"]["ndcg@10"] = 0.50
+        failed = check_gate(ndcg, {"n_labeled_pairs": 12000}, {"estimable": True}, 300, 10000)
+        assert failed["passed"] is False
+
 
 class TestAcquisitionPlan:
     def test_plan_generates_items(self) -> None:

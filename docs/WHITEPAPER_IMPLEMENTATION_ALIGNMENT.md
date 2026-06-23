@@ -152,22 +152,24 @@ Limitations:
 
 ### Claim 5: Current expanded-corpus retrieval performance is publication-grade
 
-Status: Partial
+Status: Preliminary / not publication-grade
 
 Evidence:
 
-- No current expanded-corpus retrieval benchmark report exists yet.
-- Current supporting artifacts cover corpus scale, embedding/index validation with caveats, usefulness correlation, and graph-rank perturbation.
+- A qrels-backed retrieval snapshot now exists: 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs.
+- Current reports: `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`, `reports/eval/intent_stratification_report.md`, `reports/eval/eval_claim_ledger.md`, and `reports/eval/regression_gate_report.md`.
+- `hybrid_rrf` is the best populated rung on aggregate NDCG@10 (0.6667), MRR (0.9209), and Recall@50 (0.7455). The MRR gain over BM25 is significant; the NDCG@10 gain over BM25 is directional but not significant by the current sign test.
 
 Limitations:
 
-- Older retrieval reports predate the current expanded-corpus artifact and should remain archived.
+- The labels are LLM-judged, not independently human-adjudicated.
+- Dual-judge QWK is not estimable because no non-error pair has labels from two models.
+- Graph/full rungs are not populated in the current ablation run.
 - Exact lookup must be validated on the frozen expanded snapshot.
-- Existing labels are too small and not independently multi-annotated.
 
 Publication framing:
 
-Do not make current ranking-performance claims until a reconciled expanded-corpus benchmark report exists.
+It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication and graph/full ablations are complete.
 
 ### Claim 6: Latent usefulness scoring is implemented
 
