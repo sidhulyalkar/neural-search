@@ -57,7 +57,9 @@ def _load_qrels(path: Path) -> dict[str, dict[str, int]]:
         parts = line.strip().split()
         if len(parts) < 4:
             continue
-        qid, _zero, did, grade = parts[0], parts[1], parts[2], parts[3]
+        # Some upstream source ids contain spaces. Treat the final token as the
+        # grade and preserve every middle token as the dataset id.
+        qid, did, grade = parts[0], " ".join(parts[2:-1]), parts[-1]
         qrels.setdefault(qid, {})[did] = int(grade)
     return qrels
 
@@ -71,7 +73,7 @@ def _load_run(path: Path) -> dict[str, list[tuple[int, str]]]:
         rec = json.loads(line)
         qid = str(rec["query_id"])
         rank = int(rec["rank"])
-        rid = str(rec["record_id"])
+        rid = str(rec.get("record_id") or rec.get("dataset_id") or rec.get("doc_id"))
         run.setdefault(qid, []).append((rank, rid))
     for qid in run:
         run[qid].sort()

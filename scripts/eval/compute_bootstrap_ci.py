@@ -158,7 +158,7 @@ def load_qrels(path: Path) -> dict[str, dict[str, int]]:
                 continue
             rec = json.loads(line)
             qid = str(rec.get("query_id", rec.get("qid", "")))
-            did = str(rec.get("dataset_id", rec.get("doc_id", "")))
+            did = str(rec.get("dataset_id") or rec.get("record_id") or rec.get("doc_id") or "")
             rel = int(rec.get("relevance", rec.get("label", 0)))
             if qid and did:
                 qrels.setdefault(qid, {})[did] = rel
@@ -175,7 +175,7 @@ def load_run(path: Path) -> dict[str, list[str]]:
                 continue
             rec = json.loads(line)
             qid = str(rec.get("query_id", rec.get("qid", "")))
-            did = str(rec.get("dataset_id", rec.get("doc_id", "")))
+            did = str(rec.get("record_id") or rec.get("dataset_id") or rec.get("doc_id") or "")
             rank = int(rec.get("rank", 999))
             if qid and did:
                 run.setdefault(qid, []).append((rank, did))

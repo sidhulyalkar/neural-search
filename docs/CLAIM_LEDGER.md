@@ -28,7 +28,7 @@
 | Hard-negative filtering reduces invalid matches | prototype_validated | 0 violations on 50 adversarial queries | Hand-built adversarial set | Add compositional negation benchmark, expand to 100+ hard negatives |
 | Ontology matching improves constraint satisfaction | prototype_validated | Ablation shows -11.6% NDCG without ontology | Ontology coverage incomplete | Add ontology coverage report, expand synonym dictionaries |
 | Field-weighted BM25 outperforms standard BM25 | implemented | Weight config exists in retrieval.yaml | No head-to-head benchmark | Add explicit BM25 variant comparison |
-| Reciprocal Rank Fusion improves over single retriever | prototype_validated | Ablation shows RRF beats BM25-only and dense-only | Not statistically tested | Add significance testing (bootstrap CI) |
+| Reciprocal Rank Fusion improves over single retriever | prototype_validated | `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`: hybrid_rrf leads populated rungs on NDCG@10, MRR, Recall@50; significant vs dense_bge on NDCG/MRR and vs BM25 on MRR | LLM-judged qrels; NDCG@10 vs BM25 is positive but not significant; dual-judge QWK not estimable | Add duplicate/human adjudication and populate graph/full rungs |
 | Provenance-weighted confidence improves precision | implemented | Confidence model in source_quality.py | Not ablated | Add confidence vs uniform weighting ablation |
 
 ---
@@ -37,8 +37,8 @@
 
 | Claim | Status | Evidence Artifact | Risk | Required Upgrade |
 |-------|--------|-------------------|------|------------------|
-| Dense embeddings improve semantic recall | partially_implemented | Sentence Transformer baseline exists | No systematic model comparison | Add SPECTER2/SciBERT/PubMedBERT/ColBERT evaluation |
-| Hybrid retrieval beats BM25-only | prototype_validated | Ablation report in benchmark results | Single embedding model tested | Test multiple embedding models, statistical significance |
+| Dense embeddings improve semantic recall | partially_implemented | `dense_bge` rung evaluated on 317-query canonical qrels snapshot | Dense-only trails BM25/hybrid on aggregate NDCG@10 and Recall@50 in current snapshot | Compare SPECTER2/SciBERT/PubMedBERT/ColBERT and inspect dense wins by intent |
+| Hybrid retrieval beats BM25-only | prototype_validated | `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`: hybrid_rrf NDCG@10 0.6667 vs BM25 0.6566, MRR 0.9209 vs 0.8795, Recall@50 0.7455 vs 0.6440 | LLM-judged labels; MRR significant, NDCG@10 not significant by sign test | Duplicate/human adjudication and broader ablations |
 | Scientific embeddings outperform general embeddings | not_started | No comparison | Claims are speculative | Implement SPECTER2 provider, run comparison |
 | Late interaction (ColBERT) helps scientific constraints | not_started | No implementation | Claims are speculative | Add ColBERT evaluation |
 | Named embedding fields enable multi-signal retrieval | implemented | Embedding fields in index.py | Not benchmarked per-field | Add per-field ablation study |

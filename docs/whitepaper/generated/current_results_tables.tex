@@ -107,3 +107,36 @@ Graph pairs changed & 39.0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Qrels-backed retrieval snapshot on the canonical judged pool.}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+System & Queries & NDCG@10 & MRR & Recall@50 \\
+\midrule
+bm25 & 317 & 0.6566 & 0.8795 & 0.6440 \\
+bm25\_structured & 317 & 0.6361 & 0.8587 & 0.6138 \\
+dense\_bge & 317 & 0.5708 & 0.8829 & 0.5384 \\
+hybrid\_rrf & 317 & 0.6667 & 0.9209 & 0.7455 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Qrels-backed evaluation coverage and reliability caveats.}
+\small
+\begin{tabular}{lc}
+\toprule
+Artifact & Value \\
+\midrule
+Canonical judged queries & 317 \\
+Canonical judged pairs & 13,654 \\
+Bootstrap samples & 2,000 \\
+Dual-judge overlap pairs & 0 \\
+Dual-judge QWK & Not estimable \\
+\bottomrule
+\end{tabular}
+\end{table}
