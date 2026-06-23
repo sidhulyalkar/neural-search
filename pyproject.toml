@@ -30,6 +30,7 @@ dependencies = [
   "numpy>=1.26.0",
   "pandas>=2.1.0",
   "duckdb>=0.9.0",
+  "scipy>=1.11.0",
 ]
 
 [project.optional-dependencies]
@@ -42,7 +43,10 @@ dev = [
   "pre-commit>=3.5.0",
   "respx>=0.20.0",
   "networkx>=3.0",
-  "scipy>=1.11.0",
+]
+spectral = [
+  "specparam>=2.0.0",
+  "yasa>=0.6.5",
 ]
 postgres = [
   "pgvector>=0.3",
@@ -65,7 +69,7 @@ notebooks = [
   "matplotlib>=3.8.0",
 ]
 all = [
-  "neural-search[dev,postgres,redis,embeddings,notebooks]",
+  "neural-search[dev,postgres,redis,embeddings,notebooks,spectral]",
 ]
 
 [project.scripts]

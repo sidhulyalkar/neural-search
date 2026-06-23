@@ -105,6 +105,7 @@ class AnalysisAffordance(BaseModel):
     helpful_signals: list[str] = Field(default_factory=list)
     typical_outputs: list[str] = Field(default_factory=list)
     relevant_tasks: list[str] = Field(default_factory=list)
+    query_synonyms: list[str] = Field(default_factory=list)
 
     @field_validator("id", "label")
     @classmethod

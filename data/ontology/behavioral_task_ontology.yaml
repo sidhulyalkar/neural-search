@@ -3633,4 +3633,48 @@ analysis_affordances:
       - go_nogo
       - two_alternative_forced_choice
       - reaching
+
+  - id: aperiodic_spectral_parameterization
+    label: Aperiodic Spectral Parameterization
+    definition: >
+      Parameterizing a power spectrum into an aperiodic ("1/f") background
+      (offset, exponent, optional knee) plus periodic oscillatory peaks,
+      using methods such as FOOOF/specparam or IRASA. Descriptive only: the
+      aperiodic exponent is not a validated direct measurement of
+      excitation/inhibition balance or any single mechanism.
+    required_signals:
+      - continuous_neural_timeseries
+      - electrophysiology_or_eeg_or_meg_modality
+    helpful_signals:
+      - sampling_rate_metadata
+      - channel_or_probe_metadata
+      - task_state_or_resting_state_label
+      - brain_region_metadata
+    typical_outputs:
+      - aperiodic_exponent
+      - aperiodic_offset
+      - knee_frequency
+      - periodic_peaks
+      - spectral_slope
+    relevant_tasks:
+      - resting_state
+      - sleep_wake
+      - seizure_monitoring
+    query_synonyms:
+      - aperiodic
+      - 1/f
+      - one over f
+      - spectral slope
+      - power law
+      - broadband
+      - E/I balance
+      - excitation inhibition
+      - intrinsic timescale
+      - neural timescale
+      - offset
+      - knee
+      - FOOOF
+      - specparam
+      - IRASA
+      - periodic vs aperiodic
       - working_memory

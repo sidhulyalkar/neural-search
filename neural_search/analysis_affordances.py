@@ -10,6 +10,7 @@ from neural_search.schemas import (
     NormalizedDatasetRecord,
 )
 from neural_search.scientific_labels import label_ids
+from neural_search.spectral.eligibility import detect_aperiodic_eligibility
 
 DETECTOR_NAME = "rule_based_analysis_affordance_detector"
 DETECTOR_VERSION = "v0.3.0"
@@ -32,6 +33,7 @@ AFFORDANCE_IDS = (
     "encoding_modeling",
     "bci_decoding",
     "latent_dynamics_modeling",
+    "aperiodic_spectral_parameterization",
 )
 
 NEURAL_MODALITIES = {
@@ -361,6 +363,19 @@ def detect_analysis_affordances(record: NormalizedDatasetRecord) -> list[Analysi
         results.append(_affordance("latent_dynamics_modeling", "medium", 0.6, present=["neural_data"], missing=["trials_or_events"], evidence=neural_evidence))
     else:
         results.append(_affordance("latent_dynamics_modeling", "low", 0.2, missing=["neural_timeseries"], evidence=[]))
+
+    aperiodic_eligibility = detect_aperiodic_eligibility(record)
+    results.append(
+        _affordance(
+            "aperiodic_spectral_parameterization",
+            aperiodic_eligibility.support_level,
+            aperiodic_eligibility.confidence,
+            present=aperiodic_eligibility.required_fields_present,
+            helpful=aperiodic_eligibility.helpful_fields_present,
+            missing=aperiodic_eligibility.missing_fields,
+            evidence=aperiodic_eligibility.evidence,
+        )
+    )
 
     return sorted(results, key=lambda item: AFFORDANCE_IDS.index(item.analysis_id))
 
