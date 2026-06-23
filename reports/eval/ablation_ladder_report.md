@@ -6,5 +6,5 @@
 | bm25_structured (ok) | 317 | 0.0 |
 | dense_bge (ok) | 317 | 0.0 |
 | hybrid_rrf (ok) | 317 | 0.0 |
-| hybrid_graph (ok) | 317 | 0.0 |
-| full (ok) | 317 | 0.0 |
+| hybrid_graph (skipped) | ? | N/A |
+| full (skipped) | ? | N/A |

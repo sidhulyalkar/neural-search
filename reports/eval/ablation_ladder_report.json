@@ -4,7 +4,7 @@
       "rung": "bm25",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 12.6,
+      "elapsed_s": 1.8,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -14,7 +14,7 @@
       "rung": "bm25_structured",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 15.5,
+      "elapsed_s": 2.0,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -24,7 +24,7 @@
       "rung": "dense_bge",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 154.9,
+      "elapsed_s": 61.3,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -34,7 +34,7 @@
       "rung": "hybrid_rrf",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 164.8,
+      "elapsed_s": 63.4,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -42,23 +42,13 @@
     },
     {
       "rung": "hybrid_graph",
-      "status": "ok",
-      "queries_run": 317,
-      "elapsed_s": 476.6,
-      "metrics": {
-        "ndcg@10": 0.0,
-        "query_count": 317
-      }
+      "status": "skipped",
+      "metrics": {}
     },
     {
       "rung": "full",
-      "status": "ok",
-      "queries_run": 317,
-      "elapsed_s": 492.4,
-      "metrics": {
-        "ndcg@10": 0.0,
-        "query_count": 317
-      }
+      "status": "skipped",
+      "metrics": {}
     }
   ]
 }
