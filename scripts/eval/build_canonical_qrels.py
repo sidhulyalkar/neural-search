@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from scripts.eval.docid import normalize_docid
+
 DEFAULT_JUDGMENTS = Path("data/qrels/llm_judgments.jsonl")
 DEFAULT_TREC = Path("data/qrels/qrels.canonical.trec")
 DEFAULT_JSONL = Path("data/qrels/qrels.canonical.jsonl")
@@ -36,7 +38,9 @@ def canonicalize(judgments: list[dict[str, Any]]) -> tuple[list[str], list[dict[
         if label < 0:
             continue
         seen.add((qid, did))
-        trec.append(f"{qid} 0 {did} {label}")
+        # TREC is whitespace-delimited: normalize doc-id so ids with internal
+        # spaces stay a single token. JSONL keeps the original id (provenance).
+        trec.append(f"{qid} 0 {normalize_docid(did)} {label}")
         rows.append({"query_id": qid, "dataset_id": did, "label": label})
     return trec, rows
 
