@@ -16,6 +16,9 @@ POLITE_EMAIL = "neuralsearch@example.com"
 NEURO_CONCEPT_ID = "C169760540"
 RATE_LIMIT_DELAY = 0.12
 PAGE_SIZE = 200
+MAX_RETRIES = 6
+RETRY_BACKOFF_BASE_S = 2.0
+RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 SELECT_FIELDS = (
     "id,doi,title,abstract_inverted_index,publication_year,"
     "concepts,cited_by_count,authorships,primary_location,"
@@ -149,15 +152,37 @@ class BulkIngester:
             "select": SELECT_FIELDS,
             "mailto": POLITE_EMAIL,
         }
-        with httpx.Client(timeout=60.0) as client:
-            response = client.get(f"{OPENALEX_BASE}/works", params=params)
-            response.raise_for_status()
-            data = response.json()
+        data = self._get_with_retry(params)
 
         results = data.get("results", [])
         records = [normalize_bulk_work(w) for w in results]
         next_cursor: str | None = (data.get("meta") or {}).get("next_cursor")
         return records, next_cursor
+
+    def _get_with_retry(self, params: dict) -> dict:
+        """GET /works with exponential-backoff retry on 429/5xx.
+
+        OpenAlex's polite pool documents a 10 req/s ceiling; sustained bulk
+        crawling can still occasionally exceed it and get a 429. Honor
+        Retry-After when present, otherwise back off exponentially
+        (2s, 4s, 8s, ...) capped at MAX_RETRIES attempts.
+        """
+        for attempt in range(MAX_RETRIES + 1):
+            with httpx.Client(timeout=60.0) as client:
+                response = client.get(f"{OPENALEX_BASE}/works", params=params)
+
+            if response.status_code not in RETRYABLE_STATUS_CODES:
+                response.raise_for_status()
+                return response.json()
+
+            if attempt == MAX_RETRIES:
+                response.raise_for_status()
+
+            retry_after = response.headers.get("Retry-After")
+            wait_s = float(retry_after) if retry_after else RETRY_BACKOFF_BASE_S * (2**attempt)
+            time.sleep(wait_s)
+
+        raise AssertionError("unreachable")  # loop always returns or raises above
 
     def _write_shard(self, records: list[dict], shard_idx: int) -> Path:
         self.out_dir.mkdir(parents=True, exist_ok=True)

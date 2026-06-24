@@ -5,9 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import httpx
 import pytest
+import respx
 
 from neural_search.ingestion.openalex_bulk import (
+    OPENALEX_BASE,
     BulkIngester,
     normalize_bulk_work,
     reconstruct_abstract,
@@ -357,3 +360,97 @@ class TestBulkIngesterRun:
 
         total = ingester.run()
         assert total == 0
+
+
+# ---------------------------------------------------------------------------
+# TestGetWithRetry -- 429/5xx backoff (regression: 2026-06-24 production 429)
+# ---------------------------------------------------------------------------
+
+EMPTY_RESULTS_PAGE = {"results": [], "meta": {"next_cursor": None}}
+
+
+class TestGetWithRetry:
+    @respx.mock
+    def test_succeeds_immediately_on_200(self, tmp_path: Path):
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(
+            return_value=httpx.Response(200, json=EMPTY_RESULTS_PAGE)
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        data = ingester._get_with_retry({})
+
+        assert data == EMPTY_RESULTS_PAGE
+        assert route.call_count == 1
+
+    @respx.mock
+    def test_retries_after_429_then_succeeds(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        data = ingester._get_with_retry({})
+
+        assert data == EMPTY_RESULTS_PAGE
+        assert route.call_count == 2
+
+    @respx.mock
+    def test_honors_retry_after_header(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429, headers={"Retry-After": "7"}),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        assert sleeps == [7.0]
+
+    @respx.mock
+    def test_exponential_backoff_without_retry_after_header(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429),
+                httpx.Response(503),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        assert sleeps == [2.0, 4.0]
+
+    @respx.mock
+    def test_raises_after_exhausting_retries(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        respx.get(f"{OPENALEX_BASE}/works").mock(return_value=httpx.Response(429))
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(httpx.HTTPStatusError):
+            ingester._get_with_retry({})
+
+    @respx.mock
+    def test_non_retryable_error_raises_immediately(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(return_value=httpx.Response(404))
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(httpx.HTTPStatusError):
+            ingester._get_with_retry({})
+
+        assert route.call_count == 1
