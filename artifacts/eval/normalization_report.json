@@ -1,18 +1,19 @@
 {
-  "input_findings": 12609,
-  "duplicates_removed": 0,
-  "output_findings": 12609,
-  "records_normalized": 5607,
-  "species_changed": 3508,
-  "region_changed": 2759,
-  "task_changed": 358,
+  "input_findings": 190279,
+  "duplicates_removed": 28,
+  "output_findings": 190251,
+  "records_normalized": 74038,
+  "species_changed": 21851,
+  "region_changed": 30758,
+  "task_changed": 6573,
   "quality_flag_counts": {
-    "no_species": 3988,
-    "no_region": 3086,
-    "generic_region_only": 1459,
-    "low_confidence": 1115,
-    "meta_language": 4
+    "no_region": 51598,
+    "no_species": 19383,
+    "generic_region_only": 10639,
+    "low_confidence": 7415,
+    "meta_language": 131,
+    "very_short_finding": 24
   },
-  "clean_findings": 5371,
-  "clean_pct": 42.6
+  "clean_findings": 112333,
+  "clean_pct": 59.0
 }

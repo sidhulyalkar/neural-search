@@ -185,8 +185,21 @@ def add_region_cooccurrence_to_graph(
             stats["edges_skipped"] += 1
             continue
 
-        node_a = _region_node(region_a)
-        node_b = _region_node(region_b)
+        try:
+            node_a = _region_node(region_a)
+            node_b = _region_node(region_b)
+        except ValueError:
+            # A region string with no ASCII alphanumeric characters at all
+            # (e.g. non-Latin-script text from a non-English finding that
+            # slipped past upstream filtering) normalizes to an empty node
+            # ID, which schema.normalize_node_type rejects. Skip the pair
+            # rather than crash the whole ingestion run.
+            logger.warning(
+                "Skipping region pair with non-normalizable identifier: %r / %r",
+                region_a, region_b,
+            )
+            stats["edges_skipped"] += 1
+            continue
         if _add_node(graph, node_a):
             stats["region_nodes_added"] += 1
         if _add_node(graph, node_b):

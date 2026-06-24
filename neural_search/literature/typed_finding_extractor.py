@@ -76,10 +76,39 @@ def _first(pattern_value_pairs: list[tuple[str, str]], text: str) -> list[str]:
     return result
 
 
+def _mask_excluded(text: str, exclusion_patterns: list[str]) -> str:
+    """Blank out known false-positive collocations before pattern matching.
+
+    Used where a field's vocabulary word collides with unrelated molecular/
+    anatomical nomenclature (e.g. "beta" the EEG band vs. "IL-1 beta" the
+    cytokine). Masking with same-length spaces, rather than deleting,
+    preserves match positions/boundaries for any other pattern run over the
+    same text afterward.
+    """
+    masked = text
+    for pattern in exclusion_patterns:
+        masked = _compiled(pattern).sub(lambda m: " " * len(m.group(0)), masked)
+    return masked
+
+
 # ---------------------------------------------------------------------------
 # Negation
 # ---------------------------------------------------------------------------
 
+# AUDIT NOTE (2026-06-24, reports/eval/typed_field_audit_summary_2026.md): this
+# list previously included bare verb-stem patterns (\binhibit, \bsuppress,
+# \bblocked?\b, \bablat, \bsilenced?\b, \bcounteractivat, \bnullif) that matched
+# words describing an inhibitory/suppressive *neuroscience phenomenon* --
+# almost always the affirmative finding itself ("Baclofen blocked X",
+# "Suppression of alpha was preceded by...") -- not a negated *claim*. A
+# 32-row audit found these patterns fired on confirmed false positives in
+# every case they were checked and zero confirmed true positives. Removed.
+# That signal (something got suppressed/blocked) belongs in result_direction
+# (decrease), a separate field already populated elsewhere in the pipeline --
+# not negation, which means "this sentence denies or contradicts a result."
+# Replaced with \bno\s+longer\b and \bbut\s+not\b, both needed to keep
+# catching genuine negations that previously only fired via the removed verb
+# patterns incidentally co-occurring in the same sentence.
 _NEGATION_PATTERNS: list[str] = [
     r"\bdid\s+not\b",
     r"\bdoes\s+not\b",
@@ -93,13 +122,8 @@ _NEGATION_PATTERNS: list[str] = [
     r"\babsence\s+of\b",
     r"\bnot\s+observed\b",
     r"\bnot\s+activated?\b",
-    r"\bcounteractivat",
-    r"\binhibit",
-    r"\bsuppress",
-    r"\bblocked?\b",
-    r"\bablat",
-    r"\bsilenced?\b",
-    r"\bnullif",
+    r"\bno\s+longer\b",
+    r"\bbut\s+not\b",
     r"\bno\s+increase\b",
     r"\bno\s+decrease\b",
     r"\bunchanged\b",
@@ -134,9 +158,36 @@ _FREQ_BAND_PAIRS: list[tuple[str, str]] = [
     (r"\bphase.amplitude", "cross_frequency"),
 ]
 
+# AUDIT NOTE (2026-06-24): bare \balpha\b/\bbeta\b/\bdelta\b/\bgamma\b match
+# Greek-letter molecular/anatomical nomenclature as readily as EEG/LFP band
+# names -- "amyloid-beta", "alpha-lipoic acid", "A-delta fiber" all matched as
+# if they named a frequency band. Mask these known collocations out before
+# band matching; a real band mention elsewhere in the same sentence is still
+# caught since masking preserves the rest of the text untouched.
+_FREQ_BAND_EXCLUSIONS: list[str] = [
+    r"amyloid[\s-]?beta",
+    r"beta[\s-]?amyloid",
+    r"\ba[\s-]?beta\b",
+    r"il-?1\s*beta",
+    r"interleukin[\s-]?1\s*beta",
+    r"tnf[\s-]?alpha",
+    r"alpha[\s-]?lipoic",
+    r"alpha[\s-]?synuclein",
+    r"alpha[\s-]?fetoprotein",
+    r"alpha[\s-]?adrenergic",
+    r"alpha[\s-]?blocker",
+    r"beta[\s-]?blocker",
+    r"beta[\s-]?adrenergic",
+    r"\b[ac][\s-]?delta\s*fib(?:er|re)",
+    r"delta[\s-]?(?:opioid|receptor)",
+    r"gamma[\s-]?secretase",
+    r"gamma[\s-]?aminobutyric",
+    r"gamma[\s-]?globulin",
+]
+
 
 def extract_frequency_bands(text: str) -> list[str]:
-    return _first(_FREQ_BAND_PAIRS, text)
+    return _first(_FREQ_BAND_PAIRS, _mask_excluded(text, _FREQ_BAND_EXCLUSIONS))
 
 
 # ---------------------------------------------------------------------------
@@ -166,9 +217,17 @@ _TEMPORAL_PAIRS: list[tuple[str, str]] = [
     (r"\bworking.memory\s+period\b", "delay_period"),
 ]
 
+# AUDIT NOTE (2026-06-24): \bcyclic\b matched "cyclic AMP"/"cyclic GMP" (the
+# signaling molecules cAMP/cGMP) and tagged a cell-fate finding with no
+# temporal content at all as "oscillatory". Same collision class as the
+# frequency_band fix above.
+_TEMPORAL_EXCLUSIONS: list[str] = [
+    r"cyclic\s+(?:amp|gmp|adenosine\s+monophosphate|guanosine\s+monophosphate)",
+]
+
 
 def extract_temporal_patterns(text: str) -> list[str]:
-    return _first(_TEMPORAL_PAIRS, text)
+    return _first(_TEMPORAL_PAIRS, _mask_excluded(text, _TEMPORAL_EXCLUSIONS))
 
 
 # ---------------------------------------------------------------------------

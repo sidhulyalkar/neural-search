@@ -235,3 +235,33 @@ class TestAddRegionCooccurrenceToGraph:
         node_a = make_node_id("brain_region", "amygdala")
         assert graph.nodes[node_a].properties.get("placeholder") is not True
         validate_graph(graph)
+
+    def test_skips_non_normalizable_region_instead_of_crashing(self, tmp_path):
+        # Regression (2026-06-24): a region pair with no ASCII alphanumeric
+        # characters at all (non-Latin-script text that slipped past
+        # upstream filtering -- seen at full 190K-finding scale: region_a=
+        # "枕部" / region_b="顶叶", Chinese for "occipital"/"parietal lobe")
+        # normalizes to an empty node ID, which schema.normalize_node_type
+        # rejects with ValueError. The whole batch ingestion (200K+ edges)
+        # must not crash on one bad pair.
+        path = tmp_path / "region_cooccurrence.jsonl"
+        _write_jsonl(
+            path,
+            [
+                {
+                    "edge_type": "region_co_occurs_with",
+                    "region_a": "柭部",
+                    "region_b": "顶叶",
+                    "n_findings": 1,
+                    "confidence": 0.5,
+                },
+                REGION_COOCCURRENCE_EDGE,
+            ],
+        )
+
+        graph = KnowledgeGraph()
+        stats = add_region_cooccurrence_to_graph(graph, path)
+
+        assert stats["edges_skipped"] == 1
+        assert stats["edges_added"] == 1
+        validate_graph(graph)

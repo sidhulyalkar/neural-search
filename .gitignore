@@ -118,6 +118,13 @@ reports/eval/*.jsonl
 artifacts/literature/findings_tier1_ollama.jsonl
 artifacts/literature/findings_tier1_ollama.checkpoint.json
 
+# Full-scale normalized findings (now derived from the full 190K-finding
+# extraction as of 2026-06-24, 270MB+ -- also exceeds the 100MB limit. The
+# previous small 12,609-record/7.7MB snapshot is still in git history at
+# e9b0c21; this path is untracked going forward. Regenerate via
+# scripts/literature/normalize_findings.py.
+artifacts/literature/findings_tier1_normalized.jsonl
+
 # Large model/index/data file types
 *.npy
 *.npz

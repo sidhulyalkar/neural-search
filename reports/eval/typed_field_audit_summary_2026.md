@@ -1,5 +1,77 @@
 # Typed-Field Extraction Audit Summary (2026-06-24)
 
+## Status: FIXED, verified, and propagated to full-scale relationship mining
+
+All three confirmed bug classes below were fixed the same day:
+
+1. **`negation`**: removed the 7 bare verb-stem patterns (`\binhibit`, `\bsuppress`,
+   `\bblocked?\b`, `\bablat`, `\bsilenced?\b`, `\bcounteractivat`, `\bnullif`) that matched
+   affirmative descriptions of inhibitory/suppressive phenomena; added `\bno\s+longer\b` and
+   `\bbut\s+not\b` to keep catching the genuine negations that previously only fired
+   incidentally via the removed patterns.
+2. **`frequency_band`**: added a masking pass (`_mask_excluded`) that blanks out known
+   molecule/anatomy collocations (`amyloid-beta`, `alpha-lipoic`, `IL-1 beta`, `A-delta fiber`,
+   `TNF-alpha`, `gamma-secretase`, etc.) before band matching.
+3. **`temporal_pattern`**: same masking mechanism applied to the `\bcyclic\b` -> oscillatory
+   collision with "cyclic AMP"/"cyclic GMP".
+
+**Re-extracting the same 32 audited findings with the fixed code**: 12 of 13 originally-FALSE
+rows and 2 of 4 originally-PARTIAL rows flipped to correct (one bonus catch the manual audit had
+under-counted: row 12, "alpha-lipoic acid", also had a `negation` false positive from "inhibited
+capillary cell apoptosis" that wasn't flagged in the original judgment). New tally: **29 TRUE, 1
+FALSE (the unrelated `effect_scale` issue, not in scope for this fix), 2 PARTIAL (conceptual
+periodicity-scale mismatches, not hard bugs)**.
+
+| | Before | After |
+|---|---|---|
+| Strict precision | 46.9% | **90.6%** |
+| Weighted precision | 53.1% | **93.75%** |
+
+16 new regression tests added (7 negation false-positive cases, 2 negation true-positive
+preservation cases, 4 frequency_band exclusion cases, 2 temporal_pattern exclusion cases, plus
+updates to 2 pre-existing tests — `test_counteractivation`/`test_inhibit` — that had encoded the
+old buggy behavior as expected). 266 tests pass in `test_typed_finding_extractor.py`.
+
+**Propagated to the full pipeline**: discovered in the process that `relationship_builder.py`
+expects its input findings file to already carry typed fields, but no committed artifact had ever
+actually been produced that way — `findings_tier1_normalized.jsonl` (the file the relationship
+builder reads) predated `typed_finding_extractor.py`'s integration into the normalizer and had no
+`negation`/`frequency_band`/etc. fields at all. This means `direct_refutation` had been
+structurally impossible (always 0), independent of whether the regex bugs above were fixed — a
+missing pipeline connection, not a corrupted artifact. Re-ran `normalize_findings.py` against the
+full 190,279-finding extraction (now complete) to produce a properly-enriched 190,251-record file,
+then re-ran `build_finding_relationships.py` against it for the first time at full scale:
+
+| Metric | Old (12,609-finding snapshot, unenriched) | New (190,251-finding, enriched) |
+|---|---|---|
+| Finding edges | 194,903 | 200,000 (hit the cap) |
+| `opposite_direction` contradictions | 111,186 | 107,642 |
+| **`direct_refutation` contradictions** | **0** | **9,833** |
+| Base consensus records | 792 | 8,520 |
+| Strong consensus (>=0.8, >=3 papers) | 34 | 274 |
+| Qualified consensus records | 567 | 9,823 |
+| Region co-occurrence edges | 965 | 11,869 |
+
+This is the first time this project has produced a non-zero `direct_refutation` count, and the
+first full-scale run of the consensus/qualified-consensus machinery. Strong consensus records now
+cite real named regions with double-digit paper counts (left inferior frontal gyrus: 18 papers,
+ventral premotor cortex: 12 papers, subthalamic nucleus: 11 papers).
+
+**One more bug found and fixed in the process**: at this larger scale, `region_cooccurrence.jsonl`
+contained one row with non-Latin-script region names (`枕部`/`顶叶`, Chinese for
+"occipital"/"parietal lobe" — a non-English finding that slipped past upstream filtering) that
+normalize to an empty graph-node identifier and crashed the whole KG-ingestion batch. Fixed in
+`relationship_kg_builder.py::add_region_cooccurrence_to_graph` to skip non-normalizable region
+pairs (with a stats counter and warning log) rather than crash; regression test added.
+
+**Caveat carried forward**: `findings_tier1_normalized.jsonl` is now 271MB (over GitHub's 100MB
+limit) and has been gitignored — the small 12,609-record/7.7MB snapshot remains in git history at
+commit `e9b0c21` but is no longer the live artifact. The relationship outputs derived from it
+(`finding_edges.jsonl` 82MB, `consensus_summaries_qualified.jsonl` 4.2MB, etc.) stay under the
+limit and remain tracked. All of the above is still **silver-tier, LLM-extracted evidence** — see
+the finding-extraction audits for precision context (82% strict / 90% weighted on the underlying
+extraction itself) — not human-validated.
+
 ## What this is
 
 An LLM-judge pass (Claude Sonnet 4.6) over a 32-row stratified sample from

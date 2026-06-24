@@ -84,8 +84,11 @@ class TestNegation:
     def test_failed_to_show(self):
         assert detect_negation("The drug failed to suppress gamma oscillations.") is True
 
-    def test_counteractivation(self):
-        assert detect_negation("PFC showed counteractivation relative to baseline.") is True
+    def test_counteractivation_is_not_negation(self):
+        # Changed 2026-06-24 (was asserted True): "counteractivation" describes
+        # a real, affirmative neuroscience phenomenon (activity opposite to a
+        # baseline/expected pattern) -- reporting it is not negating a claim.
+        assert detect_negation("PFC showed counteractivation relative to baseline.") is False
 
     def test_absence_of(self):
         assert detect_negation("Absence of theta was noted during sleep.") is True
@@ -93,11 +96,81 @@ class TestNegation:
     def test_unchanged(self):
         assert detect_negation("Beta power remained unchanged across conditions.") is True
 
-    def test_inhibit(self):
-        assert detect_negation("Optogenetic stimulation inhibited CA1 firing.") is True
+    def test_inhibited_is_not_negation(self):
+        # Changed 2026-06-24 (was asserted True): "inhibited" here reports an
+        # affirmative optogenetic effect (a real decrease in firing), not a
+        # negated claim -- see reports/eval/typed_field_audit_summary_2026.md.
+        assert detect_negation("Optogenetic stimulation inhibited CA1 firing.") is False
 
     def test_positive_finding_not_negated(self):
         assert detect_negation("Theta power increased during spatial navigation.") is False
+
+    # ---- Regression tests from the 2026-06-24 typed-field audit ----
+    # (reports/eval/typed_field_audit_summary_2026.md): bare inhibit/suppress/
+    # block/ablate/silence/counteractivate/nullify patterns produced false
+    # positives on findings that affirmatively describe an inhibitory or
+    # suppressive neuroscience phenomenon, not a negated claim.
+
+    def test_baclofen_blocked_is_affirmative_finding(self):
+        assert detect_negation(
+            "Baclofen blocked the frequency-dependent depression of EPSCs and IPSCs, "
+            "but was less effective at blocking frequency-dependent facilitation of EPSCs."
+        ) is False
+
+    def test_suppression_as_sentence_subject_is_not_negation(self):
+        assert detect_negation(
+            "Suppression of posterior alpha oscillations was preceded by increased "
+            "activity in regions of the dorsal attention network."
+        ) is False
+
+    def test_inhibited_cells_describes_population_not_negation(self):
+        assert detect_negation(
+            "Most cells inhibited during SPW (80%) fired rhythmically and "
+            "phase-locked to the negative peak of the CA1 pyramidal layer theta waves."
+        ) is False
+
+    def test_inhibition_as_task_condition_name_is_not_negation(self):
+        assert detect_negation(
+            "Increases in the theta range (4-7 Hz) were equally high for "
+            "inhibition and change, but lower for action activation."
+        ) is False
+
+    def test_gabaergic_blockade_increasing_dopamine_is_affirmative(self):
+        assert detect_negation(
+            "Blockade of the tonic inhibitory GABAergic input in the prefrontal "
+            "cortex with bicuculline increased the release of dopamine in the "
+            "medial striatum."
+        ) is False
+
+    def test_dbs_suppressed_oscillatory_activity_is_affirmative(self):
+        assert detect_negation(
+            "Both optimized and standard high-frequency stimulation suppressed "
+            "abnormal oscillatory activity in the basal ganglia of rats and humans."
+        ) is False
+
+    def test_biphasic_inhibitory_response_is_affirmative(self):
+        assert detect_negation(
+            "Phasic ACh application generates biphasic inhibitory followed by "
+            "excitatory responses in pyramidal neurons."
+        ) is False
+
+    def test_no_longer_observed_is_negation(self):
+        # Previously only caught incidentally via the removed \binhibit pattern
+        # matching "inhibition" earlier in the same sentence.
+        assert detect_negation(
+            "The brief inhibition that followed the early excitation was no "
+            "longer observed after the blockade of STN inputs by CNQX "
+            "application into the VP."
+        ) is True
+
+    def test_but_not_catches_partial_negation(self):
+        # Previously missed entirely: "but not beta" negates the beta-band
+        # correlation specifically, even though the sentence as a whole
+        # reports a positive theta correlation.
+        assert detect_negation(
+            "Dystonic symptom severity significantly correlated with theta "
+            "but not beta oscillatory amplitudes."
+        ) is True
 
     def test_empty_string(self):
         assert detect_negation("") is False
@@ -137,6 +210,40 @@ class TestFrequencyBand:
     def test_cross_frequency(self):
         assert "cross_frequency" in extract_frequency_bands("Phase-amplitude coupling between theta and gamma")
 
+    # ---- Regression tests from the 2026-06-24 typed-field audit ----
+    # (reports/eval/typed_field_audit_summary_2026.md): bare alpha/beta/delta/
+    # gamma matched Greek-letter molecular/anatomical nomenclature as readily
+    # as EEG/LFP band names.
+
+    def test_il1_beta_is_not_a_band(self):
+        assert extract_frequency_bands(
+            "IL-1 beta mRNA levels were markedly decreased in all regions examined."
+        ) == []
+
+    def test_alpha_lipoic_acid_is_not_a_band(self):
+        assert extract_frequency_bands(
+            "alpha-lipoic acid administration for the entire duration of diabetes "
+            "inhibited capillary cell apoptosis."
+        ) == []
+
+    def test_a_delta_fibre_is_not_a_band(self):
+        assert extract_frequency_bands(
+            "Low concentrations of tetrodotoxin (TTX) blocked EPSPs evoked by "
+            "A delta fibre stimulation."
+        ) == []
+
+    def test_amyloid_beta_is_not_a_band(self):
+        assert extract_frequency_bands(
+            "Amyloid-beta (A-beta) exposure led to a significant increase in "
+            "potassium current density in SN56 cells."
+        ) == []
+
+    def test_real_band_still_detected_alongside_excluded_molecule(self):
+        # Masking must not suppress a genuine band mention elsewhere in the
+        # same sentence just because an excluded collocation is also present.
+        bands = extract_frequency_bands("Amyloid-beta exposure correlated with theta power.")
+        assert bands == ["theta"]
+
 
 # ---------------------------------------------------------------------------
 # Temporal pattern
@@ -166,6 +273,19 @@ class TestTemporalPattern:
 
     def test_phasic(self):
         assert "transient" in extract_temporal_patterns("A phasic response was observed after stimulus")
+
+    # ---- Regression test from the 2026-06-24 typed-field audit ----
+
+    def test_cyclic_amp_is_not_oscillatory(self):
+        assert extract_temporal_patterns(
+            "The proportion of cells undergoing death or differentiation is "
+            "influenced in opposite directions by treatment with cyclic AMP "
+            "and retinoic acid."
+        ) == []
+
+    def test_real_oscillatory_still_detected_alongside_cyclic_amp(self):
+        patterns = extract_temporal_patterns("Cyclic AMP signaling modulated oscillatory firing.")
+        assert patterns == ["oscillatory"]
 
 
 # ---------------------------------------------------------------------------

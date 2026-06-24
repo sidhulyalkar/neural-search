@@ -54,7 +54,7 @@ def main() -> None:
 
     logger.info("Loading findings from %s", args.input)
     raw: list[dict] = []
-    with args.input.open() as fh:
+    with args.input.open(encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
             if not line:
@@ -75,7 +75,7 @@ def main() -> None:
 
     # --- Write output ---
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w") as fh:
+    with args.output.open("w", encoding="utf-8") as fh:
         for r in deduped:
             fh.write(json.dumps(r) + "\n")
     logger.info("Wrote %d findings to %s", len(deduped), args.output)
@@ -117,7 +117,7 @@ def main() -> None:
 
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report, indent=2))
+        args.report.write_text(json.dumps(report, indent=2), encoding="utf-8")
         logger.info("Report written to %s", args.report)
 
     # Print summary
