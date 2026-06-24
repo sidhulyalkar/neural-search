@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Additive ablation ladder for neural-search retrieval evaluation.
 
-Runs six retrieval systems in progressive order, writing a TREC-style JSONL
+Runs eight retrieval systems in progressive order, writing a TREC-style JSONL
 run file for each rung. Each rung adds one capability on top of the previous:
 
   rung 1 — bm25                BM25 sparse retrieval
@@ -9,7 +9,15 @@ run file for each rung. Each rung adds one capability on top of the previous:
   rung 3 — dense_bge           BGE-large dense retrieval (pre-computed embeddings)
   rung 4 — hybrid_rrf          RRF(BM25 + BGE-dense)
   rung 5 — hybrid_graph        hybrid_rrf + knowledge graph context score
-  rung 6 — full                hybrid_graph + source diversity reranking
+  rung 6 — typed_kg            hybrid_rrf + typed finding-relationship score ONLY
+                                (isolates the Phase 0-6b supports/contradicts layer
+                                 from the aggregate graph signal in rung 5 — added
+                                 2026-06-23 because hybrid_graph mixes linked-paper
+                                 counts, affordances, and dataset-similarity edges
+                                 together with the typed layer, so a gain or loss
+                                 there couldn't be attributed to the typed layer)
+  rung 7 — typed_kg_qualified  typed_kg + qualified-consensus region bonus
+  rung 8 — full                hybrid_graph + source diversity reranking
 
 Use --skip-rungs to exclude slow rungs (dense_bge requires sentence-transformers).
 
@@ -20,6 +28,8 @@ Outputs
   reports/eval/runs/dense_bge.jsonl
   reports/eval/runs/hybrid_rrf.jsonl
   reports/eval/runs/hybrid_graph.jsonl
+  reports/eval/runs/typed_kg.jsonl
+  reports/eval/runs/typed_kg_qualified.jsonl
   reports/eval/runs/full.jsonl
   reports/eval/ablation_ladder_report.json
   reports/eval/ablation_ladder_report.md
@@ -42,6 +52,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import time
 from collections import defaultdict
@@ -50,6 +61,7 @@ from typing import Any
 
 import yaml
 
+from neural_search.graph.typed_kg_features import TypedKGIndex, typed_kg_score
 from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
 from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 from neural_search.search.sparse import SparseIndex
@@ -58,10 +70,17 @@ DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_
 DEFAULT_QUERIES = Path("data/eval/benchmark_queries_canonical.yaml")
 DEFAULT_EMBEDDINGS = Path("data/embeddings/real_all.dense.field_embeddings.jsonl")
 DEFAULT_GRAPH = Path("data/graph/neural_search_graph.real_corpus.json")
+DEFAULT_PAPER_LINKS = Path("artifacts/literature/paper_dataset_links.jsonl")
+DEFAULT_FINDING_EDGES = Path("artifacts/literature/relationships/finding_edges.jsonl")
+DEFAULT_QUALIFIED_CONSENSUS = Path("artifacts/literature/relationships/consensus_summaries_qualified.jsonl")
 DEFAULT_OUT_DIR = Path("reports/eval/runs")
+# Cross-platform discard sink for cache-miss recomputation that shouldn't be
+# written to a run file (the original /dev/null literal only worked on POSIX).
+NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
 GRAPH_SCORE_WEIGHT = 0.005
+TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT — fair comparison
 
 ALL_RUNGS = [
     "bm25",
@@ -69,6 +88,8 @@ ALL_RUNGS = [
     "dense_bge",
     "hybrid_rrf",
     "hybrid_graph",
+    "typed_kg",
+    "typed_kg_qualified",
     "full",
 ]
 
@@ -417,6 +438,35 @@ def rung_hybrid_graph(
     return results
 
 
+def rung_typed_kg(
+    rrf_results: list[RunResult],
+    typed_index: TypedKGIndex,
+    corpus_by_stable_id: dict[str, dict],
+    query_id: str,
+    top_k: int,
+    out_path: Path,
+    *,
+    qualified: bool,
+    score_weight: float = TYPED_KG_SCORE_WEIGHT,
+) -> list[RunResult]:
+    """hybrid_rrf + typed finding-relationship score ONLY (no graph_context_score).
+
+    Isolates the Phase 0-6b supports/contradicts/qualified-consensus layer from
+    the aggregate hybrid_graph signal, so its retrieval contribution can be
+    measured on its own against the same canonical qrels.
+    """
+    rung_name = "typed_kg_qualified" if qualified else "typed_kg"
+    rescored: list[RunResult] = []
+    for record_id, base_score in rrf_results:
+        record = corpus_by_stable_id.get(record_id)
+        tscore = typed_kg_score(record_id, typed_index, record=record, qualified=qualified)
+        rescored.append((record_id, base_score + (score_weight * tscore)))
+    rescored.sort(key=lambda x: -x[1])
+    results = rescored[:top_k]
+    _write_run(out_path, query_id, results, rung_name)
+    return results
+
+
 def rung_full(
     graph_results: list[RunResult],
     corpus_by_stable_id: dict[str, dict],
@@ -552,6 +602,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
     parser.add_argument("--embeddings", type=Path, default=DEFAULT_EMBEDDINGS)
     parser.add_argument("--graph", type=Path, default=DEFAULT_GRAPH)
+    parser.add_argument("--paper-links", type=Path, default=DEFAULT_PAPER_LINKS)
+    parser.add_argument("--finding-edges", type=Path, default=DEFAULT_FINDING_EDGES)
+    parser.add_argument("--qualified-consensus", type=Path, default=DEFAULT_QUALIFIED_CONSENSUS)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
     parser.add_argument(
@@ -559,6 +612,12 @@ def main(argv: list[str] | None = None) -> int:
         type=float,
         default=GRAPH_SCORE_WEIGHT,
         help="Global multiplier for graph_context_score in hybrid_graph/full rungs.",
+    )
+    parser.add_argument(
+        "--typed-kg-score-weight",
+        type=float,
+        default=TYPED_KG_SCORE_WEIGHT,
+        help="Global multiplier for typed_kg_score in typed_kg/typed_kg_qualified rungs.",
     )
     parser.add_argument(
         "--skip-rungs", nargs="+", default=[],
@@ -574,7 +633,10 @@ def main(argv: list[str] | None = None) -> int:
 
     active_rungs = set(args.rungs or ALL_RUNGS) - set(args.skip_rungs)
     is_partial_run = active_rungs != set(ALL_RUNGS)
-    needs_dense = bool(active_rungs & {"dense_bge", "hybrid_rrf", "hybrid_graph", "full"})
+    needs_dense = bool(
+        active_rungs
+        & {"dense_bge", "hybrid_rrf", "hybrid_graph", "typed_kg", "typed_kg_qualified", "full"}
+    )
 
     if not args.queries.exists():
         raise SystemExit(f"Query file not found: {args.queries}. Run merge_benchmark_queries.py first.")
@@ -608,8 +670,10 @@ def main(argv: list[str] | None = None) -> int:
     encoder: Any = None
     if needs_dense:
         if not args.embeddings.exists():
-            print(f"  Warning: embeddings not found at {args.embeddings} — dense rungs will be skipped.")
-            active_rungs -= {"dense_bge", "hybrid_rrf", "hybrid_graph", "full"}
+            print(f"  Warning: embeddings not found at {args.embeddings} -- dense rungs will be skipped.")
+            active_rungs -= {
+                "dense_bge", "hybrid_rrf", "hybrid_graph", "typed_kg", "typed_kg_qualified", "full",
+            }
         else:
             embeddings = load_field_embeddings(args.embeddings)
             encoder = load_bge_encoder()
@@ -623,9 +687,21 @@ def main(argv: list[str] | None = None) -> int:
                 node_count = len(graph.nodes) if hasattr(graph, "nodes") else "?"
                 print(f"  Graph loaded: {node_count} nodes")
             else:
-                print(f"  Graph not found at {args.graph} — hybrid_graph/full will run without graph signal")
+                print(f"  Graph not found at {args.graph} -- hybrid_graph/full will run without graph signal")
         except Exception as exc:
             print(f"  Warning: graph load failed: {exc}")
+
+    typed_index: TypedKGIndex | None = None
+    if active_rungs & {"typed_kg", "typed_kg_qualified"}:
+        typed_index = TypedKGIndex.from_files(
+            args.paper_links, args.finding_edges, args.qualified_consensus
+        )
+        n_linked = len(typed_index.dataset_to_papers)
+        n_qualified = len(typed_index.region_to_qualified_consensus)
+        print(
+            f"  Typed KG index: {n_linked} datasets with confidently-linked papers, "
+            f"{n_qualified} regions with qualified consensus (n_papers>=2)"
+        )
 
     auto_labels = _load_auto_labels(Path("data/eval/annotation_candidates.jsonl"))
     print(f"  Auto-labels loaded: {len(auto_labels)} pairs")
@@ -650,7 +726,7 @@ def main(argv: list[str] | None = None) -> int:
             report_rows.append({"rung": rung, "status": "skipped", "metrics": {}})
             continue
 
-        print(f"\n── Rung: {rung} ──────────────────────────────────")
+        print(f"\n-- Rung: {rung} --------------------------------------")
         t_rung = time.time()
         queries_run = 0
 
@@ -669,7 +745,7 @@ def main(argv: list[str] | None = None) -> int:
             elif rung == "bm25_structured":
                 bm25 = bm25_cache.get(qid) or rung_bm25(
                     index, corpus_by_bm25_id, corpus_by_stable_id,
-                    qtext, qid, args.top_k, Path("/dev/null"),
+                    qtext, qid, args.top_k, NULL_PATH,
                 )
                 rung_bm25_structured(bm25, corpus_by_stable_id, qtext, qid,
                                      intent, args.top_k, run_paths["bm25_structured"])
@@ -682,10 +758,10 @@ def main(argv: list[str] | None = None) -> int:
             elif rung == "hybrid_rrf":
                 bm25 = bm25_cache.get(qid) or rung_bm25(
                     index, corpus_by_bm25_id, corpus_by_stable_id,
-                    qtext, qid, args.top_k, Path("/dev/null"),
+                    qtext, qid, args.top_k, NULL_PATH,
                 )
                 dense = dense_cache.get(qid) or rung_dense_bge(
-                    encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                    encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                 )
                 res = rung_hybrid_rrf(bm25, dense, qid, args.top_k, run_paths["hybrid_rrf"])
                 rrf_cache[qid] = res
@@ -695,12 +771,12 @@ def main(argv: list[str] | None = None) -> int:
                 if rrf is None:
                     bm25 = bm25_cache.get(qid) or rung_bm25(
                         index, corpus_by_bm25_id, corpus_by_stable_id,
-                        qtext, qid, args.top_k, Path("/dev/null"),
+                        qtext, qid, args.top_k, NULL_PATH,
                     )
                     dense = dense_cache.get(qid) or rung_dense_bge(
-                        encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                     )
-                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
                 res = rung_hybrid_graph(
                     rrf,
                     graph,
@@ -712,6 +788,40 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 graph_cache[qid] = res
 
+            elif rung == "typed_kg":
+                rrf = rrf_cache.get(qid)
+                if rrf is None:
+                    bm25 = bm25_cache.get(qid) or rung_bm25(
+                        index, corpus_by_bm25_id, corpus_by_stable_id,
+                        qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    dense = dense_cache.get(qid) or rung_dense_bge(
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                rung_typed_kg(
+                    rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
+                    run_paths["typed_kg"], qualified=False,
+                    score_weight=args.typed_kg_score_weight,
+                )
+
+            elif rung == "typed_kg_qualified":
+                rrf = rrf_cache.get(qid)
+                if rrf is None:
+                    bm25 = bm25_cache.get(qid) or rung_bm25(
+                        index, corpus_by_bm25_id, corpus_by_stable_id,
+                        qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    dense = dense_cache.get(qid) or rung_dense_bge(
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                rung_typed_kg(
+                    rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
+                    run_paths["typed_kg_qualified"], qualified=True,
+                    score_weight=args.typed_kg_score_weight,
+                )
+
             elif rung == "full":
                 gr = graph_cache.get(qid)
                 if gr is None:
@@ -719,19 +829,19 @@ def main(argv: list[str] | None = None) -> int:
                     if rrf is None:
                         bm25 = bm25_cache.get(qid) or rung_bm25(
                             index, corpus_by_bm25_id, corpus_by_stable_id,
-                            qtext, qid, args.top_k, Path("/dev/null"),
+                            qtext, qid, args.top_k, NULL_PATH,
                         )
                         dense = dense_cache.get(qid) or rung_dense_bge(
-                            encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                            encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                         )
-                        rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
+                        rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
                     gr = rung_hybrid_graph(
                         rrf,
                         graph,
                         q,
                         qid,
                         args.top_k,
-                        Path("/dev/null"),
+                        NULL_PATH,
                         graph_score_weight=args.graph_score_weight,
                     )
                 rung_full(gr, corpus_by_stable_id, qid, args.top_k, run_paths["full"])

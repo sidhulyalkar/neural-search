@@ -176,6 +176,25 @@ def _clean_region_string(r: str) -> str:
     return r
 
 
+# Patterns for region values that are not anatomical/cell-type terms at all --
+# found via the 2026-06-23 audit of the 190K-finding corpus (see
+# reports/eval/finding_audit_llm_judge_summary_2026.md): a genomic locus, a
+# gene/peptide/epitope identifier, or a literal comparative phrase from the
+# finding text getting concatenated into the region field as if it were a
+# place name. None of these are real brain regions; strip them mechanically
+# rather than relying on the LLM extractor (or a re-judge pass) to catch them.
+_MALFORMED_REGION_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"\bchromosome\s+\d+\b"),                    # "chromosome 19"
+    re.compile(r"\(\s*\d+\s*[-–]\s*\d+\s*\)"),          # "(111-129)" residue ranges
+    re.compile(r"\b(higher|lower|greater|smaller|more|less)\s+than\b"),  # comparative phrases
+]
+
+
+def _is_malformed_region(cleaned: str) -> bool:
+    """True if a cleaned region string is structurally not an anatomical term."""
+    return any(p.search(cleaned) for p in _MALFORMED_REGION_PATTERNS)
+
+
 def normalize_regions(
     regions: list[str],
 ) -> tuple[list[str], list[str], bool]:
@@ -183,6 +202,9 @@ def normalize_regions(
 
     * Applies underscore cleanup and alias expansion.
     * Separates generic regions into a second list for quality flagging.
+    * Also strips malformed values (genomic loci, epitope names, comparative
+      phrases -- see _MALFORMED_REGION_PATTERNS) into the same flagged list;
+      they are not real regions to begin with, generic or otherwise.
     """
     normalized: list[str] = []
     generic_flagged: list[str] = []
@@ -194,7 +216,7 @@ def normalize_regions(
         canonical = _REGION_ALIASES.get(cleaned, cleaned)
         if canonical != r:
             changed = True
-        if canonical in _GENERIC_REGIONS:
+        if canonical in _GENERIC_REGIONS or _is_malformed_region(canonical):
             generic_flagged.append(canonical)
             changed = True
             continue

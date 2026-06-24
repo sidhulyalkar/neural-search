@@ -39,6 +39,8 @@ RUNG_ORDER = [
     "dense_bge",
     "hybrid_rrf",
     "hybrid_graph",
+    "typed_kg",
+    "typed_kg_qualified",
     "full",
 ]
 
@@ -179,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {len(qrels)} queries with judgments ({total_judgments} total pairs)")
 
     if not qrels:
-        print("\nNo qrels found — run run_parallel_llm_qrels.py first.")
+        print("\nNo qrels found -- run run_parallel_llm_qrels.py first.")
         return 1
 
     # Relevance distribution
@@ -195,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
     for rung in RUNG_ORDER:
         rung_path = args.runs_dir / f"{rung}.jsonl"
         if not rung_path.exists():
-            print(f"  {rung:20} — file not found, skipping")
+            print(f"  {rung:20} -- file not found, skipping")
             continue
         metrics = evaluate_rung(rung_path, qrels)
         results[rung] = metrics
@@ -209,7 +211,7 @@ def main(argv: list[str] | None = None) -> int:
     # Write JSON
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(results, indent=2), encoding="utf-8")
-    print(f"\nMetrics → {args.out}")
+    print(f"\nMetrics written -> {args.out}")
 
     # Write Markdown table
     md_lines = [
@@ -231,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     md_lines.append("")
     args.md.write_text("\n".join(md_lines), encoding="utf-8")
-    print(f"Markdown → {args.md}")
+    print(f"Markdown written -> {args.md}")
 
     return 0
 

@@ -343,44 +343,54 @@ Limitations:
 
 ### Claim 14: Literature-scale ingestion enables evidence-backed neuroscience discovery [NEW]
 
-Status: Partial — ingestion and linking done; extraction running
+Status: Partial — tier1 ingestion AND extraction now complete; KG/relationship layer built on it, quality audited
 
 Evidence:
 
 - `neural_search/ingestion/openalex_bulk.py`: BulkIngester with cursor-based pagination, checkpoint/resume, three tiers
   - Tier 1: 255,940 neuroscience papers (≥100 citations) — **fully ingested**
-  - Tier 2: ~1.39M open-access papers — staged for next sprint
+  - Tier 2: ~1.39M open-access papers — staged, not started (`bulk_ingest_openalex.py --tier tier2` is ready to run)
   - Tier 3: ~4.36M total papers — future
 - `neural_search/literature/finding_extractor.py`: LLM-powered structured finding extraction
   - `FindingRecord` schema: finding_text, result_direction, regions, species, modalities, tasks, cell_types, molecules, confidence
   - Ollama local inference backend (no cloud cost): `extract_batch_ollama()` with `_repair_json()` for markdown fence handling
   - Multi-provider fallback: Ollama → Anthropic → OpenRouter
-- `neural_search/literature/search.py`: BM25-style TF-IDF search across papers and findings
-- `neural_search/literature/kg_builder.py`: KG integration — adds paper/finding/venue nodes and cross-edges
-- Current extraction run: 550 papers processed, 262 findings, 47% yield rate
+  - **Tier1 extraction is complete as of 2026-06-23 19:09 PDT**: 255,940/255,940 papers checkpointed, 190,279 findings (74.4% yield) in `artifacts/literature/findings_tier1_ollama.jsonl` (144MB+, gitignored — do not commit)
+- `neural_search/literature/typed_finding_extractor.py`: 27 rule-based typed fields (frequency band, temporal pattern, negation, spatial frame, injury model, molecular marker, etc.), regex-only, no model calls
+- `neural_search/literature/relationship_builder.py`: cross-finding supports/contradicts edges, region co-occurrence, base + qualified (per-facet) consensus summaries — regenerated 2026-06-23 against the full extraction: 194,903 finding edges (83,717 supports / 111,186 contradicts), 965 region co-occurrence edges, 792 base + 567 qualified consensus records
+- `scripts/literature/ingest_relationships_to_kg.py`: materializes the above into `data/graph/relationships_kg.jsonl` (3,334 finding nodes, 559 region nodes) — rebuilt 2026-06-23
+- `neural_search/literature/kg_builder.py`: KG integration — adds paper/finding/venue nodes and cross-edges (predates the full extraction; not yet rebuilt at the new finding count)
+- **Quality audit** (`reports/eval/finding_audit_llm_judge_summary_2026.md`, 100-row LLM-judge sample post-completion): 82% strict / 90% weighted precision — holds above the 80% whitepaper-citation threshold, down modestly from the 88%/92% pre-completion snapshot (consistent with judging a fresh sample, not a quality regression — the FALSE rate actually halved). Dominant failure mode is now region-field errors (inferred-not-stated regions, and a new malformed-value subtype: genomic loci/peptide names/comparative phrases landing in the region field). A mechanical normalizer fix for the malformed-value subtype shipped same day (`neural_search/literature/normalizer.py::_is_malformed_region`). A v3 extraction prompt (`configs/literature/finding_extraction_v3.yaml`) addresses all four named failure modes (domain contamination, methods-statements-as-findings, malformed regions, direction-field misuse) but has not yet been used for a production extraction run.
+- `artifacts/claims/` 5-stage claim synthesis pipeline (cluster → synthesize via Claude Haiku → detect contradictions → ingest to KG) exists but is **not yet run on the full extraction**: `findings_normalized.jsonl` (123,331 rows) and `finding_clusters.jsonl` (4,345 clusters) are from an earlier, smaller snapshot; `claims_raw.jsonl` (the Claude Haiku synthesis output) does not exist yet. This step costs real API calls and was deliberately not auto-triggered.
 
 Limitations:
 
-- Tier1 extraction at ~0.54s/paper requires ~38h to complete; findings not yet fully available.
-- Finding extraction quality has been manually spot-checked (smoke test) but not formally precision/recall evaluated.
+- Extraction quality is LLM-judge audited (Claude Sonnet 4.6), not human-audited — see the dual caveat in both 2026-06-22 and 2026-06-23 audit summaries.
+- Corpus/domain contamination is now a *confirmed recurring* issue (non-neuroscience papers entering the findings corpus), not a one-off — an upstream topic filter remains unbuilt.
 - Literature search not yet integrated into main search path — operates as a separate index.
-- KG rebuild with full findings pending extraction completion.
+- KG rebuild with full findings (`kg_builder.py`'s paper/finding/venue layer) is still pending — only the relationship layer (`relationships_kg.jsonl`) has been rebuilt at full scale so far.
+- Claim synthesis (Claude Haiku) has not been run at all on real data yet — claims_router.py is wired into the API but has no real claims to serve.
+- The typed/relationship KG layer's effect on retrieval, when isolated from the aggregate hybrid_graph signal, is being measured for the first time in the 2026-06-23 `typed_kg`/`typed_kg_qualified` ablation rungs (see Claim 9 above for the numbers).
 
 Publication framing:
 
-Claim literature-scale ingestion (255,940+ OpenAlex neuroscience papers), paper-dataset bidirectional linking, and LLM-structured finding extraction as implemented capabilities. Frame finding count and search quality as preliminary pending full extraction.
+Claim literature-scale ingestion (255,940 OpenAlex neuroscience papers, **complete**) and LLM-structured finding extraction (190,279 findings, **complete**) as implemented and now-finished capabilities, with a fresh 100-row quality audit at full scale. Claim the relationship layer (194,903 finding edges, base + qualified consensus) as built and KG-integrated. Do **not** yet claim the claims/synthesis layer is populated with real data, or that finding extraction precision has been human-validated.
 
 ## Publication Required Before Strong Claims
 
-1. Complete tier1 finding extraction (~80K findings expected) and rebuild the KG.
-2. Freeze a reconciled expanded-corpus snapshot manifest with checksums.
-3. Rerun retrieval benchmarks on that frozen corpus.
+1. ~~Complete tier1 finding extraction~~ — **done 2026-06-23** (190,279 findings, 255,940/255,940 papers).
+2. Freeze a reconciled expanded-corpus snapshot manifest with checksums — `reports/eval/current_artifact_manifest.json` exists but is still hand-maintained (no `build_artifact_manifest.py` script despite being referenced by `docs/REPRODUCIBILITY_CAPSULE.md`).
+3. Rerun retrieval benchmarks on that frozen corpus — in progress; the canonical 317-query/13,654-pair ladder now includes `typed_kg`/`typed_kg_qualified` rungs (2026-06-23) to isolate the relationship layer's contribution.
 4. Implement and test exact identifier pinning.
 5. Generate source-by-source metadata completeness and false-positive audits.
-6. Validate affordances against file inspection or human labels.
+6. Validate affordances against file inspection or human labels — `reports/eval/affordance_audit_template.csv` exists, still blank.
 7. Audit memory graph coverage so the paper distinguishes the field-state graph from the literature graph.
 8. Generate manuscript metric tables directly from JSON reports.
-9. Conduct a precision spot-check on 100 random extracted findings against source abstracts.
+9. ~~Conduct a precision spot-check on 100 random extracted findings against source abstracts~~ — **done twice** (2026-06-22 pre-completion, 2026-06-23 post-completion; both LLM-judge, not human).
+10. Run the claim-synthesis pipeline (cluster → Claude Haiku synthesis → contradiction detection → KG ingest) on the full 190K-finding extraction — not started; requires real API spend, needs explicit go-ahead.
+11. Rebuild `kg_builder.py`'s paper/finding/venue KG layer at the full 190K-finding scale (only the relationship layer has been rebuilt so far).
+12. Sample and fill at least one of the four still-blank human-audit CSVs (findings, paper-dataset links, affordances, typed-fields) with a genuine human pass, not an LLM-judge pass — every audit run so far, including both 2026 finding-extraction audits, has been LLM-judged.
+13. Human-adjudicate a stratified subset of the canonical 13,654-pair qrels (still 0 gold rows) — the single most-repeated blocker across every strategy doc in this repo since 2026-06-11.
 10. Run literature search quality evaluation against a curated query set.
 
 ## Current Bottom Line

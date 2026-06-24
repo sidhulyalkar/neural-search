@@ -108,6 +108,32 @@ class TestNormalizeRegions:
         result, generic, changed = normalize_regions(["hippocampus", "hippocampus"])
         assert result.count("hippocampus") == 1
 
+    def test_chromosome_locus_stripped(self):
+        # From the 2026-06-23 audit: paper:openalex:W2090116059:f0 extracted
+        # "chromosome 19" (a genomic locus, not a brain region).
+        result, generic, changed = normalize_regions(["chromosome 19"])
+        assert result == []
+        assert "chromosome 19" in generic
+        assert changed
+
+    def test_epitope_residue_range_stripped(self):
+        # From the audit: paper:openalex:W2063057013:f0 extracted "mbp(111-129)".
+        result, generic, changed = normalize_regions(["mbp(111-129)"])
+        assert result == []
+        assert changed
+
+    def test_comparative_phrase_stripped(self):
+        # From the audit: paper:openalex:W1974710999:f2 extracted
+        # "higher than primary visual cortex" as a single region value.
+        result, generic, changed = normalize_regions(["higher than primary visual cortex"])
+        assert result == []
+        assert changed
+
+    def test_malformed_region_does_not_affect_valid_siblings(self):
+        result, generic, changed = normalize_regions(["chromosome 19", "hippocampus"])
+        assert result == ["hippocampus"]
+        assert "chromosome 19" in generic
+
 
 class TestNormalizeTasks:
     def test_spatial_navigation_variant(self):
