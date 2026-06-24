@@ -98,7 +98,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-Neural Search is an experiment-aware discovery framework for reusable neuroscience datasets. Generic document retrieval treats datasets as text; Neural Search treats them as structured experimental objects with typed metadata, ontology-grounded dimensions, provenance, dense retrieval signals, and graph context. The current implementation contains a 7,171-row normalized corpus, full-corpus graph construction, coverage analysis, literature ingestion, finding extraction, qrels review infrastructure, and frontend evidence surfaces. Validation remains in progress: current vector-index and graph-rank artifacts are engineering evidence, while publication-grade NDCG/MRR/Recall requires frozen benchmark runs over human-adjudicated qrels. LLM-generated qrels and extracted findings are therefore used as silver diagnostic signals and audit queues, not as final scientific evidence.
+Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current live corpus artifact contains 7,171 normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, Harvard Dataverse, Buzsaki Lab, SPARK, and smaller sources. Corpus expansion is implemented as a tiered ingestion and enrichment pipeline: high-volume open repositories are admitted through raw/processed-data, neuroscience-signal, license, and persistent-identifier gates, while curated neuroscience sources and DANDI/NWB enrichers add modality, species, task, paper-link, and brain-region evidence with explicit provenance. The current indexed/evaluated slice is represented by 2,840 BGE-large-en-v1.5 embeddings over 625 records and a 625-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores datasets, papers, concepts, modalities, species, brain regions, tasks, affordances, neuro-judge evidence packets, user feedback signals, and versioned snapshots in a single queryable, exportable, incrementally-updatable graph. The full-corpus knowledge graph (\texttt{neural\_search\_graph.real\_corpus.json}, rebuilt 14~June~2026) contains 7,593 typed nodes and 31,920 typed edges across 7,171 dataset nodes, 118 brain-region nodes, 81 task nodes, 60 modality nodes, and 17 species nodes. In addition to 28,963 base provenance edges, 2,957 explicit cross-dataset relationship edges encode multimodal reuse candidates (\texttt{same\_region\_cross\_modality}: 890), methodological siblings (\texttt{same\_region\_same\_task}: 1,576), and cross-species generalization bridges (\texttt{same\_task\_cross\_species}: 491). A separate field-state memory graph (\texttt{update\_20260613T053153Z}) tracks 2,200 nodes and 3,788 typed edges spanning evidence packets, feedback signals, and curation artifacts for the 629-record reviewed slice. Provenance invariants keep neuro-judge silver labels, CrossRef/NWB-derived silver enrichments, downstream user feedback, and human gold labels separate. A DuckDB-backed coverage ledger (7,176 datasets; 29,561 entries across six dimensions: brain\_regions, modalities, recording\_scales, species, tasks, behavioral\_events) enables gap-analysis queries, source coverage rates, and dark-pair identification. A coverage gap boost adds an additive inverse-log-frequency rarity signal (capped at $+0.10$) to retrieval scores, preferring underrepresented anatomical regions and modalities. A source-diversity post-processor applies a greedy windowed algorithm (default \texttt{max\_per\_source}=3) to prevent single-repository domination of result lists. A SPECTER2 hybrid retrieval module (config-gated, disabled by default) adds scientific paper embedding similarity as an additive signal. An LLM query expansion fallback (Claude Haiku, LRU-cached, fails safe) activates only when rule-based parsing extracts zero brain regions and zero tasks, filling empty queries with structured ontological terms. Structured dimension-match badges in the frontend surface per-dimension evidence quality (full/partial/inferred/none) for every result card. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, computes memory diffs, preserves human review overlays, and generates provisional learning signals without overwriting canonical labels. A literature ingestion layer has linked papers to corpus datasets and run rule-based typed-finding extraction (27 fields: frequency band, temporal pattern, negation, spatial frame, and more) over a tier-1 finding-extraction run that is still in progress (190K+ findings as of 23~June~2026). Current validation artifacts show preliminary usefulness-score separation between relevant and irrelevant results, graph-rank perturbation for 39\% of ranked pairs, and a canonical LLM-judged qrels snapshot with 317 queries and 13,654 non-error query--dataset labels --- the first non-degenerate ablation ladder this project has produced, though bootstrap confidence intervals show the graph-backed variants' lead over plain BM25 is not yet statistically established (Section~\ref{sec:limitations}). The qrels review workflow has also been smoke-tested for human adjudication, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation steps are dual-judge agreement, human adjudication of a stratified subset, deterministic exact lookup, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
 \end{abstract}
 
 \begin{table}[htbp]
@@ -991,7 +991,7 @@ $\rightarrow$ \texttt{claim evidence update}
 $\rightarrow$ \texttt{whitepaper validation report}.
 \end{center}
 
-As of the current artifact snapshot, this loop has been smoke-tested and now contains only three adjudicated qrels entries. This demonstrates artifact integrity and review-loop feasibility, but it does not constitute final human relevance validation or benchmark-quality retrieval performance evidence.
+As of the current artifact snapshot, this human-review loop has been smoke-tested and remains separate from the larger canonical LLM-judged qrels snapshot. The smoke test demonstrates artifact integrity and review-loop feasibility, while the 317-query LLM qrels snapshot exercises retrieval metrics and the regression gate. Neither constitutes final publication-grade human relevance validation until duplicate review and adjudication are complete.
 
 \subsection{Field-State Memory Graph (v0.9)}
 \label{sec:field-state-memory-graph}
@@ -1344,7 +1344,7 @@ The Field-State, Obsidian memory, and evaluation-memory infrastructure is curren
 
 \subsection{Human Relevance Labeling Protocol}
 
-Human relevance validation uses 0--3 graded labels for each query--dataset pair. The evaluation-memory layer exports qrels candidates to review notes and imports human labels into \texttt{artifacts/field\_state/qrels\_reviews.jsonl}. Adjudicated labels are written separately to \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl}. The current workflow has reached only three adjudicated labels, which is useful for validating storage, import, and reporting mechanics but far below the threshold required for benchmark claims.
+Human relevance validation uses 0--3 graded labels for each query--dataset pair. The evaluation-memory layer exports qrels candidates to review notes and imports human labels into \texttt{artifacts/field\_state/qrels\_reviews.jsonl}. Adjudicated labels are written separately to \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl}. The current canonical LLM-judged qrels snapshot is useful for ablation preview and regression testing, but human relevance validation still requires duplicate review, disagreement adjudication, and agreement reporting.
 
 \noindent\textbf{Neuro-judge labels are preliminary silver labels.} The repository includes a RAG-grounded neuro-judge workflow for prioritizing query--dataset pairs for review and for diagnosing evidence gaps. These labels are not human gold. The mock neuro-judge backend is a deterministic plumbing and regression-test instrument, not a scientific relevance labeler. Judge-derived metrics must remain diagnostic until collapse diagnostics, stratified validation sampling, expert audit, and calibration against adjudicated human labels are complete.
 
@@ -1697,12 +1697,12 @@ Metrics include NDCG@10 (graded relevance, 0--3 scale), MRR (binary threshold $\
 
 \subsection{Validation Status}
 
-\textbf{The graph boost has not yet been scientifically validated.} The graph influence on final scores is only scientifically meaningful if it produces measurable improvement in qrels-backed retrieval metrics (NDCG@10, MRR) over the lexical-only baseline. As of the current system state, adjudicated qrels contain only three judgements. The ablation evaluation infrastructure is complete and operational, but the evaluation cannot produce credible metrics until human relevance labels are provided at benchmark scale via the qrels workflow. Until then:
+\textbf{The graph boost is now measurable, but still preliminary.} The graph influence on final scores is scientifically meaningful only if it produces measurable improvement in qrels-backed retrieval metrics (NDCG@10, MRR) over strong non-graph baselines. As of the current system state, the populated qrels-backed retrieval snapshot covers 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs. This is sufficient for a useful ablation preview, but it is not a substitute for independently adjudicated human labels. After calibrating the global graph multiplier to 0.005, \texttt{hybrid\_graph} shows a small LLM-qrels-backed gain over \texttt{hybrid\_rrf}; this should be treated as a promising calibration result, not as publication-grade validation. Until human/adjudicated graph ablations are available:
 
 \begin{itemize}
     \item All score decompositions are structurally correct and unit-tested.
-    \item No retrieval quality claim based on concept boost should be made in publications.
-    \item The GICM layer should be described as a \emph{planned enrichment mechanism with a validated evaluation harness}, not a proven retrieval improvement.
+    \item No publication-grade retrieval quality claim based on concept boost should be made from LLM-only labels.
+    \item The GICM layer should be described as a \emph{calibrated enrichment mechanism with an active evaluation harness}, not yet a human-validated retrieval improvement.
 \end{itemize}
 
 \section{Audit Protocols}
@@ -1728,6 +1728,83 @@ Qrels adjudication protocol & Pooled query-dataset candidates from all retrieval
 
 \noindent\textbf{LLM qrels status.} LLM-generated qrels, neuro-judge packets, and consensus labels are silver diagnostic artifacts. They can prioritize review, reveal prompt collapse, and support exploratory ablations, but they cannot produce publication-grade NDCG, MRR, or Recall. Publication-grade retrieval metrics require human-adjudicated qrels, agreement reporting, and reproducible run files over a frozen corpus snapshot.
 
+A hard-negative violation is recorded when a result explicitly matches a stated \texttt{hard\_negatives} description for the query. These are tracked separately as they indicate systemic failures (e.g., returning mouse calcium imaging when the query explicitly requires human fMRI).
+
+\subsection{Evaluation Metrics}
+
+For each retrieval variant, the following metrics are computed:
+
+\begin{itemize}
+    \item $\text{NDCG@10}$ and $\text{NDCG@20}$: Normalized Discounted Cumulative Gain using the graded 0--3 relevance scale
+    \item $\text{MRR}$: Mean Reciprocal Rank (binary threshold: relevance $\geq 2$)
+    \item $\text{P@10}$, $\text{R@10}$, $\text{R@50}$: Precision and Recall at rank cutoffs
+    \item $\text{HN rate}$: Fraction of top-10 results that are hard-negative violations
+    \item $\text{Source skew}$: Entropy-normalized concentration of top-10 results by data repository
+    \item Bootstrap 95\% CI (1000 samples) for NDCG@10, MRR, Recall@50
+\end{itemize}
+
+\subsection{Retrieval Variants}
+
+The canonical 317-query ablation ladder compares six rungs, in increasing order of signal:
+
+\begin{enumerate}
+    \item \texttt{bm25}: BM25 sparse retrieval only
+    \item \texttt{bm25\_structured}: BM25 + structured ontology-dimension matching
+    \item \texttt{dense\_bge}: BGE-large-en-v1.5 dense field embeddings only
+    \item \texttt{hybrid\_rrf}: reciprocal rank fusion of sparse and dense signals
+    \item \texttt{hybrid\_graph}: \texttt{hybrid\_rrf} + calibrated knowledge-graph boost
+    \item \texttt{full}: all components, including coverage-gap and source-diversity post-processing
+\end{enumerate}
+
+An earlier, smaller-scale concept-memory ablation (\texttt{bm25} / \texttt{usefulness} / \texttt{concept\_boost} / \texttt{concept\_boost\_ev} / \texttt{concept\_full}) remains available in \texttt{reports/ablation\_v08.md} but ran on synthetic seed pairs and produced no rung differentiation; it is superseded by the canonical ladder above for any retrieval-quality claim.
+
+\subsection{Candidate Pooling and Annotation}
+
+Annotation candidates are built by pooling the top-50 results from all active variants. Consensus candidates (retrieved by multiple variants) are prioritized for annotation. The concept-rerank strategy is included in the pool when field-state artifacts are present, ensuring GICM-specific results are represented in the annotation set.
+
+A minimum of 30\% of pairs are independently annotated by two annotators. Disagreements where $|s_A - s_B| \geq 2$ are adjudicated. The \texttt{qrels.jsonl} schema records: \texttt{relevance}, \texttt{rationale}, \texttt{hard\_negative\_violation}, \texttt{missing\_metadata}, \texttt{annotator\_id}, \texttt{adjudicated}, and \texttt{adjudication\_notes}.
+
+\subsection{Minimum Credible Benchmark}
+
+Results from this benchmark support paper-ready claims only when:
+
+\begin{itemize}
+    \item $\geq 100$ queries with adjudicated qrels
+    \item $\geq 1,500$ judged query-dataset pairs
+    \item All 7 intent types represented
+    \item $\geq 5$ distinct data repositories in the corpus
+    \item All annotator disagreements adjudicated
+    \item Bootstrap 95\% CI does not include 0 improvement for primary claims
+\end{itemize}
+
+\subsection{Current Status}
+
+\textbf{A first qrels-backed retrieval snapshot is now available, but remains preliminary.} The current canonical qrels artifact contains 13,654 non-error LLM-judged query--dataset pairs across 317 canonical queries. The join is complete across all six retrieval rungs. On this snapshot, \texttt{hybrid\_rrf} remains a strong non-graph baseline with NDCG@10 = 0.6667, MRR = 0.9209, and Recall@50 = 0.7455. BM25 remains competitive on NDCG@10 (0.6566), while dense BGE alone has lower aggregate NDCG@10 (0.5708) and Recall@50 (0.5384). The graph-backed variants are now populated, calibrated, and evaluable: \texttt{hybrid\_graph} obtains NDCG@10 = 0.6696, MRR = 0.9256, and Recall@50 = 0.7465; \texttt{full} obtains NDCG@10 = 0.6696, MRR = 0.9256, and Recall@50 = 0.7450. The calibrated graph multiplier is 0.005, selected by \texttt{graph\_weight\_calibration.md} as the best balanced setting that improves NDCG@10 and MRR over \texttt{hybrid\_rrf}. Bootstrap/sign-test analysis finds \texttt{hybrid\_graph} significantly better than \texttt{hybrid\_rrf} on NDCG@10 ($p=0.0052$) and MRR ($p=0.0020$), significantly better than BM25 on MRR, and significantly better than dense BGE on NDCG@10 and MRR. The graph gain is small and LLM-qrels-backed, so it should be framed as a promising calibrated preview rather than final human-adjudicated evidence.
+
+These numbers should be reported as an LLM-judged benchmark preview, not as final human-adjudicated scientific relevance evidence. Dual-judge reliability is not estimable from the current artifact: 13,654 labels are usable, but no non-error query--dataset pair was judged by two models.
+
+The evaluation infrastructure is complete:
+\begin{itemize}
+    \item Benchmark specification is frozen (\texttt{docs/benchmark\_v1\_spec.md})
+    \item 317 canonical evaluated queries are available in \texttt{data/eval/benchmark\_queries\_canonical.yaml}
+    \item Canonical LLM qrels are available in \texttt{data/qrels/qrels.canonical.jsonl} and \texttt{data/qrels/qrels.canonical.trec}
+    \item Candidate pool scripts operational (\texttt{sample\_candidate\_pool.py})
+    \item Metric computation with bootstrap CI operational (\texttt{compute\_ndcg\_from\_qrels.py}, \texttt{compute\_bootstrap\_ci.py})
+    \item Intent stratification, dual-judge reliability reporting, claim ledger generation, and regression gate scripts operational
+    \item Failure analysis and result card gallery scripts operational
+    \item Graph/full ablation rungs populated from a 2,821-record eval-corpus graph with 3,180 nodes and 17,523 edges, including 5,254 cross-dataset and reanalysis relationship edges
+    \item Graph-weight calibration and relationship-edge quality reporting operational; current relationship-edge promotions are mixed, so edge confidence/source calibration remains a priority
+    \item Reinterpretation and reprocessing discovery reports operational: reanalysis affordance ranking, new-method-to-old-dataset matching, and metadata-enrichment priorities derived from failure analysis
+    \item Annotation tool with resume mode operational
+    \item Frontend feedback loop operational: React search interface with evidence inspection, inline relevance feedback (usefulness, would-use-for-analysis, reason tags, free-text notes), neuro-judge badges with silver provenance watermarks, and save/export
+    \item Downstream retrieval success reporting operational (\texttt{compute\_downstream\_retrieval\_success.py})
+    \item Dataset organisation views operational (\texttt{build\_dataset\_organization\_views.py}) — groups judged corpus into relevance tiers, modality buckets, and special views (missing raw data, hard negatives, abstain-flagged, metadata gaps)
+    \item Feedback audit queue operational (\texttt{build\_feedback\_audit\_queue.py}) — priority scoring for judge/user disagreements, high-rank-not-useful cases, abstain-but-useful patterns
+    \item Transparent feedback reranking priors operational (\texttt{build\_feedback\_rerank\_priors.py}) — log-odds weight table ($\pm$1.5 cap) from aggregated downstream feedback, toggle-able in frontend; downstream signal only
+\end{itemize}
+
+No publication-grade improvement claim based on concept-memory or graph reranking appears in this paper. The current calibrated graph result is a positive LLM-qrels preview; any final claim requires qrels-backed evidence meeting the minimum credible benchmark targets above and independently adjudicated labels.
+
 \section{Limitations}
 \label{sec:limitations}
 
@@ -1735,7 +1812,7 @@ Qrels adjudication protocol & Pooled query-dataset candidates from all retrieval
 
 \paragraph{Engineering tests are not human labels.} The Field-State, Obsidian memory, and evaluation-memory tests validate schemas, JSONL persistence, report generation, roundtrips, human-block preservation, qrels import/export, adjudication logic, and snapshot generation. They do not substitute for expert relevance judgments or qrels-backed NDCG/MRR evaluation.
 
-\paragraph{Current qrels coverage is insufficient.} The qrels workflow has been smoke-tested and currently contains only three adjudicated labels. This is enough to validate workflow mechanics, but not enough to support final retrieval claims.
+\paragraph{Current qrels coverage is LLM-judged, not human-adjudicated.} The current canonical qrels snapshot covers 317 queries and 13,654 non-error LLM judgments, which is enough for a meaningful ablation preview and regression gate. It is not yet enough for publication-grade human relevance claims because no dual-judge overlap is available and expert adjudication remains pending.
 
 \paragraph{Future usefulness remains weakly validated.} Claims about future reuse potential, dataset-method compatibility, and downstream scientific value require longitudinal reuse outcomes or defensible proxy labels. Until those labels exist, usefulness scores should be interpreted as prioritization signals rather than validated predictions.
 
@@ -1747,7 +1824,7 @@ Qrels adjudication protocol & Pooled query-dataset candidates from all retrieval
 
 \paragraph{Unvalidated affordance inference.} Analysis affordances are currently represented and predicted, but content-validated affordance precision/recall is pending. Metadata-only affordance claims should be surfaced with uncertainty.
 
-\paragraph{Graph construction bias.} Graph proximity changes ranking behavior, but improvement in scientific relevance remains unproven until the frozen expanded-corpus benchmark ablation is run. Graph edges can also amplify incomplete or noisy metadata.
+\paragraph{Graph construction bias.} Calibrated graph proximity now shows a small positive LLM-qrels-backed retrieval gain, but graph edges can also amplify incomplete or noisy metadata. The relationship-edge quality report shows mixed promotion quality, so graph-weight and edge-confidence calibration must be revalidated on adjudicated labels.
 
 \paragraph{Dense embedding domain mismatch.} BGE-large-en-v1.5 provides a strong general dense retrieval representation, and broad embedding benchmarks such as MTEB are useful external references \citep{muennighoff2022mteb}. Scientific dataset usefulness may still require domain-specific calibration and field weighting.
 
@@ -2049,7 +2126,7 @@ The $s_{10}$ dimension is currently a placeholder ($0.0$). Future work should ex
 
 \subsection{Human-Labeled Benchmark Calibration}
 
-The current repository has preliminary usefulness labels and qrels review infrastructure, but the paper needs a larger multi-annotator benchmark before making final retrieval claims. The next benchmark should include 100--150 queries and at least 300--500 reviewed query--dataset pairs in the first credible snapshot, then grow as failure analysis identifies undersampled intents and sources. The benchmark should enable:
+The current repository now has a canonical LLM-judged qrels snapshot large enough to exercise the retrieval metrics and regression gate, but the paper still needs a multi-annotator human benchmark before making final retrieval claims. The next benchmark step should duplicate-judge a stratified subset of the 317 canonical queries, adjudicate disagreements, and grow expert coverage as failure analysis identifies undersampled intents and sources. The benchmark should enable:
 \begin{itemize}
     \item Calibrated usefulness score distributions
     \item Learned reranker training ($f_\theta$) on feature vectors
@@ -2064,9 +2141,9 @@ The current repository has preliminary usefulness labels and qrels review infras
 
 Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system is designed to help researchers find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus knowledge graph with 7,593 nodes and 31,920 edges (including 2,957 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 100-query benchmark suite with bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference with a live operational snapshot of 16,150 papers processed, 12,050 findings extracted, 74.6\% yield, and roughly 190K tier~1 findings projected if that rate is maintained. A subsequent rule-based enrichment pass adds 27 typed fields and has been coverage-audited over 122K findings, enabling compound queries over disease model, brain region, frequency band, molecular marker, pharmacological context, sleep state, and analysis method. These finding counts and coverage rates are operational estimates, not validated finding quality. Dense field embeddings are being rebuilt over all 7,171 records, which will unlock full dense retrieval and turbovec index rebuild. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus knowledge graph with 7,593 nodes and 31,920 edges (including 2,957 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 317-query canonical benchmark suite with 13,654 LLM-judged qrels, bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference and remains in progress, with 190K+ tier~1 findings extracted as of 23~June~2026. A rule-based enrichment pass adds 27 typed fields (frequency band, temporal pattern, negation, spatial frame, and more), enabling compound queries over disease model, brain region, frequency band, molecular marker, pharmacological context, sleep state, and analysis method; these finding counts and coverage rates are operational estimates, not validated finding quality, and the typed-field layer's effect on retrieval has not yet been isolated from the aggregate graph signal in the ablation ladder. Dense field embeddings are being rebuilt over all 7,171 records (previously covering 40\%), which will unlock full dense retrieval and turbovec index rebuild. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
 
-The next scientific milestone is completing tier~1 finding extraction, auditing finding and link quality, and rebuilding the knowledge graph to incorporate paper, finding, and venue nodes with validated literature edges. The subsequent milestone is annotation: LLM qrels can provide silver diagnostic metrics, but publication-grade NDCG@10, MRR, and Recall require human-adjudicated qrels from the frozen benchmark pool. The third milestone is coverage: spatial ontology expansion (Allen CCF v3, 13K+ regions; UBERON cross-species; HCP MMP 360 cortical areas), tier~2 ingest ($\sim$1.39M open-access papers), and corpus growth toward 10K+ datasets will close the dark-pair gaps identified by the coverage ledger.
+The next scientific milestone is reliability: dual-judge and human-adjudicate a stratified subset of the canonical qrels so QWK, disagreement analysis, and expert-calibrated NDCG@10 can be reported. The second is isolating the typed/relationship knowledge-graph layer's contribution: dedicated ablation rungs for typed finding/claim edges (independent of the aggregate \texttt{hybrid\_graph} signal) against the canonical qrels, extending the existing relationship-edge quality analysis (currently mixed, 47--52\% helpful rate) to the newer qualified-consensus and contradiction-subtype edge types. The third is coverage: spatial ontology expansion (Allen CCF v3, 13K+ regions; UBERON cross-species; HCP MMP 360 cortical areas), tier~2 ingest ($\sim$1.39M open-access papers), BIL and NeuroVault re-enrichment, OpenNeuro BIDS electrode extraction, and corpus growth toward 10K+ records will close the dark-pair gaps identified by the coverage ledger. The fourth is accuracy: SPECTER2 fusion, metapath retrieval, additional graph rungs, and a learned-to-rank reranker will be evaluated against the frozen qrels benchmark before any production deployment.
 
 The key insight remains: neuroscience search should retrieve reusable experimental contexts, not just documents. Neural Search now has the retrieval architecture, full-corpus knowledge graph, literature-scale paper-finding linkage, coverage analysis infrastructure, and validation harness needed to test that principle honestly and iteratively---across every brain region, measurement modality, and timescale in the published record.
 

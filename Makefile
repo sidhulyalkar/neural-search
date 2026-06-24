@@ -1,4 +1,4 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
+.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval eval-runs eval-qrels reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
@@ -127,6 +127,56 @@ benchmark:
 
 # Alias for benchmark
 eval: benchmark
+
+eval-runs:
+	PYTHONPATH=. $${NSPY:-python} scripts/eval/run_ablation_ladder.py \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--corpus data/eval/ablation_corpus_from_packets.jsonl \
+		--embeddings data/embeddings/real_all.dense.field_embeddings.jsonl \
+		--graph data/graph/neural_search_graph.real_corpus.json \
+		--out-dir reports/eval/runs
+
+eval-qrels:
+	python scripts/eval/compute_ndcg_from_qrels.py \
+		--qrels data/qrels/qrels.canonical.trec \
+		--runs-dir reports/eval/runs
+	python scripts/eval/compute_bootstrap_ci.py \
+		--qrels data/qrels/qrels.canonical.jsonl \
+		--runs reports/eval/runs/bm25.jsonl reports/eval/runs/bm25_structured.jsonl reports/eval/runs/dense_bge.jsonl reports/eval/runs/hybrid_rrf.jsonl reports/eval/runs/hybrid_graph.jsonl reports/eval/runs/full.jsonl \
+		--out reports/eval/bootstrap_ci_report.json \
+		--n-bootstrap 2000
+	python scripts/eval/report_intent_stratification.py \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--qrels data/qrels/qrels.canonical.trec \
+		--runs-dir reports/eval/runs
+	python scripts/eval/report_dual_judge_reliability.py \
+		--judgments data/qrels/llm_judgments.jsonl
+	python scripts/eval/build_eval_claim_ledger.py
+	python scripts/eval/check_eval_regression_gate.py
+	python scripts/eval/analyze_failures.py \
+		--qrels data/qrels/qrels.canonical.jsonl \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--runs-dir reports/eval/runs \
+		--judgments data/qrels/llm_judgments.jsonl \
+		--out reports/eval/failure_analysis.md \
+		--json-out reports/eval/failure_analysis.json \
+		--top-k 10
+	python scripts/eval/build_reanalysis_affordance_report.py \
+		--corpus data/eval/ablation_corpus_from_packets.jsonl
+	python scripts/eval/match_new_methods_to_old_datasets.py \
+		--corpus data/eval/ablation_corpus_from_packets.jsonl
+	python scripts/eval/prioritize_metadata_enrichment.py \
+		--failures reports/eval/failure_analysis.json
+	python scripts/eval/calibrate_graph_rerank.py \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--qrels data/qrels/qrels.canonical.trec \
+		--run reports/eval/runs/hybrid_rrf.jsonl \
+		--graph data/graph/neural_search_graph.real_corpus.json
+	python scripts/eval/analyze_relationship_edge_quality.py \
+		--qrels data/qrels/qrels.canonical.trec \
+		--graph data/graph/neural_search_graph.real_corpus.json \
+		--base-run reports/eval/runs/hybrid_rrf.jsonl \
+		--graph-run reports/eval/runs/hybrid_graph.jsonl
 
 # Generate compilation report
 reports:

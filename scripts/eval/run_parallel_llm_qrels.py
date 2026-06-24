@@ -73,6 +73,8 @@ from neural_search.eval.neuro_judge.judge import (  # noqa: E402,PLC2701
 )
 from neural_search.eval.neuro_judge.prompt import build_judge_prompt  # noqa: E402
 
+from scripts.eval.docid import normalize_docid  # noqa: E402
+
 DEFAULT_PACKETS = Path("artifacts/ablation_judge/evidence_packets.jsonl")
 DEFAULT_OUT = Path("data/qrels/llm_judgments.jsonl")
 DEFAULT_TREC = Path("data/qrels/qrels.trec")
@@ -403,7 +405,9 @@ def _write_trec_qrels(judgments_path: Path, trec_path: Path) -> int:
         if key in seen:
             continue
         seen.add(key)
-        lines.append(f"{qid} 0 {did} {label}\n")
+        # TREC is whitespace-delimited: normalize doc-id to a single token so
+        # ids with internal spaces don't shift columns (see scripts/eval/docid).
+        lines.append(f"{qid} 0 {normalize_docid(did)} {label}\n")
     trec_path.parent.mkdir(parents=True, exist_ok=True)
     trec_path.write_text("".join(lines), encoding="utf-8")
     return len(lines)

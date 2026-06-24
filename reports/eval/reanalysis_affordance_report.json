@@ -1,0 +1,2763 @@
+{
+  "dataset_count": 2821,
+  "high_affordance_count": 1582,
+  "medium_affordance_count": 200,
+  "metadata_gap_counts": {
+    "behavior": 1726,
+    "brain_regions": 1096,
+    "data_standards": 1415,
+    "modalities": 649,
+    "raw_data": 1427,
+    "species": 931,
+    "tasks": 1812
+  },
+  "source_counts": {
+    "allen": 132,
+    "bluebrain": 57,
+    "brain_image_library": 6,
+    "buzsaki": 35,
+    "crcns": 142,
+    "dandi": 557,
+    "figshare": 97,
+    "gin": 220,
+    "harvard_dataverse": 282,
+    "ibl": 81,
+    "nemo": 10,
+    "neuromorpho": 57,
+    "neurovault": 563,
+    "openneuro": 89,
+    "osf": 128,
+    "spark": 17,
+    "zenodo": 348
+  },
+  "top_datasets": [
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "IT"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "calcium_imaging"
+      ],
+      "record_id": "dandi:000691",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "free_behavior"
+      ],
+      "title": "An optical design enabling lightweight and large field-of-view head-mounted microscopes",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "entorhinal_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:000897",
+      "source": "dandi",
+      "species": [
+        "macaque"
+      ],
+      "tasks": [
+        "spatial_navigation"
+      ],
+      "title": "Neupane_Fiete_Jazayeri_Mental navigation_NHP_EntorhinalCortex",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "entorhinal_cortex",
+        "medial_entorhinal_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:000943",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "locomotion",
+        "open_field",
+        "spatial_navigation"
+      ],
+      "title": "Clark and Nolan (2024) Task-anchored grid cell firing is selectively associated with successful path integration-dependent behaviour",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": 2024
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "somatosensory_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001341",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "closed_loop_control",
+        "locomotion",
+        "spatial_navigation",
+        "two_alternative_forced_choice"
+      ],
+      "title": "Barrel cortex electrophysiology during tactile VR whisker-guided navigation",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ca1",
+        "hippocampus"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging"
+      ],
+      "record_id": "dandi:001361",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "spatial_navigation"
+      ],
+      "title": "A flexible hippocampal population code for experience relative to reward",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": 2025
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "inferior_colliculus"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001420",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "auditory_processing",
+        "spatial_navigation"
+      ],
+      "title": "Cortical Circuits for the integration of short-latency auditory pathways: Inferior colliculus linear probe recording",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "session_structure"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.875
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "medial_geniculate_nucleus",
+        "thalamus"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001421",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "auditory_processing",
+        "spatial_navigation"
+      ],
+      "title": "Cortical Circuits for the integration of short-latency auditory pathways: MGN linear probe recording",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "olfactory_bulb"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001433",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "free_behavior"
+      ],
+      "title": "Breathing rhythm and place dataset",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "hypothalamus"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001512",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "maternal_behavior",
+        "social_interaction",
+        "social_preference"
+      ],
+      "title": "Optically tagged oxytocin neuron recordings from female mouse PVN",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "prefrontal_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "species"
+      ],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001530",
+      "source": "dandi",
+      "species": [],
+      "tasks": [
+        "closed_loop_control",
+        "reversal_learning"
+      ],
+      "title": "Contextual gating of whisker-evoked responses by frontal cortex supports flexible decision making",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        }
+      ],
+      "year": 2026
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "neocortex",
+        "parietal_cortex",
+        "posterior_parietal_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "calcium_imaging"
+      ],
+      "record_id": "dandi:001605",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "auditory_processing",
+        "locomotion",
+        "spatial_navigation"
+      ],
+      "title": "Two-photon calcium imaging of mouse PPC/PM during auditory virtual navigation (Funamizu et al. 2016)",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        }
+      ],
+      "year": 2016
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ca1",
+        "ca2",
+        "ca3",
+        "dentate_gyrus",
+        "hippocampus",
+        "retrosplenial_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys",
+        "lfp",
+        "neuropixels"
+      ],
+      "record_id": "dandi:001695",
+      "source": "dandi",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "resting_state",
+        "sleep_wake",
+        "spatial_navigation"
+      ],
+      "title": "High-density extracellular recordings (Neuropixels/SiNAPS) of Hippocampal-Cortical dynamics during spatial behavior.",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ca1",
+        "hippocampus",
+        "STS"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "eeg",
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001754",
+      "source": "dandi",
+      "species": [
+        "rat"
+      ],
+      "tasks": [
+        "closed_loop_control",
+        "locomotion",
+        "resting_state",
+        "spatial_navigation"
+      ],
+      "title": "Three-dimensional spatial selectivity of hippocampal neurons during space flight",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": 1998
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "hippocampus"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavioral",
+        "extracellular_ephys"
+      ],
+      "record_id": "dandi:001836",
+      "source": "dandi",
+      "species": [
+        "rat"
+      ],
+      "tasks": [
+        "free_behavior"
+      ],
+      "title": "Naturalistic behavior and self-generated neural activity predictive of self-correction",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "brainstem",
+        "hippocampus",
+        "parietal_cortex",
+        "prefrontal_cortex",
+        "striatum",
+        "thalamus"
+      ],
+      "data_standards": [
+        "ALF",
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavior",
+        "extracellular_ephys",
+        "neuropixels"
+      ],
+      "record_id": "ibl:ibl_brain_wide_map_2022",
+      "source": "ibl",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "decision_making",
+        "two_alternative_forced_choice"
+      ],
+      "title": "IBL Brain Wide Map 2022 Q4 Release",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        }
+      ],
+      "year": 2022
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "brainstem",
+        "hippocampus",
+        "parietal_cortex",
+        "prefrontal_cortex",
+        "striatum",
+        "thalamus"
+      ],
+      "data_standards": [
+        "ALF",
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavior",
+        "extracellular_ephys",
+        "neuropixels"
+      ],
+      "record_id": "ibl:ibl_brain_wide_map_2023",
+      "source": "ibl",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "decision_making",
+        "two_alternative_forced_choice"
+      ],
+      "title": "IBL Brain Wide Map 2023 Q4 Release",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        }
+      ],
+      "year": 2023
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "brainstem",
+        "hippocampus",
+        "parietal_cortex",
+        "prefrontal_cortex",
+        "striatum",
+        "thalamus"
+      ],
+      "data_standards": [
+        "ALF",
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavior",
+        "calcium_imaging",
+        "extracellular_ephys",
+        "fiber_photometry",
+        "neuropixels"
+      ],
+      "record_id": "ibl:ibl_brain_wide_map_2024",
+      "source": "ibl",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "decision_making",
+        "passive_viewing",
+        "two_alternative_forced_choice"
+      ],
+      "title": "IBL Brain Wide Map 2024 Q2 Release",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        }
+      ],
+      "year": 2024
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "brainstem",
+        "hippocampus",
+        "parietal_cortex",
+        "prefrontal_cortex",
+        "striatum",
+        "thalamus"
+      ],
+      "data_standards": [
+        "ALF",
+        "NWB"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "behavior",
+        "extracellular_ephys",
+        "neuropixels"
+      ],
+      "record_id": "ibl:ibl_brain_wide_map_2026",
+      "source": "ibl",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "decision_making",
+        "two_alternative_forced_choice"
+      ],
+      "title": "IBL Brain Wide Map 2026 Q2 Release",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        }
+      ],
+      "year": 2026
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "prefrontal_cortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:1072",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "social_reward"
+      ],
+      "title": "Women\u2019s Preference for a Male Acquaintance Enhances Social Reward Processing of Material Goods in the Anterior Cingulate Cortex",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "hippocampus",
+        "IT",
+        "neocortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:1503",
+      "source": "neurovault",
+      "species": [
+        "human",
+        "rat"
+      ],
+      "tasks": [
+        "morris_water_maze",
+        "open_field",
+        "spatial_navigation"
+      ],
+      "title": "Maternal Exercise during Pregnancy Increases BDNF Levels and Cell Numbers in the Hippocampal Formation but Not in the Cerebral Cortex of Adult Rat Offspring",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "prefrontal_cortex",
+        "vmPFC"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:1944",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "resting_state",
+        "two_alternative_forced_choice"
+      ],
+      "title": "Higher Heart-Rate Variability Is Associated with Ventromedial Prefrontal Cortex Activity and Increased Resistance to Temptation in Dietary Self-Control Challenges",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "cerebellum",
+        "deep_cerebellar_nuclei"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:2039",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "social_reward"
+      ],
+      "title": "Not Just Social Sensitivity: Adolescent neural suppression of social feedback during risk taking",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [
+            "brain_region"
+          ],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "amygdala"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:3163",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "value_based_decision_making"
+      ],
+      "title": "Reduced loss aversion in pathological gambling and alcohol dependence is associated with differential alterations in amygdala and prefrontal functioning",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "amygdala",
+        "dlPFC",
+        "prefrontal_cortex",
+        "striatum",
+        "ventral_striatum",
+        "vmPFC"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:3259",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "two_alternative_forced_choice"
+      ],
+      "title": "Acute Stress Impairs Self-Control in Goal-Directed Choice by Altering Multiple Functional Connections within the Brain\u2019s Decision Circuits",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "amygdala",
+        "dlPFC",
+        "hypothalamus",
+        "OFC",
+        "prefrontal_cortex",
+        "striatum",
+        "suprachiasmatic_nucleus"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "extracellular_ephys",
+        "fmri"
+      ],
+      "record_id": "neurovault:3396",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "fear_conditioning",
+        "reversal_learning"
+      ],
+      "title": "Instructed knowledge shapes feedback-driven aversive learning in striatum and orbitofrontal cortex, but not the amygdala",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        }
+      ],
+      "year": 2016
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "IT",
+        "prefrontal_cortex",
+        "sensorimotor_cortex",
+        "sensory_cortex",
+        "striatum",
+        "ventral_striatum",
+        "vmPFC"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:3955",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "grasping",
+        "value_based_decision_making"
+      ],
+      "title": "Neural correlates of effort-based valuation with prospective choices",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "striatum"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:4487",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "value_based_decision_making"
+      ],
+      "title": "The contribution of striatal pseudo-reward prediction errors to value-based decision-making",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "brainstem",
+        "midbrain",
+        "VTA"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:4560",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "reversal_learning"
+      ],
+      "title": "Sensory prediction errors in the human midbrain signal identity violations independent of perceptual distance",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [
+            "brain_region"
+          ],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "prefrontal_cortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:599",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "visual_decision_making"
+      ],
+      "title": "Causal evidence for frontal cortex organization for perceptual decision making",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [
+        "brain_regions"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:6026",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "visual_decision_making"
+      ],
+      "title": "Modulation of fusiform code on PPI and comparisons between early and late responders in a perceptual decision making task",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [
+            "brain_region"
+          ],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "striatum"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:835",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "visual_decision_making"
+      ],
+      "title": "Brain networks of perceptual decision-making: an fMRI ALE meta-analysis",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "dmFC",
+        "IT",
+        "OFC",
+        "prefrontal_cortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:8491",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "spatial_navigation"
+      ],
+      "title": "Activation and disruption of a neural mechanism for novel choice in monkeys",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "insula",
+        "prefrontal_cortex",
+        "striatum",
+        "thalamus",
+        "ventral_striatum"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "neurovault:917",
+      "source": "neurovault",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "pupil_arousal",
+        "value_based_decision_making"
+      ],
+      "title": "The valuation system: A coordinate-based meta-analysis of BOLD fMRI experiments examining neural correlates of subjective value",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "dlPFC"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [
+        "species"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "openneuro:ds000120",
+      "source": "openneuro",
+      "species": [],
+      "tasks": [
+        "Go/NoGo"
+      ],
+      "title": "Developmental changes in brain function underlying the influence of reward processing on inhibitory control (Slot Reward)",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "dlPFC"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [
+        "species"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "openneuro:ds000121",
+      "source": "openneuro",
+      "species": [],
+      "tasks": [
+        "Go/NoGo"
+      ],
+      "title": "Immaturities in Reward Processing and Its Influence on Inhibitory Control in Adolescence (Ring Reward)",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "dlPFC",
+        "OFC",
+        "prefrontal_cortex",
+        "striatum"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [
+        "species"
+      ],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "openneuro:ds001762",
+      "source": "openneuro",
+      "species": [],
+      "tasks": [
+        "Foraging Task",
+        "Value-Based Decision Making"
+      ],
+      "title": "Dorsal anterior cingulate and ventromedial prefrontal cortex have inverse roles in both foraging and economic choice",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "motor_cortex",
+        "premotor_cortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "record_id": "openneuro:ds002336",
+      "source": "openneuro",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "Motor Imagery"
+      ],
+      "title": "A multi-modal human neuroimaging dataset for data integration: simultaneous EEG and fMRI acquisition during a motor imagery neurofeedback task: XP1",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "motor_cortex",
+        "premotor_cortex"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "eeg",
+        "fmri"
+      ],
+      "record_id": "openneuro:ds002338",
+      "source": "openneuro",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "Motor Imagery"
+      ],
+      "title": "A multi-modal human neuroimaging dataset for data integration: simultaneous EEG and fMRI acquisition during a motor imagery neurofeedback task: XP2",
+      "top_methods": [
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 1.0,
+      "brain_regions": [
+        "ACC",
+        "striatum"
+      ],
+      "data_standards": [
+        "BIDS"
+      ],
+      "missing_metadata": [],
+      "modalities": [
+        "fmri"
+      ],
+      "record_id": "spark:SPARK-FMRI-002",
+      "source": "spark",
+      "species": [
+        "human"
+      ],
+      "tasks": [
+        "Go/NoGo",
+        "N-Back",
+        "Stop-Signal Task"
+      ],
+      "title": "SPARK fMRI Executive Function and Cognitive Control in ASD",
+      "top_methods": [
+        {
+          "display_name": "Model-based RL reanalysis",
+          "method": "model_based_rl_reanalysis",
+          "missing_requirements": [],
+          "novelty_year": 2020,
+          "reinterpretation": "Re-estimate latent value, policy, and prediction-error variables.",
+          "score": 1.0
+        },
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Behavior-aligned embedding / CEBRA-style analysis",
+          "method": "behavior_aligned_embedding",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2023,
+          "reinterpretation": "Align neural activity with behavior to expose latent state structure.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_715093703",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 715093703",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_719161530",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 719161530",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_721123822",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 721123822",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_732592105",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 732592105",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_737581020",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 737581020",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_739448407",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 739448407",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_742951821",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 742951821",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_744228101",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 744228101",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_751348571",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 751348571",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_754829445",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 754829445",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    },
+    {
+      "best_method_score": 0.95,
+      "brain_regions": [
+        "hippocampus",
+        "thalamus",
+        "visual_cortex"
+      ],
+      "data_standards": [
+        "NWB"
+      ],
+      "missing_metadata": [
+        "behavior"
+      ],
+      "modalities": [
+        "extracellular_electrophysiology",
+        "neuropixels"
+      ],
+      "record_id": "allen:ecephys_756029989",
+      "source": "allen",
+      "species": [
+        "mouse"
+      ],
+      "tasks": [
+        "visual_stimulation"
+      ],
+      "title": "Allen Visual Coding Neuropixels: brain_observatory_1.1 session 756029989",
+      "top_methods": [
+        {
+          "display_name": "Multimodal same-region reinterpretation",
+          "method": "multimodal_region_bridge",
+          "missing_requirements": [],
+          "novelty_year": 2022,
+          "reinterpretation": "Use same-region datasets across modalities to connect scales of observation.",
+          "score": 0.95
+        },
+        {
+          "display_name": "Cross-session representation alignment",
+          "method": "cross_session_alignment",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2021,
+          "reinterpretation": "Compare representational stability across sessions, animals, or cohorts.",
+          "score": 0.75
+        },
+        {
+          "display_name": "Latent neural dynamics modeling",
+          "method": "latent_dynamics_modeling",
+          "missing_requirements": [
+            "task"
+          ],
+          "novelty_year": 2018,
+          "reinterpretation": "Fit population dynamics to old recordings to test state-space hypotheses.",
+          "score": 0.75
+        }
+      ],
+      "year": null
+    }
+  ],
+  "top_method_counts": {
+    "behavior_aligned_embedding": 339,
+    "cross_session_alignment": 9,
+    "latent_dynamics_modeling": 149,
+    "model_based_rl_reanalysis": 12,
+    "multimodal_region_bridge": 1273
+  }
+}

@@ -148,26 +148,31 @@ Limitations:
 
 ### Claim 5: Current expanded-corpus retrieval performance is publication-grade
 
-Status: Partial
+Status: Preliminary / not publication-grade
 
 Evidence:
 
-- No current expanded-corpus retrieval benchmark report exists yet.
-- Current supporting artifacts cover corpus scale, embedding/index validation with caveats, usefulness correlation, and graph-rank perturbation.
+- A qrels-backed retrieval snapshot now exists: 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs.
+- Current reports: `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`, `reports/eval/intent_stratification_report.md`, `reports/eval/eval_claim_ledger.md`, and `reports/eval/regression_gate_report.md`.
+- `hybrid_rrf` is strong on aggregate NDCG@10 (0.6667), MRR (0.9209), and Recall@50 (0.7455). The MRR gain over BM25 is significant; the NDCG@10 gain over BM25 is directional but not significant by the current sign test.
+- Graph-backed rungs are now populated from an eval-corpus graph built over 2,821 records. After graph-weight calibration, `hybrid_graph` is currently the best qrels-backed preview rung (NDCG@10 0.6696, MRR 0.9256, Recall@50 0.7465), with small but significant sign-test gains over `hybrid_rrf` on NDCG@10 and MRR.
+- Reinterpretation/reprocessing discovery reports now exist: `reports/eval/reanalysis_affordance_report.md`, `reports/eval/new_method_dataset_matches.md`, and `reports/eval/metadata_enrichment_priorities.md`.
 
 Limitations:
 
-- Older retrieval reports predate the current expanded-corpus artifact and should remain archived.
+- The labels are LLM-judged, not independently human-adjudicated.
+- Dual-judge QWK is not estimable because no non-error pair has labels from two models.
+- Graph/full gains are small and calibrated on LLM-judged qrels; they need duplicate/human adjudication and source-aware edge QA before publication-grade claims.
+- Reanalysis affordance and new-method matching reports are metadata-derived prioritization tools, not file-validated compatibility judgments.
 - Exact lookup must be validated on the frozen expanded snapshot.
-- Existing labels are too small and not independently multi-annotated.
 
 Publication framing:
 
-Do not make current ranking-performance claims until a reconciled expanded-corpus benchmark report exists.
+It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication, exact lookup validation, and graph-weight calibration are confirmed on independently reviewed labels.
 
 ### Claim 6: Latent usefulness scoring is implemented
 
-Status: Partial
+Status: Prototype-validated on LLM qrels / not publication-grade
 
 Evidence:
 
@@ -231,24 +236,27 @@ Status: Partial — materially improved
 
 Evidence:
 
-- `neural_search/graph/`
 - `neural_search/literature/kg_builder.py` — adds paper/finding/venue nodes and cross-edges
-- `reports/graph_ablation.json`: 39% of pairs changed rank with graph signal
 - Knowledge graph at 7,593 nodes / 31,920 edges (rebuilt 2026-06-14 from full corpus)
 - New node types: `paper`, `finding`, `venue`
 - New edge types: `paper_reports_finding`, `finding_involves_region/task/modality/species`, `dataset_linked_to_paper`
 - `artifacts/literature/paper_dataset_links.jsonl`: 7,171 corpus datasets linked to OpenAlex papers
+- `reports/eval/ndcg_report.md`: calibrated `hybrid_graph` NDCG@10 0.6696 vs `hybrid_rrf` 0.6667 vs `bm25` 0.6566; MRR 0.9256 vs 0.9209 vs 0.8795 (first non-degenerate ablation ladder this project has produced, 13,654 LLM-silver qrels / 317 queries)
+- `reports/eval/bootstrap_ci_report.json`: `hybrid_graph` NDCG@10 95% CI [0.6453, 0.6921] overlaps `bm25`'s CI [0.6322, 0.6807] substantially — the lead over the plain BM25 baseline is directionally consistent but not statistically established at n=317 queries. The narrower, paired comparison against `hybrid_rrf` (same corpus, same qrels) shows a small but more consistent sign-test gain.
+- `reports/eval/graph_weight_calibration.md`: balanced calibrated graph setting is default profile at global weight 0.005
+- `reports/eval/relationship_edge_quality.md`: relationship-edge promotions are mixed — `same_region_same_task`/`dataset_reprocessing_candidate` and `same_region_cross_modality`/`dataset_reanalysis_bridge_dataset` sit at 0.498 and 0.522 helpful rate respectively among judged top-10 promotions, i.e. close to a coin flip. This report predates the 2026-06-23 typed-field Phase 6b additions (qualified consensus tiers, `contradiction_subtype`); re-running it against those edge types is open work, not yet measured.
 
 Limitations:
 
-- The current ablation report does not show NDCG improvement.
-- KG rebuild incorporating extracted findings is pending completion of tier1 extraction run.
-- Once extraction completes (~80K findings expected), a full KG rebuild will substantially increase node/edge counts.
-- Graph artifacts should be rebuilt and validated against the frozen expanded corpus.
+- The current evidence is LLM-judged, not human-adjudicated.
+- The graph gain vs. the plain BM25 baseline is within bootstrap noise; only the narrower vs.-`hybrid_rrf` comparison shows a more defensible (still small) gain, and that comparison was calibrated on the same qrels snapshot it's evaluated against.
+- Relationship-edge quality is mixed; some edge classes help roughly as often as they hurt, and the newest typed/qualified-consensus edge types (Phase 6b) haven't been run through this quality analysis at all yet.
+- KG rebuild incorporating the still-running tier1 extraction (190K+ findings as of 2026-06-23, growing) will substantially change node/edge counts; current counts predate that run.
+- Paper links need better confidence/evidence surfacing.
 
 Publication framing:
 
-Claim graph signals affect rankings and support relational context. Do not claim demonstrated metric gains until rerun. Claim paper-dataset and finding-dataset bidirectional linking as an architectural capability.
+Claim calibrated graph reranking shows a small LLM-qrels-backed improvement relative to the hybrid RRF baseline and supports relational context; do not claim a demonstrated improvement over plain BM25, since that comparison's confidence intervals overlap. Claim paper-dataset and finding-dataset bidirectional linking as an architectural capability. Do not describe any of this as publication-grade or human-validated until adjudicated labels confirm it.
 
 ### Claim 10: Query intent classification and routing exist
 

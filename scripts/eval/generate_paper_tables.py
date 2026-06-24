@@ -67,6 +67,9 @@ def main(argv: list[str] | None = None) -> int:
     turbovec = load_json(Path("reports/turbovec_recall.json"))
     usefulness = load_json(Path("reports/usefulness_correlation_v09.json"))
     graph = load_json(Path("reports/graph_ablation.json"))
+    ndcg = load_json(args.reports_dir / "ndcg_report.json")
+    bootstrap = load_json(args.reports_dir / "bootstrap_ci_report.json")
+    reliability = load_json(args.reports_dir / "dual_judge_reliability.json")
     source_rows = read_csv(args.reports_dir / "source_distribution.csv")
     completeness_rows = read_csv(args.reports_dir / "field_completeness.csv")
     rejection_rows = read_csv(args.reports_dir / "rejection_summary.csv")
@@ -138,6 +141,39 @@ def main(argv: list[str] | None = None) -> int:
     for metric, value in validation_rows:
         lines.append(f"{latex_escape(metric)} & {latex_escape(value)} \\\\")
     lines.extend(end_table())
+
+    if ndcg:
+        lines.extend(
+            begin_table(
+                "Qrels-backed retrieval snapshot on the canonical judged pool.",
+                "lrrrr",
+                "System & Queries & NDCG@10 & MRR & Recall@50",
+            )
+        )
+        for system in ["bm25", "bm25_structured", "dense_bge", "hybrid_rrf"]:
+            metrics = ndcg.get(system, {})
+            if not metrics:
+                continue
+            lines.append(
+                f"{latex_escape(system)} & {int(metrics.get('judged_queries', 0)):,} "
+                f"& {float(metrics.get('ndcg@10', 0.0)):.4f} "
+                f"& {float(metrics.get('mrr', 0.0)):.4f} "
+                f"& {float(metrics.get('recall@50', 0.0)):.4f} \\\\"
+            )
+        lines.extend(end_table())
+
+    if bootstrap:
+        lines.extend(begin_table("Qrels-backed evaluation coverage and reliability caveats.", "lc", "Artifact & Value"))
+        qrels_rows = [
+            ("Canonical judged queries", bootstrap.get("n_queries", "Pending benchmark artifact")),
+            ("Canonical judged pairs", bootstrap.get("n_labeled_pairs", "Pending benchmark artifact")),
+            ("Bootstrap samples", bootstrap.get("n_bootstrap", "Pending benchmark artifact")),
+            ("Dual-judge overlap pairs", reliability.get("pairs_with_two_or_more_judges", "Pending benchmark artifact")),
+            ("Dual-judge QWK", "Not estimable" if reliability and not reliability.get("estimable") else "Available"),
+        ]
+        for metric, value in qrels_rows:
+            lines.append(f"{latex_escape(metric)} & {latex_escape(display_value(value))} \\\\")
+        lines.extend(end_table())
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text("\n".join(lines), encoding="utf-8")

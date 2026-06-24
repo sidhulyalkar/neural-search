@@ -1,4 +1,5 @@
 from neural_search.graph import build_graph_from_records, write_graph_json
+from neural_search.graph.schema import KnowledgeGraphEdge, make_edge_id
 from neural_search.graph.search_features import (
     compute_graph_features_for_result,
     graph_context_score,
@@ -102,6 +103,33 @@ def test_graph_features_and_context_score_are_bounded():
     assert features["requirement_matches"]["data_standard"]
     assert features["requirement_matches"]["required_signal"]
     assert 0 < score <= 0.25
+
+
+def test_graph_features_include_relationship_and_reanalysis_edges():
+    graph = _graph()
+    source = "node:dataset:dandi:000026"
+    target = "node:dataset:dandi:000027"
+    graph.nodes[target] = graph.nodes[source].model_copy(
+        update={"node_id": target, "label": "Related OFC dataset"}
+    )
+    edge = KnowledgeGraphEdge(
+        edge_id=make_edge_id(source, "dataset_reanalysis_bridge_dataset", target),
+        source_node_id=source,
+        target_node_id=target,
+        edge_type="dataset_reanalysis_bridge_dataset",
+        confidence=0.8,
+        properties={
+            "relationship_type": "multimodal_reanalysis_bridge",
+            "explanation": "shared OFC region across modalities",
+        },
+    )
+    graph.edges[edge.edge_id] = edge
+
+    features = compute_graph_features_for_result(graph, "dataset:dandi:000026")
+    score = graph_context_score(graph, "dataset:dandi:000026")
+
+    assert features["relationship_edges"][0]["relationship_type"] == "multimodal_reanalysis_bridge"
+    assert score > 0.0
 
 
 def test_graph_features_return_empty_requirement_matches_without_analysis_edges():

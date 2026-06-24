@@ -19,6 +19,8 @@ from neural_search.graph.schema import (
 DEFAULT_GRAPH_SEARCH_WEIGHTS = {
     "linked_paper": 0.04,
     "analysis_affordance": 0.03,
+    "relationship_edge": 0.012,
+    "reanalysis_edge": 0.018,
     "requirement_match": 0.01,
     "analysis_requirement_coverage": 0.015,
     "task_match": 0.03,
@@ -28,6 +30,25 @@ DEFAULT_GRAPH_SEARCH_WEIGHTS = {
     "brain_region_match": 0.02,
     "degree": 0.01,
 }
+
+RELATIONSHIP_EDGE_TYPES = {
+    "dataset_similar_to_dataset",
+    "same_region_cross_modality",
+    "same_task_cross_species",
+    "same_region_same_task",
+    "dataset_reanalysis_bridge_dataset",
+}
+
+REANALYSIS_EDGE_TYPES = {
+    "dataset_old_dataset_new_method_candidate",
+    "dataset_reinterpretation_candidate",
+    "dataset_reprocessing_candidate",
+}
+
+_LOCAL_EDGE_INDEX_CACHE: dict[
+    int,
+    tuple[int, dict[str, list[KnowledgeGraphEdge]], dict[str, list[KnowledgeGraphEdge]]],
+] = {}
 
 REQUIREMENT_GROUPS = {
     "modality": "modality",
@@ -93,15 +114,34 @@ def _get_edges_for_node(
 ) -> list[KnowledgeGraphEdge]:
     """Return edges connected to a node, optionally filtered by type."""
     edges = []
-    for edge in graph.edges.values():
-        if direction in ("out", "both") and edge.source_node_id == node_id:
+    out_index, in_index = _local_edge_indexes(graph)
+    if direction in ("out", "both"):
+        for edge in out_index.get(node_id, []):
             if edge_type is None or edge.edge_type == edge_type:
                 edges.append(edge)
-        elif direction in ("in", "both") and edge.target_node_id == node_id:
+    if direction in ("in", "both"):
+        for edge in in_index.get(node_id, []):
             if edge_type is None or edge.edge_type == edge_type:
                 edges.append(edge)
     # Sort by confidence descending
     return sorted(edges, key=lambda e: e.confidence, reverse=True)
+
+
+def _local_edge_indexes(
+    graph: KnowledgeGraph,
+) -> tuple[dict[str, list[KnowledgeGraphEdge]], dict[str, list[KnowledgeGraphEdge]]]:
+    cache_key = id(graph)
+    edge_count = len(graph.edges)
+    cached = _LOCAL_EDGE_INDEX_CACHE.get(cache_key)
+    if cached and cached[0] == edge_count:
+        return cached[1], cached[2]
+    out_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    in_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    for edge in graph.edges.values():
+        out_index.setdefault(edge.source_node_id, []).append(edge)
+        in_index.setdefault(edge.target_node_id, []).append(edge)
+    _LOCAL_EDGE_INDEX_CACHE[cache_key] = (edge_count, out_index, in_index)
+    return out_index, in_index
 
 
 def _empty_features(*, graph_available: bool) -> dict[str, Any]:
@@ -119,6 +159,8 @@ def _empty_features(*, graph_available: bool) -> dict[str, Any]:
             "animal_types": [],
         },
         "brain_regions": [],
+        "relationship_edges": [],
+        "reanalysis_edges": [],
         "recording_scales": [],
         "matched_query_context": {},
         "requirement_matches": {
@@ -247,6 +289,45 @@ def _requirement_matches(
     return grouped
 
 
+def _relationship_summaries(
+    graph: KnowledgeGraph,
+    dataset_node_id: str,
+    edge_types: set[str],
+) -> list[dict[str, Any]]:
+    """Return compact summaries for cross-dataset and reanalysis edges."""
+
+    summaries: list[dict[str, Any]] = []
+    for edge in _get_edges_for_node(graph, dataset_node_id, direction="both"):
+        if edge.edge_type not in edge_types:
+            continue
+        other_id = (
+            edge.target_node_id
+            if edge.source_node_id == dataset_node_id
+            else edge.source_node_id
+        )
+        other = graph.nodes.get(other_id)
+        summaries.append(
+            {
+                "edge_type": edge.edge_type,
+                "dataset": other.label if other else other_id,
+                "dataset_id": other_id,
+                "confidence": round(edge.confidence, 3),
+                "relationship_type": edge.properties.get("relationship_type"),
+                "method": edge.properties.get("method"),
+                "explanation": edge.properties.get("explanation")
+                or edge.properties.get("context"),
+            }
+        )
+    summaries.sort(
+        key=lambda item: (
+            -float(item["confidence"]),
+            str(item["edge_type"]),
+            str(item["dataset_id"]),
+        )
+    )
+    return summaries
+
+
 def _species_context(
     graph: KnowledgeGraph,
     dataset_node_id: str,
@@ -307,6 +388,8 @@ def compute_graph_features_for_result(
     species = _neighbor_labels(graph, node_id, "dataset_has_species")
     species_context = _species_context(graph, node_id)
     brain_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+    relationship_edges = _relationship_summaries(graph, node_id, RELATIONSHIP_EDGE_TYPES)
+    reanalysis_edges = _relationship_summaries(graph, node_id, REANALYSIS_EDGE_TYPES)
     context = query_context or {}
     query_species = {_norm(value) for value in context.get("species", [])}
     species_terms = {_norm(value) for value in species}
@@ -345,6 +428,8 @@ def compute_graph_features_for_result(
         "species": species,
         "species_context": species_context,
         "brain_regions": brain_regions,
+        "relationship_edges": relationship_edges,
+        "reanalysis_edges": reanalysis_edges,
         "matched_query_context": matched_query_context,
         "requirement_matches": _requirement_matches(graph, node_id),
     }
@@ -384,6 +469,8 @@ def graph_context_score(
     covered_requirement_groups = len(
         [values for values in requirement_matches.values() if values]
     )
+    relationship_count = len(features.get("relationship_edges", []))
+    reanalysis_count = len(features.get("reanalysis_edges", []))
 
     if use_edge_confidence:
         # Weight linked paper edges by confidence
@@ -436,6 +523,8 @@ def graph_context_score(
             min(covered_requirement_groups, 4)
             * score_weights.get("analysis_requirement_coverage", 0.0)
         )
+        score += min(relationship_count, 5) * score_weights.get("relationship_edge", 0.0)
+        score += min(reanalysis_count, 5) * score_weights.get("reanalysis_edge", 0.0)
     else:
         # Original counting-based scoring
         score += min(len(features["linked_papers"]), 3) * score_weights["linked_paper"]
@@ -450,6 +539,8 @@ def graph_context_score(
         score += len(matched.get("species", [])) * score_weights.get("species_match", 0.0)
         score += len(matched.get("taxon_groups", [])) * score_weights.get("taxon_match", 0.0)
         score += len(matched.get("brain_regions", [])) * score_weights["brain_region_match"]
+        score += min(relationship_count, 5) * score_weights.get("relationship_edge", 0.0)
+        score += min(reanalysis_count, 5) * score_weights.get("reanalysis_edge", 0.0)
         score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
 
     return round(min(score, 0.25), 4)

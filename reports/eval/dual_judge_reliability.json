@@ -1,0 +1,13 @@
+{
+  "total_records": 13673,
+  "usable_records": 13654,
+  "unique_labeled_pairs": 13654,
+  "pairs_with_two_or_more_judges": 0,
+  "model_counts": {
+    "google/gemini-2.5-flash": 137,
+    "anthropic/claude-opus-4-5": 1,
+    "qwen2.5:32b-instruct": 13535
+  },
+  "pairwise": {},
+  "estimable": false
+}
