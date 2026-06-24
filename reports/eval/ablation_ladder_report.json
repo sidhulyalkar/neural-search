@@ -4,7 +4,7 @@
       "rung": "bm25",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 2.0,
+      "elapsed_s": 1.7,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -24,7 +24,7 @@
       "rung": "dense_bge",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 60.2,
+      "elapsed_s": 57.6,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317
@@ -44,7 +44,7 @@
       "rung": "hybrid_graph",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 75.6,
+      "elapsed_s": 65.8,
       "metrics": {
         "ndcg@10": 0.0,
         "query_count": 317

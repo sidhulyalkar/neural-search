@@ -1,0 +1,734 @@
+{
+  "edge_quality": [
+    {
+      "edge_type": "dataset_reprocessing_candidate",
+      "harmful_promotions": 204,
+      "helpful_promotions": 202,
+      "helpful_rate": 0.4975369458128079,
+      "judged_promotions": 406,
+      "mean_relevance": 1.3201970443349753,
+      "promotions": 449
+    },
+    {
+      "edge_type": "same_region_same_task",
+      "harmful_promotions": 204,
+      "helpful_promotions": 202,
+      "helpful_rate": 0.4975369458128079,
+      "judged_promotions": 406,
+      "mean_relevance": 1.3201970443349753,
+      "promotions": 449
+    },
+    {
+      "edge_type": "dataset_reanalysis_bridge_dataset",
+      "harmful_promotions": 175,
+      "helpful_promotions": 191,
+      "helpful_rate": 0.5218579234972678,
+      "judged_promotions": 366,
+      "mean_relevance": 1.3770491803278688,
+      "promotions": 393
+    },
+    {
+      "edge_type": "same_region_cross_modality",
+      "harmful_promotions": 175,
+      "helpful_promotions": 191,
+      "helpful_rate": 0.5218579234972678,
+      "judged_promotions": 366,
+      "mean_relevance": 1.3770491803278688,
+      "promotions": 393
+    },
+    {
+      "edge_type": "dataset_reinterpretation_candidate",
+      "harmful_promotions": 145,
+      "helpful_promotions": 130,
+      "helpful_rate": 0.4727272727272727,
+      "judged_promotions": 275,
+      "mean_relevance": 1.309090909090909,
+      "promotions": 309
+    },
+    {
+      "edge_type": "same_task_cross_species",
+      "harmful_promotions": 145,
+      "helpful_promotions": 130,
+      "helpful_rate": 0.4727272727272727,
+      "judged_promotions": 275,
+      "mean_relevance": 1.309090909090909,
+      "promotions": 309
+    },
+    {
+      "edge_type": "no_relationship_edge",
+      "harmful_promotions": 26,
+      "helpful_promotions": 13,
+      "helpful_rate": 0.3333333333333333,
+      "judged_promotions": 39,
+      "mean_relevance": 1.1282051282051282,
+      "promotions": 43
+    }
+  ],
+  "examples": {
+    "harmful_promotions": [
+      {
+        "base_rank": 4,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 3,
+        "query_id": "can_0001",
+        "record_id": "dandi:001056",
+        "relevance": 0
+      },
+      {
+        "base_rank": 5,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 4,
+        "query_id": "can_0001",
+        "record_id": "zenodo:4307883",
+        "relevance": 1
+      },
+      {
+        "base_rank": 9,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "same_region_cross_modality",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0002",
+        "record_id": "dandi:000462",
+        "relevance": 1
+      },
+      {
+        "base_rank": 6,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0004",
+        "record_id": "dandi:000125",
+        "relevance": 1
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 7,
+        "query_id": "can_0004",
+        "record_id": "dandi:000941",
+        "relevance": 0
+      },
+      {
+        "base_rank": 9,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 8,
+        "query_id": "can_0004",
+        "record_id": "zenodo:1321265",
+        "relevance": 0
+      },
+      {
+        "base_rank": 11,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0004",
+        "record_id": "zenodo:3854034",
+        "relevance": 1
+      },
+      {
+        "base_rank": 7,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0005",
+        "record_id": "dandi:001079",
+        "relevance": 1
+      },
+      {
+        "base_rank": 11,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0005",
+        "record_id": "figshare:29052116",
+        "relevance": 1
+      },
+      {
+        "base_rank": 5,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 4,
+        "query_id": "can_0007",
+        "record_id": "gin:2361",
+        "relevance": 1
+      },
+      {
+        "base_rank": 5,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 4,
+        "query_id": "can_0010",
+        "record_id": "openneuro:ds001740",
+        "relevance": 0
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0011",
+        "record_id": "neurovault:599",
+        "relevance": 1
+      },
+      {
+        "base_rank": 7,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0012",
+        "record_id": "dandi:000574",
+        "relevance": 1
+      },
+      {
+        "base_rank": 9,
+        "edge_types": [
+          "dataset_reprocessing_candidate",
+          "same_region_same_task"
+        ],
+        "graph_rank": 7,
+        "query_id": "can_0014",
+        "record_id": "dandi:000053",
+        "relevance": 0
+      },
+      {
+        "base_rank": 11,
+        "edge_types": [
+          "dataset_reprocessing_candidate",
+          "same_region_same_task"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0014",
+        "record_id": "dandi:000405",
+        "relevance": 1
+      },
+      {
+        "base_rank": 9,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 8,
+        "query_id": "can_0016",
+        "record_id": "zenodo:17457318",
+        "relevance": 1
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "same_region_cross_modality",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0018",
+        "record_id": "neurovault:2138",
+        "relevance": 1
+      },
+      {
+        "base_rank": 6,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "same_region_cross_modality",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0019",
+        "record_id": "dandi:000951",
+        "relevance": 1
+      },
+      {
+        "base_rank": 7,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0022",
+        "record_id": "dandi:001631",
+        "relevance": 1
+      },
+      {
+        "base_rank": 12,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0024",
+        "record_id": "zenodo:12818267",
+        "relevance": 1
+      },
+      {
+        "base_rank": 3,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0025",
+        "record_id": "zenodo:2598755",
+        "relevance": 1
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0026",
+        "record_id": "dandi:000231",
+        "relevance": 1
+      },
+      {
+        "base_rank": 11,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0026",
+        "record_id": "dandi:000016",
+        "relevance": 1
+      },
+      {
+        "base_rank": 8,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 7,
+        "query_id": "can_0028",
+        "record_id": "zenodo:10697024",
+        "relevance": 1
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0028",
+        "record_id": "dandi:000574",
+        "relevance": 1
+      }
+    ],
+    "helpful_promotions": [
+      {
+        "base_rank": 6,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0002",
+        "record_id": "neurovault:3396",
+        "relevance": 2
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0003",
+        "record_id": "neurovault:2581",
+        "relevance": 2
+      },
+      {
+        "base_rank": 13,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0003",
+        "record_id": "neurovault:5617",
+        "relevance": 3
+      },
+      {
+        "base_rank": 8,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0004",
+        "record_id": "dandi:001209",
+        "relevance": 2
+      },
+      {
+        "base_rank": 5,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 4,
+        "query_id": "can_0006",
+        "record_id": "dandi:001641",
+        "relevance": 2
+      },
+      {
+        "base_rank": 6,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0007",
+        "record_id": "gin:2697",
+        "relevance": 2
+      },
+      {
+        "base_rank": 12,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 8,
+        "query_id": "can_0007",
+        "record_id": "dandi:000488",
+        "relevance": 2
+      },
+      {
+        "base_rank": 2,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0008",
+        "record_id": "openneuro:ds002338",
+        "relevance": 2
+      },
+      {
+        "base_rank": 3,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 2,
+        "query_id": "can_0008",
+        "record_id": "openneuro:ds002336",
+        "relevance": 2
+      },
+      {
+        "base_rank": 4,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 3,
+        "query_id": "can_0009",
+        "record_id": "dandi:001044",
+        "relevance": 2
+      },
+      {
+        "base_rank": 2,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0011",
+        "record_id": "crcns:ofc-3",
+        "relevance": 2
+      },
+      {
+        "base_rank": 12,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "same_region_cross_modality"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0012",
+        "record_id": "crcns:fcx-2",
+        "relevance": 2
+      },
+      {
+        "base_rank": 8,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0013",
+        "record_id": "dandi:001692",
+        "relevance": 2
+      },
+      {
+        "base_rank": 10,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 9,
+        "query_id": "can_0013",
+        "record_id": "dandi:000971",
+        "relevance": 2
+      },
+      {
+        "base_rank": 3,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 2,
+        "query_id": "can_0014",
+        "record_id": "dandi:001695",
+        "relevance": 2
+      },
+      {
+        "base_rank": 5,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 4,
+        "query_id": "can_0014",
+        "record_id": "dandi:001754",
+        "relevance": 2
+      },
+      {
+        "base_rank": 12,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0014",
+        "record_id": "dandi:001361",
+        "relevance": 2
+      },
+      {
+        "base_rank": 6,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 5,
+        "query_id": "can_0015",
+        "record_id": "dandi:000688",
+        "relevance": 2
+      },
+      {
+        "base_rank": 9,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 7,
+        "query_id": "can_0015",
+        "record_id": "crcns:pmd-1",
+        "relevance": 2
+      },
+      {
+        "base_rank": 2,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0016",
+        "record_id": "dandi:001692",
+        "relevance": 2
+      },
+      {
+        "base_rank": 11,
+        "edge_types": [
+          "dataset_reprocessing_candidate",
+          "same_region_same_task"
+        ],
+        "graph_rank": 10,
+        "query_id": "can_0017",
+        "record_id": "dandi:001532",
+        "relevance": 2
+      },
+      {
+        "base_rank": 2,
+        "edge_types": [
+          "dataset_reprocessing_candidate",
+          "same_region_same_task"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0018",
+        "record_id": "spark:SPARK-FMRI-002",
+        "relevance": 2
+      },
+      {
+        "base_rank": 13,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task"
+        ],
+        "graph_rank": 8,
+        "query_id": "can_0018",
+        "record_id": "neurovault:826",
+        "relevance": 2
+      },
+      {
+        "base_rank": 7,
+        "edge_types": [
+          "dataset_reinterpretation_candidate",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 6,
+        "query_id": "can_0019",
+        "record_id": "zenodo:7037327",
+        "relevance": 2
+      },
+      {
+        "base_rank": 2,
+        "edge_types": [
+          "dataset_reanalysis_bridge_dataset",
+          "dataset_reinterpretation_candidate",
+          "dataset_reprocessing_candidate",
+          "same_region_cross_modality",
+          "same_region_same_task",
+          "same_task_cross_species"
+        ],
+        "graph_rank": 1,
+        "query_id": "can_0020",
+        "record_id": "zenodo:4307883",
+        "relevance": 2
+      }
+    ]
+  },
+  "judged_promotions_into_top_k": 590,
+  "top_k": 10,
+  "total_promotions_into_top_k": 650
+}

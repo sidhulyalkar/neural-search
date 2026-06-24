@@ -42,7 +42,9 @@ def check_gate(
         f"{n_pairs} labeled pairs >= {min_labeled_pairs}",
     )
 
-    for system in ["bm25", "bm25_structured", "dense_bge", "hybrid_rrf"]:
+    for system in ["bm25", "bm25_structured", "dense_bge", "hybrid_rrf", "hybrid_graph", "full"]:
+        if system not in ndcg:
+            continue
         n_queries = int((ndcg.get(system) or {}).get("judged_queries", 0))
         add(
             f"{system}_query_coverage",
@@ -60,6 +62,17 @@ def check_gate(
             h_val >= b_val,
             f"hybrid_rrf {metric}={h_val:.4f}; bm25 {metric}={b_val:.4f}",
         )
+
+    graph = ndcg.get("hybrid_graph") or {}
+    if graph:
+        for metric in ["ndcg@10", "mrr", "recall@50"]:
+            g_val = float(graph.get(metric, 0.0))
+            h_val = float(hybrid.get(metric, 0.0))
+            add(
+                f"hybrid_graph_ge_hybrid_rrf_{metric}",
+                g_val >= h_val,
+                f"hybrid_graph {metric}={g_val:.4f}; hybrid_rrf {metric}={h_val:.4f}",
+            )
 
     if not reliability.get("estimable"):
         warnings.append("Dual-judge QWK is not estimable because no pair has two non-error judge labels.")

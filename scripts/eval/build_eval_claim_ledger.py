@@ -61,6 +61,9 @@ def build_ledger(
     hybrid_ndcg_delta = _metric_delta(ndcg, "hybrid_rrf", "bm25", "ndcg@10")
     hybrid_mrr_delta = _metric_delta(ndcg, "hybrid_rrf", "bm25", "mrr")
     hybrid_recall_delta = _metric_delta(ndcg, "hybrid_rrf", "bm25", "recall@50")
+    graph_ndcg_delta = _metric_delta(ndcg, "hybrid_graph", "hybrid_rrf", "ndcg@10")
+    graph_mrr_delta = _metric_delta(ndcg, "hybrid_graph", "hybrid_rrf", "mrr")
+    graph_recall_delta = _metric_delta(ndcg, "hybrid_graph", "hybrid_rrf", "recall@50")
 
     return [
         {
@@ -107,6 +110,31 @@ def build_ledger(
                 "ndcg_significant_vs_dense_bge": _significant(bootstrap, "dense_bge", "hybrid_rrf", "ndcg@10", "hybrid_rrf"),
                 "mrr_significant_vs_dense_bge": _significant(bootstrap, "dense_bge", "hybrid_rrf", "mrr", "hybrid_rrf"),
             },
+        },
+        {
+            "claim_id": "claim_calibrated_graph_beats_hybrid_rrf",
+            "claim": "Calibrated graph reranking improves over hybrid RRF on the labeled qrels aggregate.",
+            "evidence_level": (
+                "supported"
+                if all(v is not None and v > 0 for v in [graph_ndcg_delta, graph_mrr_delta, graph_recall_delta])
+                and _significant(bootstrap, "hybrid_rrf", "hybrid_graph", "ndcg@10", "hybrid_graph")
+                and _significant(bootstrap, "hybrid_rrf", "hybrid_graph", "mrr", "hybrid_graph")
+                else "partially_supported"
+                if all(v is not None and v > 0 for v in [graph_ndcg_delta, graph_mrr_delta, graph_recall_delta])
+                else "not_supported"
+            ),
+            "evidence": {
+                "ndcg@10_delta": graph_ndcg_delta,
+                "mrr_delta": graph_mrr_delta,
+                "recall@50_delta": graph_recall_delta,
+                "ndcg_significant_vs_hybrid_rrf": _significant(bootstrap, "hybrid_rrf", "hybrid_graph", "ndcg@10", "hybrid_graph"),
+                "mrr_significant_vs_hybrid_rrf": _significant(bootstrap, "hybrid_rrf", "hybrid_graph", "mrr", "hybrid_graph"),
+                "artifacts": [
+                    "reports/eval/graph_weight_calibration.json",
+                    "reports/eval/relationship_edge_quality.json",
+                ],
+            },
+            "caveat": "Small effect on LLM-judged qrels; calibration and edge quality should be rechecked on independently adjudicated labels.",
         },
         {
             "claim_id": "claim_intent_stratification_available",

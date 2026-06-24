@@ -1556,12 +1556,12 @@ Metrics include NDCG@10 (graded relevance, 0--3 scale), MRR (binary threshold $\
 
 \subsection{Validation Status}
 
-\textbf{The graph boost has not yet been scientifically validated.} The graph influence on final scores is only scientifically meaningful if it produces measurable improvement in qrels-backed retrieval metrics (NDCG@10, MRR) over the lexical-only baseline. As of the current system state, the populated qrels-backed retrieval snapshot covers 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs. This is sufficient for a useful ablation preview, but it is not a substitute for independently adjudicated human labels. The graph-specific rungs in the current ablation ladder are not yet populated, so graph-improvement claims remain pending. Until human/adjudicated graph ablations are available:
+\textbf{The graph boost is now measurable, but still preliminary.} The graph influence on final scores is scientifically meaningful only if it produces measurable improvement in qrels-backed retrieval metrics (NDCG@10, MRR) over strong non-graph baselines. As of the current system state, the populated qrels-backed retrieval snapshot covers 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs. This is sufficient for a useful ablation preview, but it is not a substitute for independently adjudicated human labels. After calibrating the global graph multiplier to 0.005, \texttt{hybrid\_graph} shows a small LLM-qrels-backed gain over \texttt{hybrid\_rrf}; this should be treated as a promising calibration result, not as publication-grade validation. Until human/adjudicated graph ablations are available:
 
 \begin{itemize}
     \item All score decompositions are structurally correct and unit-tested.
-    \item No retrieval quality claim based on concept boost should be made in publications.
-    \item The GICM layer should be described as a \emph{planned enrichment mechanism with a validated evaluation harness}, not a proven retrieval improvement.
+    \item No publication-grade retrieval quality claim based on concept boost should be made from LLM-only labels.
+    \item The GICM layer should be described as a \emph{calibrated enrichment mechanism with an active evaluation harness}, not yet a human-validated retrieval improvement.
 \end{itemize}
 
 \section{Benchmark-Backed Evaluation Protocol}
@@ -1654,7 +1654,7 @@ Results from this benchmark support paper-ready claims only when:
 
 \subsection{Current Status}
 
-\textbf{A first qrels-backed retrieval snapshot is now available, but remains preliminary.} The current canonical qrels artifact contains 13,654 non-error LLM-judged query--dataset pairs across 317 canonical queries. The join is complete across all six retrieval rungs. On this snapshot, \texttt{hybrid\_rrf} is the strongest variant by aggregate NDCG@10, MRR, and Recall@50: NDCG@10 = 0.6667, MRR = 0.9209, and Recall@50 = 0.7455. BM25 remains competitive on NDCG@10 (0.6566), while dense BGE alone has lower aggregate NDCG@10 (0.5708) and Recall@50 (0.5384). The graph-backed variants are now populated and evaluable: \texttt{hybrid\_graph} obtains NDCG@10 = 0.6385, MRR = 0.8824, and Recall@50 = 0.6957; \texttt{full} obtains NDCG@10 = 0.6385, MRR = 0.8824, and Recall@50 = 0.6908. These graph variants currently trail \texttt{hybrid\_rrf}, so the correct conclusion is that relationship-aware graph reranking is implemented and measurable but still needs calibration before it can support an improvement claim. Bootstrap/sign-test analysis finds \texttt{hybrid\_rrf} significantly better than BM25 on MRR ($p=0.0030$) and significantly better than dense BGE on both NDCG@10 and MRR; the NDCG@10 margin over BM25 is directionally positive but not significant in the current sign test.
+\textbf{A first qrels-backed retrieval snapshot is now available, but remains preliminary.} The current canonical qrels artifact contains 13,654 non-error LLM-judged query--dataset pairs across 317 canonical queries. The join is complete across all six retrieval rungs. On this snapshot, \texttt{hybrid\_rrf} remains a strong non-graph baseline with NDCG@10 = 0.6667, MRR = 0.9209, and Recall@50 = 0.7455. BM25 remains competitive on NDCG@10 (0.6566), while dense BGE alone has lower aggregate NDCG@10 (0.5708) and Recall@50 (0.5384). The graph-backed variants are now populated, calibrated, and evaluable: \texttt{hybrid\_graph} obtains NDCG@10 = 0.6696, MRR = 0.9256, and Recall@50 = 0.7465; \texttt{full} obtains NDCG@10 = 0.6696, MRR = 0.9256, and Recall@50 = 0.7450. The calibrated graph multiplier is 0.005, selected by \texttt{graph\_weight\_calibration.md} as the best balanced setting that improves NDCG@10 and MRR over \texttt{hybrid\_rrf}. Bootstrap/sign-test analysis finds \texttt{hybrid\_graph} significantly better than \texttt{hybrid\_rrf} on NDCG@10 ($p=0.0052$) and MRR ($p=0.0020$), significantly better than BM25 on MRR, and significantly better than dense BGE on NDCG@10 and MRR. The graph gain is small and LLM-qrels-backed, so it should be framed as a promising calibrated preview rather than final human-adjudicated evidence.
 
 These numbers should be reported as an LLM-judged benchmark preview, not as final human-adjudicated scientific relevance evidence. Dual-judge reliability is not estimable from the current artifact: 13,654 labels are usable, but no non-error query--dataset pair was judged by two models.
 
@@ -1668,6 +1668,7 @@ The evaluation infrastructure is complete:
     \item Intent stratification, dual-judge reliability reporting, claim ledger generation, and regression gate scripts operational
     \item Failure analysis and result card gallery scripts operational
     \item Graph/full ablation rungs populated from a 2,821-record eval-corpus graph with 3,180 nodes and 17,523 edges, including 5,254 cross-dataset and reanalysis relationship edges
+    \item Graph-weight calibration and relationship-edge quality reporting operational; current relationship-edge promotions are mixed, so edge confidence/source calibration remains a priority
     \item Reinterpretation and reprocessing discovery reports operational: reanalysis affordance ranking, new-method-to-old-dataset matching, and metadata-enrichment priorities derived from failure analysis
     \item Annotation tool with resume mode operational
     \item Frontend feedback loop operational: React search interface with evidence inspection, inline relevance feedback (usefulness, would-use-for-analysis, reason tags, free-text notes), neuro-judge badges with silver provenance watermarks, and save/export
@@ -1677,7 +1678,7 @@ The evaluation infrastructure is complete:
     \item Transparent feedback reranking priors operational (\texttt{build\_feedback\_rerank\_priors.py}) — log-odds weight table ($\pm$1.5 cap) from aggregated downstream feedback, toggle-able in frontend; downstream signal only
 \end{itemize}
 
-No improvement claim based on concept-memory or graph reranking appears in this paper. Any such claim requires qrels-backed evidence meeting the minimum credible benchmark targets above, calibrated graph weights, and independently adjudicated labels.
+No publication-grade improvement claim based on concept-memory or graph reranking appears in this paper. The current calibrated graph result is a positive LLM-qrels preview; any final claim requires qrels-backed evidence meeting the minimum credible benchmark targets above and independently adjudicated labels.
 
 \section{Limitations}
 \label{sec:limitations}
@@ -1698,7 +1699,7 @@ No improvement claim based on concept-memory or graph reranking appears in this 
 
 \paragraph{Unvalidated affordance inference.} Analysis affordances are currently represented and predicted, but content-validated affordance precision/recall is pending. Metadata-only affordance claims should be surfaced with uncertainty.
 
-\paragraph{Graph construction bias.} Graph proximity changes ranking behavior, but improvement in scientific relevance remains unproven until the frozen expanded-corpus benchmark ablation is run. Graph edges can also amplify incomplete or noisy metadata.
+\paragraph{Graph construction bias.} Calibrated graph proximity now shows a small positive LLM-qrels-backed retrieval gain, but graph edges can also amplify incomplete or noisy metadata. The relationship-edge quality report shows mixed promotion quality, so graph-weight and edge-confidence calibration must be revalidated on adjudicated labels.
 
 \paragraph{Dense embedding domain mismatch.} BGE-large-en-v1.5 provides a strong general dense retrieval representation, and broad embedding benchmarks such as MTEB are useful external references \citep{muennighoff2022mteb}. Scientific dataset usefulness may still require domain-specific calibration and field weighting.
 

@@ -61,7 +61,7 @@ DEFAULT_GRAPH = Path("data/graph/neural_search_graph.real_corpus.json")
 DEFAULT_OUT_DIR = Path("reports/eval/runs")
 DEFAULT_TOP_K = 100
 RRF_K = 60
-GRAPH_SCORE_WEIGHT = 0.05
+GRAPH_SCORE_WEIGHT = 0.005
 
 ALL_RUNGS = [
     "bm25",
@@ -402,6 +402,7 @@ def rung_hybrid_graph(
     query_id: str,
     top_k: int,
     out_path: Path,
+    graph_score_weight: float = GRAPH_SCORE_WEIGHT,
 ) -> list[RunResult]:
     from neural_search.graph.search_features import graph_context_score
 
@@ -409,7 +410,7 @@ def rung_hybrid_graph(
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         gscore = graph_context_score(graph, record_id, query_context=q_ctx)
-        rescored.append((record_id, base_score + (GRAPH_SCORE_WEIGHT * gscore)))
+        rescored.append((record_id, base_score + (graph_score_weight * gscore)))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]
     _write_run(out_path, query_id, results, "hybrid_graph")
@@ -509,9 +510,10 @@ def compute_metrics(
 # Reporting
 # ---------------------------------------------------------------------------
 
-def _write_report(out_dir: Path, rows: list[dict[str, Any]]) -> None:
+def _write_report(out_dir: Path, rows: list[dict[str, Any]], *, partial: bool = False) -> None:
     report = {"rungs": rows}
-    json_path = out_dir.parent / "ablation_ladder_report.json"
+    stem = "ablation_ladder_report.partial" if partial else "ablation_ladder_report"
+    json_path = out_dir.parent / f"{stem}.json"
     json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     md_lines = ["# Ablation Ladder Report\n", "| Rung | Queries | NDCG@10 |", "|------|---------|---------|"]
@@ -522,7 +524,7 @@ def _write_report(out_dir: Path, rows: list[dict[str, Any]]) -> None:
         status = row.get("status", "ok")
         label = f"{row['rung']} ({'skipped' if status == 'skipped' else 'ok'})"
         md_lines.append(f"| {label} | {qc} | {ndcg} |")
-    md_path = out_dir.parent / "ablation_ladder_report.md"
+    md_path = out_dir.parent / f"{stem}.md"
     md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
     print(f"\nReport: {json_path}")
 
@@ -553,6 +555,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
     parser.add_argument(
+        "--graph-score-weight",
+        type=float,
+        default=GRAPH_SCORE_WEIGHT,
+        help="Global multiplier for graph_context_score in hybrid_graph/full rungs.",
+    )
+    parser.add_argument(
         "--skip-rungs", nargs="+", default=[],
         choices=ALL_RUNGS, metavar="RUNG",
         help="Rungs to skip (e.g. --skip-rungs dense_bge hybrid_rrf)",
@@ -565,6 +573,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     active_rungs = set(args.rungs or ALL_RUNGS) - set(args.skip_rungs)
+    is_partial_run = active_rungs != set(ALL_RUNGS)
     needs_dense = bool(active_rungs & {"dense_bge", "hybrid_rrf", "hybrid_graph", "full"})
 
     if not args.queries.exists():
@@ -692,7 +701,15 @@ def main(argv: list[str] | None = None) -> int:
                         encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
                     )
                     rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
-                res = rung_hybrid_graph(rrf, graph, q, qid, args.top_k, run_paths["hybrid_graph"])
+                res = rung_hybrid_graph(
+                    rrf,
+                    graph,
+                    q,
+                    qid,
+                    args.top_k,
+                    run_paths["hybrid_graph"],
+                    graph_score_weight=args.graph_score_weight,
+                )
                 graph_cache[qid] = res
 
             elif rung == "full":
@@ -708,7 +725,15 @@ def main(argv: list[str] | None = None) -> int:
                             encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
                         )
                         rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
-                    gr = rung_hybrid_graph(rrf, graph, q, qid, args.top_k, Path("/dev/null"))
+                    gr = rung_hybrid_graph(
+                        rrf,
+                        graph,
+                        q,
+                        qid,
+                        args.top_k,
+                        Path("/dev/null"),
+                        graph_score_weight=args.graph_score_weight,
+                    )
                 rung_full(gr, corpus_by_stable_id, qid, args.top_k, run_paths["full"])
 
             queries_run += 1
@@ -728,7 +753,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # -- Report -----------------------------------------------------------
     _print_table(report_rows)
-    _write_report(args.out_dir, report_rows)
+    _write_report(args.out_dir, report_rows, partial=is_partial_run)
     return 0
 
 
