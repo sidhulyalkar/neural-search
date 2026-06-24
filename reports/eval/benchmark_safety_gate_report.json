@@ -1,0 +1,305 @@
+{
+  "generated_at": "2026-06-23T03:32:06.421107+00:00",
+  "gold_qrels_rows": 0,
+  "adj_qrels_rows": 3,
+  "safe": false,
+  "blockers": [
+    {
+      "file": "reports\\eval\\neuro_judge_retrieval_metrics.md",
+      "type": "gold_claim_while_empty",
+      "match": "Gold Benchmark",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\whitepaper_claims_status.md",
+      "type": "gold_claim_while_empty",
+      "match": "NDCG@10 > 0.40",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "NDCG@10 > 0.40",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "Gold Benchmark",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    }
+  ],
+  "warnings": [
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "stale_corpus_reference",
+      "match": "10404",
+      "severity": "WARN"
+    },
+    {
+      "file": "reports\\eval\\corpus_manifest.json",
+      "type": "stale_corpus_reference",
+      "match": "10404",
+      "severity": "WARN"
+    },
+    {
+      "file": "reports\\eval\\corpus_manifest.json",
+      "type": "stale_corpus_reference",
+      "match": "corpus_size\": 10404",
+      "severity": "WARN"
+    },
+    {
+      "file": "reports\\eval\\retrieval_baselines_status.json",
+      "type": "stale_corpus_reference",
+      "match": "10404",
+      "severity": "WARN"
+    },
+    {
+      "file": "reports\\eval\\retrieval_baselines_status.json",
+      "type": "stale_corpus_reference",
+      "match": "corpus_size\": 10404",
+      "severity": "WARN"
+    }
+  ],
+  "report_findings": [
+    {
+      "path": "reports\\eval\\ablation_ladder_report.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\affordance_audit_instructions.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\brainknow_baseline_summary.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\downstream_retrieval_success.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\finding_audit_instructions.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\finding_audit_llm_judge_summary.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\known_item_lookup.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\ndcg_report.md",
+      "evidence_status": "silver_diagnostic",
+      "evidence_label": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_consensus_report.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_human_calibration.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_mock_collapse_diagnostics.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_preflight.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_retrieval_metrics.md",
+      "evidence_status": "silver_diagnostic",
+      "evidence_label": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "Gold Benchmark",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_validation_sample_summary.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\paper_link_audit_instructions.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\retrieval_loading_diagnostics.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\typed_field_audit_instructions.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\whitepaper_claims_status.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "NDCG@10 > 0.40",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\ablation_ladder_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\benchmark_safety_gate_report.json",
+      "evidence_status": "historical_stale",
+      "evidence_label": "historical stale snapshot \u2014 do not cite",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "NDCG@10 > 0.40",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "Gold Benchmark",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "stale_corpus_reference",
+          "match": "10404",
+          "severity": "WARN"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\brainknow_baseline_graph.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\corpus_manifest.json",
+      "evidence_status": "historical_stale",
+      "evidence_label": "historical stale snapshot \u2014 do not cite",
+      "issues": [
+        {
+          "type": "stale_corpus_reference",
+          "match": "10404",
+          "severity": "WARN"
+        },
+        {
+          "type": "stale_corpus_reference",
+          "match": "corpus_size\": 10404",
+          "severity": "WARN"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\downstream_retrieval_success.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\hard_negative_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\ndcg_report.json",
+      "evidence_status": "silver_diagnostic",
+      "evidence_label": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_mock_collapse_diagnostics.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\neuro_judge_retrieval_metrics.json",
+      "evidence_status": "silver_diagnostic",
+      "evidence_label": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\retrieval_baselines_status.json",
+      "evidence_status": "historical_stale",
+      "evidence_label": "historical stale snapshot \u2014 do not cite",
+      "issues": [
+        {
+          "type": "stale_corpus_reference",
+          "match": "10404",
+          "severity": "WARN"
+        },
+        {
+          "type": "stale_corpus_reference",
+          "match": "corpus_size\": 10404",
+          "severity": "WARN"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\retrieval_loading_diagnostics.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    }
+  ],
+  "evidence_status_labels": {
+    "gold": "human gold \u2014 peer-review grade",
+    "human_adjudicated_smoke": "human-adjudicated smoke test (3 pairs) \u2014 workflow validated only",
+    "silver_diagnostic": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+    "historical_stale": "historical stale snapshot \u2014 do not cite",
+    "engineering_validation": "engineering validation \u2014 not retrieval evidence"
+  }
+}

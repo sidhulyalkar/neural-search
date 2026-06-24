@@ -113,6 +113,11 @@ artifacts/field_state/concept_memory/concept_index.json
 reports/eval/runs/
 reports/eval/*.jsonl
 
+# Live/growing literature extraction outputs (currently 140MB+, exceeds
+# GitHub's 100MB hard limit; regenerate locally, do not version)
+artifacts/literature/findings_tier1_ollama.jsonl
+artifacts/literature/findings_tier1_ollama.checkpoint.json
+
 # Large model/index/data file types
 *.npy
 *.npz

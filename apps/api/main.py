@@ -1299,6 +1299,27 @@ async def get_corpus_completeness() -> dict[str, Any]:
     return compute_corpus_completeness()
 
 
+_MANIFEST_PATH = Path("reports/eval/current_artifact_manifest.json")
+
+
+@app.get("/api/artifacts/current-manifest")
+async def get_current_manifest() -> dict[str, Any]:
+    """Return the canonical artifact manifest (reports/eval/current_artifact_manifest.json).
+
+    This is the single source of truth for corpus size, qrels counts, graph stats,
+    and stale-report warnings. Frontend should read counts from here rather than
+    hardcoding them.
+    """
+    if not _MANIFEST_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Artifact manifest not found. Run: python scripts/eval/freeze_corpus_manifest.py",
+        )
+    with open(_MANIFEST_PATH) as f:
+        manifest = json.load(f)
+    return manifest
+
+
 # Evaluation endpoints
 class EvaluationRequest(BaseModel):
     benchmark_file: str | None = Field(

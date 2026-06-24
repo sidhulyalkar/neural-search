@@ -122,6 +122,53 @@ function DimensionMatchBadges({ groups }: { groups: ExplanationGroups }) {
   )
 }
 
+type CoverageLevel = 'present' | 'partial' | 'absent'
+
+function CoverageBar({ result }: { result: SearchResultItem }) {
+  const { dataset, evidence_packet, readiness_score } = result
+  const dims: { label: string; level: CoverageLevel }[] = [
+    { label: 'task', level: (dataset.tasks?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'modality', level: (dataset.modalities?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'species', level: (dataset.species?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'region', level: (dataset.brain_regions?.length ?? 0) > 0 ? 'present' : 'absent' },
+    {
+      label: 'affordance',
+      level: (evidence_packet?.affordance_matches?.length ?? 0) > 0 ? 'present'
+        : evidence_packet ? 'partial'
+        : 'absent',
+    },
+    {
+      label: 'graph',
+      level: result.memory_graph_evidence ? 'present' : 'absent',
+    },
+    {
+      label: 'readiness',
+      level: typeof readiness_score === 'number'
+        ? readiness_score >= 0.6 ? 'present' : readiness_score >= 0.3 ? 'partial' : 'absent'
+        : 'absent',
+    },
+  ]
+  const colors: Record<CoverageLevel, string> = {
+    present: 'bg-accent-cyan/70',
+    partial: 'bg-amber-400/50',
+    absent: 'bg-neural-800',
+  }
+  return (
+    <div className="flex items-center gap-2 mb-3" title="Coverage: task · modality · species · region · affordance · graph · readiness">
+      <span className="text-xs text-neural-700 flex-shrink-0">coverage</span>
+      <div className="flex gap-1">
+        {dims.map(({ label, level }) => (
+          <span
+            key={label}
+            title={`${label}: ${level}`}
+            className={`inline-block h-1.5 w-5 rounded-sm ${colors[level]}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function MemoryGraphEvidencePanel({ evidence }: { evidence: MemoryGraphEvidence }) {
   const hasAny =
     evidence.modality_matches.length > 0 ||
@@ -535,6 +582,9 @@ export function DatasetCard({
               groups={result.dataset_card_preview.explanation.match_summary.dimension_matches as ExplanationGroups}
             />
           )}
+
+          {/* Compact 7-dimension coverage bar */}
+          <CoverageBar result={result} />
 
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge tone="cyan">retrieval {Math.round(score * 100)}</Badge>

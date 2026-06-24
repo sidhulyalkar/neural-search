@@ -27,7 +27,7 @@ All quantitative claims in this document are drawn directly from artifacts, not 
 
 | Component | Evidence of Maturity |
 |-----------|---------------------|
-| **Corpus ingestion pipeline** | 8 source adapters (DANDI, OpenNeuro, NeuroVault, Zenodo, OSF, Allen, IBL, NeuroMorpho), 10,404 datasets |
+| **Corpus ingestion pipeline** | 8 source adapters (DANDI, OpenNeuro, NeuroVault, Zenodo, OSF, Allen, IBL, NeuroMorpho), 7,171 dataset records (full_corpus_v09.jsonl) |
 | **BM25 + usefulness retrieval** | Produces credible candidate lists for all 15 benchmark queries (checked manually for q_0001: top results are genuine RL fMRI datasets) |
 | **Ontology-based matching** | Label recall @10 = 85.5% on 30 queries against real corpus — tasks/modalities recover well |
 | **Affordance framework** | 14 affordance types with rule-based validators; NWB and BIDS file validators |

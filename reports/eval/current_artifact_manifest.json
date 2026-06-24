@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-06-20T08:25:57Z",
+  "git_commit": "499d1ce",
+  "reconciliation_note": "Manual reconciliation 2026-06-20. data/corpus/normalized/combined_corpus.jsonl is a directory; the live corpus file is full_corpus_v09.jsonl inside it. Unique IDs counted via source_id field (7,121); dataset_id field has only 625 unique values (embedded-slice only).",
+  "corpus": {
+    "path": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl",
+    "row_count": 7171,
+    "unique_source_ids": 7121,
+    "unique_dataset_ids": 625,
+    "id_field_note": "source_id is the canonical unique identifier (7,121 unique). dataset_id has 625 unique values — covers the embedded/indexed slice only.",
+    "sha256_head_16chars": "4aacecc3e9d37e17"
+  },
+  "knowledge_graph": {
+    "path": "data/graph/neural_search_graph.real_corpus.json",
+    "nodes": 7593,
+    "edges": 31920,
+    "cross_dataset_edges": 2957,
+    "note": "Full-corpus graph. 7,593 nodes / 31,920 edges as cited in whitepaper."
+  },
+  "qrels": {
+    "gold": {
+      "path": "artifacts/qrels_gold.jsonl",
+      "rows": 0,
+      "status": "empty — pending human annotation campaign"
+    },
+    "silver": {
+      "path": "artifacts/qrels_silver.jsonl",
+      "rows": 175,
+      "status": "LLM-generated diagnostic only — not peer-reviewed"
+    },
+    "bronze": {
+      "path": "artifacts/qrels_bronze.jsonl",
+      "rows": 319,
+      "status": "LLM-generated diagnostic only — not peer-reviewed"
+    },
+    "field_state_adjudicated": {
+      "path": "artifacts/field_state/adjudicated_qrels.jsonl",
+      "rows": 3,
+      "status": "smoke-test only — adjudication workflow verified but not at benchmark scale"
+    }
+  },
+  "vector_index": {
+    "current_on_disk_ids": 625,
+    "full_rebuild_pending": true,
+    "note": "turbovec index covers 625-record embedded slice; full 7,171-record rebuild needed before expanded-corpus retrieval claims"
+  },
+  "literature": {
+    "openalex_papers_ingested": 255940,
+    "doi_exact_links": 168,
+    "title_fuzzy_links": 225,
+    "not_found": 6778,
+    "findings_operational_estimate": 122544,
+    "findings_file": "artifacts/literature/findings_tier1_ollama.jsonl",
+    "findings_note": "122,544 findings from 179,450 papers processed (68.2% yield) as of 2026-06-21; extraction still running. Quality not validated — manual audit template at reports/eval/finding_audit_template.csv"
+  },
+  "stale_reports": [
+    {
+      "path": "reports/eval/corpus_manifest.json",
+      "issue": "claims corpus_size=10404 and treats combined_corpus.jsonl as a file; conflicts with 7,171-row v09 reality"
+    },
+    {
+      "path": "reports/eval/retrieval_loading_diagnostics.md",
+      "issue": "corpus load failed because path is a directory; diagnostics need corpus path updated to full_corpus_v09.jsonl"
+    },
+    {
+      "path": "reports/eval/neuro_judge_retrieval_metrics.md",
+      "issue": "claims 675 annotated pairs; actual adjudicated_qrels.jsonl has 3 rows; treat as stale historical artifact"
+    },
+    {
+      "path": "reports/eval/ndcg_report.md",
+      "issue": "based on 8 LLM-qrels pairs over 1 query; engineering diagnostic only"
+    },
+    {
+      "path": "artifacts/field_state/current_manifest.json",
+      "issue": "points to /tmp/pytest path; 701 nodes / 1 edge; test artifact — not production state"
+    }
+  ],
+  "source_of_truth_summary": {
+    "corpus": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl — 7,171 rows, 7,121 unique source_ids",
+    "graph": "data/graph/neural_search_graph.real_corpus.json — 7,593 nodes / 31,920 edges",
+    "gold_qrels": "empty — awaiting human annotation",
+    "silver_diagnostic": "artifacts/qrels_silver.jsonl — 175 rows (diagnostic)",
+    "field_state_memory_graph": "artifacts/field_state/memory_graph_manifest.json — 629-record curation slice, 2,200 nodes / 3,788 edges"
+  }
+}

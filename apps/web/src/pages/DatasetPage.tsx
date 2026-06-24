@@ -124,12 +124,22 @@ function AffordancePanel({ affordances }: { affordances: AffordanceResult[] }) {
     return order.indexOf(a.support_level) - order.indexOf(b.support_level)
   })
 
+  const supported = sorted.filter((a) => a.support_level === 'high' || a.support_level === 'medium')
+  const missing = sorted.filter((a) => a.support_level === 'low' || a.support_level === 'unsupported')
+
   return (
     <section className="card">
-      <h2 className="text-lg font-semibold mb-4">Analysis Affordances</h2>
-      <p className="text-xs text-neural-500 mb-3">
-        Which analyses this dataset structurally supports, based on metadata.
+      <h2 className="text-lg font-semibold mb-1">What can I test with this?</h2>
+      <p className="text-xs text-neural-500 mb-1">
+        Analyses this dataset structurally supports, based on metadata signals.
+        <span className="ml-2 text-neural-600">(audit pending · metadata-only)</span>
       </p>
+      {supported.length > 0 && (
+        <p className="text-xs text-emerald-400 mb-3">
+          {supported.length} supported · {missing.length} not supported
+        </p>
+      )}
+
       <div className="space-y-1.5">
         {sorted.map((a) => (
           <div key={a.affordance_id}>

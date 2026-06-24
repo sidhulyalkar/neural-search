@@ -6,12 +6,14 @@ const VIEW_MODES: { value: ViewMode; label: string; icon: string }[] = [
   { value: '2d', label: '2D', icon: '📐' },
 ]
 
-const LAYER_MODES: { value: LayerMode; label: string }[] = [
-  { value: 'corpus', label: 'Corpus' },
-  { value: 'consensus', label: 'Consensus' },
-  { value: 'literature', label: 'Literature' },
-  { value: 'bridge', label: 'Bridge' },
-  { value: 'morphology', label: 'Morphology' },
+const LAYER_MODES: { value: LayerMode; label: string; title: string }[] = [
+  { value: 'corpus', label: 'Corpus', title: 'Dataset Corpus — 7,171 dataset records with metadata' },
+  { value: 'consensus', label: 'Consensus', title: 'Consensus Findings — aggregated evidence across papers per region' },
+  { value: 'literature', label: 'Literature', title: 'Literature Findings — extracted from ~12K Tier-C findings' },
+  { value: 'bridge', label: 'Bridge', title: 'Paper-Dataset Bridges — 168 DOI-exact + 225 fuzzy paper links' },
+  { value: 'morphology', label: 'Morphology', title: 'Morphology — structural connectivity and anatomy' },
+  { value: 'validation', label: 'Validation', title: 'Validation / Qrels — 175 silver + 3 adjudicated qrels; gold benchmark pending' },
+  { value: 'coverage_gaps', label: 'Gaps', title: 'Coverage Gaps — regions or tasks with fewer than 3 datasets' },
 ]
 
 interface GraphControlsProps {
@@ -46,16 +48,30 @@ export function GraphControls({
         ))}
       </div>
 
-      {/* Layer mode */}
-      <select
-        value={layerMode}
-        onChange={(e) => onLayerModeChange(e.target.value as LayerMode)}
-        className="bg-neural-900 border border-neural-700 rounded px-2 py-1.5 text-xs text-neural-200 focus:outline-none focus:border-neural-500"
-      >
-        {LAYER_MODES.map(({ value, label }) => (
-          <option key={value} value={value}>Layer: {label}</option>
-        ))}
-      </select>
+      {/* Layer mode — toggle buttons with tooltips */}
+      <div className="flex gap-0.5 border-r border-neural-800 pr-2 mr-1">
+        {LAYER_MODES.map(({ value, label, title }) => {
+          const isNew = value === 'validation' || value === 'coverage_gaps'
+          return (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onLayerModeChange(value)}
+              title={title}
+              className={`relative px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
+                layerMode === value
+                  ? 'bg-accent-violet/20 text-accent-violet border border-accent-violet/30'
+                  : 'text-neural-500 hover:text-neural-200 border border-transparent'
+              }`}
+            >
+              {label}
+              {isNew && (
+                <span className="absolute -top-1 -right-0.5 w-1.5 h-1.5 rounded-full bg-accent-cyan" />
+              )}
+            </button>
+          )
+        })}
+      </div>
 
       {/* Legend */}
       <button

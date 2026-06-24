@@ -116,7 +116,7 @@ Full-corpus knowledge graph & 7,593 nodes and 31,920 edges, including 2,957 cros
 Coverage ledger and UI evidence surfaces & 7,176 datasets and 29,561 dimension entries; Atlas and affordance panels implemented & Affordance precision and content-derived validation are pending. \\
 Literature ingestion & 255,940 OpenAlex tier~1 neuroscience papers ingested & Literature search is not yet integrated into the unified retrieval path. \\
 Paper-dataset linker & Linker run over all 7,171 datasets; 168 DOI-exact links, 225 title-fuzzy-local links, 6,778 not found & ``Run over all datasets'' is not the same as ``all datasets linked''; link precision audit pending. \\
-Finding extraction & Operational snapshot: 16,150 papers processed; 12,050 findings; 74.6\% yield; $\sim$190K projected if maintained & Live operational estimate only; not validated finding quality or final yield. \\
+Finding extraction & 122K findings enriched by a 27-field typed pass; earlier extraction snapshot: 16,150 papers processed; 12,050 findings; 74.6\% yield & Live operational estimate and field-coverage audit only; not validated finding quality or final yield. \\
 Qrels and benchmark layer & Export/import/adjudication workflow smoke-tested; three adjudicated labels & LLM qrels are silver diagnostics only; publication-grade NDCG/MRR/Recall requires human-adjudicated qrels. \\
 \bottomrule
 \end{tabular}
@@ -191,6 +191,76 @@ This paper distinguishes implemented infrastructure from completed empirical val
 \end{enumerate}
 
 Items 1--6 are implemented as repository infrastructure and covered by targeted engineering tests. The empirical claim that Neural Search improves scientific retrieval quality on the expanded corpus remains future validation until the corpus, embedding, and index manifests are reconciled, adjudicated qrels exist at benchmark scale, and run files, metric reports, hard-negative analyses, source-skew diagnostics, and calibration reports are complete.
+
+\subsection{Artifact Reconciliation and Evidence Tiers}
+\label{sec:artifact-reconciliation}
+
+The following table records the current source of truth for each major artifact layer as of the \textbf{2026-06-20} repository state. All quantitative claims in this paper must be traced to one of these layers; any claim traced to a stale or quarantined report should be treated as historical until reproduced from the artifacts below.
+
+\begin{table}[htbp]
+\centering
+\caption{Artifact truth table (2026-06-20). Canonical manifest: \texttt{reports/eval/current\_artifact\_manifest.json}.}
+\label{tab:artifact-truth}
+\small
+\begin{tabular}{p{0.22\linewidth}p{0.35\linewidth}p{0.33\linewidth}}
+\toprule
+Layer & Canonical artifact & Validation caveat \\
+\midrule
+Normalized corpus & \texttt{data/corpus/normalized/combined\_corpus.jsonl/full\_corpus\_v09.jsonl} — 7,171 rows, 7,121 unique \texttt{source\_id}s & \texttt{combined\_corpus.jsonl} is a directory, not a file; loaders must reference \texttt{full\_corpus\_v09.jsonl} explicitly \\
+Dense index & \texttt{turbovec} on-disk: 625 records $\times$ 1,024 dim & Full 7,171-record rebuild pending; current index metrics are engineering validation only \\
+Full-corpus KG & \texttt{data/graph/neural\_search\_graph.real\_corpus.json} — 7,593 nodes / 31,920 edges & Graph rank perturbation observed; qrels-backed improvement unproven \\
+Field-state memory graph & \texttt{artifacts/field\_state/memory\_graph\_manifest.json} — 629-record curation slice, 2,200 nodes / 3,788 edges & Curated subset; not full-corpus \\
+Gold qrels & \texttt{artifacts/qrels\_gold.jsonl} — 0 rows & Pending human annotation \\
+Field-state adjudicated & \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl} — 3 rows & Smoke-test only \\
+Silver/bronze qrels & \texttt{artifacts/qrels\_silver.jsonl} (175 rows), \texttt{artifacts/qrels\_bronze.jsonl} (319 rows) & LLM-generated diagnostic signals; not peer-reviewed \\
+Finding extraction & 122K findings enriched by a 27-field typed pass; earlier extraction snapshot: 16,150 papers / 12,050 findings & Quality not validated; treat as audit queue \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Reports that cite 10,404 corpus records (\texttt{reports/eval/corpus\_manifest.json}), 675 annotated pairs (\texttt{reports/eval/neuro\_judge\_retrieval\_metrics.md}), or an index of 4,366 records are stale historical snapshots and should not be cited as current state.
+
+Evidence tiers used throughout this paper:
+\begin{itemize}
+    \item \textbf{Tier A — publishable infrastructure:} implemented code, engineering tests, schema definitions, JSONL artifacts with verified row counts.
+    \item \textbf{Tier B — engineering validation:} vector recall, index latency, graph rank perturbation, ablation on seed pairs. Useful for understanding system behavior but not final scientific retrieval evidence.
+    \item \textbf{Tier C — silver diagnostic:} LLM-generated qrels, extracted findings, auto-linked papers. Used for triage and audit prioritization only.
+    \item \textbf{Tier D — planned / pending:} human qrels at benchmark scale, affordance precision audits, user study, finding precision evaluation. Required before final performance claims.
+\end{itemize}
+
+\subsection{Why Existing Tools Are Not Enough}
+\label{sec:why-needed}
+
+Neuroscience data discovery currently relies on a patchwork of tools, each covering a fragment of the researcher's intent:
+
+\paragraph{Archive-native search} (DANDI, OpenNeuro, NeuroVault, Allen, Zenodo) exposes structured metadata but provides weak scientific intent matching, no analysis feasibility reasoning, no cross-repository integration, and no provenance for metadata claims.
+
+\paragraph{Literature knowledge graphs} such as BrainKnow \citep{wang2024brainknow} and Linked Brain Data extract concept co-occurrence at field scale (BrainKnow: 37K+ concepts, 3.6M+ relations, 1.8M PubMed papers). These systems excel at concept-level exploration and temporal literature synthesis. However, same-sentence co-occurrence does not constitute relation extraction: edges are largely unsigned, untyped, and undirected; direction, polarity, negation, causal interpretation, frequency band, and temporal pattern are not core graph semantics. Neural Search's current typed-finding pass instead records 27 fields on each extracted finding, including disease model, molecular marker, pharmacological agent, sensory stimulus, sleep stage, connectivity type, and dimensionality-reduction method. Crucially, BrainKnow is concept-centered, not dataset-centered — it does not answer: ``Which dataset can I download and run an analysis on to test this claim?''
+
+\paragraph{Generic RAG and vector search} retrieve passages but do not enforce provenance, constrain by analysis feasibility, surface hard negatives, distinguish raw from processed data, or connect to reusable experimental contexts.
+
+Neural Search bridges these gaps. Its distinguishing claim is not corpus size but \emph{research-object awareness}: every result is a dataset with typed metadata, an evidence trail, analysis affordances, links to the papers and findings that cite or test it, and explicit markers for what the evidence does and does not support. The goal is to answer: ``Which dataset can I use to test, reproduce, or challenge this specific claim?''
+
+\subsection{Current Non-Claims}
+\label{sec:non-claims}
+
+To protect this paper from overreach and to set clear expectations for reviewers, the following claims are \textbf{explicitly not made} in the current version:
+
+\begin{enumerate}
+    \item \textbf{No final retrieval superiority claim.} Neural Search has not been shown to outperform BM25, dense retrieval, archive-native search, or BrainKnow-style co-occurrence on a shared human-adjudicated benchmark. That benchmark is planned (Workstream D: 100 queries, 1,500 pooled pairs) but not yet run.
+
+    \item \textbf{No final NDCG/MRR/Recall claim.} Current NDCG/MRR/Recall artifacts are either engineering smoke tests over 8 LLM-qrels pairs or seed-set diagnostics. Publication-grade retrieval metrics require frozen runs over human qrels.
+
+    \item \textbf{No final finding-extraction precision claim.} The extraction and 27-field enrichment snapshots have been spot-checked but not formally evaluated for precision or recall. Region, species, and typed-field accuracy are unknown.
+
+    \item \textbf{No gold-benchmark results.} Gold qrels contain 0 rows. Adjudicated qrels contain 3 rows (workflow smoke-test only).
+
+    \item \textbf{No content-level neural signature search.} Neural signature extraction is not implemented. The dimension is excluded from active scoring.
+
+    \item \textbf{No generalization claim.} Results on seed pairs should not be extrapolated across neuroscience subfields without cross-domain evaluation.
+\end{enumerate}
+
+The paper's strongest claims are about \emph{implemented architecture}, \emph{reproducible workflow}, \emph{provenance-backed infrastructure}, and the \emph{research-object retrieval framing} — not final empirical retrieval superiority.
 
 % ============================================================================
 % SECTION 2: MATHEMATICAL FOUNDATIONS
@@ -1181,6 +1251,7 @@ This section reports only artifacts aligned with the current repository state. R
     Unlinked dataset records & 6,778 \\
     Finding extraction model & qwen2.5:7b-instruct-q4\_K\_M (Ollama) \\
     Finding extraction yield & 74.6\% (16,150 papers processed; 12,050 findings) \\
+    Typed-finding enrichment & 27 fields over 122K findings; highest coverage among new fields: molecular marker 4.1\%, metabolic context 3.3\%, pharmacological agent 3.0\% \\
     Expected tier~1 findings if maintained & $\sim$190K \\
     Tier~2 papers staged (open-access, with abstract) & $\sim$1.39M \\
     \bottomrule
@@ -1307,7 +1378,7 @@ Dense vector index supports approximate nearest-neighbor lookup & Partial/stale 
 Usefulness scorer separates useful from irrelevant examples & Preliminary & 270 labeled pairs; Spearman $r=0.3999$ & Independent labels, larger query coverage, calibration & Cautious \\
 Graph proximity improves retrieval quality & Unproven & 39\% rank perturbation artifact & Qrels-backed graph ablation on frozen snapshot & No \\
 Paper-dataset linker covered the corpus & Implemented run & \texttt{paper\_dataset\_links.jsonl} & Precision audit; distinguish 393 successful links from 6,778 not-found records & Cautious \\
-Finding extraction yields reusable structured findings & Operational estimate & 16,150 papers processed; 12,050 findings; 74.6\% yield & Manual finding audit against abstracts; ontology-field precision/recall & No \\
+Finding extraction yields reusable structured findings & Operational estimate & 16,150 papers processed; 12,050 findings; 74.6\% yield; 27-field enrichment coverage over 122K findings & Manual finding audit against abstracts; ontology-field and typed-field precision/recall & No \\
 Analysis affordance labels support recommendations & Implemented representation & 21-type registry and frontend panel & Content-level affordance precision audit & No \\
 LLM qrels support final retrieval metrics & Silver only & LLM qrels and neuro-judge evidence packets & Human-adjudicated qrels for NDCG/MRR/Recall & No \\
 Human qrels workflow is reproducible & Implemented workflow & qrels export/import/adjudication artifacts; three adjudicated labels & Benchmark-scale labels, agreement stats, metric report & Cautious \\
@@ -1559,7 +1630,7 @@ The current system is best understood as a layered artifact pipeline rather than
 
     \item \textbf{RAG-grounded neuro-judge triage.} Candidate query--dataset pairs are converted into evidence packets containing query intent, hard negatives, dataset metadata, concept-memory evidence, linked-paper evidence, raw-data signals, missing dimensions, and warnings. LLM or mock judges emit 0--3 silver labels, confidence, matched dimensions, evidence for/against, abstain recommendations, and failure modes. These labels route human review and diagnostics; they never write \texttt{human\_gold} provenance.
 
-    \item \textbf{Literature-scale ingestion and finding extraction (added 17~June~2026).} 255,940 OpenAlex tier~1 papers (neuroscience concept \texttt{C169760540}, $\geq$100 citations) were ingested via a cursor-based bulk downloader (\texttt{openalex\_bulk.py}) with checkpoint/resume and written to 26 JSONL shards. The paper-dataset linker was run over all 7,171 corpus datasets, producing \texttt{paper\_dataset\_links.jsonl}; current link-method counts are 168 DOI-exact links, 225 title-fuzzy-local links, and 6,778 not-found records. This is a corpus-wide linker run, not evidence that every dataset was successfully linked; precision and false-negative audits are pending. LLM-powered structured finding extraction (\texttt{find\-ing\_ex\-trac\-tor.py}) runs on local inference: \texttt{extract\_batch\_ollama()} posts to Ollama's \texttt{/api/chat} endpoint and calls \texttt{\_repair\_json()} to strip markdown fences from local model output before JSON parsing. Each successfully parsed abstract yields zero or more \texttt{FindingRecord} objects with \texttt{finding\_text}, \texttt{result\_direction}, \texttt{regions}, \texttt{species}, \texttt{modalities}, \texttt{tasks}, \texttt{cell\_types}, \texttt{molecules}, and \texttt{confidence}. The batch-level checkpoint ensures that papers returning empty findings are still marked processed and are not reprocessed on resume. The current operational snapshot is 16,150 papers processed, 12,050 findings, and 74.6\% yield, projecting roughly 190K tier~1 findings if that rate holds; this is a live operational estimate, not a validated quality result. Completed findings are incorporated into the knowledge graph via a literature KG builder (\texttt{kg\_builder.py}) that adds \texttt{paper}, \texttt{finding}, and \texttt{venue} nodes with bidirectional edges to existing dataset and concept nodes.
+    \item \textbf{Literature-scale ingestion and finding extraction (added 17~June~2026).} 255,940 OpenAlex tier~1 papers (neuroscience concept \texttt{C169760540}, $\geq$100 citations) were ingested via a cursor-based bulk downloader (\texttt{openalex\_bulk.py}) with checkpoint/resume and written to 26 JSONL shards. The paper-dataset linker was run over all 7,171 corpus datasets, producing \texttt{paper\_dataset\_links.jsonl}; current link-method counts are 168 DOI-exact links, 225 title-fuzzy-local links, and 6,778 not-found records. This is a corpus-wide linker run, not evidence that every dataset was successfully linked; precision and false-negative audits are pending. LLM-powered structured finding extraction (\texttt{find\-ing\_ex\-trac\-tor.py}) runs on local inference: \texttt{extract\_batch\_ollama()} posts to Ollama's \texttt{/api/chat} endpoint and calls \texttt{\_repair\_json()} to strip markdown fences from local model output before JSON parsing. Each successfully parsed abstract yields zero or more \texttt{FindingRecord} objects with \texttt{finding\_text}, \texttt{result\_direction}, \texttt{regions}, \texttt{species}, \texttt{modalities}, \texttt{tasks}, \texttt{cell\_types}, \texttt{molecules}, and \texttt{confidence}. A rule-based typed-field pass enriches findings with 27 additional fields spanning polarity, experimental condition, signal type, statistics, behavior, anatomy, cell population, plasticity, network coupling, decoding, computational models, stimulus class, pharmacology, disease model, development, genetic tools, molecular markers, social-affective paradigms, sleep state, metabolic context, connectivity, and dimensionality reduction. The batch-level checkpoint ensures that papers returning empty findings are still marked processed and are not reprocessed on resume. The current operational extraction snapshot is 16,150 papers processed, 12,050 findings, and 74.6\% yield, projecting roughly 190K tier~1 findings if that rate holds; a later typed-field coverage audit over 122K findings shows stable coverage across all 27 fields. These are live operational estimates and coverage diagnostics, not validated quality results. Completed findings are incorporated into the knowledge graph via a literature KG builder (\texttt{kg\_builder.py}) that adds \texttt{paper}, \texttt{finding}, and \texttt{venue} nodes with bidirectional edges to existing dataset and concept nodes.
 
     \item \textbf{Human qrels and feedback.} Expert qrels are imported into separate adjudicated artifacts. Frontend feedback and downstream retrieval success signals are stored with downstream-feedback provenance and can influence audit queues or transparent reranking priors, but they do not overwrite qrels or promote LLM outputs.
 
@@ -1684,7 +1755,7 @@ Qrels adjudication protocol & Pooled query-dataset candidates from all retrieval
 
 \paragraph{Obsidian traceability is not validation.} The Obsidian-compatible review layer improves human auditability by separating generated fields from protected human notes. It is a traceability mechanism, not an epistemic guarantee. Likewise, weak supervision, generated review prompts, or future LLM triage may help prioritize review work but should not be treated as gold labels.
 
-\paragraph{Finding extraction quality is preliminary.} LLM-extracted findings from \texttt{qwen2.5:7b-instruct-q4\_K\_M} have been manually spot-checked on a small smoke set but not formally precision/recall evaluated. Region and species fields rely on the model correctly identifying ontological terms from free text; output quality will vary across abstract styles. A formal precision audit is required before publication claims about finding accuracy. The current 16,150-paper operational snapshot produced 12,050 findings at 74.6\% yield, projecting roughly 190K tier~1 findings if maintained; this likely reflects high-citation tier composition and should not be treated as a final yield or quality estimate.
+\paragraph{Finding extraction quality is preliminary.} LLM-extracted findings from \texttt{qwen2.5:7b-instruct-q4\_K\_M} have been manually spot-checked on a small smoke set but not formally precision/recall evaluated. Region and species fields rely on the model correctly identifying ontological terms from free text; output quality will vary across abstract styles. A formal precision audit is required before publication claims about finding accuracy. The current 16,150-paper operational snapshot produced 12,050 findings at 74.6\% yield, projecting roughly 190K tier~1 findings if maintained; a later typed-field audit enriched 122K findings with 27 rule-based fields. These counts likely reflect high-citation tier composition and should not be treated as final yield or quality estimates.
 
 \paragraph{Literature search not yet integrated into main search path.} The finding and paper search infrastructure operates as a separate index. Integration into the unified hybrid scorer, ranking pipeline, and frontend is staged for Horizon 3.
 
@@ -1824,7 +1895,7 @@ The roadmap below orders work by impact on the three core goals: corpus growth, 
 
     \item \textbf{Paper-dataset linking} (\textit{linker run complete; audit pending}): The linker was run over all 7,171 corpus datasets. Current method counts are 168 DOI-exact links, 225 title-fuzzy-local links, and 6,778 not-found records. Artifact: \texttt{artifacts/literature/paper\_dataset\_links.jsonl}. Precision and false-negative audits are pending.
 
-    \item \textbf{LLM finding extraction} (\textit{in progress}): \texttt{extract\_batch\_ollama()} using \texttt{qwen2.5:7b-instruct-q4\_K\_M}; \texttt{\_repair\_json()} for markdown fence handling; \texttt{FindingRecord} schema with 11 typed fields; batch-level checkpoint with append-mode output. Current operational estimate: 16,150 papers processed, 12,050 findings, 74.6\% yield, and $\sim$190K projected tier~1 findings if maintained. This is not a validated quality estimate.
+    \item \textbf{LLM finding extraction} (\textit{in progress}): \texttt{extract\_batch\_ollama()} using \texttt{qwen2.5:7b-instruct-q4\_K\_M}; \texttt{\_repair\_json()} for markdown fence handling; \texttt{FindingRecord} schema plus 27 typed extension fields; batch-level checkpoint with append-mode output. Current operational estimate: 16,150 papers processed, 12,050 findings, 74.6\% yield, and $\sim$190K projected tier~1 findings if maintained. A 122K-finding typed-field coverage audit places core structural fields above 5\%, rich annotation fields at 2--5\%, and sparse high-specificity fields below 2\%. This is not a validated quality estimate.
 
     \item \textbf{Literature KG rebuild} (\textit{infrastructure implemented; full rebuild pending}): \texttt{kg\_builder.py} adds \texttt{paper}, \texttt{finding}, and \texttt{venue} node types; new edge types \texttt{paper\_reports\_finding}, \texttt{finding\_involves\_\{region, task, modality, species\}}, \texttt{dataset\_linked\_to\_paper}. The full graph should be rebuilt after extraction and link audits are frozen.
 
@@ -1993,7 +2064,7 @@ The current repository has preliminary usefulness labels and qrels review infras
 
 Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system is designed to help researchers find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus knowledge graph with 7,593 nodes and 31,920 edges (including 2,957 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 100-query benchmark suite with bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference with a live operational snapshot of 16,150 papers processed, 12,050 findings extracted, 74.6\% yield, and roughly 190K tier~1 findings projected if that rate is maintained. This finding yield is an operational estimate, not validated finding quality. Dense field embeddings are being rebuilt over all 7,171 records, which will unlock full dense retrieval and turbovec index rebuild. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus knowledge graph with 7,593 nodes and 31,920 edges (including 2,957 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 100-query benchmark suite with bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference with a live operational snapshot of 16,150 papers processed, 12,050 findings extracted, 74.6\% yield, and roughly 190K tier~1 findings projected if that rate is maintained. A subsequent rule-based enrichment pass adds 27 typed fields and has been coverage-audited over 122K findings, enabling compound queries over disease model, brain region, frequency band, molecular marker, pharmacological context, sleep state, and analysis method. These finding counts and coverage rates are operational estimates, not validated finding quality. Dense field embeddings are being rebuilt over all 7,171 records, which will unlock full dense retrieval and turbovec index rebuild. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
 
 The next scientific milestone is completing tier~1 finding extraction, auditing finding and link quality, and rebuilding the knowledge graph to incorporate paper, finding, and venue nodes with validated literature edges. The subsequent milestone is annotation: LLM qrels can provide silver diagnostic metrics, but publication-grade NDCG@10, MRR, and Recall require human-adjudicated qrels from the frozen benchmark pool. The third milestone is coverage: spatial ontology expansion (Allen CCF v3, 13K+ regions; UBERON cross-species; HCP MMP 360 cortical areas), tier~2 ingest ($\sim$1.39M open-access papers), and corpus growth toward 10K+ datasets will close the dark-pair gaps identified by the coverage ledger.
 
@@ -2154,6 +2225,11 @@ Priem, J., Piwowar, H., and Orr, R.
 Qwen Team.
 \newblock Qwen2.5 Technical Report.
 \newblock \emph{arXiv preprint arXiv:2412.15115}, 2024.
+
+\bibitem[Wang et~al.(2024)]{wang2024brainknow}
+Wang, X., et~al.
+\newblock BrainKnow: Extracting, filtering, and generating neuroscience knowledge using large language models.
+\newblock \emph{arXiv preprint arXiv:2403.04346}, 2024.
 
 \end{thebibliography}
 

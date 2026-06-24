@@ -1,7 +1,7 @@
 export type NodeType = 'system' | 'region' | 'finding_cluster' | 'dataset' | 'paper'
 export type EdgeType = 'contains' | 'covers' | 'linked' | 'supports' | 'contradicts'
 export type ViewMode = 'galaxy' | 'explorer' | '2d'
-export type LayerMode = 'corpus' | 'consensus' | 'literature' | 'bridge' | 'morphology'
+export type LayerMode = 'corpus' | 'consensus' | 'literature' | 'bridge' | 'morphology' | 'validation' | 'coverage_gaps'
 export type Direction = 'increase' | 'decrease' | 'correlation' | 'no_change'
 
 export interface GraphNode {

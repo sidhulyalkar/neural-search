@@ -287,3 +287,48 @@ export async function getSimilarDatasets(
     `${API_BASE}/datasets/${encodeURIComponent(datasetId)}/similar?limit=${limit}`
   )
 }
+
+export interface ArtifactManifest {
+  generated_at: string
+  git_commit: string
+  reconciliation_note: string
+  corpus: {
+    path: string
+    row_count: number
+    unique_source_ids: number
+    unique_dataset_ids: number
+    id_field_note: string
+  }
+  knowledge_graph: {
+    path: string | null
+    nodes: number | null
+    edges: number | null
+    cross_dataset_edges: number
+    note: string
+  }
+  qrels: {
+    gold: { path: string; rows: number; status: string }
+    silver: { path: string; rows: number; status: string }
+    bronze: { path: string; rows: number; status: string }
+    field_state_adjudicated: { path: string; rows: number; status: string }
+  }
+  vector_index: {
+    current_on_disk_ids: number
+    full_rebuild_pending: boolean
+    note: string
+  }
+  literature: {
+    openalex_papers_ingested: number
+    doi_exact_links: number
+    title_fuzzy_links: number
+    not_found: number
+    findings_operational_estimate: number
+    findings_note: string
+  }
+  stale_reports: Array<{ path: string; issue: string }>
+  source_of_truth_summary: Record<string, string>
+}
+
+export async function getArtifactManifest(): Promise<ArtifactManifest> {
+  return fetchJSON<ArtifactManifest>(`${API_BASE}/artifacts/current-manifest`)
+}
