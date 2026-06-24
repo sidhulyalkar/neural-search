@@ -24,15 +24,15 @@
     "judged_queries": 317
   },
   "hybrid_graph": {
-    "ndcg@10": 0.0,
-    "mrr": 0.0,
-    "recall@50": 0.0,
-    "judged_queries": 0
+    "ndcg@10": 0.638476283202594,
+    "mrr": 0.8823719393120023,
+    "recall@50": 0.6957110933379659,
+    "judged_queries": 317
   },
   "full": {
-    "ndcg@10": 0.0,
-    "mrr": 0.0,
-    "recall@50": 0.0,
-    "judged_queries": 0
+    "ndcg@10": 0.638476283202594,
+    "mrr": 0.8823719393120023,
+    "recall@50": 0.6907903896487728,
+    "judged_queries": 317
   }
 }

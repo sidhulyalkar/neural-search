@@ -50,6 +50,8 @@
         "bm25",
         "bm25_structured",
         "dense_bge",
+        "full",
+        "hybrid_graph",
         "hybrid_rrf"
       ],
       "artifacts": [

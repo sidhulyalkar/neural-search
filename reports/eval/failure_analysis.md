@@ -1,7 +1,7 @@
 # Failure Analysis Report
 
 Queries evaluated: 317  
-Variants: bm25, bm25_structured, dense_bge, hybrid_rrf
+Variants: bm25, bm25_structured, dense_bge, full, hybrid_graph, hybrid_rrf
 
 ---
 
@@ -448,6 +448,302 @@ Variants: bm25, bm25_structured, dense_bge, hybrid_rrf
 | Hard-negative failure mode | Count |
 |----------------------------|-------|
 | hard_negative_detected | 43 |
+
+## Variant: `full`
+
+| Metric | Count |
+|--------|-------|
+| False positives (top-K, relevance ≤ 1) | 1417 |
+| False negatives (relevant, not in top-K) | 3328 |
+| Hard-negative violations | 67 |
+
+
+### Top False Positives (rank ≤ 10)
+
+| Rank | Record | Relevance | HN | Query | Rationale |
+|------|--------|-----------|----|----|-----------|
+| 1 | `dandi:001056` | 0 | no | can_0001 | The dataset's task ('center_out_reaching') does not match the query's required ' |
+| 1 | `dandi:000070` | 1 | no | can_0004 | The dataset involves reaching tasks, which matches the query's task requirement. |
+| 1 | `dandi:000575` | 1 | no | can_0012 | The dataset is weakly related due to species match but lacks explicit evidence f |
+| 1 | `zenodo:4307883` | 0 | no | can_0021 | The dataset does not meet the specific requirement for BIDS-formatted neuroimagi |
+| 1 | `dandi:001631` | 1 | no | can_0022 | The dataset has some broad scientific concept matches but does not support the i |
+| 1 | `zenodo:2598755` | 1 | no | can_0025 | The dataset matches on species and modality but lacks explicit evidence for the  |
+| 1 | `dandi:000574` | 1 | no | can_0028 | The dataset matches species and modality but fails to meet the required task cri |
+| 1 | `dandi:000987` | 1 | no | can_0030 | The dataset matches the required species and modalities but fails to meet the br |
+| 1 | `neurovault:4487` | 1 | no | can_0032 | The dataset matches the brain region and modality but lacks the specific task re |
+| 1 | `dandi:000987` | 1 | no | can_0033 | The dataset matches the species and modality but has a different brain region th |
+| 1 | `zenodo:11550255` | 0 | **YES** | can_0034 | The dataset matches several query requirements but fails due to the use of Utah  |
+| 1 | `harvard_dataverse:10.11588_DATA_V57GNG` | 0 | **YES** | can_0035 | The dataset does not meet the modality requirement for iEEG/ECOG and lacks expli |
+| 1 | `crcns:hc-12` | 0 | no | can_0037 | The dataset matches several required dimensions but fails due to involvement in  |
+| 1 | `gin:2479` | 1 | no | can_0041 | The dataset matches calcium imaging and hippocampal CA1 region but lacks necessa |
+| 1 | `zenodo:10277145` | 1 | no | can_0043 | The dataset is weakly related due to mismatched species and brain region, with a |
+| 1 | `dandi:001253` | 1 | no | can_0045 | The dataset matches species, modality, and brain region but not the task or affo |
+| 1 | `dandi:001631` | 0 | no | can_0046 | The dataset does not contain data from any of the required brain regions (striat |
+| 1 | `dandi:001057` | 1 | no | can_0047 | The dataset matches on species and brain regions, but the task does not align we |
+| 1 | `dandi:000231` | 1 | no | can_0050 | The dataset matches the species and includes relevant modalities but does not ma |
+| 1 | `dandi:000053` | 0 | no | can_0051 | The dataset does not contain any relevant data for the specified brain regions,  |
+
+### False Negatives (relevant, not in top-K)
+
+| Record | Relevance | Best Rank Outside K | Query |
+|--------|-----------|--------------------|----|
+| `neurovault:190` | 3 | 11 | can_0107 |
+| `zenodo:15446526` | 3 | 15 | can_0075 |
+| `dandi:000941` | 3 | 22 | can_0136 |
+| `dandi:001209` | 3 | 23 | can_0136 |
+| `zenodo:19729161` | 3 | 25 | can_0023 |
+| `harvard_dataverse:10.7910_DVN_BQNOMZ` | 3 | 30 | can_0165 |
+| `crcns:hc-8` | 3 | 33 | can_0185 |
+| `figshare:7666892` | 3 | 34 | can_0086 |
+| `openneuro:ds002422` | 3 | 35 | can_0279 |
+| `osf:sb82w` | 3 | 44 | can_0003 |
+| `zenodo:15098469` | 3 | 45 | can_0086 |
+| `crcns:pvc-12` | 3 | not retrieved | can_0073 |
+| `ibl:session_7f56a60c-92c9-42` | 3 | not retrieved | can_0230 |
+| `neurovault:4560` | 2 | 11 | can_0002 |
+| `ibl:session_034e726f-b35f-41` | 2 | 11 | can_0005 |
+| `spark:SPARK-MULTI-001` | 2 | 11 | can_0010 |
+| `dandi:001340` | 2 | 11 | can_0013 |
+| `dandi:000140` | 2 | 11 | can_0015 |
+| `dandi:000351` | 2 | 11 | can_0016 |
+| `allen:ophys_529693740` | 2 | 11 | can_0017 |
+
+### Source Breakdown
+
+| Source | FP Count | FN Count |
+|--------|----------|----------|
+| allen | 26 | 369 |
+| bluebrain | 4 | 15 |
+| brain_image_library | 3 | 0 |
+| buzsaki | 10 | 105 |
+| crcns | 92 | 147 |
+| dandi | 457 | 908 |
+| figshare | 22 | 53 |
+| gin | 74 | 164 |
+| harvard_dataverse | 149 | 147 |
+| ibl | 3 | 366 |
+| nemo | 5 | 7 |
+| neuromorpho | 0 | 18 |
+| neurovault | 203 | 395 |
+| openneuro | 25 | 66 |
+| osf | 46 | 106 |
+| spark | 10 | 7 |
+| zenodo | 288 | 455 |
+
+### By Query Intent
+
+| Intent | FP Count | FN Count |
+|--------|----------|----------|
+| CROSS_DATASET_COMPARISON | 0 | 19 |
+| EXPLORATION | 1312 | 3007 |
+| PIPELINE_REUSE | 1 | 60 |
+| REANALYSIS_FEASIBILITY | 96 | 116 |
+| REPLICATION | 3 | 10 |
+| STRICT_LOOKUP | 5 | 116 |
+
+### False-Positive Mismatch Breakdown
+
+| Mismatch bucket | Count |
+|-----------------|-------|
+| task_mismatch | 986 |
+| brain_region_mismatch | 669 |
+| modality_mismatch | 443 |
+| species_mismatch | 417 |
+| raw_data_missing | 105 |
+| behavioral_event_mismatch | 21 |
+
+### Metadata Missingness Breakdown
+
+| Missing dimension | FP Count | FN Count |
+|-------------------|----------|----------|
+| affordance | 713 | 1523 |
+| behavioral_event | 16 | 51 |
+| brain_region | 670 | 862 |
+| data_standard | 7 | 4 |
+| modality | 510 | 374 |
+| other | 83 | 146 |
+| raw_data | 68 | 847 |
+| species | 408 | 646 |
+| task | 978 | 1380 |
+
+### Top False-Positive Failure Modes
+
+| Failure mode | Count |
+|--------------|-------|
+| wrong_modality | 197 |
+| wrong_task | 171 |
+| wrong_brain_region | 121 |
+| wrong_species | 106 |
+| no_raw_data | 60 |
+| hard_negative_detected | 32 |
+| no_task_match | 31 |
+| no_affordance_evidence | 17 |
+| no_species | 16 |
+| wrong_tasks | 11 |
+| no_modality | 9 |
+| wrong_modalities | 8 |
+| no_modality_match | 7 |
+| no_task_evidence | 7 |
+| no_modality_evidence | 6 |
+| no_brain_region | 6 |
+| no_task | 6 |
+| no_required_modalities | 6 |
+| incorrect_modality | 5 |
+| no_tasks | 5 |
+
+### Hard-Negative Failure Modes
+
+| Hard-negative failure mode | Count |
+|----------------------------|-------|
+| hard_negative_detected | 67 |
+
+## Variant: `hybrid_graph`
+
+| Metric | Count |
+|--------|-------|
+| False positives (top-K, relevance ≤ 1) | 1417 |
+| False negatives (relevant, not in top-K) | 3328 |
+| Hard-negative violations | 67 |
+
+
+### Top False Positives (rank ≤ 10)
+
+| Rank | Record | Relevance | HN | Query | Rationale |
+|------|--------|-----------|----|----|-----------|
+| 1 | `dandi:001056` | 0 | no | can_0001 | The dataset's task ('center_out_reaching') does not match the query's required ' |
+| 1 | `dandi:000070` | 1 | no | can_0004 | The dataset involves reaching tasks, which matches the query's task requirement. |
+| 1 | `dandi:000575` | 1 | no | can_0012 | The dataset is weakly related due to species match but lacks explicit evidence f |
+| 1 | `zenodo:4307883` | 0 | no | can_0021 | The dataset does not meet the specific requirement for BIDS-formatted neuroimagi |
+| 1 | `dandi:001631` | 1 | no | can_0022 | The dataset has some broad scientific concept matches but does not support the i |
+| 1 | `zenodo:2598755` | 1 | no | can_0025 | The dataset matches on species and modality but lacks explicit evidence for the  |
+| 1 | `dandi:000574` | 1 | no | can_0028 | The dataset matches species and modality but fails to meet the required task cri |
+| 1 | `dandi:000987` | 1 | no | can_0030 | The dataset matches the required species and modalities but fails to meet the br |
+| 1 | `neurovault:4487` | 1 | no | can_0032 | The dataset matches the brain region and modality but lacks the specific task re |
+| 1 | `dandi:000987` | 1 | no | can_0033 | The dataset matches the species and modality but has a different brain region th |
+| 1 | `zenodo:11550255` | 0 | **YES** | can_0034 | The dataset matches several query requirements but fails due to the use of Utah  |
+| 1 | `harvard_dataverse:10.11588_DATA_V57GNG` | 0 | **YES** | can_0035 | The dataset does not meet the modality requirement for iEEG/ECOG and lacks expli |
+| 1 | `crcns:hc-12` | 0 | no | can_0037 | The dataset matches several required dimensions but fails due to involvement in  |
+| 1 | `gin:2479` | 1 | no | can_0041 | The dataset matches calcium imaging and hippocampal CA1 region but lacks necessa |
+| 1 | `zenodo:10277145` | 1 | no | can_0043 | The dataset is weakly related due to mismatched species and brain region, with a |
+| 1 | `dandi:001253` | 1 | no | can_0045 | The dataset matches species, modality, and brain region but not the task or affo |
+| 1 | `dandi:001631` | 0 | no | can_0046 | The dataset does not contain data from any of the required brain regions (striat |
+| 1 | `dandi:001057` | 1 | no | can_0047 | The dataset matches on species and brain regions, but the task does not align we |
+| 1 | `dandi:000231` | 1 | no | can_0050 | The dataset matches the species and includes relevant modalities but does not ma |
+| 1 | `dandi:000053` | 0 | no | can_0051 | The dataset does not contain any relevant data for the specified brain regions,  |
+
+### False Negatives (relevant, not in top-K)
+
+| Record | Relevance | Best Rank Outside K | Query |
+|--------|-----------|--------------------|----|
+| `neurovault:190` | 3 | 11 | can_0107 |
+| `zenodo:15446526` | 3 | 15 | can_0075 |
+| `dandi:000941` | 3 | 22 | can_0136 |
+| `dandi:001209` | 3 | 23 | can_0136 |
+| `zenodo:19729161` | 3 | 25 | can_0023 |
+| `harvard_dataverse:10.7910_DVN_BQNOMZ` | 3 | 30 | can_0165 |
+| `crcns:hc-8` | 3 | 33 | can_0185 |
+| `openneuro:ds002422` | 3 | 35 | can_0279 |
+| `osf:sb82w` | 3 | 44 | can_0003 |
+| `ibl:session_7f56a60c-92c9-42` | 3 | 48 | can_0230 |
+| `crcns:pvc-12` | 3 | not retrieved | can_0073 |
+| `figshare:7666892` | 3 | not retrieved | can_0086 |
+| `zenodo:15098469` | 3 | not retrieved | can_0086 |
+| `neurovault:4560` | 2 | 11 | can_0002 |
+| `ibl:session_034e726f-b35f-41` | 2 | 11 | can_0005 |
+| `spark:SPARK-MULTI-001` | 2 | 11 | can_0010 |
+| `dandi:001340` | 2 | 11 | can_0013 |
+| `dandi:000140` | 2 | 11 | can_0015 |
+| `dandi:000351` | 2 | 11 | can_0016 |
+| `allen:ophys_529693740` | 2 | 11 | can_0017 |
+
+### Source Breakdown
+
+| Source | FP Count | FN Count |
+|--------|----------|----------|
+| allen | 26 | 369 |
+| bluebrain | 4 | 15 |
+| brain_image_library | 3 | 0 |
+| buzsaki | 10 | 105 |
+| crcns | 92 | 147 |
+| dandi | 457 | 908 |
+| figshare | 22 | 53 |
+| gin | 74 | 164 |
+| harvard_dataverse | 149 | 147 |
+| ibl | 3 | 366 |
+| nemo | 5 | 7 |
+| neuromorpho | 0 | 18 |
+| neurovault | 203 | 395 |
+| openneuro | 25 | 66 |
+| osf | 46 | 106 |
+| spark | 10 | 7 |
+| zenodo | 288 | 455 |
+
+### By Query Intent
+
+| Intent | FP Count | FN Count |
+|--------|----------|----------|
+| CROSS_DATASET_COMPARISON | 0 | 19 |
+| EXPLORATION | 1312 | 3007 |
+| PIPELINE_REUSE | 1 | 60 |
+| REANALYSIS_FEASIBILITY | 96 | 116 |
+| REPLICATION | 3 | 10 |
+| STRICT_LOOKUP | 5 | 116 |
+
+### False-Positive Mismatch Breakdown
+
+| Mismatch bucket | Count |
+|-----------------|-------|
+| task_mismatch | 986 |
+| brain_region_mismatch | 669 |
+| modality_mismatch | 443 |
+| species_mismatch | 417 |
+| raw_data_missing | 105 |
+| behavioral_event_mismatch | 21 |
+
+### Metadata Missingness Breakdown
+
+| Missing dimension | FP Count | FN Count |
+|-------------------|----------|----------|
+| affordance | 713 | 1523 |
+| behavioral_event | 16 | 51 |
+| brain_region | 670 | 862 |
+| data_standard | 7 | 4 |
+| modality | 510 | 374 |
+| other | 83 | 146 |
+| raw_data | 68 | 847 |
+| species | 408 | 646 |
+| task | 978 | 1380 |
+
+### Top False-Positive Failure Modes
+
+| Failure mode | Count |
+|--------------|-------|
+| wrong_modality | 197 |
+| wrong_task | 171 |
+| wrong_brain_region | 121 |
+| wrong_species | 106 |
+| no_raw_data | 60 |
+| hard_negative_detected | 32 |
+| no_task_match | 31 |
+| no_affordance_evidence | 17 |
+| no_species | 16 |
+| wrong_tasks | 11 |
+| no_modality | 9 |
+| wrong_modalities | 8 |
+| no_modality_match | 7 |
+| no_task_evidence | 7 |
+| no_modality_evidence | 6 |
+| no_brain_region | 6 |
+| no_task | 6 |
+| no_required_modalities | 6 |
+| incorrect_modality | 5 |
+| no_tasks | 5 |
+
+### Hard-Negative Failure Modes
+
+| Hard-negative failure mode | Count |
+|----------------------------|-------|
+| hard_negative_detected | 67 |
 
 ## Variant: `hybrid_rrf`
 

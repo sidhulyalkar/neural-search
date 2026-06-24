@@ -372,6 +372,75 @@ class TestFailureAnalysis:
         assert "False-Positive Mismatch Breakdown" in out.read_text()
 
 
+class TestReanalysisReports:
+    def test_reanalysis_affordance_report_ranks_candidates(self) -> None:
+        from scripts.eval.build_reanalysis_affordance_report import build_report
+
+        records = [
+            {
+                "dataset_id": "d1",
+                "source": "dandi",
+                "source_id": "000001",
+                "title": "Mouse Neuropixels choice reward task",
+                "modalities": ["Neuropixels"],
+                "tasks": ["choice reward"],
+                "brain_regions": ["OFC"],
+                "data_standards": ["NWB"],
+                "usability_flags": {"has_behavior": True, "has_raw_data": True},
+            },
+            {"dataset_id": "d2", "source": "zenodo", "source_id": "z2", "title": "metadata sparse"},
+        ]
+
+        report = build_report(records, top_n=2)
+
+        assert report["dataset_count"] == 2
+        assert report["top_datasets"][0]["record_id"] == "dandi:000001"
+        assert report["metadata_gap_counts"]["species"] >= 1
+
+    def test_new_method_matcher_flags_old_or_unknown_date_datasets(self) -> None:
+        from scripts.eval.match_new_methods_to_old_datasets import build_matches
+
+        records = [
+            {
+                "dataset_id": "d1",
+                "source": "openneuro",
+                "source_id": "ds1",
+                "title": "2017 fMRI reward choice task",
+                "modalities": ["fMRI"],
+                "tasks": ["reward choice"],
+                "brain_regions": ["PFC"],
+                "data_standards": ["BIDS"],
+                "usability_flags": {"has_behavior": True, "has_raw_data": True},
+            }
+        ]
+
+        report = build_matches(records, min_score=0.5, top_n=10)
+
+        assert report["match_count"] >= 1
+        assert report["matches"][0]["date_status"] == "older_than_method"
+
+    def test_metadata_priorities_use_failure_counts(self) -> None:
+        from scripts.eval.prioritize_metadata_enrichment import build_priorities
+
+        report = build_priorities(
+            {
+                "variants": {
+                    "hybrid_rrf": {
+                        "fp_metadata_missing_counts": {"species": 3},
+                        "fn_metadata_missing_counts": {"raw_data": 2},
+                        "fp_mismatch_counts": {"species_mismatch": 4},
+                        "source_fp_counts": {"zenodo": 2},
+                        "intent_fp_counts": {"EXPLORATION": 2},
+                    }
+                }
+            }
+        )
+
+        fields = [row["field"] for row in report["priorities"]]
+        assert fields[:2] == ["species", "raw_data"]
+        assert report["top_false_positive_sources"]["zenodo"] == 2
+
+
 class TestAcquisitionPlan:
     def test_plan_generates_items(self) -> None:
         from scripts.coverage.generate_acquisition_plan import generate_plan
