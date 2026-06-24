@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -10,6 +11,8 @@ from pathlib import Path
 import httpx
 
 from neural_search.normalized import stable_normalized_id
+
+logger = logging.getLogger(__name__)
 
 OPENALEX_BASE = "https://api.openalex.org"
 POLITE_EMAIL = "neuralsearch@example.com"
@@ -180,6 +183,18 @@ class BulkIngester:
 
             retry_after = response.headers.get("Retry-After")
             wait_s = float(retry_after) if retry_after else RETRY_BACKOFF_BASE_S * (2**attempt)
+            # Without this, a long Retry-After wait (OpenAlex's rate-limit window
+            # reset can be several minutes) looks indistinguishable from a hung
+            # process -- no output at all until the next successful page fetch.
+            remaining = response.headers.get("X-RateLimit-Remaining")
+            msg = (
+                f"Rate limited (HTTP {response.status_code}, attempt {attempt + 1}/"
+                f"{MAX_RETRIES + 1}) -- waiting {wait_s:.0f}s before retrying"
+            )
+            if remaining is not None:
+                msg += f" (X-RateLimit-Remaining={remaining})"
+            logger.warning(msg)
+            print(msg, flush=True)
             time.sleep(wait_s)
 
         raise AssertionError("unreachable")  # loop always returns or raises above

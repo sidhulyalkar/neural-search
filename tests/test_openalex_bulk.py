@@ -399,6 +399,28 @@ class TestGetWithRetry:
         assert route.call_count == 2
 
     @respx.mock
+    def test_retry_wait_is_printed_not_silent(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    ):
+        # Regression (2026-06-24): a long Retry-After wait (OpenAlex's rate-limit
+        # window reset took ~426s in production) printed nothing at all, making a
+        # retrying-but-alive process indistinguishable from a hung one.
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429, headers={"Retry-After": "426", "X-RateLimit-Remaining": "0"}),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        captured = capsys.readouterr()
+        assert "Rate limited" in captured.out
+        assert "426" in captured.out
+
+    @respx.mock
     def test_honors_retry_after_header(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         sleeps: list[float] = []
         monkeypatch.setattr("time.sleep", sleeps.append)

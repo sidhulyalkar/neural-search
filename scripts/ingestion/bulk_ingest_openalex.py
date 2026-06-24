@@ -52,6 +52,19 @@ def _dry_run(tier: str) -> None:
     }
     with _httpx.Client(timeout=30.0) as client:
         resp = client.get(f"{OPENALEX_BASE}/works", params=params)
+        if resp.status_code == 429:
+            retry_after = resp.headers.get("Retry-After", "unknown")
+            remaining = resp.headers.get("X-RateLimit-Remaining", "unknown")
+            limit = resp.headers.get("X-RateLimit-Limit", "unknown")
+            print(
+                f"RATE LIMITED: HTTP 429 from OpenAlex. "
+                f"X-RateLimit-Remaining={remaining}/{limit}, Retry-After={retry_after}s. "
+                f"This is expected after exhausting the polite-pool quota (mailto={POLITE_EMAIL}) "
+                f"-- wait for the window to reset, or use --resume on the real ingestion run, "
+                f"which retries automatically.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         resp.raise_for_status()
         data = resp.json()
     count = data.get("meta", {}).get("count", "unknown")
