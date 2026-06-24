@@ -131,7 +131,7 @@ def annotate_report(path: Path) -> None:
     if STALE_BANNER.strip() in text:
         return
     if any(p.search(text) for p in STALE_CORPUS_PATTERNS):
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(STALE_BANNER + text)
         print(f"  Annotated: {path.relative_to(ROOT)}")
 
@@ -173,7 +173,7 @@ def run_gate(warn_only: bool = False, annotate: bool = False) -> dict:
     }
 
     out_path = REPORTS_DIR / "benchmark_safety_gate_report.json"
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
 
     return result
@@ -187,24 +187,24 @@ def main(argv: list[str] | None = None) -> int:
 
     result = run_gate(warn_only=args.warn_only, annotate=args.annotate)
 
-    print(f"Benchmark Safety Gate — {result['generated_at']}")
+    print(f"Benchmark Safety Gate - {result['generated_at']}")
     print(f"  Gold qrels: {result['gold_qrels_rows']} rows")
     print(f"  Adjudicated: {result['adj_qrels_rows']} rows")
     print()
 
     if result["blockers"]:
-        print(f"❌ BLOCKERS ({len(result['blockers'])}):")
+        print(f"[BLOCKERS] ({len(result['blockers'])}):")
         for b in result["blockers"]:
-            print(f"   {b['file']}: {b['type']} — '{b.get('match', '')}' (gold rows={b.get('gold_rows')})")
+            print(f"   {b['file']}: {b['type']} - '{b.get('match', '')}' (gold rows={b.get('gold_rows')})")
     else:
-        print("✅ No BLOCKER-level issues found.")
+        print("[OK] No BLOCKER-level issues found.")
 
     if result["warnings"]:
-        print(f"\n⚠  Warnings ({len(result['warnings'])}):")
+        print(f"\n[WARN] ({len(result['warnings'])}):")
         for w in result["warnings"]:
-            print(f"   {w['file']}: {w['type']} — '{w.get('match', '')}'")
+            print(f"   {w['file']}: {w['type']} - '{w.get('match', '')}'")
 
-    print(f"\nReport → reports/eval/benchmark_safety_gate_report.json")
+    print(f"\nReport written -> reports/eval/benchmark_safety_gate_report.json")
 
     if result["blockers"] and not args.warn_only:
         return 1

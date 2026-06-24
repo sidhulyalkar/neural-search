@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-06-20T08:58:06.143164+00:00",
+  "generated_at": "2026-06-24T02:22:18.062132+00:00",
   "summary": {
     "gold_qrels_rows": 0,
     "human_adjudicated_rows": 3,
     "human_review_rows": 10,
     "silver_diagnostic_rows": 175,
     "bronze_diagnostic_rows": 319,
+    "canonical_llm_silver_rows": 13654,
+    "canonical_llm_silver_queries": 317,
     "total_human_labelled_pairs": 13,
     "unique_queries_human_covered": 4,
     "pool_size": 914,
@@ -27,7 +29,7 @@
   "gaps_to_publishable": [
     "Need 96 more unique queries annotated (target: 100)",
     "Need 1487 more labelled pairs (target: 1,500)",
-    "Need \u22652 annotators with inter-annotator agreement statistics",
+    "Need >=2 annotators with inter-annotator agreement statistics",
     "Gold qrels are empty \u2014 adjudication workflow must produce gold labels"
   ],
   "sets": {
@@ -75,6 +77,19 @@
         "1": 18
       },
       "hard_negative_count": 131
+    },
+    "canonical_llm_silver": {
+      "name": "canonical_llm_silver (single-judge, ablation ladder)",
+      "count": 13654,
+      "queries_covered": 317,
+      "pairs_per_query": 43.1,
+      "label_distribution": {
+        "0": 3311,
+        "1": 5671,
+        "2": 4652,
+        "3": 20
+      },
+      "hard_negative_count": 0
     }
   },
   "next_50_priority_pairs": [

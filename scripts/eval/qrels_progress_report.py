@@ -24,6 +24,13 @@ ADJ_PATH = ROOT / "artifacts/field_state/adjudicated_qrels.jsonl"
 REVIEWS_PATH = ROOT / "artifacts/field_state/qrels_reviews.jsonl"
 POOL_PATH = ROOT / "reports/eval/benchmark_pool.jsonl"
 
+# Canonical LLM-silver qrels (merged in from claude/latent-usefulness-v08,
+# 2026-06-23): 317 queries / 13,654 non-error single-LLM-judge labels, used
+# for the ablation ladder + regression gate. Single-judge, not human-adjudicated
+# — kept separate from the gold/adjudicated/reviews counts above, which track
+# the human-labelling pipeline specifically.
+CANONICAL_SILVER_PATH = ROOT / "data/qrels/qrels.canonical.jsonl"
+
 REPORT_JSON = ROOT / "reports/eval/qrels_progress_report.json"
 REPORT_MD = ROOT / "reports/eval/qrels_progress_report.md"
 
@@ -93,6 +100,7 @@ def build_report() -> dict:
     adj = load_jsonl(ADJ_PATH)
     reviews = load_jsonl(REVIEWS_PATH)
     pool = load_jsonl(POOL_PATH)
+    canonical_silver = load_jsonl(CANONICAL_SILVER_PATH)
 
     labelled_ids: set[str] = set()
     for r in gold + adj + reviews:
@@ -107,6 +115,9 @@ def build_report() -> dict:
     reviews_summary = summarize_qrel_set(reviews, "human_reviews (field_state)")
     silver_summary = summarize_qrel_set(silver, "silver_diagnostic")
     bronze_summary = summarize_qrel_set(bronze, "bronze_diagnostic")
+    canonical_silver_summary = summarize_qrel_set(
+        canonical_silver, "canonical_llm_silver (single-judge, ablation ladder)"
+    )
 
     priority_pairs = next_priority_pairs(pool, labelled_ids, n=50)
 
@@ -130,7 +141,7 @@ def build_report() -> dict:
     if remaining_pairs > 0:
         gaps.append(f"Need {remaining_pairs} more labelled pairs (target: 1,500)")
     if not publishable_checklist["min_annotators_2"]:
-        gaps.append("Need ≥2 annotators with inter-annotator agreement statistics")
+        gaps.append("Need >=2 annotators with inter-annotator agreement statistics")
     if gold_count == 0:
         gaps.append("Gold qrels are empty — adjudication workflow must produce gold labels")
 
@@ -142,6 +153,8 @@ def build_report() -> dict:
             "human_review_rows": len(reviews),
             "silver_diagnostic_rows": len(silver),
             "bronze_diagnostic_rows": len(bronze),
+            "canonical_llm_silver_rows": len(canonical_silver),
+            "canonical_llm_silver_queries": canonical_silver_summary.get("queries_covered", 0),
             "total_human_labelled_pairs": human_pairs,
             "unique_queries_human_covered": len(unique_human_queries),
             "pool_size": len(pool),
@@ -157,6 +170,7 @@ def build_report() -> dict:
             "reviews": reviews_summary,
             "silver": silver_summary,
             "bronze": bronze_summary,
+            "canonical_llm_silver": canonical_silver_summary,
         },
         "next_50_priority_pairs": priority_pairs,
     }
@@ -180,6 +194,15 @@ def render_markdown(report: dict) -> str:
         f"| **Total human-labelled pairs** | **{s['total_human_labelled_pairs']}** |",
         f"| Unique queries covered (human) | {s['unique_queries_human_covered']} |",
         f"| Pool size | {s['pool_size']} |",
+        f"| Canonical LLM-silver qrels (single judge) | {s['canonical_llm_silver_rows']} |",
+        f"| Canonical LLM-silver queries | {s['canonical_llm_silver_queries']} |",
+        "",
+        "_The canonical LLM-silver row is a separate, much larger pool"
+        " (`data/qrels/qrels.canonical.jsonl`, merged from `claude/latent-usefulness-v08`"
+        " on 2026-06-23) used for the ablation ladder and regression gate. It is"
+        " single-LLM-judged, not human-adjudicated, and does not count toward the"
+        " human-labelled totals or the publishable checklist below — those still"
+        " require human/gold labels per the existing benchmark spec._",
         "",
         "## Publishable Benchmark Checklist\n",
         "Target: 100 queries, 1,500 pairs, 2 annotators, agreement stats.\n",
@@ -225,26 +248,28 @@ def render_markdown(report: dict) -> str:
 def main():
     report = build_report()
     REPORT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    with open(REPORT_JSON, "w") as f:
+    with open(REPORT_JSON, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
     md = render_markdown(report)
-    with open(REPORT_MD, "w") as f:
+    with open(REPORT_MD, "w", encoding="utf-8") as f:
         f.write(md)
-    print(f"✓ JSON  → {REPORT_JSON.relative_to(ROOT)}")
-    print(f"✓ MD    → {REPORT_MD.relative_to(ROOT)}")
+    print(f"JSON written -> {REPORT_JSON.relative_to(ROOT)}")
+    print(f"MD written   -> {REPORT_MD.relative_to(ROOT)}")
     s = report["summary"]
     print(f"\n  gold={s['gold_qrels_rows']}  adj={s['human_adjudicated_rows']}  "
           f"reviews={s['human_review_rows']}  silver={s['silver_diagnostic_rows']}  "
           f"bronze={s['bronze_diagnostic_rows']}")
     print(f"  human pairs={s['total_human_labelled_pairs']}  "
           f"queries covered={s['unique_queries_human_covered']}")
+    print(f"  canonical_llm_silver={s['canonical_llm_silver_rows']} "
+          f"queries={s['canonical_llm_silver_queries']} (single-judge, not human)")
     gaps = report["gaps_to_publishable"]
     if gaps:
         print("\n  Gaps to publishable benchmark:")
         for g in gaps:
-            print(f"    ✗ {g}")
+            print(f"    [gap] {g}")
     else:
-        print("\n  ✓ Publishable checklist complete!")
+        print("\n  [ok] Publishable checklist complete!")
 
 
 if __name__ == "__main__":

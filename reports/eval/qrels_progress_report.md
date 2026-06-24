@@ -1,6 +1,6 @@
 # Qrels Annotation Progress Report
 
-_Generated: 2026-06-20T08:58:06.143164+00:00_
+_Generated: 2026-06-24T02:22:18.062132+00:00_
 
 ## Current State
 
@@ -14,6 +14,10 @@ _Generated: 2026-06-20T08:58:06.143164+00:00_
 | **Total human-labelled pairs** | **13** |
 | Unique queries covered (human) | 4 |
 | Pool size | 914 |
+| Canonical LLM-silver qrels (single judge) | 13654 |
+| Canonical LLM-silver queries | 317 |
+
+_The canonical LLM-silver row is a separate, much larger pool (`data/qrels/qrels.canonical.jsonl`, merged from `claude/latent-usefulness-v08` on 2026-06-23) used for the ablation ladder and regression gate. It is single-LLM-judged, not human-adjudicated, and does not count toward the human-labelled totals or the publishable checklist below — those still require human/gold labels per the existing benchmark spec._
 
 ## Publishable Benchmark Checklist
 
@@ -29,7 +33,7 @@ Target: 100 queries, 1,500 pairs, 2 annotators, agreement stats.
 
 - Need 96 more unique queries annotated (target: 100)
 - Need 1487 more labelled pairs (target: 1,500)
-- Need ≥2 annotators with inter-annotator agreement statistics
+- Need >=2 annotators with inter-annotator agreement statistics
 - Gold qrels are empty — adjudication workflow must produce gold labels
 
 ## Adjudicated
@@ -63,6 +67,14 @@ Target: 100 queries, 1,500 pairs, 2 annotators, agreement stats.
 - **Pairs per query:** 21.3
 - **Hard-negative count:** 131
 - **Label distribution:** {'3': 63, '0': 131, '2': 107, '1': 18}
+
+## Canonical Llm Silver
+
+- **Pairs:** 13654
+- **Queries covered:** 317
+- **Pairs per query:** 43.1
+- **Hard-negative count:** 0
+- **Label distribution:** {'0': 3311, '1': 5671, '2': 4652, '3': 20}
 
 ## Next Priority Pairs to Label
 

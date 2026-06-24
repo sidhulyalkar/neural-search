@@ -1,13 +1,55 @@
 {
-  "generated_at": "2026-06-23T03:32:06.421107+00:00",
+  "generated_at": "2026-06-24T02:25:48.142450+00:00",
   "gold_qrels_rows": 0,
   "adj_qrels_rows": 3,
   "safe": false,
   "blockers": [
     {
+      "file": "reports\\eval\\graph_weight_calibration.md",
+      "type": "gold_claim_while_empty",
+      "match": "NDCG@10=0.6667",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\graph_weight_calibration.md",
+      "type": "gold_claim_while_empty",
+      "match": "MRR=0.9209",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\graph_weight_calibration.md",
+      "type": "gold_claim_while_empty",
+      "match": "Recall@50=0.7455",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
       "file": "reports\\eval\\neuro_judge_retrieval_metrics.md",
       "type": "gold_claim_while_empty",
       "match": "Gold Benchmark",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.md",
+      "type": "gold_claim_while_empty",
+      "match": "ndcg@10=0.6667",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.md",
+      "type": "gold_claim_while_empty",
+      "match": "mrr=0.9209",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.md",
+      "type": "gold_claim_while_empty",
+      "match": "recall@50=0.7455",
       "gold_rows": 0,
       "severity": "BLOCKER"
     },
@@ -21,7 +63,21 @@
     {
       "file": "reports\\eval\\benchmark_safety_gate_report.json",
       "type": "gold_claim_while_empty",
-      "match": "NDCG@10 > 0.40",
+      "match": "NDCG@10=0.6667",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "MRR=0.9209",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "Recall@50=0.7455",
       "gold_rows": 0,
       "severity": "BLOCKER"
     },
@@ -31,6 +87,27 @@
       "match": "Gold Benchmark",
       "gold_rows": 0,
       "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "ndcg@10=0.6667",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "mrr=0.9209",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
+    },
+    {
+      "file": "reports\\eval\\regression_gate_report.json",
+      "type": "gold_claim_while_empty",
+      "match": "recall@50=0.7455",
+      "gold_rows": 0,
+      "severity": "BLOCKER"
     }
   ],
   "warnings": [
@@ -38,6 +115,12 @@
       "file": "reports\\eval\\benchmark_safety_gate_report.json",
       "type": "stale_corpus_reference",
       "match": "10404",
+      "severity": "WARN"
+    },
+    {
+      "file": "reports\\eval\\benchmark_safety_gate_report.json",
+      "type": "stale_corpus_reference",
+      "match": "corpus_size\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\": 10404",
       "severity": "WARN"
     },
     {
@@ -91,6 +174,24 @@
       "issues": []
     },
     {
+      "path": "reports\\eval\\dual_judge_reliability.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\eval_claim_ledger.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\failure_analysis.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
       "path": "reports\\eval\\finding_audit_instructions.md",
       "evidence_status": "engineering_validation",
       "evidence_label": "engineering validation \u2014 not retrieval evidence",
@@ -103,7 +204,44 @@
       "issues": []
     },
     {
+      "path": "reports\\eval\\graph_weight_calibration.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "NDCG@10=0.6667",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "MRR=0.9209",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "Recall@50=0.7455",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\intent_stratification_report.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
       "path": "reports\\eval\\known_item_lookup.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\metadata_enrichment_priorities.md",
       "evidence_status": "engineering_validation",
       "evidence_label": "engineering validation \u2014 not retrieval evidence",
       "issues": []
@@ -158,7 +296,50 @@
       "issues": []
     },
     {
+      "path": "reports\\eval\\new_method_dataset_matches.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
       "path": "reports\\eval\\paper_link_audit_instructions.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\reanalysis_affordance_report.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\regression_gate_report.md",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "ndcg@10=0.6667",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "mrr=0.9209",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "recall@50=0.7455",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\relationship_edge_quality.md",
       "evidence_status": "engineering_validation",
       "evidence_label": "engineering validation \u2014 not retrieval evidence",
       "issues": []
@@ -201,7 +382,19 @@
       "issues": [
         {
           "type": "gold_claim_while_empty",
-          "match": "NDCG@10 > 0.40",
+          "match": "NDCG@10=0.6667",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "MRR=0.9209",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "Recall@50=0.7455",
           "gold_rows": 0,
           "severity": "BLOCKER"
         },
@@ -215,8 +408,19 @@
           "type": "stale_corpus_reference",
           "match": "10404",
           "severity": "WARN"
+        },
+        {
+          "type": "stale_corpus_reference",
+          "match": "corpus_size\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\": 10404",
+          "severity": "WARN"
         }
       ]
+    },
+    {
+      "path": "reports\\eval\\bootstrap_ci_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
     },
     {
       "path": "reports\\eval\\brainknow_baseline_graph.json",
@@ -248,7 +452,43 @@
       "issues": []
     },
     {
+      "path": "reports\\eval\\dual_judge_reliability.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\eval_claim_ledger.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\failure_analysis.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\graph_weight_calibration.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
       "path": "reports\\eval\\hard_negative_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\intent_stratification_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\metadata_enrichment_priorities.json",
       "evidence_status": "engineering_validation",
       "evidence_label": "engineering validation \u2014 not retrieval evidence",
       "issues": []
@@ -269,6 +509,49 @@
       "path": "reports\\eval\\neuro_judge_retrieval_metrics.json",
       "evidence_status": "silver_diagnostic",
       "evidence_label": "LLM-generated silver diagnostic \u2014 not peer-reviewed",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\new_method_dataset_matches.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\reanalysis_affordance_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": []
+    },
+    {
+      "path": "reports\\eval\\regression_gate_report.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
+      "issues": [
+        {
+          "type": "gold_claim_while_empty",
+          "match": "ndcg@10=0.6667",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "mrr=0.9209",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        },
+        {
+          "type": "gold_claim_while_empty",
+          "match": "recall@50=0.7455",
+          "gold_rows": 0,
+          "severity": "BLOCKER"
+        }
+      ]
+    },
+    {
+      "path": "reports\\eval\\relationship_edge_quality.json",
+      "evidence_status": "engineering_validation",
+      "evidence_label": "engineering validation \u2014 not retrieval evidence",
       "issues": []
     },
     {

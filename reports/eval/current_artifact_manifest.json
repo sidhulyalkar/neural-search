@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-20T08:25:57Z",
-  "git_commit": "499d1ce",
-  "reconciliation_note": "Manual reconciliation 2026-06-20. data/corpus/normalized/combined_corpus.jsonl is a directory; the live corpus file is full_corpus_v09.jsonl inside it. Unique IDs counted via source_id field (7,121); dataset_id field has only 625 unique values (embedded-slice only).",
+  "generated_at": "2026-06-24T02:24:00Z",
+  "git_commit": "e08b3b7",
+  "reconciliation_note": "Manual reconciliation 2026-06-24, post-merge of claude/latent-usefulness-v08 (eval/qrels branch) into claude/neuronpedia-foundation (KG/claims/vault/frontend branch). data/corpus/normalized/combined_corpus.jsonl is a directory; the live corpus file is full_corpus_v09.jsonl inside it. Unique IDs counted via source_id field (7,121); dataset_id field has only 625 unique values (embedded-slice only). No build_artifact_manifest.py script exists in the repo despite being referenced by docs/REPRODUCIBILITY_CAPSULE.md — this file is still hand-maintained; writing that script is queued as backlog, not done in this pass.",
   "corpus": {
     "path": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl",
     "row_count": 7171,
@@ -37,7 +37,32 @@
       "path": "artifacts/field_state/adjudicated_qrels.jsonl",
       "rows": 3,
       "status": "smoke-test only — adjudication workflow verified but not at benchmark scale"
+    },
+    "canonical_llm_silver": {
+      "path": "data/qrels/qrels.canonical.jsonl",
+      "rows": 13654,
+      "queries": 317,
+      "label_distribution": {"0": 3311, "1": 5671, "2": 4652, "3": 20},
+      "status": "merged 2026-06-23 from claude/latent-usefulness-v08 — single LLM-judge pass, not human-adjudicated. First non-degenerate ablation ladder this project has produced (see ablation_ladder below). Dual-judge reliability not yet estimable (no pair has two non-error judge labels)."
     }
+  },
+  "ablation_ladder": {
+    "path": "reports/eval/ndcg_report.md",
+    "qrels_used": "canonical_llm_silver (13,654 pairs / 317 queries)",
+    "rungs": {
+      "bm25": {"ndcg@10": 0.6566, "mrr": 0.8795, "recall@50": 0.6440, "ndcg@10_ci95": [0.6322, 0.6807]},
+      "bm25_structured": {"ndcg@10": 0.6361, "mrr": 0.8587, "recall@50": 0.6138},
+      "dense_bge": {"ndcg@10": 0.5708, "mrr": 0.8829, "recall@50": 0.5384, "ndcg@10_ci95": [0.5464, 0.5939]},
+      "hybrid_rrf": {"ndcg@10": 0.6667, "mrr": 0.9209, "recall@50": 0.7455, "ndcg@10_ci95": [0.6421, 0.6893]},
+      "hybrid_graph": {"ndcg@10": 0.6696, "mrr": 0.9256, "recall@50": 0.7465, "ndcg@10_ci95": [0.6453, 0.6921]},
+      "full": {"ndcg@10": 0.6696, "mrr": 0.9256, "recall@50": 0.7450}
+    },
+    "honest_caveats": [
+      "hybrid_graph/full's NDCG@10 lead over plain bm25 is within bootstrap-CI overlap, not yet statistically established at n=317 queries",
+      "dense_bge underperforming bm25 IS a real, CI-separated negative result (no overlap) worth investigating before citing as a flat claim",
+      "all rungs are evaluated on LLM-silver qrels, not human-adjudicated gold",
+      "relationship_edge_quality.md shows the typed/relationship KG edges sit at ~0.50 helpful rate (close to coin-flip) among judged top-10 promotions, predating the 2026-06-23 Phase 6b qualified-consensus edge types"
+    ]
   },
   "vector_index": {
     "current_on_disk_ids": 625,
@@ -49,9 +74,10 @@
     "doi_exact_links": 168,
     "title_fuzzy_links": 225,
     "not_found": 6778,
-    "findings_operational_estimate": 122544,
+    "findings_operational_estimate": 190279,
     "findings_file": "artifacts/literature/findings_tier1_ollama.jsonl",
-    "findings_note": "122,544 findings from 179,450 papers processed (68.2% yield) as of 2026-06-21; extraction still running. Quality not validated — manual audit template at reports/eval/finding_audit_template.csv"
+    "findings_file_note": "144MB+ and growing — gitignored as of 2026-06-23, do not commit (exceeds GitHub's 100MB hard limit)",
+    "findings_note": "190,279 findings from 255,940/255,940 papers in the checkpoint as of 2026-06-23 19:09 PDT (74.4% yield) — checkpoint count equals total ingested papers, so this run may be at or near completion; not independently confirmed. Quality not validated at this scale — manual audit template at reports/eval/finding_audit_template.csv is still blank. A 100-sample LLM-judge pass (reports/eval/finding_audit_llm_judge_summary.md) found 88% strict / 92% weighted precision on an earlier extraction snapshot, with dominant errors in result_direction and species — both fields feed directly into the typed-field contradiction_subtype logic, so audit before further relationship-mining at this larger scale."
   },
   "stale_reports": [
     {
@@ -80,6 +106,7 @@
     "graph": "data/graph/neural_search_graph.real_corpus.json — 7,593 nodes / 31,920 edges",
     "gold_qrels": "empty — awaiting human annotation",
     "silver_diagnostic": "artifacts/qrels_silver.jsonl — 175 rows (diagnostic)",
+    "canonical_llm_silver_qrels": "data/qrels/qrels.canonical.jsonl — 13,654 pairs / 317 queries (single LLM judge, first non-degenerate ablation ladder; see ablation_ladder above)",
     "field_state_memory_graph": "artifacts/field_state/memory_graph_manifest.json — 629-record curation slice, 2,200 nodes / 3,788 edges"
   }
 }
