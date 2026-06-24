@@ -158,25 +158,25 @@ Evidence:
 
 - A qrels-backed retrieval snapshot now exists: 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs.
 - Current reports: `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`, `reports/eval/intent_stratification_report.md`, `reports/eval/eval_claim_ledger.md`, and `reports/eval/regression_gate_report.md`.
-- `hybrid_rrf` is the best populated rung on aggregate NDCG@10 (0.6667), MRR (0.9209), and Recall@50 (0.7455). The MRR gain over BM25 is significant; the NDCG@10 gain over BM25 is directional but not significant by the current sign test.
-- Graph-backed rungs are now populated from an eval-corpus graph built over 2,821 records. `hybrid_graph` and `full` currently trail `hybrid_rrf` (NDCG@10 0.6385, MRR 0.8824), so the graph signal should be described as implemented and evaluable, not yet as a retrieval-quality improvement.
+- `hybrid_rrf` is strong on aggregate NDCG@10 (0.6667), MRR (0.9209), and Recall@50 (0.7455). The MRR gain over BM25 is significant; the NDCG@10 gain over BM25 is directional but not significant by the current sign test.
+- Graph-backed rungs are now populated from an eval-corpus graph built over 2,821 records. After graph-weight calibration, `hybrid_graph` is currently the best qrels-backed preview rung (NDCG@10 0.6696, MRR 0.9256, Recall@50 0.7465), with small but significant sign-test gains over `hybrid_rrf` on NDCG@10 and MRR.
 - Reinterpretation/reprocessing discovery reports now exist: `reports/eval/reanalysis_affordance_report.md`, `reports/eval/new_method_dataset_matches.md`, and `reports/eval/metadata_enrichment_priorities.md`.
 
 Limitations:
 
 - The labels are LLM-judged, not independently human-adjudicated.
 - Dual-judge QWK is not estimable because no non-error pair has labels from two models.
-- Graph/full rungs need calibration and source-aware graph weighting before improvement claims.
+- Graph/full gains are small and calibrated on LLM-judged qrels; they need duplicate/human adjudication and source-aware edge QA before publication-grade claims.
 - Reanalysis affordance and new-method matching reports are metadata-derived prioritization tools, not file-validated compatibility judgments.
 - Exact lookup must be validated on the frozen expanded snapshot.
 
 Publication framing:
 
-It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication, exact lookup validation, and graph-weight calibration are complete.
+It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication, exact lookup validation, and graph-weight calibration are confirmed on independently reviewed labels.
 
 ### Claim 6: Latent usefulness scoring is implemented
 
-Status: Partial
+Status: Prototype-validated on LLM qrels / not publication-grade
 
 Evidence:
 
@@ -241,17 +241,21 @@ Status: Partial
 Evidence:
 
 - `neural_search/graph/`
-- `reports/graph_ablation.json`: 39% of pairs changed rank with graph signal
+- `reports/eval/ndcg_report.md`: calibrated `hybrid_graph` NDCG@10 0.6696 vs `hybrid_rrf` 0.6667; MRR 0.9256 vs 0.9209
+- `reports/eval/bootstrap_ci_report.json`: sign-test gains for `hybrid_graph` over `hybrid_rrf` on NDCG@10 and MRR
+- `reports/eval/graph_weight_calibration.md`: balanced calibrated graph setting is default profile at global weight 0.005
+- `reports/eval/relationship_edge_quality.md`: relationship-edge promotions are mixed, with same-region cross-modality/reanalysis bridge edges slightly above 50% helpful among judged top-10 promotions
 
 Limitations:
 
-- The current ablation report does not show NDCG improvement.
-- Graph artifacts should be rebuilt and validated against the frozen expanded corpus.
+- The current evidence is LLM-judged, not human-adjudicated.
+- The graph gain is small and was calibrated on the same qrels snapshot.
+- Relationship-edge quality is mixed; some edge classes help roughly as often as they hurt.
 - Paper links need better confidence/evidence surfacing.
 
 Publication framing:
 
-Claim graph signals affect rankings and support relational context. Do not claim demonstrated metric gains until rerun.
+Claim calibrated graph reranking shows a small LLM-qrels-backed improvement and supports relational context. Do not describe this as publication-grade or human-validated until adjudicated labels confirm it.
 
 ### Claim 10: Query intent classification and routing exist
 

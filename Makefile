@@ -167,6 +167,16 @@ eval-qrels:
 		--corpus data/eval/ablation_corpus_from_packets.jsonl
 	python scripts/eval/prioritize_metadata_enrichment.py \
 		--failures reports/eval/failure_analysis.json
+	python scripts/eval/calibrate_graph_rerank.py \
+		--queries data/eval/benchmark_queries_canonical.yaml \
+		--qrels data/qrels/qrels.canonical.trec \
+		--run reports/eval/runs/hybrid_rrf.jsonl \
+		--graph data/graph/neural_search_graph.real_corpus.json
+	python scripts/eval/analyze_relationship_edge_quality.py \
+		--qrels data/qrels/qrels.canonical.trec \
+		--graph data/graph/neural_search_graph.real_corpus.json \
+		--base-run reports/eval/runs/hybrid_rrf.jsonl \
+		--graph-run reports/eval/runs/hybrid_graph.jsonl
 
 # Generate compilation report
 reports:

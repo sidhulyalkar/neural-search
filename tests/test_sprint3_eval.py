@@ -441,6 +441,77 @@ class TestReanalysisReports:
         assert report["top_false_positive_sources"]["zenodo"] == 2
 
 
+class TestGraphCalibrationAndEdgeQuality:
+    def test_graph_calibration_keeps_rrf_when_graph_has_no_signal(self) -> None:
+        from neural_search.graph.schema import KnowledgeGraph, KnowledgeGraphNode
+        from scripts.eval.calibrate_graph_rerank import calibrate
+
+        graph = KnowledgeGraph(
+            nodes={
+                "node:dataset:d1": KnowledgeGraphNode(
+                    node_id="node:dataset:d1",
+                    node_type="dataset",
+                    label="Dataset 1",
+                )
+            }
+        )
+        report = calibrate(
+            qrels={"q1": {"d1": 2}},
+            queries={"q1": {"id": "q1", "query": "dataset"}},
+            run={"q1": [("d1", 1.0)]},
+            graph=graph,
+            profiles={"empty": {"degree": 0.0}},
+            global_weights=[0.0, 0.1],
+        )
+
+        assert report["baseline_metrics"]["ndcg@10"] == pytest.approx(1.0)
+        assert report["best"]["ndcg_delta_vs_rrf"] == pytest.approx(0.0)
+        assert report["recommendation"] == "keep_hybrid_rrf_as_quality_baseline"
+
+    def test_relationship_edge_quality_counts_helpful_and_harmful_promotions(self) -> None:
+        from neural_search.graph.schema import (
+            KnowledgeGraph,
+            KnowledgeGraphEdge,
+            KnowledgeGraphNode,
+            make_edge_id,
+        )
+        from scripts.eval.analyze_relationship_edge_quality import analyze_edge_quality
+
+        d1 = KnowledgeGraphNode(node_id="node:dataset:d1", node_type="dataset", label="Dataset 1")
+        d2 = KnowledgeGraphNode(node_id="node:dataset:d2", node_type="dataset", label="Dataset 2")
+        edge = KnowledgeGraphEdge(
+            edge_id=make_edge_id(d1.node_id, "dataset_reanalysis_bridge_dataset", d2.node_id),
+            source_node_id=d1.node_id,
+            target_node_id=d2.node_id,
+            edge_type="dataset_reanalysis_bridge_dataset",
+            confidence=0.8,
+        )
+        graph = KnowledgeGraph(
+            nodes={d1.node_id: d1, d2.node_id: d2},
+            edges={edge.edge_id: edge},
+        )
+
+        report = analyze_edge_quality(
+            qrels={"q1": {"d2": 2}, "q2": {"d2": 0}},
+            base_run={
+                "q1": [(1, "d1"), (2, "d2")],
+                "q2": [(1, "d1"), (2, "d2")],
+            },
+            graph_run={
+                "q1": [(1, "d2"), (2, "d1")],
+                "q2": [(1, "d2"), (2, "d1")],
+            },
+            graph=graph,
+            top_k=1,
+        )
+
+        by_edge = {row["edge_type"]: row for row in report["edge_quality"]}
+        stats = by_edge["dataset_reanalysis_bridge_dataset"]
+        assert stats["helpful_promotions"] == 1
+        assert stats["harmful_promotions"] == 1
+        assert stats["helpful_rate"] == pytest.approx(0.5)
+
+
 class TestAcquisitionPlan:
     def test_plan_generates_items(self) -> None:
         from scripts.coverage.generate_acquisition_plan import generate_plan

@@ -42,6 +42,23 @@
     }
   },
   {
+    "claim_id": "claim_calibrated_graph_beats_hybrid_rrf",
+    "claim": "Calibrated graph reranking improves over hybrid RRF on the labeled qrels aggregate.",
+    "evidence_level": "supported",
+    "evidence": {
+      "ndcg@10_delta": 0.0029309779203748887,
+      "mrr_delta": 0.004641672733155411,
+      "recall@50_delta": 0.0010632242149479776,
+      "ndcg_significant_vs_hybrid_rrf": true,
+      "mrr_significant_vs_hybrid_rrf": true,
+      "artifacts": [
+        "reports/eval/graph_weight_calibration.json",
+        "reports/eval/relationship_edge_quality.json"
+      ]
+    },
+    "caveat": "Small effect on LLM-judged qrels; calibration and edge quality should be rechecked on independently adjudicated labels."
+  },
+  {
     "claim_id": "claim_intent_stratification_available",
     "claim": "Retrieval metrics are stratified by canonical query intent.",
     "evidence_level": "supported",
