@@ -29,3 +29,15 @@
 | hybrid_rrf | REANALYSIS_FEASIBILITY | 19 | 0.6288 | 0.8759 | 0.7353 |
 | hybrid_rrf | REPLICATION | 1 | 0.7536 | 1.0000 | 0.8438 |
 | hybrid_rrf | STRICT_LOOKUP | 4 | 0.8051 | 1.0000 | 0.7683 |
+| hybrid_graph | CROSS_DATASET_COMPARISON | 1 | 0.8415 | 1.0000 | 0.6970 |
+| hybrid_graph | EXPLORATION | 289 | 0.6342 | 0.8807 | 0.6963 |
+| hybrid_graph | PIPELINE_REUSE | 3 | 0.8042 | 1.0000 | 0.6192 |
+| hybrid_graph | REANALYSIS_FEASIBILITY | 19 | 0.6229 | 0.8524 | 0.6948 |
+| hybrid_graph | REPLICATION | 1 | 0.8143 | 1.0000 | 0.7188 |
+| hybrid_graph | STRICT_LOOKUP | 4 | 0.7995 | 1.0000 | 0.7117 |
+| full | CROSS_DATASET_COMPARISON | 1 | 0.8415 | 1.0000 | 0.6667 |
+| full | EXPLORATION | 289 | 0.6342 | 0.8807 | 0.6921 |
+| full | PIPELINE_REUSE | 3 | 0.8042 | 1.0000 | 0.6723 |
+| full | REANALYSIS_FEASIBILITY | 19 | 0.6229 | 0.8524 | 0.6910 |
+| full | REPLICATION | 1 | 0.8143 | 1.0000 | 0.7188 |
+| full | STRICT_LOOKUP | 4 | 0.7995 | 1.0000 | 0.6082 |

@@ -1654,7 +1654,7 @@ Results from this benchmark support paper-ready claims only when:
 
 \subsection{Current Status}
 
-\textbf{A first qrels-backed retrieval snapshot is now available, but remains preliminary.} The current canonical qrels artifact contains 13,654 non-error LLM-judged query--dataset pairs across 317 canonical queries. The join is complete across the populated retrieval rungs. On this snapshot, \texttt{hybrid\_rrf} is the strongest populated variant by aggregate NDCG@10, MRR, and Recall@50: NDCG@10 = 0.6667, MRR = 0.9209, and Recall@50 = 0.7455. BM25 remains competitive on NDCG@10 (0.6566), while dense BGE alone has lower aggregate NDCG@10 (0.5708) and Recall@50 (0.5384). Bootstrap/sign-test analysis finds \texttt{hybrid\_rrf} significantly better than BM25 on MRR ($p=0.0030$) and significantly better than dense BGE on both NDCG@10 and MRR; the NDCG@10 margin over BM25 is directionally positive but not significant in the current sign test.
+\textbf{A first qrels-backed retrieval snapshot is now available, but remains preliminary.} The current canonical qrels artifact contains 13,654 non-error LLM-judged query--dataset pairs across 317 canonical queries. The join is complete across all six retrieval rungs. On this snapshot, \texttt{hybrid\_rrf} is the strongest variant by aggregate NDCG@10, MRR, and Recall@50: NDCG@10 = 0.6667, MRR = 0.9209, and Recall@50 = 0.7455. BM25 remains competitive on NDCG@10 (0.6566), while dense BGE alone has lower aggregate NDCG@10 (0.5708) and Recall@50 (0.5384). The graph-backed variants are now populated and evaluable: \texttt{hybrid\_graph} obtains NDCG@10 = 0.6385, MRR = 0.8824, and Recall@50 = 0.6957; \texttt{full} obtains NDCG@10 = 0.6385, MRR = 0.8824, and Recall@50 = 0.6908. These graph variants currently trail \texttt{hybrid\_rrf}, so the correct conclusion is that relationship-aware graph reranking is implemented and measurable but still needs calibration before it can support an improvement claim. Bootstrap/sign-test analysis finds \texttt{hybrid\_rrf} significantly better than BM25 on MRR ($p=0.0030$) and significantly better than dense BGE on both NDCG@10 and MRR; the NDCG@10 margin over BM25 is directionally positive but not significant in the current sign test.
 
 These numbers should be reported as an LLM-judged benchmark preview, not as final human-adjudicated scientific relevance evidence. Dual-judge reliability is not estimable from the current artifact: 13,654 labels are usable, but no non-error query--dataset pair was judged by two models.
 
@@ -1667,6 +1667,8 @@ The evaluation infrastructure is complete:
     \item Metric computation with bootstrap CI operational (\texttt{compute\_ndcg\_from\_qrels.py}, \texttt{compute\_bootstrap\_ci.py})
     \item Intent stratification, dual-judge reliability reporting, claim ledger generation, and regression gate scripts operational
     \item Failure analysis and result card gallery scripts operational
+    \item Graph/full ablation rungs populated from a 2,821-record eval-corpus graph with 3,180 nodes and 17,523 edges, including 5,254 cross-dataset and reanalysis relationship edges
+    \item Reinterpretation and reprocessing discovery reports operational: reanalysis affordance ranking, new-method-to-old-dataset matching, and metadata-enrichment priorities derived from failure analysis
     \item Annotation tool with resume mode operational
     \item Frontend feedback loop operational: React search interface with evidence inspection, inline relevance feedback (usefulness, would-use-for-analysis, reason tags, free-text notes), neuro-judge badges with silver provenance watermarks, and save/export
     \item Downstream retrieval success reporting operational (\texttt{compute\_downstream\_retrieval\_success.py})
@@ -1675,7 +1677,7 @@ The evaluation infrastructure is complete:
     \item Transparent feedback reranking priors operational (\texttt{build\_feedback\_rerank\_priors.py}) — log-odds weight table ($\pm$1.5 cap) from aggregated downstream feedback, toggle-able in frontend; downstream signal only
 \end{itemize}
 
-No improvement claim based on concept-memory reranking appears in this paper. Any such claim requires qrels-backed evidence meeting the minimum credible benchmark targets above, with graph rungs populated and independently adjudicated labels.
+No improvement claim based on concept-memory or graph reranking appears in this paper. Any such claim requires qrels-backed evidence meeting the minimum credible benchmark targets above, calibrated graph weights, and independently adjudicated labels.
 
 \section{Limitations}
 \label{sec:limitations}

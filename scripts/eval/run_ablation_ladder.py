@@ -61,6 +61,7 @@ DEFAULT_GRAPH = Path("data/graph/neural_search_graph.real_corpus.json")
 DEFAULT_OUT_DIR = Path("reports/eval/runs")
 DEFAULT_TOP_K = 100
 RRF_K = 60
+GRAPH_SCORE_WEIGHT = 0.05
 
 ALL_RUNGS = [
     "bm25",
@@ -408,7 +409,7 @@ def rung_hybrid_graph(
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         gscore = graph_context_score(graph, record_id, query_context=q_ctx)
-        rescored.append((record_id, base_score + gscore))
+        rescored.append((record_id, base_score + (GRAPH_SCORE_WEIGHT * gscore)))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]
     _write_run(out_path, query_id, results, "hybrid_graph")
@@ -625,10 +626,15 @@ def main(argv: list[str] | None = None) -> int:
     run_paths: dict[str, Path] = {}
     for rung in ALL_RUNGS:
         p = args.out_dir / f"{rung}.jsonl"
-        p.write_text("", encoding="utf-8")
+        if rung in active_rungs:
+            p.write_text("", encoding="utf-8")
         run_paths[rung] = p
 
     report_rows: list[dict[str, Any]] = []
+    bm25_cache: dict[str, list[RunResult]] = {}
+    dense_cache: dict[str, list[RunResult]] = {}
+    rrf_cache: dict[str, list[RunResult]] = {}
+    graph_cache: dict[str, list[RunResult]] = {}
 
     for rung in ALL_RUNGS:
         if rung not in active_rungs:
@@ -638,12 +644,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\n── Rung: {rung} ──────────────────────────────────")
         t_rung = time.time()
         queries_run = 0
-
-        # Per-query storage for rungs that need prior results
-        bm25_cache: dict[str, list[RunResult]] = {}
-        dense_cache: dict[str, list[RunResult]] = {}
-        rrf_cache: dict[str, list[RunResult]] = {}
-        graph_cache: dict[str, list[RunResult]] = {}
 
         for qi, q in enumerate(queries, start=1):
             qid = str(q.get("id", q.get("query_id", f"q_{qi:04d}")))

@@ -159,6 +159,84 @@
           "n_queries": 317
         }
       }
+    },
+    "hybrid_graph": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.6385,
+          "ci_low": 0.6154,
+          "ci_high": 0.6613,
+          "std": 0.2144,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6478,
+          "ci_low": 0.6199,
+          "ci_high": 0.6739,
+          "std": 0.2507,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.8824,
+          "ci_low": 0.8545,
+          "ci_high": 0.9082,
+          "std": 0.2435,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.7729,
+          "ci_low": 0.7445,
+          "ci_high": 0.8006,
+          "std": 0.2549,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.4051,
+          "ci_low": 0.3911,
+          "ci_high": 0.419,
+          "std": 0.1294,
+          "n_queries": 317
+        }
+      }
+    },
+    "full": {
+      "ci": {
+        "ndcg@10": {
+          "mean": 0.6385,
+          "ci_low": 0.6154,
+          "ci_high": 0.6613,
+          "std": 0.2144,
+          "n_queries": 317
+        },
+        "ndcg@5": {
+          "mean": 0.6478,
+          "ci_low": 0.6199,
+          "ci_high": 0.6739,
+          "std": 0.2507,
+          "n_queries": 317
+        },
+        "mrr": {
+          "mean": 0.8824,
+          "ci_low": 0.8545,
+          "ci_high": 0.9082,
+          "std": 0.2435,
+          "n_queries": 317
+        },
+        "p@5": {
+          "mean": 0.7729,
+          "ci_low": 0.7445,
+          "ci_high": 0.8006,
+          "std": 0.2549,
+          "n_queries": 317
+        },
+        "recall@20": {
+          "mean": 0.4051,
+          "ci_low": 0.3911,
+          "ci_high": 0.419,
+          "std": 0.1294,
+          "n_queries": 317
+        }
+      }
     }
   },
   "pairwise_significance": [
@@ -230,6 +308,50 @@
     },
     {
       "n": 317,
+      "a_wins": 161,
+      "b_wins": 145,
+      "ties": 11,
+      "p_value_approx": 0.3604,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 43,
+      "b_wins": 44,
+      "ties": 230,
+      "p_value_approx": 0.9146,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 161,
+      "b_wins": 145,
+      "ties": 11,
+      "p_value_approx": 0.3604,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 43,
+      "b_wins": 44,
+      "ties": 230,
+      "p_value_approx": 0.9146,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
       "a_wins": 194,
       "b_wins": 119,
       "ties": 4,
@@ -274,6 +396,50 @@
     },
     {
       "n": 317,
+      "a_wins": 163,
+      "b_wins": 145,
+      "ties": 9,
+      "p_value_approx": 0.3051,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25_structured",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 46,
+      "b_wins": 51,
+      "ties": 220,
+      "p_value_approx": 0.6117,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25_structured",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 163,
+      "b_wins": 145,
+      "ties": 9,
+      "p_value_approx": 0.3051,
+      "significant_at_05": false,
+      "metric": "ndcg@10",
+      "system_a": "bm25_structured",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 46,
+      "b_wins": 51,
+      "ties": 220,
+      "p_value_approx": 0.6117,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "bm25_structured",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
       "a_wins": 85,
       "b_wins": 225,
       "ties": 7,
@@ -293,6 +459,114 @@
       "metric": "mrr",
       "system_a": "dense_bge",
       "system_b": "hybrid_rrf"
+    },
+    {
+      "n": 317,
+      "a_wins": 108,
+      "b_wins": 203,
+      "ties": 6,
+      "p_value_approx": 0.0,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "dense_bge",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 38,
+      "b_wins": 43,
+      "ties": 236,
+      "p_value_approx": 0.5785,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "dense_bge",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 108,
+      "b_wins": 203,
+      "ties": 6,
+      "p_value_approx": 0.0,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "dense_bge",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 38,
+      "b_wins": 43,
+      "ties": 236,
+      "p_value_approx": 0.5785,
+      "significant_at_05": false,
+      "metric": "mrr",
+      "system_a": "dense_bge",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 178,
+      "b_wins": 126,
+      "ties": 13,
+      "p_value_approx": 0.0029,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "hybrid_rrf",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 43,
+      "b_wins": 19,
+      "ties": 255,
+      "p_value_approx": 0.0023,
+      "significant_at_05": true,
+      "metric": "mrr",
+      "system_a": "hybrid_rrf",
+      "system_b": "hybrid_graph"
+    },
+    {
+      "n": 317,
+      "a_wins": 178,
+      "b_wins": 126,
+      "ties": 13,
+      "p_value_approx": 0.0029,
+      "significant_at_05": true,
+      "metric": "ndcg@10",
+      "system_a": "hybrid_rrf",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 43,
+      "b_wins": 19,
+      "ties": 255,
+      "p_value_approx": 0.0023,
+      "significant_at_05": true,
+      "metric": "mrr",
+      "system_a": "hybrid_rrf",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 0,
+      "b_wins": 0,
+      "ties": 317,
+      "p_value_approx": 1.0,
+      "metric": "ndcg@10",
+      "system_a": "hybrid_graph",
+      "system_b": "full"
+    },
+    {
+      "n": 317,
+      "a_wins": 0,
+      "b_wins": 0,
+      "ties": 317,
+      "p_value_approx": 1.0,
+      "metric": "mrr",
+      "system_a": "hybrid_graph",
+      "system_b": "full"
     }
   ]
 }

@@ -159,17 +159,20 @@ Evidence:
 - A qrels-backed retrieval snapshot now exists: 317 canonical queries and 13,654 non-error LLM-judged query--dataset pairs.
 - Current reports: `reports/eval/ndcg_report.md`, `reports/eval/bootstrap_ci_report.json`, `reports/eval/intent_stratification_report.md`, `reports/eval/eval_claim_ledger.md`, and `reports/eval/regression_gate_report.md`.
 - `hybrid_rrf` is the best populated rung on aggregate NDCG@10 (0.6667), MRR (0.9209), and Recall@50 (0.7455). The MRR gain over BM25 is significant; the NDCG@10 gain over BM25 is directional but not significant by the current sign test.
+- Graph-backed rungs are now populated from an eval-corpus graph built over 2,821 records. `hybrid_graph` and `full` currently trail `hybrid_rrf` (NDCG@10 0.6385, MRR 0.8824), so the graph signal should be described as implemented and evaluable, not yet as a retrieval-quality improvement.
+- Reinterpretation/reprocessing discovery reports now exist: `reports/eval/reanalysis_affordance_report.md`, `reports/eval/new_method_dataset_matches.md`, and `reports/eval/metadata_enrichment_priorities.md`.
 
 Limitations:
 
 - The labels are LLM-judged, not independently human-adjudicated.
 - Dual-judge QWK is not estimable because no non-error pair has labels from two models.
-- Graph/full rungs are not populated in the current ablation run.
+- Graph/full rungs need calibration and source-aware graph weighting before improvement claims.
+- Reanalysis affordance and new-method matching reports are metadata-derived prioritization tools, not file-validated compatibility judgments.
 - Exact lookup must be validated on the frozen expanded snapshot.
 
 Publication framing:
 
-It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication and graph/full ablations are complete.
+It is reasonable to describe this as a meaningful LLM-judged ablation preview and regression gate. Do not describe it as publication-grade human relevance evidence until duplicate/human adjudication, exact lookup validation, and graph-weight calibration are complete.
 
 ### Claim 6: Latent usefulness scoring is implemented
 

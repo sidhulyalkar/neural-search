@@ -1,0 +1,291 @@
+{
+  "priorities": [
+    {
+      "failure_count": 14904,
+      "field": "task",
+      "recommended_action": "Extract task and behavioral paradigm labels from titles, descriptions, and protocol files.",
+      "related_mismatches": [
+        "task_mismatch"
+      ],
+      "top_intents": [
+        {
+          "count": 6594,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 698,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 14341,
+      "field": "affordance",
+      "recommended_action": "Audit and normalize `affordance` evidence.",
+      "related_mismatches": [],
+      "top_intents": [
+        {
+          "count": 4970,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 698,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 9848,
+      "field": "brain_region",
+      "recommended_action": "Extract anatomical regions from repository metadata, paper links, and file annotations.",
+      "related_mismatches": [
+        "brain_region_mismatch"
+      ],
+      "top_intents": [
+        {
+          "count": 4703,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 698,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 7034,
+      "field": "species",
+      "recommended_action": "Normalize species aliases and source-specific organism fields.",
+      "related_mismatches": [
+        "species_mismatch"
+      ],
+      "top_intents": [
+        {
+          "count": 3109,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 698,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 5979,
+      "field": "modality",
+      "recommended_action": "Add or normalize modality labels from source metadata and file manifests.",
+      "related_mismatches": [
+        "modality_mismatch"
+      ],
+      "top_intents": [
+        {
+          "count": 3698,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 698,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 5571,
+      "field": "raw_data",
+      "recommended_action": "Verify raw-data availability and expose raw/processed evidence separately.",
+      "related_mismatches": [
+        "raw_data_missing"
+      ],
+      "top_intents": [
+        {
+          "count": 486,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 486,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 1446,
+      "field": "other",
+      "recommended_action": "Audit and normalize `other` evidence.",
+      "related_mismatches": [],
+      "top_intents": [
+        {
+          "count": 537,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 537,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 407,
+      "field": "behavioral_event",
+      "recommended_action": "Audit and normalize `behavioral_event` evidence.",
+      "related_mismatches": [
+        "behavioral_event_mismatch"
+      ],
+      "top_intents": [
+        {
+          "count": 123,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 123,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 33,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 25,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 18,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    },
+    {
+      "failure_count": 70,
+      "field": "data_standard",
+      "recommended_action": "Normalize NWB, BIDS, and source-specific file-standard metadata.",
+      "related_mismatches": [
+        "raw_data_missing"
+      ],
+      "top_intents": [
+        {
+          "count": 42,
+          "intent": "EXPLORATION"
+        },
+        {
+          "count": 42,
+          "intent": "REANALYSIS_FEASIBILITY"
+        },
+        {
+          "count": 30,
+          "intent": "STRICT_LOOKUP"
+        },
+        {
+          "count": 21,
+          "intent": "REPLICATION"
+        },
+        {
+          "count": 17,
+          "intent": "PIPELINE_REUSE"
+        }
+      ]
+    }
+  ],
+  "priority_count": 9,
+  "top_false_positive_sources": {
+    "allen": 172,
+    "crcns": 612,
+    "dandi": 2599,
+    "figshare": 149,
+    "gin": 699,
+    "harvard_dataverse": 1071,
+    "neurovault": 1347,
+    "openneuro": 186,
+    "osf": 400,
+    "zenodo": 1769
+  },
+  "top_mismatch_modes": {
+    "behavioral_event_mismatch": 129,
+    "brain_region_mismatch": 4698,
+    "modality_mismatch": 3161,
+    "raw_data_missing": 818,
+    "species_mismatch": 3168,
+    "task_mismatch": 6635
+  }
+}
