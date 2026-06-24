@@ -42,13 +42,27 @@ All extraction is purely rule-based (regex/substring matching) — no model call
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 
 # ---------------------------------------------------------------------------
 # Regex helpers
 # ---------------------------------------------------------------------------
 
+# 28 pattern collections in this module (negation + 27 typed fields) define
+# 500+ distinct pattern strings between them -- comfortably past CPython's
+# process-wide re cache (re._MAXCACHE, 512 entries as of 3.11-3.14), shared
+# with every other regex in the process. Without this, every _any()/_first()
+# call recompiles its pattern from scratch because the shared cache keeps
+# evicting entries; enrich_finding() on the full ~190K-finding corpus took
+# 30+ minutes as a result. A dedicated unbounded cache, scoped to just this
+# module's patterns, makes each distinct pattern compile exactly once.
+@lru_cache(maxsize=None)
+def _compiled(pattern: str) -> re.Pattern[str]:
+    return re.compile(pattern, re.IGNORECASE)
+
+
 def _any(patterns: list[str], text: str) -> bool:
-    return any(re.search(p, text, re.IGNORECASE) for p in patterns)
+    return any(_compiled(p).search(text) for p in patterns)
 
 
 def _first(pattern_value_pairs: list[tuple[str, str]], text: str) -> list[str]:
@@ -56,7 +70,7 @@ def _first(pattern_value_pairs: list[tuple[str, str]], text: str) -> list[str]:
     seen: set[str] = set()
     result = []
     for p, v in pattern_value_pairs:
-        if re.search(p, text, re.IGNORECASE) and v not in seen:
+        if _compiled(p).search(text) and v not in seen:
             seen.add(v)
             result.append(v)
     return result

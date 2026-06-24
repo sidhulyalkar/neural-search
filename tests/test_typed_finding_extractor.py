@@ -7,6 +7,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from neural_search.literature.typed_finding_extractor import (
+    _compiled,
     detect_negation,
     enrich_finding,
     extract_anatomical_directions,
@@ -37,6 +38,36 @@ from neural_search.literature.typed_finding_extractor import (
     extract_temporal_patterns,
     extract_typed_fields,
 )
+
+
+# ---------------------------------------------------------------------------
+# Compiled-pattern cache (perf regression guard: 2026-06-24)
+#
+# enrich_finding() over the full ~190K-finding corpus took 30-45+ minutes
+# before this cache existed, because _any()/_first() called re.search() with
+# raw pattern strings -- recompiling on every call once this module's 500+
+# distinct patterns exceeded CPython's shared, process-wide 512-entry regex
+# cache. _compiled() is a dedicated, unbounded, module-scoped cache so each
+# pattern compiles exactly once regardless of what else is sharing the
+# global re cache.
+# ---------------------------------------------------------------------------
+
+class TestCompiledPatternCache:
+    def test_same_pattern_returns_same_compiled_object(self):
+        a = _compiled(r"\btheta\b")
+        b = _compiled(r"\btheta\b")
+        assert a is b
+
+    def test_compiled_pattern_is_case_insensitive(self):
+        pattern = _compiled(r"\btheta\b")
+        assert pattern.search("THETA power increased")
+        assert pattern.search("theta power increased")
+
+    def test_different_patterns_compile_independently(self):
+        a = _compiled(r"\btheta\b")
+        b = _compiled(r"\bgamma\b")
+        assert a is not b
+        assert a.pattern != b.pattern
 
 
 # ---------------------------------------------------------------------------
