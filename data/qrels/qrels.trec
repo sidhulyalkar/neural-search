@@ -8532,7 +8532,7 @@ can_0201 0 zenodo:18873228 1
 can_0201 0 neuromorpho:Chang 1
 can_0201 0 osf:963ad 1
 can_0201 0 zenodo:12818267 0
-can_0201 0 neuromorpho:Physio Lab - Medical Faculty - UoI 0
+can_0201 0 neuromorpho:Physio_Lab_-_Medical_Faculty_-_UoI 0
 can_0202 0 neuromorpho:DeMoya_Morrison 1
 can_0202 0 crcns:mc-1 1
 can_0202 0 dandi:000125 2
@@ -8812,7 +8812,7 @@ can_0208 0 zenodo:6027335 1
 can_0208 0 gin:12153 0
 can_0208 0 neurovault:439 1
 can_0208 0 dandi:001458 1
-can_0208 0 neuromorpho:Munoz et al. 1
+can_0208 0 neuromorpho:Munoz_et_al. 1
 can_0208 0 gin:9483 1
 can_0208 0 harvard_dataverse:10.21950_MJYPXG 2
 can_0208 0 gin:3247 2
@@ -9693,7 +9693,7 @@ can_0229 0 zenodo:13772103 0
 can_0229 0 harvard_dataverse:10.5683_SP2_QAIMTK 0
 can_0229 0 dandi:000886 0
 can_0229 0 zenodo:19590800 1
-can_0229 0 neuromorpho:Physio Lab - Medical Faculty - UoI 0
+can_0229 0 neuromorpho:Physio_Lab_-_Medical_Faculty_-_UoI 0
 can_0229 0 zenodo:7700343 1
 can_0230 0 harvard_dataverse:10.7910_DVN_VOIX3F 2
 can_0230 0 ibl:session_034e726f-b35f-41 2
@@ -11499,7 +11499,7 @@ can_0269 0 dandi:001616 1
 can_0269 0 dandi:000004 2
 can_0269 0 harvard_dataverse:10.7910_DVN_5VZJIJ 1
 can_0270 0 dandi:000295 0
-can_0270 0 neuromorpho:Allen Cell Types 0
+can_0270 0 neuromorpho:Allen_Cell_Types 0
 can_0270 0 figshare:1295407 1
 can_0270 0 dandi:000969 1
 can_0270 0 zenodo:2538583 0
