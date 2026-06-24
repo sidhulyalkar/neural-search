@@ -96,7 +96,7 @@ Sid: sid.soccer.21@gmail.com
 
 def load_findings(path: Path, max_records: int = 200_000) -> list[dict]:
     records = []
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         for i, line in enumerate(f):
             if i >= max_records:
                 break
@@ -147,14 +147,14 @@ def stratified_sample(records: list[dict], n: int, seed: int) -> list[dict]:
 
 def write_jsonl(records: list[dict], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         for r in records:
             f.write(json.dumps(r) + "\n")
 
 
 def write_csv(records: list[dict], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", newline="") as f:
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=AUDIT_CSV_COLUMNS)
         writer.writeheader()
         for r in records:
@@ -200,12 +200,12 @@ def main(argv: list[str] | None = None) -> None:
 
     write_jsonl(sample, AUDIT_JSONL)
     write_csv(sample, AUDIT_CSV)
-    with open(AUDIT_INSTRUCTIONS, "w") as f:
+    with open(AUDIT_INSTRUCTIONS, "w", encoding="utf-8") as f:
         f.write(INSTRUCTIONS_TEXT)
 
-    print(f"✓ JSONL   → {AUDIT_JSONL.relative_to(ROOT)}")
-    print(f"✓ CSV     → {AUDIT_CSV.relative_to(ROOT)}")
-    print(f"✓ Guide   → {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
+    print(f"JSONL written -> {AUDIT_JSONL.relative_to(ROOT)}")
+    print(f"CSV written   -> {AUDIT_CSV.relative_to(ROOT)}")
+    print(f"Guide written -> {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
     print("\nFill in human_correct, error_type, notes columns in the CSV.")
 
 
