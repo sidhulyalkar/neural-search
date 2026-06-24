@@ -81,7 +81,7 @@ If yes, mark `link_correct=FALSE` (false negative) and add the paper in `notes`.
 def load_jsonl(p: Path) -> list[dict]:
     if not p.exists():
         return []
-    with open(p) as f:
+    with open(p, encoding="utf-8") as f:
         return [json.loads(l) for l in f if l.strip()]
 
 
@@ -140,7 +140,7 @@ def main(argv: list[str] | None = None) -> None:
     )
 
     AUDIT_CSV.parent.mkdir(parents=True, exist_ok=True)
-    with open(AUDIT_CSV, "w", newline="") as f:
+    with open(AUDIT_CSV, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=AUDIT_COLUMNS, extrasaction="ignore")
         writer.writeheader()
         for r in rows:
@@ -158,11 +158,11 @@ def main(argv: list[str] | None = None) -> None:
                 "notes": "",
             })
 
-    with open(AUDIT_INSTRUCTIONS, "w") as f:
+    with open(AUDIT_INSTRUCTIONS, "w", encoding="utf-8") as f:
         f.write(INSTRUCTIONS_TEXT)
 
-    print(f"✓ CSV          → {AUDIT_CSV.relative_to(ROOT)}")
-    print(f"✓ Instructions → {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
+    print(f"CSV written          -> {AUDIT_CSV.relative_to(ROOT)}")
+    print(f"Instructions written -> {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
     print(f"  doi_exact={len(doi_sample)}  title_fuzzy={len(fuzzy_sample)}  not_found={len(nf_sample)}")
 
 

@@ -3,8 +3,24 @@
 Samples datasets for key analysis affordances and produces an audit template
 showing required signals found/missing and source evidence.
 
-Target affordances: q_learning, choice_decoding, trial_aligned_neural,
-functional_connectivity, seizure_detection, speech_decoding.
+Target affordances: the 8 most frequent values actually present in the
+corpus's `analysis_affordances` field as of 2026-06-24 (see audit note
+below) -- population_coding, stimulus_response, calcium_event_detection,
+cell_type_characterization, spike_sorting, morphology_analysis,
+brain_image_analysis, microscopy_image_registration.
+
+AUDIT NOTE (2026-06-24): the original target list here (q_learning,
+choice_decoding, trial_aligned_neural, functional_connectivity,
+seizure_detection, speech_decoding, delay_discounting_modeling,
+motor_decoding) was drawn from neural_search/analysis_affordances.py's
+18-value AFFORDANCE_IDS registry. A live check found ZERO overlap between
+that registry and the actual `analysis_affordances` values present in
+data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl (990/7,171
+records have non-empty affordances, all drawn from a different,
+morphology/imaging/electrophysiology-method vocabulary). The registry-based
+rule detector (wired into neural_search/enrich_corpus.py) appears to have
+never been run against this corpus snapshot, or its output was not carried
+into v09 -- see reports/eval/affordance_audit_summary_2026.md.
 
 Usage:
     python scripts/eval/sample_affordances_for_audit.py
@@ -22,49 +38,49 @@ AUDIT_CSV = ROOT / "reports/eval/affordance_audit_template.csv"
 AUDIT_INSTRUCTIONS = ROOT / "reports/eval/affordance_audit_instructions.md"
 
 TARGET_AFFORDANCES = [
-    "q_learning",
-    "choice_decoding",
-    "trial_aligned_neural",
-    "functional_connectivity",
-    "seizure_detection",
-    "speech_decoding",
-    "delay_discounting_modeling",
-    "motor_decoding",
+    "population_coding",
+    "stimulus_response",
+    "calcium_event_detection",
+    "cell_type_characterization",
+    "spike_sorting",
+    "morphology_analysis",
+    "brain_image_analysis",
+    "microscopy_image_registration",
 ]
 
 # Rough signal requirements per affordance (for audit checklist display)
 AFFORDANCE_SIGNALS: dict[str, dict] = {
-    "q_learning": {
-        "required": ["trial outcomes (reward/no-reward)", "behavioral choice data", "multi-trial structure"],
-        "preferred": ["prediction error proxies", "OFC/striatum/VTA region labels"],
+    "population_coding": {
+        "required": ["multi-unit or multi-channel neural recordings", "simultaneous population activity"],
+        "preferred": ["sorted spike trains", "task or stimulus labels per trial"],
     },
-    "choice_decoding": {
-        "required": ["neural population recordings", "binary/multi-choice labels per trial"],
-        "preferred": ["electrophysiology (Neuropixels/tetrode)", "trial-aligned structure"],
+    "stimulus_response": {
+        "required": ["stimulus presentation timestamps/labels", "time-locked neural or behavioral response"],
+        "preferred": ["trial structure", "stimulus metadata (type, intensity, duration)"],
     },
-    "trial_aligned_neural": {
-        "required": ["spike or LFP data", "trial event timestamps"],
-        "preferred": ["standard trial structure", "task epochs annotated"],
+    "calcium_event_detection": {
+        "required": ["calcium imaging traces (dF/F or raw fluorescence)", "frame timing/sample rate"],
+        "preferred": ["ROI/cell segmentation", "behavioral or stimulus alignment"],
     },
-    "functional_connectivity": {
-        "required": ["multi-region recordings", "time-series neural data"],
-        "preferred": ["simultaneous recordings", "resting-state or task condition labels"],
+    "cell_type_characterization": {
+        "required": ["cell-type labels or markers (genetic line, morphology, marker stain)", "per-cell metadata"],
+        "preferred": ["electrophysiological or morphological feature data", "multiple identified cell types"],
     },
-    "seizure_detection": {
-        "required": ["EEG or iEEG recordings", "seizure event annotations"],
-        "preferred": ["clinical labels", "onset/offset timestamps"],
+    "spike_sorting": {
+        "required": ["raw or band-passed extracellular voltage traces", "multi-channel/multi-electrode recording"],
+        "preferred": ["ground-truth or validated unit labels", "waveform data"],
     },
-    "speech_decoding": {
-        "required": ["ECoG or iEEG data", "speech production or perception labels"],
-        "preferred": ["phoneme or word labels", "multiple subjects"],
+    "morphology_analysis": {
+        "required": ["3D neuronal reconstruction (SWC or equivalent)", "soma/dendrite/axon structure"],
+        "preferred": ["cell-type annotation", "species/region metadata"],
     },
-    "delay_discounting_modeling": {
-        "required": ["intertemporal choice trials", "reward delay manipulation"],
-        "preferred": ["behavioral logfiles", "limbic region recordings"],
+    "brain_image_analysis": {
+        "required": ["volumetric or 2D brain imaging data", "image metadata (resolution, modality)"],
+        "preferred": ["registration to a reference atlas", "segmentation labels"],
     },
-    "motor_decoding": {
-        "required": ["motor cortex neural recordings", "limb/reach trajectory data"],
-        "preferred": ["kinematic labels", "BCI-compatible format"],
+    "microscopy_image_registration": {
+        "required": ["microscopy image stacks", "spatial/voxel metadata"],
+        "preferred": ["reference atlas alignment", "multi-channel or multi-modal imaging"],
     },
 }
 
@@ -124,7 +140,7 @@ This audit makes affordance claims measurable for the whitepaper.
 
 def load_corpus(n_max: int = 20_000) -> list[dict]:
     records = []
-    with open(CORPUS_PATH) as f:
+    with open(CORPUS_PATH, encoding="utf-8") as f:
         for i, line in enumerate(f):
             if i >= n_max:
                 break
@@ -157,7 +173,7 @@ def get_affordance_confidence(record: dict, affordance: str) -> str:
 
 def main() -> None:
     if not CORPUS_PATH.exists():
-        print(f"✗ Corpus not found: {CORPUS_PATH}")
+        print(f"Corpus not found: {CORPUS_PATH}")
         return
 
     print("Loading corpus ...")
@@ -171,7 +187,7 @@ def main() -> None:
         matching = [r for r in records if has_affordance(r, affordance)]
         rng.shuffle(matching)
         sample = matching[:15] or records[:5]  # fallback if no affordance matches
-        print(f"  {affordance}: {len(matching)} matching → sampling {len(sample)}")
+        print(f"  {affordance}: {len(matching)} matching -> sampling {len(sample)}")
         signals = AFFORDANCE_SIGNALS.get(affordance, {})
         for r in sample:
             rows.append({
@@ -195,16 +211,16 @@ def main() -> None:
             })
 
     AUDIT_CSV.parent.mkdir(parents=True, exist_ok=True)
-    with open(AUDIT_CSV, "w", newline="") as f:
+    with open(AUDIT_CSV, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=AUDIT_COLUMNS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 
-    with open(AUDIT_INSTRUCTIONS, "w") as f:
+    with open(AUDIT_INSTRUCTIONS, "w", encoding="utf-8") as f:
         f.write(INSTRUCTIONS_TEXT)
 
-    print(f"✓ CSV          → {AUDIT_CSV.relative_to(ROOT)}")
-    print(f"✓ Instructions → {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
+    print(f"CSV written          -> {AUDIT_CSV.relative_to(ROOT)}")
+    print(f"Instructions written -> {AUDIT_INSTRUCTIONS.relative_to(ROOT)}")
     print(f"  Total rows: {len(rows)}")
 
 
