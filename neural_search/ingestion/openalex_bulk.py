@@ -22,6 +22,13 @@ PAGE_SIZE = 200
 MAX_RETRIES = 6
 RETRY_BACKOFF_BASE_S = 2.0
 RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
+# Sanity ceiling on how long we'll silently sleep for a single retry. OpenAlex's
+# short-term polite-pool burst window resets in single-digit minutes (observed:
+# up to ~426s) -- but a separate, longer-duration quota (likely daily) can return
+# Retry-After values in the tens of thousands of seconds (observed: 70643s, ~19.6h).
+# Sleeping that long would make a live, working process indistinguishable from a
+# hung one for most of a day. Fail fast with a clear message instead.
+MAX_RETRY_WAIT_S = 600.0
 SELECT_FIELDS = (
     "id,doi,title,abstract_inverted_index,publication_year,"
     "concepts,cited_by_count,authorships,primary_location,"
@@ -183,10 +190,26 @@ class BulkIngester:
 
             retry_after = response.headers.get("Retry-After")
             wait_s = float(retry_after) if retry_after else RETRY_BACKOFF_BASE_S * (2**attempt)
+            remaining = response.headers.get("X-RateLimit-Remaining")
+
+            if wait_s > MAX_RETRY_WAIT_S:
+                # A multi-hour Retry-After means a longer-duration quota (likely
+                # daily, distinct from the short burst window) is exhausted --
+                # not something worth silently sleeping through. Fail fast so
+                # the caller can decide (wait it out manually, get a real API
+                # key instead of the placeholder polite-pool email, etc.).
+                raise RuntimeError(
+                    f"OpenAlex returned Retry-After={wait_s:.0f}s ({wait_s / 3600:.1f}h), "
+                    f"over the {MAX_RETRY_WAIT_S:.0f}s sanity cap -- this looks like a "
+                    f"longer-duration (likely daily) quota exhaustion, not the short "
+                    f"burst-window limit. X-RateLimit-Remaining={remaining}. "
+                    f"Not sleeping for hours; check OpenAlex's rate-limit policy for "
+                    f"the mailto identity in use, or wait and --resume later."
+                )
+
             # Without this, a long Retry-After wait (OpenAlex's rate-limit window
             # reset can be several minutes) looks indistinguishable from a hung
             # process -- no output at all until the next successful page fetch.
-            remaining = response.headers.get("X-RateLimit-Remaining")
             msg = (
                 f"Rate limited (HTTP {response.status_code}, attempt {attempt + 1}/"
                 f"{MAX_RETRIES + 1}) -- waiting {wait_s:.0f}s before retrying"

@@ -437,6 +437,29 @@ class TestGetWithRetry:
         assert sleeps == [7.0]
 
     @respx.mock
+    def test_raises_instead_of_sleeping_for_excessive_retry_after(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Regression (2026-06-25 production incident): OpenAlex returned
+        # Retry-After=83503 (~23.2h) and Retry-After=70643 (~19.6h) on separate
+        # checks, a longer-duration (likely daily) quota distinct from the short
+        # burst window. Sleeping that long would hang a foreground process for
+        # most of a day with zero indication anything was wrong.
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            return_value=httpx.Response(
+                429, headers={"Retry-After": "83503", "X-RateLimit-Remaining": "0"}
+            )
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(RuntimeError, match="Retry-After=83503"):
+            ingester._get_with_retry({})
+
+        assert sleeps == []
+
+    @respx.mock
     def test_exponential_backoff_without_retry_after_header(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ):
