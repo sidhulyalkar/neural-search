@@ -109,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
 
     args.out.mkdir(parents=True, exist_ok=True)
-    print(f"Ingesting {args.tier} → {args.out}")
+    print(f"Ingesting {args.tier} -> {args.out}")
     print(f"Filter: {TIER_FILTERS[args.tier]}")
     if args.max_records:
         print(f"Max records: {args.max_records}")
