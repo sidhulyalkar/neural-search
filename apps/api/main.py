@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from apps.api.atlas_router import router as atlas_router
 from apps.api.claims_router import router as claims_router
+from apps.api.coverage_router import router as coverage_router
 from apps.api.graph_router import router as graph_router
 from apps.api.spectral_router import router as spectral_router
 from apps.api.timeline_router import router as timeline_router
@@ -123,6 +124,7 @@ app.add_middleware(
 app.include_router(graph_router)
 app.include_router(atlas_router)
 app.include_router(claims_router)
+app.include_router(coverage_router)
 app.include_router(spectral_router)
 app.include_router(timeline_router)
 
