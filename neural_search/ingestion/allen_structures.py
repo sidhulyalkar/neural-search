@@ -89,8 +89,8 @@ def _flatten_node(
             name=node.get("safe_name") or node.get("name", ""),
             parent_id=parent_id,
             color_hex=node.get("color_hex_triplet", ""),
-            graph_order=int(node.get("graph_order", 0)),
-            st_level=int(node.get("st_level", 0)),
+            graph_order=int(node.get("graph_order") or 0),
+            st_level=int(node.get("st_level") or 0),
             atlas_id=atlas_id,
             children_ids=children_ids,
         )

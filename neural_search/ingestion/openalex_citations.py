@@ -65,13 +65,19 @@ def build_citation_edges(
     Only includes edges where BOTH citing and cited paper are in the corpus
     (inner-corpus citation graph). Uses a thread pool for concurrency.
     """
-    # Build index of corpus openalex IDs → publication_year
+    # Build index of corpus openalex IDs → publication_year.
+    # Supports two field conventions:
+    #   • legacy: openalex_id = "W2741809807" or full URL
+    #   • openalex_neuro batches: source="openalex", source_id="W2741809807"
     corpus_index: dict[str, int | None] = {}
     for paper in corpus_papers:
         oa_id = paper.get("openalex_id")
+        if not oa_id and paper.get("source") == "openalex":
+            oa_id = paper.get("source_id")
         if oa_id:
             short_id = _strip_prefix(str(oa_id))
-            corpus_index[short_id] = paper.get("publication_year")
+            pub_year = paper.get("publication_year") or paper.get("year")
+            corpus_index[short_id] = pub_year
 
     if not corpus_index:
         logger.warning("No corpus papers with openalex_id found")
@@ -124,8 +130,17 @@ if __name__ == "__main__":
     corpus_dir = repo_root / "data" / "corpus" / "normalized"
     output_path = repo_root / "artifacts" / "citations" / "citation_edges.jsonl"
 
-    # Load all normalized paper records
+    # Load all normalized paper records (JSONL batches + legacy JSON)
     corpus_papers: list[dict] = []
+    for jsonl_path in glob.glob(str(corpus_dir / "**" / "*.jsonl"), recursive=True):
+        try:
+            with open(jsonl_path, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        corpus_papers.append(json.loads(line))
+        except Exception as exc:
+            logger.warning("Could not load %s: %s", jsonl_path, exc)
     for json_path in glob.glob(str(corpus_dir / "**" / "*.json"), recursive=True):
         try:
             with open(json_path, encoding="utf-8") as f:
