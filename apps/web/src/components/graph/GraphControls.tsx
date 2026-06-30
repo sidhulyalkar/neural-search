@@ -12,6 +12,7 @@ const LAYER_MODES: { value: LayerMode; label: string }[] = [
   { value: 'literature', label: 'Literature' },
   { value: 'bridge', label: 'Bridge' },
   { value: 'morphology', label: 'Morphology' },
+  { value: 'topics', label: 'Topics' },
 ]
 
 interface GraphControlsProps {
