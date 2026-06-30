@@ -1,0 +1,256 @@
+# Oscillation Signature Registry
+# Maps brain regions to their characteristic oscillatory frequency bands,
+# functional correlates, and the experimental conditions under which they appear.
+# Used to build `region_generates_oscillation` edges in the KG.
+# Sources: established LFP/EEG literature + Hulyalkar et al. (2025) for corticostriatal.
+
+# Frequency band definitions
+frequency_bands:
+  - id: delta
+    label: Delta
+    range_hz: [0.5, 4.0]
+    period_ms: 250
+  - id: theta
+    label: Theta
+    range_hz: [4.0, 12.0]
+    subranges:
+      rodent_theta: [6.0, 10.0]
+      human_theta: [4.0, 8.0]
+  - id: alpha
+    label: Alpha / Mu
+    range_hz: [8.0, 13.0]
+  - id: beta_low
+    label: Low Beta
+    range_hz: [13.0, 20.0]
+  - id: beta_high
+    label: High Beta / Beta
+    range_hz: [20.0, 30.0]
+  - id: beta
+    label: Beta (full)
+    range_hz: [13.0, 30.0]
+  - id: low_gamma
+    label: Low Gamma
+    range_hz: [30.0, 60.0]
+  - id: high_gamma
+    label: High Gamma / Broadband
+    range_hz: [60.0, 200.0]
+  - id: ripple
+    label: Sharp-Wave Ripple
+    range_hz: [150.0, 250.0]
+  - id: ultra_fast
+    label: Ultra-Fast / HFO
+    range_hz: [200.0, 600.0]
+
+# Main signatures: region x frequency_band x condition
+oscillation_signatures:
+
+  # ── Hippocampus ────────────────────────────────────────────────────────────
+  - region_id: hippocampus
+    frequency_band: theta
+    species: [rat, mouse, human]
+    functional_role: "Active navigation, memory encoding, encoding of temporal context"
+    condition: "Exploration, REM sleep, working memory tasks"
+    generator: "Medial septum -> hippocampus via MS-DBB cholinergic/GABAergic projection"
+    amplitude_envelope_hz: 8.0
+    modulates: [gamma_amplitude_via_pac]
+    key_papers:
+      - "O'Keefe & Recce (1993) — Phase precession of place cells"
+      - "Buzsaki (2002, Neuron) — Theta oscillations in the hippocampus"
+    topics: [episodic_memory, spatial_navigation, neural_synchrony]
+    species_note: "Rat: 6-10 Hz during locomotion; Human: ~4-8 Hz during memory tasks (EEG)"
+
+  - region_id: hippocampus
+    frequency_band: ripple
+    species: [rat, mouse, human]
+    functional_role: "Offline memory consolidation and replay during slow-wave sleep and quiet wakefulness"
+    condition: "Non-REM sleep, immobility, post-task rest"
+    generator: "CA3 -> CA1 via Schaffer collaterals; CA1 PV interneuron-driven fast oscillation"
+    peak_frequency_hz: 180.0
+    duration_ms: [50, 150]
+    key_papers:
+      - "Buzsaki et al. (1992) — Sharp wave-associated high-frequency oscillation"
+      - "Ramanathan et al. (2015, PLoS Biol) — Sleep-dependent reactivation promotes skill consolidation"
+    topics: [sleep_and_oscillations, episodic_memory]
+
+  - region_id: hippocampus
+    frequency_band: gamma
+    species: [rat, mouse, human]
+    functional_role: "Pattern separation (DG, ~90 Hz) vs pattern completion (CA3, ~40 Hz); coupled to theta"
+    condition: "Active exploration, encoding"
+    pac_coupling: theta_phase_modulates_gamma_amplitude
+    topics: [episodic_memory, neural_synchrony, spectral_dynamics]
+
+  # ── Striatum ──────────────────────────────────────────────────────────────
+  - region_id: striatum
+    frequency_band: beta
+    species: [rat, mouse, human]
+    functional_role: "Reward certainty, learned value, motor readiness; desynchronizes at movement onset"
+    condition: "Reward anticipation (high certainty), waiting, inter-trial interval; desynchronizes at movement onset"
+    amplitude_peaks_at: "Correct rejection of unrewarded option; encoding of stable contingencies"
+    key_papers:
+      - "Hulyalkar et al. (2025, J Neuroscience) — Beta/gamma reflect reward certainty in cortico-striatal network"
+      - "Feingold et al. (2015, PNAS) — Beta bursts differentiate post-performance activity"
+      - "Brittain & Brown (2014) — Oscillations and the basal ganglia"
+    topics: [spectral_dynamics, reward_learning, motor_learning]
+    species_note: "Beta bursts in human STN measured with DBS electrodes; rat dorsal striatum LFP; human striatum in fMRI (indirect)"
+    clinical_relevance: "Beta pathologically elevated in Parkinson's disease — DBS suppresses it"
+    correlated_with: [prefrontal_cortex_beta]
+    coherent_with: [prefrontal_cortex, motor_cortex]
+
+  - region_id: striatum
+    frequency_band: high_gamma
+    species: [rat]
+    functional_role: "Reward prediction error signal; scales with unexpected reward magnitude"
+    condition: "Reward delivery, particularly unexpected rewards"
+    key_papers:
+      - "Hulyalkar et al. (2025, J Neuroscience) — High gamma reflects reward prediction error"
+    topics: [spectral_dynamics, reward_learning]
+
+  - region_id: nucleus_accumbens
+    frequency_band: theta
+    species: [rat, mouse]
+    functional_role: "Limbic input integration; synchronizes with hippocampal theta during reward anticipation"
+    pac_coupling: hippocampal_theta_phase_modulates_NAcc_gamma
+    topics: [reward_learning, neural_synchrony]
+
+  # ── Prefrontal Cortex ──────────────────────────────────────────────────────
+  - region_id: prefrontal_cortex
+    frequency_band: theta
+    species: [rat, mouse, human]
+    functional_role: "Working memory maintenance, top-down attention, HPC-PFC communication"
+    condition: "Delay period of working memory tasks; attention-demanding tasks"
+    pac_coupling: theta_phase_modulates_gamma_amplitude_in_pfc
+    key_papers:
+      - "Siegel et al. (2009, Nature Neuroscience) — Phase-dependent neuronal coding"
+      - "Liebe et al. (2012, Nature Neuroscience) — Theta coupling between V4 and PFC"
+    topics: [working_memory, cognitive_control, attention_and_salience]
+
+  - region_id: prefrontal_cortex
+    frequency_band: beta
+    species: [rat, mouse, human]
+    functional_role: "Top-down motor suppression, maintenance of current state, anti-kinetic signal"
+    condition: "Between action sequences, stable rule maintenance, motor preparation phase"
+    coherent_with: [striatum, motor_cortex]
+    key_papers:
+      - "Hulyalkar et al. (2025) — Cortico-striatal beta coherence during reward certainty"
+      - "Engel & Fries (2010, Nature Reviews Neuroscience) — Beta-band oscillations — signalling the status quo?"
+    topics: [spectral_dynamics, reward_learning, cognitive_control]
+
+  - region_id: prefrontal_cortex
+    frequency_band: gamma
+    species: [rat, mouse, human]
+    functional_role: "Local computation, attention, feature binding; high gamma = broadband power = spiking activity"
+    condition: "Active cognitive engagement, attention cueing, encoding"
+    topics: [attention_and_salience, working_memory, spectral_dynamics]
+
+  # ── Motor Cortex ───────────────────────────────────────────────────────────
+  - region_id: motor_cortex
+    frequency_band: beta
+    species: [rat, mouse, human, macaque]
+    functional_role: "Motor readiness state; desynchronizes ~200-500ms before movement onset (ERD = event-related desynchronization)"
+    condition: "Movement preparation and execution (desynchronizes); inter-movement intervals (synchronizes)"
+    erd_timing_ms: [-500, 0]  # before movement onset
+    ers_timing_ms: [200, 800]  # post-movement rebound
+    key_papers:
+      - "Pfurtscheller & Lopes da Silva (1999) — Event-related EEG/MEG synchronization and desynchronization"
+      - "Ramanathan et al. (2018, Nature Medicine) — Low-frequency cortical activity tracks stroke recovery"
+    topics: [motor_learning, spectral_dynamics]
+    clinical: "Beta ERD used as BCI control signal; Parkinson's shows excessive beta in M1"
+
+  - region_id: motor_cortex
+    frequency_band: low_gamma
+    species: [rat, mouse, human]
+    functional_role: "Movement execution; gamma increases correlate with local cortical activity and movement vigor"
+    condition: "Active movement"
+    topics: [motor_learning, spectral_dynamics]
+
+  # ── Amygdala ──────────────────────────────────────────────────────────────
+  - region_id: amygdala
+    frequency_band: theta
+    species: [rat, mouse]
+    functional_role: "Fear learning acquisition; BLA theta synchronizes with HPC during context fear encoding"
+    condition: "CS presentation, context re-exposure, threat anticipation"
+    coherent_with: [hippocampus, prefrontal_cortex]
+    topics: [fear_and_anxiety, episodic_memory]
+    key_papers:
+      - "Seidenbecher et al. (2003) — Amygdalar and hippocampal theta rhythm synchronization"
+
+  - region_id: amygdala
+    frequency_band: gamma
+    species: [rat, mouse]
+    functional_role: "Local computation during threat appraisal"
+    condition: "US (shock) presentation, aversive stimulus"
+    topics: [fear_and_anxiety]
+
+  # ── Anterior Cingulate ─────────────────────────────────────────────────────
+  - region_id: anterior_cingulate_cortex
+    frequency_band: theta
+    species: [rat, human]
+    functional_role: "Conflict detection, error monitoring (EEG: theta increase after error)"
+    condition: "Conflict trials (NoGo), error commission, decision under uncertainty"
+    key_papers:
+      - "Cavanagh & Frank (2014) — Frontal theta as a mechanism for cognitive control"
+    topics: [cognitive_control, executive_function, attention_and_salience]
+
+  # ── Visual Cortex ──────────────────────────────────────────────────────────
+  - region_id: visual_cortex
+    frequency_band: gamma
+    species: [cat, macaque, mouse, human]
+    functional_role: "Visual feature encoding, contrast gain, stimulus-driven gamma"
+    condition: "Visual stimulus presentation; high contrast gratings maximally drive gamma"
+    key_papers:
+      - "Gray & Singer (1989) — Stimulus-specific neuronal oscillations in orientation columns"
+    topics: [spectral_dynamics, neural_synchrony]
+
+  - region_id: visual_cortex
+    frequency_band: alpha
+    species: [human]
+    functional_role: "Suppression of unattended regions; alpha decreases with attention"
+    condition: "Eyes closed (strong alpha); attended location shows alpha suppression"
+    topics: [attention_and_salience, spectral_dynamics]
+
+  # ── Thalamus ───────────────────────────────────────────────────────────────
+  - region_id: thalamus
+    frequency_band: alpha
+    species: [human, rat]
+    functional_role: "Thalamocortical loop rhythm; sensory gating; relay fidelity"
+    condition: "Eyes closed, sensory disengagement"
+    generator: "Thalamic reticular nucleus -> relay nuclei -> cortex -> thalamus feedback"
+    topics: [sleep_and_oscillations, attention_and_salience]
+
+  - region_id: thalamus
+    frequency_band: delta
+    species: [rat, human]
+    functional_role: "Deep sleep slow oscillations; thalamocortical spindle-delta coupling"
+    condition: "NREM sleep stages 3-4 (slow-wave sleep)"
+    topics: [sleep_and_oscillations]
+    pac_coupling: "Slow oscillation up-states gate thalamic spindles which gate hippocampal ripples"
+
+  # ── Insular Cortex ─────────────────────────────────────────────────────────
+  - region_id: insular_cortex
+    frequency_band: theta
+    species: [rat, human]
+    functional_role: "Interoceptive processing; synchronized with ACC during salience detection"
+    condition: "Interoceptive attention, pain processing, salience detection"
+    topics: [interoception, attention_and_salience]
+
+  # ── Medial Septum ──────────────────────────────────────────────────────────
+  - region_id: medial_septum
+    frequency_band: theta
+    species: [rat, mouse]
+    functional_role: "Theta rhythm pacemaker for hippocampus; lesion abolishes hippocampal theta"
+    condition: "Running, exploration, REM sleep"
+    mechanism: "Cholinergic and GABAergic MS->HPC projections oscillate to set hippocampal theta"
+    topics: [spatial_navigation, episodic_memory, neural_synchrony]
+
+  # ── Cortico-striatal coherence (the NEATLabs signal) ─────────────────────
+  - region_id: corticostriatal_network
+    frequency_band: beta
+    species: [rat, human]
+    functional_role: "Reward certainty encoding; coherence between OFC/PFC and dorsal striatum indexes learned value stability"
+    condition: "High-probability reward trials; stable contingency blocks; post-reward delivery"
+    key_papers:
+      - "Hulyalkar et al. (2025, J Neuroscience) — Beta/gamma oscillations reflect reward certainty"
+      - "Koloski et al. (2024, CABN) — Cortico-striatal beta as reward-related signal"
+    topics: [spectral_dynamics, reward_learning, cognitive_control]
+    translational_significance: "Cross-species: measurable as LFP coherence in rats (BrainER) and potentially EEG coherence in humans (BrainE). Key target for precision psychiatry depression/OCD biomarker."

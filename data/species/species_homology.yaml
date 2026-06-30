@@ -1,0 +1,386 @@
+# Cross-Species Brain Region Homology
+# Maps canonical ontology region IDs across mouse, rat, primate, and human.
+# Confidence levels: high (strong gene expression + connectivity + functional evidence),
+#   medium (structural similarity + partial functional evidence, some debate),
+#   low (proposed homology only, contested or poorly studied)
+# Basis codes: GE=gene expression, CA=cytoarchitecture, CO=connectivity pattern,
+#              FU=function, EV=evolutionary parsimony, EL=electrophysiology similarity
+
+species:
+  - id: mouse
+    label: Mus musculus
+    atlas: allen_ccf_mouse
+    common_model: true
+  - id: rat
+    label: Rattus norvegicus
+    atlas: waxholm_rat
+    common_model: true
+  - id: macaque
+    label: Macaca mulatta
+    atlas: paxinos_macaque
+    common_model: false
+  - id: human
+    label: Homo sapiens
+    atlas: allen_human
+
+# Format: each entry defines a set of homologous regions across species
+# Fields: region_id (our ontology ID), species, allen_acronym (for reference),
+#         notes on species-specific differences
+
+homologs:
+
+  # ── Striatum ──────────────────────────────────────────────────────────────
+  - group_id: dorsal_striatum
+    confidence: high
+    basis: [GE, CA, CO, FU]
+    notes: "D1/D2 MSN composition, corticostriatal projections, and behavioral function well-conserved"
+    members:
+      - region_id: striatum
+        species: mouse
+        allen_acronym: STR
+        substructures: [caudate_putamen_CPu, dorsal_striatum]
+      - region_id: striatum
+        species: rat
+        waxholm_id: 483
+        notes: "Dorsal striatum — caudate-putamen (CPu)"
+      - region_id: caudate
+        species: macaque
+        notes: "Separate caudate and putamen in primates; mouse CPu is fused"
+      - region_id: caudate_nucleus
+        species: human
+        allen_human_id: 4002
+        notes: "Human caudate: separate from putamen; more prominent role in cognitive control"
+    divergence: "Mouse has fused caudate-putamen (CPu); human/primate has anatomically separate caudate and putamen with different functional roles (cognitive vs motor)"
+
+  - group_id: nucleus_accumbens
+    confidence: high
+    basis: [GE, CA, CO, FU]
+    notes: "Ventral striatum, mesolimbic dopamine target — highly conserved"
+    members:
+      - region_id: nucleus_accumbens
+        species: mouse
+        allen_acronym: ACB
+      - region_id: nucleus_accumbens
+        species: rat
+        waxholm_id: 477
+      - region_id: nucleus_accumbens
+        species: macaque
+        notes: "Ventral striatum"
+      - region_id: nucleus_accumbens
+        species: human
+        allen_human_id: 4284
+
+  # ── Prefrontal Cortex (most contested region) ─────────────────────────────
+  - group_id: medial_prefrontal_cortex
+    confidence: medium
+    basis: [CA, CO]
+    notes: "Mouse PL/IL are proposed homologs of human vmPFC/OFC but this is debated. Connectivity pattern similar but expansion massive."
+    debate: "Many argue mouse lacks true DLPFC equivalent — only approximate homologs of medial and orbital PFC"
+    members:
+      - region_id: prelimbic_cortex
+        species: mouse
+        allen_acronym: PL
+        proposed_human_homolog: vmPFC
+        notes: "Prelimbic: proposed vmPFC homolog — lesion studies show similar fear expression role"
+      - region_id: infralimbic_cortex
+        species: mouse
+        allen_acronym: ILA
+        proposed_human_homolog: subgenual_acc
+        notes: "Infralimbic: proposed subgenual ACC homolog — extinction of fear"
+      - region_id: medial_prefrontal_cortex
+        species: rat
+        notes: "Includes PL and IL cortex in rodents; functionally homologous"
+      - region_id: medial_prefrontal_cortex
+        species: human
+        allen_human_id: 3999
+        notes: "Human vmPFC: key for default mode, value computation"
+    divergence: "Human DLPFC (BA9/46) has no clear mouse homolog — it's evolutionarily new or massively expanded. Mouse prefrontal circuits cannot model DLPFC-dependent working memory."
+
+  - group_id: orbitofrontal_cortex
+    confidence: medium
+    basis: [CA, CO, FU]
+    notes: "OFC reasonably conserved — both show outcome expectation and reversal learning functions"
+    members:
+      - region_id: orbitofrontal_cortex
+        species: mouse
+        allen_acronym: ORB
+        substructures: [MO, LO, VO]
+      - region_id: orbitofrontal_cortex
+        species: rat
+        notes: "OFC in rodents: well-studied for reversal learning and reward devaluation"
+      - region_id: orbitofrontal_cortex
+        species: macaque
+        notes: "Walker area 11/13 — key electrophysiology data (Wallis, Murray labs)"
+      - region_id: orbitofrontal_cortex
+        species: human
+        allen_human_id: 4007
+    divergence: "Human OFC is larger and more differentiated; lateral OFC (BA12/47) poorly represented in rodents"
+
+  # ── Hippocampus ───────────────────────────────────────────────────────────
+  - group_id: hippocampus
+    confidence: high
+    basis: [GE, CA, CO, FU, EL]
+    notes: "Hippocampus is one of the most conserved structures. CA1, CA3, DG cytoarchitecture and function nearly identical across mammals."
+    members:
+      - region_id: hippocampus
+        species: mouse
+        allen_acronym: HIP
+        substructures: [CA1, CA2, CA3, DG]
+      - region_id: hippocampus
+        species: rat
+        notes: "Rat hippocampus — canonical model organism (O'Keefe place cells, Buzsaki theta/ripples)"
+      - region_id: hippocampus
+        species: macaque
+        notes: "Primate hippocampus: relational memory emphasis, less spatial"
+      - region_id: hippocampus
+        species: human
+        allen_human_id: 4249
+    divergence: "Mouse hippocampus elongated dorsal-ventral (=posterior-anterior in human); dorsal=spatial, ventral=stress/emotion. Theta frequency: ~8Hz rat, ~6Hz human."
+
+  - group_id: entorhinal_cortex
+    confidence: high
+    basis: [CA, CO, GE, FU]
+    members:
+      - region_id: entorhinal_cortex
+        species: mouse
+        allen_acronym: ENT
+      - region_id: entorhinal_cortex
+        species: rat
+        notes: "Grid cells discovered here (Moser lab 2005)"
+      - region_id: entorhinal_cortex
+        species: human
+        allen_human_id: 4220
+    divergence: "Human lateral EC has expanded perirhinal/parahippocampal regions for semantic and visual memory"
+
+  # ── Amygdala ──────────────────────────────────────────────────────────────
+  - group_id: amygdala_basolateral
+    confidence: high
+    basis: [GE, CA, CO, FU]
+    notes: "BLA complex highly conserved — fear conditioning circuits essentially identical"
+    members:
+      - region_id: amygdala
+        species: mouse
+        allen_acronym: BLA
+        substructures: [LA, BA, CEA]
+      - region_id: amygdala
+        species: rat
+        notes: "Most fear conditioning research conducted in rats (LeDoux, Maren labs)"
+      - region_id: amygdala
+        species: macaque
+        notes: "Larger, with more differentiated subnuclei"
+      - region_id: amygdala
+        species: human
+        allen_human_id: 4274
+    divergence: "Human amygdala has greatly expanded accessory basal nucleus and much more complex social-emotional functions; central nucleus (CEA) highly conserved for basic fear"
+
+  # ── Motor Cortex ──────────────────────────────────────────────────────────
+  - group_id: motor_cortex_primary
+    confidence: high
+    basis: [CA, CO, FU, EL]
+    notes: "Primary motor cortex (M1) extremely well conserved: layer 5 Betz cells, corticospinal projections"
+    members:
+      - region_id: motor_cortex
+        species: mouse
+        allen_acronym: MOp
+      - region_id: motor_cortex
+        species: rat
+        notes: "Classic Ramanathan lab recordings during skill learning"
+      - region_id: motor_cortex
+        species: macaque
+        notes: "BA4 — most detailed electrophysiology (Georgopoulos, Fetz)"
+      - region_id: motor_cortex
+        species: human
+        allen_human_id: 4024
+    divergence: "Primate/human motor cortex shows much finer digit representation (hand area ~30% of M1 in humans); mouse forelimb area is simpler but circuit organization conserved"
+
+  # ── Thalamus ──────────────────────────────────────────────────────────────
+  - group_id: mediodorsal_thalamus
+    confidence: medium
+    basis: [CA, CO]
+    notes: "MD thalamus — PFC gateway. Conserved in connectivity but primate MD much larger"
+    members:
+      - region_id: thalamus
+        species: mouse
+        allen_acronym: MD
+      - region_id: mediodorsal_thalamus
+        species: rat
+        waxholm_id: 280
+      - region_id: mediodorsal_thalamus
+        species: human
+        allen_human_id: 4157
+
+  - group_id: ventral_posterior_thalamus
+    confidence: high
+    basis: [CA, CO, FU]
+    members:
+      - region_id: thalamus
+        species: mouse
+        allen_acronym: VP
+      - region_id: thalamus
+        species: rat
+        notes: "VPM — whisker thalamus (well studied)"
+      - region_id: thalamus
+        species: human
+        allen_human_id: 4100
+        notes: "VPL/VPM — somatosensory relay"
+
+  # ── Substantia Nigra & VTA ────────────────────────────────────────────────
+  - group_id: substantia_nigra_compacta
+    confidence: high
+    basis: [GE, CA, CO, FU, EL]
+    notes: "SNc dopamine neurons: TH+, well-conserved. Parkinson's disease model highly translational."
+    members:
+      - region_id: substantia_nigra
+        species: mouse
+        allen_acronym: SNc
+      - region_id: substantia_nigra
+        species: rat
+        notes: "6-OHDA and MPTP rodent Parkinson models target SNc"
+      - region_id: substantia_nigra
+        species: human
+        allen_human_id: 4339
+
+  - group_id: vta
+    confidence: high
+    basis: [GE, CA, CO, FU, EL]
+    notes: "VTA dopamine neurons: reward prediction error signal extremely well-conserved (Schultz recordings in primate, optogenetics in mouse)"
+    members:
+      - region_id: ventral_tegmental_area
+        species: mouse
+        allen_acronym: VTA
+      - region_id: ventral_tegmental_area
+        species: rat
+        notes: "VTA DA neurons — foundational Schultz-equivalent recordings"
+      - region_id: ventral_tegmental_area
+        species: human
+        allen_human_id: 4344
+
+  # ── Anterior Cingulate ────────────────────────────────────────────────────
+  - group_id: anterior_cingulate
+    confidence: medium
+    basis: [CA, CO, FU]
+    notes: "Mouse ACC is narrow strip (Cg1/Cg2); human ACC vastly larger and more differentiated"
+    members:
+      - region_id: anterior_cingulate_cortex
+        species: mouse
+        allen_acronym: ACA
+        substructures: [Cg1, Cg2]
+      - region_id: anterior_cingulate_cortex
+        species: rat
+        notes: "ACd — conflict detection, pain, reward"
+      - region_id: anterior_cingulate_cortex
+        species: human
+        allen_human_id: 4019
+        notes: "Vastly larger; subgenual (BA25) and dorsal ACC (BA32) dissociated"
+
+  # ── Cerebellum ────────────────────────────────────────────────────────────
+  - group_id: cerebellar_cortex
+    confidence: high
+    basis: [CA, CO, FU, GE]
+    notes: "Purkinje cell circuit architecture essentially identical across all mammals — most conserved circuit"
+    members:
+      - region_id: cerebellum
+        species: mouse
+        allen_acronym: CB
+      - region_id: cerebellum
+        species: rat
+        notes: "Lobule anatomy conserved; lobules VI-VII motor adaptation"
+      - region_id: cerebellum
+        species: human
+        allen_human_id: 4696
+    divergence: "Human posterior cerebellum (Crus I/II, lobule VII) disproportionately expanded — connected to PFC and language areas; not in rodents"
+
+  # ── Locus Coeruleus ───────────────────────────────────────────────────────
+  - group_id: locus_coeruleus
+    confidence: high
+    basis: [GE, CA, CO, FU]
+    notes: "Sole brainstem NE nucleus — TH+, DBH+ cells highly conserved"
+    members:
+      - region_id: locus_coeruleus
+        species: mouse
+        allen_acronym: LC
+      - region_id: locus_coeruleus
+        species: rat
+        notes: "Classic Aston-Jones recordings"
+      - region_id: locus_coeruleus
+        species: human
+        allen_human_id: 4384
+
+  # ── Insular Cortex ────────────────────────────────────────────────────────
+  - group_id: insular_cortex
+    confidence: medium
+    basis: [CA, FU, CO]
+    notes: "Functional roles (interoception, salience) conserved but human anterior insula (Von Economo neurons) has no rodent equivalent"
+    members:
+      - region_id: insular_cortex
+        species: mouse
+        allen_acronym: INSULA
+      - region_id: insular_cortex
+        species: rat
+        notes: "Agranular insular — taste, pain, interoception"
+      - region_id: insular_cortex
+        species: human
+        allen_human_id: 4030
+    divergence: "Human anterior insula contains Von Economo neurons (VENs) — absent in rodents; VENs proposed for rapid social/emotional processing"
+
+  # ── Lateral Habenula ─────────────────────────────────────────────────────
+  - group_id: lateral_habenula
+    confidence: high
+    basis: [GE, CA, CO, FU, EL]
+    notes: "LHb anti-reward signal extremely well-conserved; depression-relevant"
+    members:
+      - region_id: lateral_habenula
+        species: mouse
+        allen_acronym: LHb
+      - region_id: lateral_habenula
+        species: rat
+        notes: "Key site for depression ketamine action (Zanos lab)"
+      - region_id: lateral_habenula
+        species: human
+        allen_human_id: 4135
+
+  # ── Periaqueductal Gray ───────────────────────────────────────────────────
+  - group_id: periaqueductal_gray
+    confidence: high
+    basis: [CA, CO, FU, GE]
+    notes: "PAG organization (dorsal/lateral/ventral columns) nearly identical across mammals"
+    members:
+      - region_id: periaqueductal_gray
+        species: mouse
+        allen_acronym: PAG
+      - region_id: periaqueductal_gray
+        species: rat
+        notes: "dPAG: flight/freezing; vlPAG: analgesia"
+      - region_id: periaqueductal_gray
+        species: human
+        allen_human_id: 4471
+
+# ── Regions without good homologs (human-specific or poorly mapped) ─────────
+human_specific_or_expanded:
+  - region_id: dlpfc
+    species: human
+    notes: "DLPFC (BA9/46) — massively expanded working memory region. Mouse equivalent (if any) is the dorsomedial PFC but with far fewer layers and much smaller."
+    closest_rodent: prelimbic_cortex
+    confidence_of_mapping: low
+
+  - region_id: arcuate_fasciculus
+    species: human
+    notes: "Language white matter tract — present in reduced form in great apes but absent in rodents"
+    rodent_equivalent: none
+
+  - region_id: angular_gyrus
+    species: human
+    notes: "Parietal multimodal association area — no clear rodent homolog"
+    closest_rodent: posterior_parietal_cortex
+    confidence_of_mapping: low
+
+  - region_id: inferior_frontal_gyrus
+    species: human
+    notes: "Broca's area (BA44/45) — speech production. Primate area F5 is partial homolog (mirror neurons) but no rodent equivalent."
+    closest_primate: area_f5
+    confidence_of_mapping: low
+
+  - region_id: precuneus
+    species: human
+    notes: "Posterior superior parietal lobe — key DMN hub. No clear rodent equivalent."
+    rodent_equivalent: none

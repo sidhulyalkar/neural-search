@@ -105,6 +105,7 @@ data/graph/
 data/corpus/normalized/
 data/corpus/rejected/
 data/ontology/
+!data/ontology/*.yaml
 artifacts/claims/
 artifacts/field_state/*.jsonl
 artifacts/field_state/concept_memory/*.jsonl

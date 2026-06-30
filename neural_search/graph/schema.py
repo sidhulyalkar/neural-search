@@ -44,6 +44,14 @@ SUPPORTED_NODE_TYPES = {
     "venue",
     "atlas_structure",   # A raw Allen structure node
     "topic",             # A canonical research topic from topic_taxonomy.yaml
+    # ── Multi-scale KG extensions ──────────────────────────────────────────
+    "method",            # Analysis method (FFT, PAC, Granger causality, etc.)
+    "math_concept",      # Mathematical concept / theorem (Cramér-Rao, Bayes theorem)
+    "paradigm",          # Behavioral/cognitive experimental paradigm
+    "oscillation",       # Named oscillatory phenomenon (theta, beta burst, ripple)
+    "disorder",          # Clinical neuropsychiatric disorder
+    "cell_type",         # Neuron type (PV interneuron, D1-MSN, Purkinje cell)
+    "white_matter_tract", # Structural connectivity pathway (arcuate fasciculus, CC)
     # Field-state memory graph node types
     "source_archive",
     "concept",
@@ -184,6 +192,32 @@ SUPPORTED_EDGE_TYPES = {
     "dataset_reanalyzable_by_pipeline",
     "dataset_missing_aperiodic_requirement",
     "dataset_supports_aperiodic_reanalysis",
+    # ── Multi-scale KG extension edge types ───────────────────────────────
+    # Methods / math layer
+    "method_computes",                      # method → what it computes
+    "method_assumes",                       # method → mathematical assumption
+    "method_related_to_method",             # method ↔ related method
+    "method_used_for_topic",                # method → topic it's commonly used in
+    "method_measures_oscillation",          # method → oscillation it quantifies
+    "circuit_studied_by_method",            # circuit → canonical analysis method
+    # Species homology layer
+    "region_has_homolog_in",               # region (species A) → region (species B)
+    "finding_transfers_to_species",        # finding (rodent) → species (human)
+    "paradigm_validated_cross_species",    # paradigm → species pair validation
+    # Oscillation / spectral signatures
+    "region_generates_oscillation",        # region → oscillation (frequency_band, condition)
+    "oscillation_indexes_circuit",         # oscillation → functional circuit
+    "oscillation_measured_by_method",      # oscillation → analysis method
+    # HCP structural connectivity
+    "region_structurally_connected",       # region → region (FA weight, pathway)
+    # NeuroSynth topic-activation
+    "topic_activates_region",              # topic → region (forward inference)
+    "region_implicated_in_topic",          # region → topic (reverse inference)
+    # Paradigm layer
+    "paradigm_engages_circuit",            # paradigm → circuit
+    "paradigm_targets_topic",              # paradigm → topic
+    "paradigm_uses_method",                # paradigm → measurement method
+    "paper_uses_paradigm",                 # paper → paradigm
 }
 
 TOKEN_RE = re.compile(r"[^A-Za-z0-9._-]+")
