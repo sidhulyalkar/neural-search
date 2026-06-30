@@ -19,6 +19,7 @@ from apps.api.atlas_router import router as atlas_router
 from apps.api.claims_router import router as claims_router
 from apps.api.graph_router import router as graph_router
 from apps.api.spectral_router import router as spectral_router
+from apps.api.timeline_router import router as timeline_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
@@ -123,6 +124,7 @@ app.include_router(graph_router)
 app.include_router(atlas_router)
 app.include_router(claims_router)
 app.include_router(spectral_router)
+app.include_router(timeline_router)
 
 
 # Health check
