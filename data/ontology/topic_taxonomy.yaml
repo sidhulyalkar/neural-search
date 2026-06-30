@@ -1,0 +1,718 @@
+# Neural Search Topic Taxonomy v0.1
+# Canonical research topics covering systems neuroscience breadth.
+# task IDs verified against behavioral_task_ontology.yaml
+# region IDs verified against brain_regions.yaml
+
+topics:
+  - id: visual_processing
+    label: Visual Processing
+    description: "Neural mechanisms of visual perception, from retina to cortex"
+    tasks:
+      - visual_discrimination
+      - naturalistic_vision
+      - visual_stimulation
+      - passive_viewing
+      - receptive_field_mapping
+      - natural_movie_viewing
+    regions:
+      - visual_cortex
+      - v1
+      - v2
+      - v4
+      - area_mt
+      - lateral_geniculate_nucleus
+      - superior_colliculus
+    modalities:
+      - calcium_imaging
+      - extracellular_ephys
+      - neuropixels
+      - fmri
+    key_methods:
+      - receptive_field_mapping
+      - population_coding
+      - decoding
+      - orientation_tuning
+    companion_topics:
+      - attention_and_salience
+      - sensorimotor_integration
+    color: "#6366f1"
+
+  - id: auditory_processing
+    label: Auditory Processing
+    description: "Neural coding of sound, frequency, and speech in auditory cortex and subcortical areas"
+    tasks:
+      - auditory_processing
+      - auditory_discrimination
+      - tonotopic_mapping
+      - mismatch_negativity
+      - speech_perception
+    regions:
+      - auditory_cortex
+      - primary_auditory_cortex
+      - secondary_auditory_cortex
+      - superior_temporal_gyrus
+      - inferior_colliculus
+      - thalamus
+    modalities:
+      - extracellular_ephys
+      - eeg
+      - ecog
+      - fmri
+    key_methods:
+      - frequency_tuning
+      - tonotopic_mapping
+      - spectrotemporal_receptive_field
+    companion_topics:
+      - language_and_speech
+      - sensorimotor_integration
+    color: "#8b5cf6"
+
+  - id: somatosensory_processing
+    label: Somatosensory Processing
+    description: "Tactile, proprioceptive, and whisker-mediated somatosensation"
+    tasks:
+      - somatosensory_detection
+    regions:
+      - somatosensory_cortex
+      - primary_somatosensory_cortex
+      - barrel_cortex
+      - thalamus
+      - posterior_parietal_cortex
+    modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - neuropixels
+    key_methods:
+      - sensory_evoked_response
+      - detection_decoding
+      - receptive_field_estimation
+    companion_topics:
+      - motor_control
+      - sensorimotor_integration
+    color: "#a78bfa"
+
+  - id: working_memory
+    label: Working Memory
+    description: "Short-term maintenance and manipulation of information across delay periods"
+    tasks:
+      - delayed_match_to_sample
+      - delayed_nonmatch_to_sample
+      - n_back
+    regions:
+      - prefrontal_cortex
+      - dlPFC
+      - mPFC
+      - hippocampus
+      - parietal_cortex
+    modalities:
+      - extracellular_ephys
+      - fmri
+      - eeg
+      - calcium_imaging
+    key_methods:
+      - delay_period_decoding
+      - persistent_activity_analysis
+      - working_memory_load_effect
+    companion_topics:
+      - episodic_memory
+      - cognitive_control
+    color: "#3b82f6"
+
+  - id: episodic_memory
+    label: Episodic Memory
+    description: "Encoding, consolidation, and retrieval of specific experiences"
+    tasks:
+      - object_recognition
+      - delayed_match_to_sample
+      - classical_conditioning
+    regions:
+      - hippocampus
+      - ca1
+      - ca3
+      - dentate_gyrus
+      - entorhinal_cortex
+      - perirhinal_cortex
+    modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - neuropixels
+      - fmri
+    key_methods:
+      - memory_trace_decoding
+      - representational_similarity
+      - replay_detection
+    companion_topics:
+      - spatial_navigation
+      - working_memory
+    color: "#06b6d4"
+
+  - id: spatial_navigation
+    label: Spatial Navigation
+    description: "Place cells, grid cells, cognitive maps, and navigation strategies"
+    tasks:
+      - spatial_navigation
+      - morris_water_maze
+      - radial_arm_maze
+      - t_maze
+      - y_maze
+    regions:
+      - hippocampus
+      - ca1
+      - entorhinal_cortex
+      - medial_entorhinal_cortex
+      - retrosplenial_cortex
+      - parietal_cortex
+    modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - neuropixels
+    key_methods:
+      - place_cell_analysis
+      - grid_cell_analysis
+      - trajectory_decoding
+      - position_decoding
+    companion_topics:
+      - episodic_memory
+      - reward_learning
+    color: "#10b981"
+
+  - id: decision_making
+    label: Decision Making
+    description: "Cognitive and neural mechanisms of choice, evidence accumulation, and action selection"
+    tasks:
+      - two_alternative_forced_choice
+      - random_dot_motion
+      - visual_decision_making
+      - decision_making
+      - categorization
+    regions:
+      - prefrontal_cortex
+      - mPFC
+      - ACC
+      - posterior_parietal_cortex
+      - striatum
+    modalities:
+      - extracellular_ephys
+      - neuropixels
+      - fmri
+      - calcium_imaging
+    key_methods:
+      - evidence_accumulation_modeling
+      - drift_diffusion_model
+      - choice_decoding
+      - psychometric_curve
+    companion_topics:
+      - reward_learning
+      - cognitive_control
+    color: "#f59e0b"
+
+  - id: reward_learning
+    label: Reward Learning
+    description: "Reinforcement learning, dopaminergic prediction errors, and value-based behavior"
+    tasks:
+      - reversal_learning
+      - bandit_task
+      - temporal_difference_learning
+      - classical_conditioning
+      - operant_conditioning
+    regions:
+      - striatum
+      - nucleus_accumbens
+      - vta
+      - substantia_nigra
+      - OFC
+      - ACC
+    modalities:
+      - extracellular_ephys
+      - fiber_photometry
+      - calcium_imaging
+      - neuropixels
+    key_methods:
+      - reward_prediction_error
+      - q_learning_modeling
+      - temporal_difference_modeling
+    companion_topics:
+      - decision_making
+      - value_computation
+    color: "#ef4444"
+
+  - id: value_computation
+    label: Value Computation
+    description: "Neural encoding of subjective value, utility, and economic preferences"
+    tasks:
+      - value_based_decision_making
+      - delay_discounting
+      - probability_discounting
+      - effort_based_decision
+    regions:
+      - OFC
+      - mPFC
+      - ACC
+      - amygdala
+      - striatum
+    modalities:
+      - extracellular_ephys
+      - fmri
+      - calcium_imaging
+    key_methods:
+      - value_encoding
+      - utility_modeling
+      - choice_decoding
+    companion_topics:
+      - reward_learning
+      - decision_making
+    color: "#f97316"
+
+  - id: motor_control
+    label: Motor Control
+    description: "Planning, preparation, and execution of voluntary movements"
+    tasks:
+      - reaching
+      - center_out_reaching
+      - grasping
+      - joystick_task
+      - oculomotor_task
+    regions:
+      - motor_cortex
+      - primary_motor_cortex
+      - premotor_cortex
+      - supplementary_motor_area
+      - parietal_cortex
+      - cerebellum
+    modalities:
+      - extracellular_ephys
+      - neuropixels
+      - calcium_imaging
+      - ecog
+      - emg
+    key_methods:
+      - kinematic_decoding
+      - neural_trajectory_analysis
+      - reach_direction_tuning
+    companion_topics:
+      - motor_learning
+      - sensorimotor_integration
+    color: "#84cc16"
+
+  - id: motor_learning
+    label: Motor Learning
+    description: "Skill acquisition, procedural memory, and cerebellar plasticity"
+    tasks:
+      - skilled_reaching
+      - sequence_learning
+      - force_tracking
+    regions:
+      - motor_cortex
+      - primary_motor_cortex
+      - cerebellum
+      - striatum
+      - supplementary_motor_area
+    modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - emg
+    key_methods:
+      - motor_learning_curve
+      - chunking_analysis
+      - adaptation_analysis
+    companion_topics:
+      - motor_control
+      - sensorimotor_integration
+    color: "#22c55e"
+
+  - id: sensorimotor_integration
+    label: Sensorimotor Integration
+    description: "Integration of sensory signals for guiding movement and action"
+    tasks:
+      - reaching
+      - grasping
+      - somatosensory_detection
+      - multisensory_integration
+    regions:
+      - parietal_cortex
+      - posterior_parietal_cortex
+      - somatosensory_cortex
+      - motor_cortex
+      - cerebellum
+    modalities:
+      - extracellular_ephys
+      - calcium_imaging
+      - emg
+    key_methods:
+      - sensory_choice_separation
+      - neural_behavior_correlation
+      - multisensory_enhancement
+    companion_topics:
+      - motor_control
+      - visual_processing
+    color: "#14b8a6"
+
+  - id: attention_and_salience
+    label: Attention and Salience
+    description: "Top-down and bottom-up attentional selection and arousal modulation"
+    tasks:
+      - oddball
+      - change_detection
+      - pupil_arousal
+    regions:
+      - prefrontal_cortex
+      - parietal_cortex
+      - posterior_parietal_cortex
+      - ACC
+      - superior_colliculus
+    modalities:
+      - eeg
+      - meg
+      - extracellular_ephys
+      - fmri
+    key_methods:
+      - state_dependent_gain
+      - arousal_state_decoding
+      - pupil_neural_correlation
+    companion_topics:
+      - visual_processing
+      - cognitive_control
+    color: "#f43f5e"
+
+  - id: cognitive_control
+    label: Cognitive Control
+    description: "Executive functions including inhibition, task switching, and conflict resolution"
+    tasks:
+      - go_nogo
+      - stop_signal_task
+      - stroop_task
+      - flanker_task
+      - set_shifting
+    regions:
+      - prefrontal_cortex
+      - mPFC
+      - ACC
+      - dlPFC
+      - striatum
+    modalities:
+      - eeg
+      - fmri
+      - extracellular_ephys
+      - ecog
+    key_methods:
+      - conflict_effect
+      - response_inhibition_decoding
+      - error_related_activity
+    companion_topics:
+      - working_memory
+      - decision_making
+    color: "#0ea5e9"
+
+  - id: sleep_and_oscillations
+    label: Sleep and Oscillations
+    description: "Sleep stages, slow waves, spindles, and memory consolidation during sleep"
+    tasks:
+      - sleep_wake
+      - sleep_staging
+      - resting_state
+    regions:
+      - hippocampus
+      - neocortex
+      - thalamus
+      - brainstem
+    modalities:
+      - eeg
+      - lfp
+      - extracellular_ephys
+      - polysomnography
+    key_methods:
+      - sleep_stage_classification
+      - spindle_detection
+      - slow_wave_analysis
+      - spectral_power_analysis
+    companion_topics:
+      - neural_synchrony
+      - episodic_memory
+    color: "#475569"
+
+  - id: neural_synchrony
+    label: Neural Synchrony
+    description: "Oscillatory coordination, coherence, and phase-locking across circuits"
+    tasks:
+      - resting_state
+      - spontaneous_activity
+    regions:
+      - hippocampus
+      - neocortex
+      - prefrontal_cortex
+      - striatum
+    modalities:
+      - lfp
+      - eeg
+      - extracellular_ephys
+      - ecog
+    key_methods:
+      - functional_connectivity
+      - coherence
+      - phase_amplitude_coupling
+    companion_topics:
+      - sleep_and_oscillations
+      - cognitive_control
+    color: "#64748b"
+
+  - id: spectral_dynamics
+    label: Spectral Dynamics
+    description: "LFP power spectra, frequency bands, and event-related spectral changes"
+    tasks:
+      - resting_state
+      - spontaneous_activity
+      - sleep_wake
+    regions:
+      - hippocampus
+      - neocortex
+      - prefrontal_cortex
+    modalities:
+      - lfp
+      - eeg
+      - ecog
+    key_methods:
+      - spectral_power_analysis
+      - lfp_spectral_analysis
+      - spectrotemporal_receptive_field
+    companion_topics:
+      - neural_synchrony
+      - sleep_and_oscillations
+    color: "#334155"
+
+  - id: fear_and_anxiety
+    label: Fear and Anxiety
+    description: "Threat learning, defensive behavior, and amygdala-prefrontal circuits"
+    tasks:
+      - fear_conditioning
+      - extinction_learning
+      - elevated_plus_maze
+      - open_field
+    regions:
+      - amygdala
+      - basolateral_amygdala
+      - central_amygdala
+      - mPFC
+      - hippocampus
+    modalities:
+      - calcium_imaging
+      - fiber_photometry
+      - extracellular_ephys
+    key_methods:
+      - freezing_quantification
+      - cue_aligned_activity
+      - extinction_learning
+    companion_topics:
+      - emotional_processing
+      - reward_learning
+    color: "#dc2626"
+
+  - id: social_behavior
+    label: Social Behavior
+    description: "Conspecific interaction, social reward, and neural circuits for social cognition"
+    tasks:
+      - social_interaction
+      - social_preference
+      - social_reward
+      - face_processing
+      - theory_of_mind
+    regions:
+      - mPFC
+      - amygdala
+      - nucleus_accumbens
+      - hypothalamus
+      - hippocampus
+    modalities:
+      - calcium_imaging
+      - fiber_photometry
+      - fmri
+      - extracellular_ephys
+    key_methods:
+      - social_approach_index
+      - social_value_encoding
+      - pose_estimation
+    companion_topics:
+      - emotional_processing
+      - fear_and_anxiety
+    color: "#db2777"
+
+  - id: emotional_processing
+    label: Emotional Processing
+    description: "Affective valence, arousal, and neural representations of emotion"
+    tasks:
+      - emotion_recognition
+      - sucrose_preference
+      - forced_swim
+    regions:
+      - amygdala
+      - insula
+      - OFC
+      - ACC
+      - hypothalamus
+    modalities:
+      - fmri
+      - eeg
+      - calcium_imaging
+      - fiber_photometry
+    key_methods:
+      - emotion_decoding
+      - valence_arousal_modeling
+    companion_topics:
+      - fear_and_anxiety
+      - social_behavior
+    color: "#be185d"
+
+  - id: language_and_speech
+    label: Language and Speech
+    description: "Speech encoding, decoding, and language comprehension in cortical circuits"
+    tasks:
+      - speech_production
+      - speech_perception
+      - language_comprehension
+      - picture_naming
+      - reading
+    regions:
+      - broca_area
+      - inferior_frontal_gyrus
+      - superior_temporal_gyrus
+      - wernicke_area
+      - temporal_cortex
+    modalities:
+      - ecog
+      - ieeg
+      - eeg
+      - meg
+      - fmri
+    key_methods:
+      - phoneme_decoding
+      - speech_envelope_tracking
+      - semantic_decoding
+    companion_topics:
+      - auditory_processing
+      - cognitive_control
+    color: "#7c3aed"
+
+  - id: semantic_cognition
+    label: Semantic Cognition
+    description: "Conceptual knowledge, semantic memory, and categorization"
+    tasks:
+      - language_comprehension
+      - categorization
+      - picture_naming
+    regions:
+      - temporal_cortex
+      - superior_temporal_gyrus
+      - prefrontal_cortex
+      - hippocampus
+    modalities:
+      - fmri
+      - eeg
+      - meg
+      - ecog
+    key_methods:
+      - semantic_decoding
+      - representational_similarity
+      - category_selectivity
+    companion_topics:
+      - language_and_speech
+      - episodic_memory
+    color: "#5b21b6"
+
+  - id: epilepsy_and_seizures
+    label: Epilepsy and Seizures
+    description: "Seizure detection, onset zone localization, and interictal dynamics"
+    tasks:
+      - seizure_monitoring
+      - interictal_monitoring
+      - intraoperative_mapping
+    regions:
+      - hippocampus
+      - temporal_cortex
+      - neocortex
+    modalities:
+      - ieeg
+      - eeg
+      - ecog
+      - lfp
+    key_methods:
+      - seizure_detection
+      - interictal_spike_detection
+      - onset_zone_localization
+    companion_topics:
+      - neural_synchrony
+      - spectral_dynamics
+    color: "#991b1b"
+
+  - id: neural_disorders
+    label: Neural Disorders
+    description: "Disease-related neural dysfunction including TBI, Parkinson's, and other conditions"
+    tasks:
+      - resting_state
+      - motor_imagery
+    regions:
+      - striatum
+      - substantia_nigra
+      - prefrontal_cortex
+      - hippocampus
+    modalities:
+      - eeg
+      - fmri
+      - extracellular_ephys
+    key_methods:
+      - functional_connectivity
+      - biomarker_analysis
+    companion_topics:
+      - epilepsy_and_seizures
+      - motor_control
+    color: "#7f1d1d"
+
+  - id: development_and_plasticity
+    label: Development and Plasticity
+    description: "Synaptic plasticity, developmental critical periods, and learning-driven reorganization"
+    tasks:
+      - classical_conditioning
+      - operant_conditioning
+      - skilled_reaching
+    regions:
+      - visual_cortex
+      - motor_cortex
+      - hippocampus
+      - neocortex
+    modalities:
+      - calcium_imaging
+      - extracellular_ephys
+      - patch_clamp
+    key_methods:
+      - learning_curve
+      - motor_learning_curve
+      - synaptic_potentiation
+    companion_topics:
+      - motor_learning
+      - reward_learning
+    color: "#065f46"
+
+  - id: neuromodulation
+    label: Neuromodulation
+    description: "Dopaminergic, cholinergic, serotonergic, and noradrenergic modulation of circuits"
+    tasks:
+      - temporal_difference_learning
+      - classical_conditioning
+      - pupil_arousal
+    regions:
+      - vta
+      - substantia_nigra
+      - locus_coeruleus
+      - dorsal_raphe
+      - nucleus_accumbens
+      - striatum
+    modalities:
+      - fiber_photometry
+      - calcium_imaging
+      - extracellular_ephys
+    key_methods:
+      - reward_prediction_error
+      - state_dependent_gain
+      - arousal_state_decoding
+    companion_topics:
+      - reward_learning
+      - attention_and_salience
+    color: "#134e4a"
