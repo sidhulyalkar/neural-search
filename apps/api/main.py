@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.atlas_router import router as atlas_router
 from apps.api.graph_router import router as graph_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
@@ -117,6 +118,7 @@ app.add_middleware(
 )
 
 app.include_router(graph_router)
+app.include_router(atlas_router)
 
 
 # Health check
