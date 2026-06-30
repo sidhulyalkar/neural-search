@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { ForceGraph2D, ForceGraph3D } from 'react-force-graph'
+import ForceGraph2D from 'react-force-graph-2d'
 import type { GraphData, GraphEdge, GraphNode } from '../../types/graph'
 
 interface ExplorerGraphProps {
@@ -11,7 +11,7 @@ interface ExplorerGraphProps {
 
 const NODE_REL_SIZE = 4
 
-export function ExplorerGraph({ graphData, mode, onNodeClick, highlightIds }: ExplorerGraphProps) {
+export function ExplorerGraph({ graphData, onNodeClick, highlightIds }: ExplorerGraphProps) {
   const fgRef = useRef<unknown>(null)
 
   const handleNodeClick = useCallback(
@@ -53,29 +53,25 @@ export function ExplorerGraph({ graphData, mode, onNodeClick, highlightIds }: Ex
     nodeRelSize: NODE_REL_SIZE,
   }
 
-  if (mode === '2d') {
-    return (
-      // @ts-expect-error react-force-graph types
-      <ForceGraph2D
-        {...commonProps}
-        nodeCanvasObject={(node, ctx, globalScale) => {
-          const n = node as GraphNode & { x?: number; y?: number }
-          if (n.x === undefined || n.y === undefined) return
-          const r = Math.sqrt(n.size || 0) * NODE_REL_SIZE
-          ctx.arc(n.x, n.y, r, 0, 2 * Math.PI)
-          ctx.fillStyle = nodeColor(node)
-          ctx.fill()
-          if (globalScale > 2 && n.label) {
-            ctx.font = `${10 / globalScale}px Inter, sans-serif`
-            ctx.fillStyle = '#e2e8f0'
-            ctx.textAlign = 'center'
-            ctx.fillText(n.label.slice(0, 20), n.x, n.y + r + 4 / globalScale)
-          }
-        }}
-      />
-    )
-  }
-
-  // @ts-expect-error react-force-graph types
-  return <ForceGraph3D {...commonProps} />
+  // 3D mode falls back to 2D (ForceGraph3D requires A-Frame which crashes in Vite/ESM)
+  return (
+    // @ts-expect-error react-force-graph-2d types
+    <ForceGraph2D
+      {...commonProps}
+      nodeCanvasObject={(node, ctx, globalScale) => {
+        const n = node as GraphNode & { x?: number; y?: number }
+        if (n.x === undefined || n.y === undefined) return
+        const r = Math.sqrt(n.size || 0) * NODE_REL_SIZE
+        ctx.arc(n.x, n.y, r, 0, 2 * Math.PI)
+        ctx.fillStyle = nodeColor(node)
+        ctx.fill()
+        if (globalScale > 2 && n.label) {
+          ctx.font = `${10 / globalScale}px Inter, sans-serif`
+          ctx.fillStyle = '#e2e8f0'
+          ctx.textAlign = 'center'
+          ctx.fillText(n.label.slice(0, 20), n.x, n.y + r + 4 / globalScale)
+        }
+      }}
+    />
+  )
 }

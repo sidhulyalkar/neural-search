@@ -1,0 +1,701 @@
+# Paradigm Registry — Extension
+# Adds recognition memory, maze-based spatial, anxiety/motivation, social, reward,
+# and human cognitive tasks to the base paradigm_registry.yaml.
+# Loaded and merged by methods_router alongside paradigm_registry.yaml.
+
+paradigms:
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # RECOGNITION MEMORY PARADIGMS
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: novel_object_recognition
+    label: Novel Object Recognition (NOR)
+    aliases: [NOR, object novelty, recognition memory test]
+    cognitive_construct: recognition_memory_perirhinal
+    description: "Two identical objects during familiarization; one replaced with novel object during test. Preference for novel object (exploration ratio > 0.5) indicates intact recognition memory. Advantage: no reward, no stress, relies on natural novelty preference."
+    circuits_engaged: [perirhinal_cortex, hippocampal_circuit, default_mode]
+    topics: [episodic_memory, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        response_modality: exploration_time_ratio
+        measure: "DI = (Novel - Familiar) / (Novel + Familiar); chance = 0"
+        inter_trial_interval_hr: [1, 24, 48]
+        neural_measure: perirhinal_cortex_LFP_unit
+        cross_species_validity: validated
+        key_papers:
+          - "Ennaceur & Delacour (1988) — A new one-trial test for neurobiological studies of memory in rats"
+      - species: mouse
+        cross_species_validity: validated
+        notes: "Shorter exploration time; strain-dependent performance"
+      - species: human
+        analog: continuous_recognition_task
+        stimuli: images_words_or_objects
+        neural_measure: fMRI_perirhinal_hippocampus
+        cross_species_validity: adapted
+        notes: "Human analog: yes/no recognition for previously seen stimuli; perirhinal cortex engagement confirmed"
+    dissociations:
+      perirhinal_lesion: "Impairs NOR at long delays (24h) but not short (1h)"
+      hippocampal_lesion: "Context-dependent; impairs object-place but not basic NOR"
+    key_neural_signal: perirhinal_cortex_theta_gamma
+
+  - id: object_location_memory
+    label: Object Location Memory / Novel Object Location (NOL)
+    aliases: [NOL, object place recognition, OPR, object displacement]
+    cognitive_construct: spatial_object_recognition_hippocampal
+    description: "Same two objects; one relocated to new position during test. Preference for displaced object indexes hippocampal-dependent spatial recognition memory (vs perirhinal-dependent identity memory in NOR)."
+    circuits_engaged: [hippocampal_circuit, trisynaptic_loop, entorhinal_grid_cells]
+    topics: [episodic_memory, spatial_navigation]
+    species_implementations:
+      - species: rat
+        response_modality: exploration_time_displaced_vs_stationary
+        neural_measure: hippocampal_theta_place_cells
+        cross_species_validity: validated
+        key_papers:
+          - "Ennaceur et al. (1997) — Neurotoxic lesions of the perirhinal cortex"
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: virtual_object_location_task
+        neural_measure: fMRI_hippocampus_OFC
+        cross_species_validity: adapted
+    dissociations:
+      hippocampal_lesion: "Selectively impairs NOL; NOR typically spared"
+      entorhinal_lesion: "Impairs spatial but not identity recognition"
+
+  - id: object_in_place
+    label: Object-in-Place Task (OiP)
+    aliases: [OiP, object-place association, configural recognition]
+    cognitive_construct: associative_recognition_memory
+    description: "Learn which specific object goes in which specific location (requires conjunction of object identity AND spatial location). This configural binding relies on perirhinal + hippocampal interaction."
+    circuits_engaged: [hippocampal_circuit, perirhinal_cortex, orbitofrontal_cortex]
+    topics: [episodic_memory, spatial_navigation]
+    species_implementations:
+      - species: rat
+        cross_species_validity: validated
+      - species: human
+        analog: paired_associate_learning_CANTAB
+        neural_measure: fMRI_hippocampus
+        cross_species_validity: adapted
+
+  - id: recency_memory
+    label: Recency Memory / Temporal Order Memory
+    aliases: [recency discrimination, temporal order judgment, what-when memory]
+    cognitive_construct: episodic_temporal_order_memory
+    description: "Present series of objects/events; probe which item appeared more recently. Requires temporal tagging of memories — episodic memory's 'when' component."
+    circuits_engaged: [hippocampal_circuit, prefrontal_cortex, default_mode]
+    topics: [episodic_memory, working_memory]
+    species_implementations:
+      - species: rat
+        response_modality: exploration_preference_for_older_object
+        neural_measure: hippocampal_theta
+        cross_species_validity: validated
+      - species: human
+        response_modality: button_press_judgment
+        neural_measure: fMRI_hippocampus_DLPFC
+        cross_species_validity: adapted
+
+  - id: source_memory
+    label: Source Memory Task
+    aliases: [source monitoring, episodic binding, what-where-when]
+    cognitive_construct: episodic_binding_context_memory
+    description: "Recognize items and also remember the context/source where they were encountered (which room, which voice, which time). Indexes hippocampal binding of what+where+when."
+    circuits_engaged: [hippocampal_circuit, prefrontal_cortex, default_mode]
+    topics: [episodic_memory]
+    species_implementations:
+      - species: human
+        response_modality: source_judgment_rating
+        neural_measure: fMRI_hippocampus_mPFC EEG_theta
+        cross_species_validity: validated
+      - species: rat
+        analog: what_where_which
+        cross_species_validity: analogous
+        notes: "Rat equivalent: discriminate object, place, AND context in separate phases"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MAZE-BASED SPATIAL MEMORY PARADIGMS
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: barnes_maze
+    label: Barnes Maze
+    aliases: [Barnes circular maze, dry land maze]
+    cognitive_construct: spatial_reference_memory_stress_free
+    description: "Large circular open platform with 20 holes; one escape hole leads to hidden dark chamber. Rat/mouse escape the aversive open bright space. Less stressful than Morris water maze; relies on spatial cues."
+    circuits_engaged: [hippocampal_circuit, trisynaptic_loop, spatial_navigation]
+    topics: [spatial_navigation, episodic_memory, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        measure: escape_latency_errors_search_strategy
+        neural_measure: hippocampal_theta_place_cells
+        cross_species_validity: validated
+        key_papers:
+          - "Barnes (1979) — Memory deficits associated with senescence — A neurophysiological and behavioral study"
+      - species: mouse
+        cross_species_validity: validated
+        notes: "Standard in mouse AD models; APP/PS1 mice show impaired Barnes maze"
+      - species: human
+        analog: virtual_barnes_maze_VR
+        cross_species_validity: adapted
+    advantages_over_mwm:
+      - "No swimming required — less stress, suitable for compromised animals"
+      - "Better for aged mice with motor impairment"
+      - "Cleaner path to escape (no swimming confound)"
+
+  - id: t_maze
+    label: T-Maze / Y-Maze Spontaneous Alternation
+    aliases: [T-maze, Y-maze, spontaneous alternation, forced-choice T-maze]
+    cognitive_construct: spatial_working_memory_short_delay
+    description: "Maze with T or Y shape. Spontaneous alternation: rat placed in start arm; naturally explores the novel arm on second trial (requires short-term spatial working memory). Forced-choice: one arm blocked during sample; both open during choice after delay."
+    circuits_engaged: [hippocampal_circuit, prefrontal_cortex, spatial_navigation]
+    topics: [spatial_navigation, working_memory]
+    species_implementations:
+      - species: rat
+        measure: alternation_percentage_vs_50pct_chance
+        delay_range_sec: [0, 300]
+        neural_measure: hippocampal_theta_PFC_coherence
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+        notes: "Fast assay; low cost; high throughput for transgenic screening"
+      - species: human
+        analog: virtual_T_maze
+        neural_measure: fMRI_hippocampus
+        cross_species_validity: adapted
+
+  - id: radial_arm_maze
+    label: Radial Arm Maze (RAM)
+    aliases: [RAM, 8-arm radial, baited radial maze]
+    cognitive_construct: spatial_reference_and_working_memory
+    description: "8 arms radiating from central platform. Baited arms: all 8 baited (reference memory version) or 4 fixed arms always baited. Within-trial re-entry = working memory error; entering unbaited arm = reference memory error."
+    circuits_engaged: [hippocampal_circuit, prefrontal_cortex, spatial_navigation]
+    topics: [spatial_navigation, episodic_memory, working_memory]
+    species_implementations:
+      - species: rat
+        measure: reference_errors_working_errors_per_trial
+        neural_measure: place_cells_grid_cells
+        cross_species_validity: validated
+        key_papers:
+          - "Olton & Samuelson (1976) — Remembrance of places passed — Spatial memory in rats"
+      - species: mouse
+        cross_species_validity: validated
+    dissociations:
+      hippocampal_lesion: "Impairs both reference and working memory errors"
+      prefrontal_lesion: "Selectively impairs working memory (within-trial errors)"
+
+  - id: cheeseboard_maze
+    label: Cheeseboard Maze
+    aliases: [cheeseboard, Knierim cheeseboard, goal-directed navigation]
+    cognitive_construct: episodic_like_memory_flexible_navigation
+    description: "Large board with 400 food wells; 3 random wells baited each day with new configuration. Rat must find and remember today's specific goal locations. Requires daily episodic updating — cannot rely on fixed spatial strategy."
+    circuits_engaged: [hippocampal_circuit, entorhinal_grid_cells, prefrontal_cortex]
+    topics: [episodic_memory, spatial_navigation]
+    species_implementations:
+      - species: rat
+        measure: time_to_find_all_three_goals_path_efficiency
+        neural_measure: sharp_wave_ripples_replay
+        cross_species_validity: validated
+        key_papers:
+          - "Dupret et al. (2010) — The reorganization and reactivation of hippocampal maps predict spatial memory performance"
+    special_value: "Replays of goal sequences during rest/sleep can be measured with tetrodes — direct link to sharp-wave ripple consolidation"
+
+  - id: elevated_plus_maze
+    label: Elevated Plus Maze (EPM)
+    aliases: [EPM, plus maze, anxiety maze]
+    cognitive_construct: anxiety_avoidance_exploration_conflict
+    description: "Plus-shaped maze elevated 50cm with two open (exposed) arms and two closed (walled) arms. Anxiety indexed by open arm avoidance and time in closed arms. Anxiolytic drugs (benzodiazepines) increase open arm time."
+    circuits_engaged: [fear_circuit, stress_hpa, basolateral_amygdala]
+    topics: [fear_and_anxiety, social_behavior]
+    species_implementations:
+      - species: rat
+        measure: open_arm_time_percentage_open_arm_entries
+        neural_measure: amygdala_LFP_PFC_theta
+        cross_species_validity: validated
+        key_papers:
+          - "Pellow et al. (1985) — Validation of open:closed arm entries in an elevated plus-maze as a measure of anxiety"
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: virtual_cliff_edge_or_height_VR_task
+        cross_species_validity: analogous
+
+  - id: light_dark_box
+    label: Light-Dark Box / Emergence Test
+    aliases: [light dark, dark-light exploration, emergence, black-white box]
+    cognitive_construct: anxiety_novelty_approach_avoidance
+    description: "Box with two chambers: brightly lit open vs dark enclosed. Rodents prefer dark; time in light, latency to enter light, and transitions index anxiety. Tests approach-avoidance conflict."
+    circuits_engaged: [fear_circuit, stress_hpa]
+    topics: [fear_and_anxiety]
+    species_implementations:
+      - species: mouse
+        measure: time_in_light_entries_to_light_latency_to_first_entry
+        cross_species_validity: validated
+      - species: rat
+        cross_species_validity: validated
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # REWARD, MOTIVATION & DECISION MAKING
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: conditioned_place_preference
+    label: Conditioned Place Preference (CPP)
+    aliases: [CPP, CPA, conditioned place aversion, place preference]
+    cognitive_construct: reward_conditioning_approach_avoidance
+    description: "Two-chamber apparatus with distinct contexts. Animal receives reward (drug, food, social) in one chamber and nothing in the other. Test: free choice between chambers. Approach to rewarded context = CPP; avoidance = CPA."
+    circuits_engaged: [reward_addiction, dopamine_mesolimbic, hippocampal_circuit]
+    topics: [reward_learning, fear_and_anxiety]
+    species_implementations:
+      - species: rat
+        reinforcer: morphine_cocaine_food_social_stimulation
+        measure: time_in_CS_plus_minus_pretest_time
+        neural_measure: NAcc_LFP_dopamine
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: reward_context_conditioning_fMRI
+        neural_measure: fMRI_NAcc_vmPFC
+        cross_species_validity: adapted
+
+  - id: progressive_ratio
+    label: Progressive Ratio Schedule (PR)
+    aliases: [progressive ratio, effort-based choice, breakpoint, motivation]
+    cognitive_construct: reward_motivation_effort_allocation
+    description: "Ratio requirement for reward increases progressively (1, 2, 4, 8, 16...). 'Breakpoint' = last completed ratio before animal stops responding. Indexes motivational drive to work for reward — distinct from hedonic value."
+    circuits_engaged: [reward_addiction, dopamine_mesolimbic, basal_ganglia_loop]
+    topics: [reward_learning, decision_making]
+    mathematical_note: "Ratio series: 1, 2, 4, 8, 12, 20, 28, 40... (varies by lab). Breakpoint correlates with phasic dopamine magnitude."
+    species_implementations:
+      - species: rat
+        reinforcer: sucrose_or_food_pellets
+        measure: breakpoint_ratio
+        neural_measure: NAcc_dopamine_voltammetry
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: effort_allocation_task_button_press
+        neural_measure: fMRI_striatum
+        cross_species_validity: adapted
+
+  - id: effort_cost_benefit
+    label: Effort/Cost-Benefit Choice Task
+    aliases: [cost-benefit, T-maze effort, effort discounting]
+    cognitive_construct: effort_based_decision_making
+    description: "Choose between high reward / high effort vs low reward / low effort. Manipulations: height of barrier, number of presses, swim duration. Effort discounting k-parameter analogous to delay discounting."
+    formula: "V = R / (1 + k*effort_cost)"
+    circuits_engaged: [reward_addiction, anterior_cingulate_cortex, dopamine_mesolimbic]
+    topics: [decision_making, reward_learning]
+    species_implementations:
+      - species: rat
+        measure: proportion_high_effort_choices
+        neural_measure: ACC_LFP_dopamine
+        cross_species_validity: validated
+        key_papers:
+          - "Salamone et al. (1994) — Behavioral functions of nucleus accumbens dopamine — Empirical and conceptual problems"
+      - species: human
+        response_modality: button_press_grip_force
+        neural_measure: fMRI_ACC_striatum
+        cross_species_validity: adapted
+
+  - id: iowa_gambling_task
+    label: Iowa Gambling Task (IGT)
+    aliases: [IGT, card game, somatic marker, ambiguous decision making]
+    cognitive_construct: decision_making_under_ambiguity_ventromedial_pfc
+    description: "Choose from 4 decks with different probability/magnitude reward-loss structures. Advantageous decks (C, D): frequent small wins, rare small losses. Disadvantageous (A, B): rare large wins, frequent large losses. Patients learn advantageous strategy ahead of explicit knowledge ('gut feeling')."
+    circuits_engaged: [orbitofrontal_cortex, reward_addiction, fear_circuit]
+    topics: [decision_making, reward_learning, emotional_processing]
+    formula: "Somatic marker hypothesis: vmPFC uses body signals (skin conductance) to tag expected emotion of outcomes"
+    species_implementations:
+      - species: human
+        platform: computer_or_tablet
+        neural_measure: fMRI_vmPFC EEG_frontal_alpha
+        cross_species_validity: validated
+        key_papers:
+          - "Bechara et al. (1994) — Insensitivity to future consequences following damage to human prefrontal cortex"
+      - species: rat
+        analog: rat_gambling_task
+        reinforcer: sucrose_vs_punishment
+        cross_species_validity: adapted
+
+  - id: cambridge_gambling_task
+    label: Cambridge Gambling Task (CGT)
+    aliases: [CGT, risk-taking, betting task, quality-of-decision]
+    cognitive_construct: risk_taking_impulsivity_reward_sensitivity
+    description: "Display of red and blue boxes (variable ratio). Bet on which color the hidden token is under. Separate impulsivity (deliberation time) from risk-taking (proportion bet)."
+    circuits_engaged: [orbitofrontal_cortex, basal_ganglia_loop]
+    topics: [decision_making, reward_learning]
+    species_implementations:
+      - species: human
+        platform: CANTAB_touchscreen
+        neural_measure: fMRI_OFC_striatum
+        cross_species_validity: validated
+        key_papers:
+          - "Rogers et al. (1999) — Dissociating executive mechanisms of task control following frontal lobe damage and Parkinson's disease"
+
+  - id: temporal_bisection
+    label: Temporal Bisection Task (Interval Timing)
+    aliases: [temporal bisection, interval timing, duration discrimination, peak interval]
+    cognitive_construct: interval_timing_basal_ganglia_dopamine
+    description: "Learn two anchor durations (e.g., 2s=short, 8s=long). Test: intermediate probe durations; classify as short or long. Bisection point (psychophysical midpoint) reflects timing calibration. Dopamine manipulations shift the bisection point."
+    formula: "Weber's law: sigma/t = constant (scalar timing theory); Bisection point ≈ geometric mean of anchors"
+    circuits_engaged: [basal_ganglia_loop, corticostriatal_beta, prefrontal_cortex]
+    topics: [decision_making, reward_learning, spectral_dynamics]
+    species_implementations:
+      - species: rat
+        response_modality: lever_press
+        neural_measure: striatal_LFP_ramping
+        cross_species_validity: validated
+        key_papers:
+          - "Meck (1983) — Selective adjustment of the speed of internal clock and memory processes"
+      - species: human
+        response_modality: button_press
+        neural_measure: EEG_beta_ramp fMRI_striatum
+        cross_species_validity: validated
+
+  - id: pavlovian_instrumental_transfer
+    label: Pavlovian-Instrumental Transfer (PIT)
+    aliases: [PIT, instrumental transfer, Pavlovian control of instrumental behavior]
+    cognitive_construct: habitual_vs_goal_directed_control
+    description: "Phase 1: Pavlovian conditioning (CS → US). Phase 2: Instrumental training (lever → reward). Test: Present CS during instrumental responding. Specific PIT: CS for food A increases lever A responding. General PIT: any CS energizes instrumental responding."
+    circuits_engaged: [basal_ganglia_loop, reward_addiction, dopamine_mesolimbic, orbitofrontal_cortex]
+    topics: [reward_learning, decision_making, cognitive_control]
+    species_implementations:
+      - species: rat
+        neural_measure: NAcc_core_shell_LFP
+        cross_species_validity: validated
+        key_papers:
+          - "Corbit & Janak (2007) — Inactivation of the lateral but not medial dorsal striatum eliminates the excitatory impact of Pavlovian stimuli on instrumental responding"
+      - species: human
+        response_modality: slot_machine_button_press
+        neural_measure: fMRI_striatum
+        cross_species_validity: adapted
+
+  - id: reward_devaluation
+    label: Outcome Devaluation (Goal-Directed vs Habit)
+    aliases: [devaluation, outcome devaluation, habit formation, goal-directed]
+    cognitive_construct: goal_directed_vs_habitual_control
+    description: "Train lever press for reward. Devalue the specific reward (satiety-specific devaluation or taste aversion). Goal-directed behavior: immediately reduces pressing for devalued outcome. Habitual behavior: insensitive to devaluation (prior to testing)."
+    circuits_engaged: [basal_ganglia_loop, orbitofrontal_cortex, anterior_cingulate_cortex]
+    topics: [reward_learning, decision_making, cognitive_control]
+    species_implementations:
+      - species: rat
+        measure: sensitivity_to_devaluation_pressing_rate
+        neural_measure: dorsal_striatum_LFP
+        cross_species_validity: validated
+        key_papers:
+          - "Dickinson (1985) — Actions and habits — The development of behavioural autonomy"
+      - species: human
+        response_modality: button_press_devaluation_ratings
+        neural_measure: fMRI_putamen_OFC
+        cross_species_validity: validated
+
+  - id: attention_set_shifting
+    label: Attentional Set-Shifting Task (ASST)
+    aliases: [ASST, IDED, intra-extra dimensional shift, cognitive flexibility]
+    cognitive_construct: cognitive_flexibility_prefrontal_dopamine
+    description: "Discriminate compound stimuli by one dimension (odor); shift to second dimension (texture). Intra-dimensional shift (IDS): same dimension, new exemplars. Extra-dimensional shift (EDS): switch relevant dimension. EDS specifically requires intact PFC."
+    circuits_engaged: [prefrontal_cortex, orbitofrontal_cortex, dopamine_nigrostriatal]
+    topics: [cognitive_control, executive_function]
+    species_implementations:
+      - species: rat
+        stimuli: odor_and_texture_digging_media
+        cross_species_validity: validated
+        key_papers:
+          - "Birrell & Brown (2000) — Medial frontal cortex mediates perceptual attentional set shifting in the rat"
+      - species: human
+        platform: CANTAB_IED
+        response_modality: touch_response
+        neural_measure: fMRI_DLPFC_ACC
+        cross_species_validity: validated
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SOCIAL BEHAVIOR PARADIGMS
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: three_chamber_social
+    label: Three-Chamber Social Preference / Novelty Test
+    aliases: [3-chamber, Crawley social task, sociability, social novelty]
+    cognitive_construct: social_approach_social_novelty
+    description: "Three-chamber box: center + two side chambers. Phase 1 (sociability): novel mouse in one side vs empty cage. Phase 2 (social novelty): familiar mouse vs novel mouse. Social preference deficit in autism models."
+    circuits_engaged: [social_behavior, mesolimbic, prefrontal_cortex]
+    topics: [social_behavior, development_and_plasticity]
+    species_implementations:
+      - species: mouse
+        measure: social_preference_index_time_with_social_vs_object
+        neural_measure: mPFC_LFP_theta oxytocin_circuit
+        cross_species_validity: validated
+        key_papers:
+          - "Crawley (2004) — Designing mouse behavioral tasks relevant to autistic-like behaviors"
+      - species: rat
+        cross_species_validity: validated
+      - species: human
+        analog: social_preference_eye_tracking_fMRI
+        neural_measure: fMRI_TPJ_ACC
+        cross_species_validity: analogous
+
+  - id: resident_intruder
+    label: Resident-Intruder Test
+    aliases: [RI, social defeat, aggressive behavior, territorial aggression]
+    cognitive_construct: territorial_aggression_social_hierarchy
+    description: "Resident rat/mouse in home cage; novel intruder introduced. Measures attack latency, bite number, and social investigation. Social defeat: subordinate role induces depression-like phenotype (social defeat stress)."
+    circuits_engaged: [fear_circuit, reward_addiction, stress_hpa]
+    topics: [social_behavior, fear_and_anxiety, emotional_processing]
+    species_implementations:
+      - species: rat
+        measure: attack_latency_number_bites_duration
+        cross_species_validity: validated
+      - species: mouse
+        notes: "Social defeat stress in C57BL/6 mice induces social avoidance, anhedonia — depression model"
+        cross_species_validity: validated
+      - species: human
+        analog: computer_aggression_task_or_social_exclusion
+        cross_species_validity: analogous
+
+  - id: social_recognition_memory
+    label: Social Recognition Memory
+    aliases: [social memory, conspecific recognition, olfactory social memory]
+    cognitive_construct: social_memory_hippocampal_oxytocin
+    description: "Introduce novel juvenile rat; rat investigates. Reintroduce same juvenile after delay; reduced investigation = recognition. Extends to many-hour delays if oxytocin or AVP intact."
+    circuits_engaged: [hippocampal_circuit, medial_amygdala, olfactory_bulb]
+    topics: [social_behavior, episodic_memory]
+    species_implementations:
+      - species: rat
+        measure: investigation_time_first_vs_second_encounter
+        neural_measure: hippocampal_CA1_oxytocin
+        cross_species_validity: validated
+        key_papers:
+          - "Dantzer et al. (1987) — Role of brain vasopressin in the control of short-term social memory in rats"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DEPRESSION / STRESS PARADIGMS
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: forced_swim_test
+    label: Forced Swim Test (FST) / Porsolt
+    aliases: [FST, Porsolt swim test, behavioral despair, immobility]
+    cognitive_construct: behavioral_despair_depression_model
+    description: "Rat/mouse placed in inescapable water-filled cylinder; immobility after initial escape attempts indexes 'behavioral despair.' Antidepressants reduce immobility. Controversial: immobility may be adaptive (passive coping), not purely 'despair.'"
+    circuits_engaged: [stress_hpa, lc_norepinephrine, dopamine_mesolimbic]
+    topics: [fear_and_anxiety, emotional_processing, neuromodulation]
+    species_implementations:
+      - species: rat
+        measure: immobility_time_latency_to_first_immobility
+        neural_measure: HPA_axis_CORT
+        cross_species_validity: adapted
+        key_papers:
+          - "Porsolt et al. (1977) — Depression — A new animal model sensitive to antidepressant treatments"
+      - species: mouse
+        notes: "Different scoring; 6 min test; limb cling vs floating distinction"
+        cross_species_validity: adapted
+    caveats:
+      - "Immobility can reflect learned helplessness OR adaptive passive coping"
+      - "Strain-dependent; C57BL/6 more immobile than BALB/c without treatment"
+      - "Should be combined with sucrose preference and social interaction for validity"
+
+  - id: sucrose_preference_test
+    label: Sucrose Preference Test (SPT) / Anhedonia
+    aliases: [SPT, sucrose consumption, anhedonia test, sweet preference]
+    cognitive_construct: anhedonia_reward_sensitivity
+    description: "Access to two bottles: water vs sucrose solution. Preference ratio = sucrose/(sucrose+water) × 100. Reduced preference = anhedonia (core symptom of depression). Chronic unpredictable stress (CUS) reduces sucrose preference."
+    circuits_engaged: [reward_addiction, dopamine_mesolimbic, nucleus_accumbens]
+    topics: [reward_learning, emotional_processing, neuromodulation]
+    species_implementations:
+      - species: rat
+        measure: sucrose_preference_ratio_percentage
+        cross_species_validity: validated
+      - species: mouse
+        notes: "Must counter-balance bottle positions; test over 24-48h for stable measure"
+        cross_species_validity: validated
+      - species: human
+        analog: reward_taste_rating_monetary_pleasure_questionnaire
+        cross_species_validity: analogous
+
+  - id: chronic_unpredictable_stress
+    label: Chronic Unpredictable Mild Stress (CUMS/CUS)
+    aliases: [CUS, CUMS, CSDS, chronic stress model, unpredictable stress]
+    cognitive_construct: depression_anxiety_chronic_stress_model
+    description: "Series of unpredictable stressors over 2-4 weeks (wet bedding, light disruption, tilted cage, restraint, social isolation, etc.). Produces anhedonia, social avoidance, cognitive deficits — multi-symptom depression model."
+    circuits_engaged: [stress_hpa, lc_norepinephrine, reward_addiction, hippocampal_circuit]
+    topics: [fear_and_anxiety, emotional_processing, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        measure: sucrose_preference_open_field_coat_state
+        neural_measure: HPA_CORT_hippocampal_neurogenesis
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MOTOR LEARNING PARADIGMS
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: rotarod
+    label: Rotarod Test
+    aliases: [rota-rod, accelerating rotarod, motor coordination]
+    cognitive_construct: motor_coordination_balance_cerebellar
+    description: "Rat/mouse placed on rotating rod accelerating from 4 to 40 RPM over 5 minutes. Fall latency = motor coordination and balance. Cerebellar lesions dramatically impair. Used in ataxia models."
+    circuits_engaged: [motor_circuit, cerebellar_purkinje, basal_ganglia_loop]
+    topics: [motor_learning, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        measure: latency_to_fall_seconds
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: balance_beam_ataxia_rating_scale
+        cross_species_validity: analogous
+
+  - id: skilled_forelimb_reaching
+    label: Skilled Forelimb Reaching (Single-Pellet Reaching)
+    aliases: [pasta matrix, sunflower seed reaching, skilled reach, Whishaw reach]
+    cognitive_construct: skilled_voluntary_movement_M1_learning
+    description: "Small food pellet on pedestal outside cage. Rat extends single forelimb through slot to grasp pellet. Measures acquisition and asymptotic performance across sessions. Each reach has 6+ movement components scored with high-speed video."
+    circuits_engaged: [motor_circuit, corticostriatal_beta, cerebellar_purkinje]
+    topics: [motor_learning, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        measure: success_rate_movement_component_scores
+        neural_measure: M1_LFP_beta_desynchronization corticospinal_tract
+        cross_species_validity: validated
+        key_papers:
+          - "Whishaw (1996) — An endpoint, descriptive, and kinematic comparison of skilled reaching in mice and rats"
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: manual_dexterity_pegboard_nine_hole
+        neural_measure: EEG_beta_ERD fMRI_M1
+        cross_species_validity: adapted
+
+  - id: sequence_learning
+    label: Sequential Motor Learning / Serial Reaction Time
+    aliases: [SRT, sequence learning, motor sequence, procedural learning]
+    cognitive_construct: procedural_motor_sequence_learning_striatum
+    description: "Repeated sequence of button presses/lever presses. RTs accelerate on practiced sequence (implicit) vs random (sequence-specific learning). Striatal-dependent."
+    circuits_engaged: [basal_ganglia_loop, motor_circuit, corticostriatal_beta]
+    topics: [motor_learning, reward_learning]
+    species_implementations:
+      - species: human
+        platform: BrainE_SRT
+        response_modality: button_press
+        neural_measure: EEG_beta_power fMRI_putamen
+        cross_species_validity: validated
+        key_papers:
+          - "Nissen & Bullemer (1987) — Attentional requirements of learning — Evidence from performance measures"
+      - species: rat
+        analog: heterogeneous_sequence_task
+        response_modality: lever_press_sequence
+        neural_measure: striatal_LFP_beta_bursts
+        cross_species_validity: adapted
+        notes: "Rat sequence task validated in Ramanathan lab; corticostriatal beta tracks sequence chunking"
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # WORKING MEMORY & EXECUTIVE FUNCTION
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: delayed_nonmatch_to_sample
+    label: Delayed Non-Match to Sample (DNMS / DNMTS)
+    aliases: [DNMS, DNMTS, delayed match, recognition memory test]
+    cognitive_construct: recognition_memory_delay_dependent
+    description: "Sample phase: touch one of two objects. After delay, new object presented alongside identical-to-sample. Choose NEW object (non-match). Classic hippocampal memory test; delay-dependent impairments after hippocampal lesions."
+    circuits_engaged: [hippocampal_circuit, perirhinal_cortex, prefrontal_cortex]
+    topics: [episodic_memory, working_memory]
+    species_implementations:
+      - species: rat
+        measure: accuracy_vs_delay_function
+        neural_measure: hippocampal_theta_delay_activity
+        cross_species_validity: validated
+      - species: macaque
+        cross_species_validity: validated
+        key_papers:
+          - "Mishkin & Delacour (1975) — An analysis of short-term visual memory in the monkey"
+      - species: human
+        response_modality: button_press
+        neural_measure: fMRI_hippocampus_perirhinal
+        cross_species_validity: validated
+
+  - id: trace_conditioning
+    label: Trace vs Delay Fear Conditioning
+    aliases: [trace conditioning, temporal gap, hippocampus-dependent fear]
+    cognitive_construct: temporal_association_hippocampal_fear
+    description: "Delay conditioning (CS-US overlap) → amygdala-dependent, hippocampus-optional. Trace conditioning (gap between CS offset and US onset) → hippocampus-dependent temporal bridging. Trace interval is key manipulation."
+    circuits_engaged: [fear_circuit, hippocampal_circuit, prefrontal_cortex]
+    topics: [fear_and_anxiety, episodic_memory]
+    species_implementations:
+      - species: rat
+        measure: freezing_percent_to_CS
+        trace_interval_sec: [0.5, 5, 20]
+        neural_measure: hippocampal_theta_amygdala_LFP
+        cross_species_validity: validated
+        key_papers:
+          - "McEchron et al. (1998) — Hippocampectomy disrupts auditory trace fear conditioning and contextual fear conditioning in the rat"
+      - species: human
+        response_modality: skin_conductance_response
+        neural_measure: fMRI_hippocampus_amygdala
+        cross_species_validity: validated
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # SLEEP & MEMORY CONSOLIDATION
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: sleep_dependent_consolidation
+    label: Sleep-Dependent Memory Consolidation
+    aliases: [sleep learning, overnight consolidation, SWS consolidation, REM sleep]
+    cognitive_construct: memory_consolidation_offline_replay
+    description: "Encode task; sleep vs wakefulness period; retest. Sleep benefit quantified as improvement in test vs wake retention interval. NREM slow oscillations coordinate sharp-wave ripples (hippocampal replay) for systems consolidation."
+    circuits_engaged: [hippocampal_circuit, thalamocortical_sensory, sharp_wave_ripple, papez_circuit]
+    topics: [sleep_and_oscillations, episodic_memory, motor_learning]
+    species_implementations:
+      - species: rat
+        measure: post_sleep_vs_post_wake_retention
+        neural_measure: sharp_wave_ripples_replay_sequences
+        cross_species_validity: validated
+        key_papers:
+          - "Ramanathan et al. (2015, PLoS Biology) — Sleep-dependent reactivation of ensembles in motor cortex promotes skill consolidation"
+          - "Wilson & McNaughton (1994) — Reactivation of hippocampal ensemble memories during sleep"
+      - species: human
+        platform: BrainE_sleep
+        measure: PSG_sleep_spindles EEG_power
+        neural_measure: EEG_sleep_spindles slow_oscillations
+        cross_species_validity: validated
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # ATTENTION / PERCEPTION
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  - id: operant_visual_attention
+    label: Operant 5-Choice Visual Attention / Signal Detection
+    aliases: [signal detection theory, d-prime, hit rate, false alarm]
+    cognitive_construct: visual_attention_signal_detection
+    description: "Detect brief visual signal in noise; report presence or absence. Measures d' (sensitivity) and beta (response criterion) from signal detection theory. D' independent of response bias."
+    formula: "d' = z(hit_rate) - z(false_alarm_rate);  beta = f(d'/2) * [z(hit) + z(FA)]"
+    circuits_engaged: [attention_salience, prefrontal_cortex, lc_norepinephrine]
+    topics: [attention_and_salience, cognitive_control]
+    species_implementations:
+      - species: rat
+        platform: BrainER_operant
+        response_modality: nosepoke_or_lever
+        neural_measure: LFP_PFC_NE
+        cross_species_validity: validated
+      - species: human
+        platform: BrainE
+        response_modality: button_press
+        neural_measure: EEG_alpha_P3
+        cross_species_validity: validated
+
+  - id: prism_adaptation
+    label: Prism Adaptation / Motor Recalibration
+    aliases: [prism goggles, motor adaptation, aftereffect, cerebellar adaptation]
+    cognitive_construct: visuo_motor_adaptation_cerebellar
+    description: "Wear prismatic lenses shifting visual field 10-30 degrees. After initial error and adaptation, lens removal reveals aftereffect (movement in opposite direction). Cerebellar lesions impair adaptation; stroke rehabilitation tool."
+    circuits_engaged: [cerebellar_purkinje, motor_circuit, thalamocortical_sensory]
+    topics: [motor_learning, development_and_plasticity]
+    species_implementations:
+      - species: human
+        measure: aftereffect_magnitude_degrees
+        neural_measure: fMRI_cerebellum TMS_disruption
+        cross_species_validity: validated
+      - species: macaque
+        cross_species_validity: validated
+        key_papers:
+          - "Weiner et al. (1983) — Adaptation to laterally displacing prisms in Macaca mulatta"

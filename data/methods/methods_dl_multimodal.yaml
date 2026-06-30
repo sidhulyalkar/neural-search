@@ -1,0 +1,432 @@
+# Methods Taxonomy — Deep Learning, Transformers & Multimodal Integration
+# Extension to methods_taxonomy.yaml covering modern ML approaches to neural data analysis.
+# These methods complement classical signal processing by discovering non-linear,
+# high-dimensional structure and bridging across recording modalities.
+
+categories:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  - id: deep_learning_neural
+    label: Deep Learning for Neural Data
+    description: "Non-linear neural architectures that discover structure in spike trains, LFP, EEG, fMRI without hand-crafted features"
+    methods:
+
+      - id: lfads
+        label: LFADS (Latent Factor Analysis via Dynamical Systems)
+        aliases: [LFADS, latent dynamics, neural dynamical system, sequential VAE]
+        formula: "Encoder RNN: q(z|x);  Generator RNN: p(x_t|z,g_t);  g_t = f(g_{t-1}, u_t);  ELBO = E_q[log p(x|g)] - KL[q(z)||p(z)]"
+        computes: [denoised_firing_rates, latent_dynamics, single_trial_trajectories, inferred_inputs]
+        mathematical_basis:
+          - "Sequential VAE: encoder RNN reads full trial → initial condition z; decoder RNN generates smooth firing rates"
+          - "Generator RNN evolves autonomous dynamics with optional inferred perturbation inputs u_t"
+          - "ELBO maximization: reconstruction accuracy + KL regularization on latent space"
+          - "Enables single-trial analysis: each trial has unique latent trajectory"
+        advantages:
+          - "Smooths single-trial spike data without assuming Gaussian noise"
+          - "Discovers low-dimensional rotational and other dynamical motifs"
+          - "Handles variable firing rates across trials and neurons"
+        assumptions:
+          lowdimensional_dynamics: "Neural population governed by low-D dynamical system — violated if dynamics are truly high-dimensional"
+          smooth_rates: "Underlying rates smooth in time; spiking adds Poisson noise"
+        topics: [spectral_dynamics, reward_learning, motor_learning]
+        key_papers:
+          - "Pandarinath et al. (2018, Nature Methods) — Inferring single-trial neural population dynamics using sequential auto-encoders"
+
+      - id: neural_ode
+        label: Neural ODEs / Neural Dynamical Systems
+        aliases: [NODE, latent ODE, dynamical systems, continuous-time RNN]
+        formula: "dh/dt = f(h(t), t, theta);  h(T) = h(0) + integral_0^T f(h,t,theta) dt;  solved via adaptive ODE solver"
+        computes: [continuous_time_latent_dynamics, trajectory_interpolation, extrapolation]
+        mathematical_basis:
+          - "Replace discrete residual connections with continuous ODE — depth becomes integration time"
+          - "Adjoint method for backpropagation: compute gradients via reverse-mode ODE solve"
+          - "Memory efficient: O(1) memory instead of O(L) for L layers"
+        neuroscience_use:
+          - "Model irregular spike times naturally (continuous time)"
+          - "Fit to calcium imaging at variable frame rates"
+          - "Predict dynamics during recording gaps"
+        key_papers:
+          - "Chen et al. (2018, NeurIPS) — Neural ordinary differential equations"
+          - "Hurwitz et al. (2021) — Targeted neural dynamical modeling"
+        topics: [spectral_dynamics, motor_learning]
+
+      - id: poisson_vae
+        label: Poisson VAE / Beta-VAE for Spike Trains
+        aliases: [spike VAE, Poisson process VAE, beta-VAE spikes]
+        formula: "p(x_t|z) = Poisson(lambda_t);  lambda_t = softplus(decoder(z));  maximize ELBO = E[log p(x|z)] - beta*KL[q||p]"
+        computes: [latent_codes, firing_rate_estimates, disentangled_representations]
+        mathematical_basis:
+          - "Poisson likelihood correctly models discrete spike counts (vs Gaussian that allows negative rates)"
+          - "Beta > 1: more disentangled latent space; beta < 1: better reconstruction"
+          - "Closed-form KL for Gaussian latent: KL[N(mu,sigma)||N(0,1)] = 0.5*(mu^2 + sigma^2 - log(sigma^2) - 1)"
+        topics: [spectral_dynamics, reward_learning]
+
+      - id: convolutional_eeg
+        label: CNN / EEGNet for EEG Classification
+        aliases: [EEGNet, ShallowConvNet, DeepConvNet, BrainAge-CNN]
+        formula: "Conv(temporal) → BatchNorm → DepthwiseConv(spatial) → SeparableConv(temporal) → Dense"
+        computes: [event_classification, brain_age, BCI_decode, artifact_detection]
+        mathematical_basis:
+          - "Temporal filters learn oscillatory patterns at multiple timescales"
+          - "Depthwise-separable convolution: O(k*C_in + C_in*C_out) vs O(k*C_in*C_out) params"
+          - "EEGNet: 4 learned temporal filters × 2 spatial filters = 8 feature maps"
+        assumptions:
+          stationarity: "Assumes EEG statistics stable across trials within subject (domain shift is a challenge)"
+          electrode_consistency: "Requires consistent montage; spatial filters don't generalize across cap layouts"
+        topics: [spectral_dynamics, attention_and_salience, motor_learning]
+        key_papers:
+          - "Lawhern et al. (2018, J Neural Engineering) — EEGNet: A compact convolutional neural network for EEG-based BCIs"
+
+      - id: graph_neural_network_brain
+        label: Graph Neural Networks for Brain Connectivity
+        aliases: [GNN, brain GCN, functional connectivity GNN, spectral graph convolution]
+        formula: "H^{l+1} = sigma(D^{-1/2} * A * D^{-1/2} * H^l * W^l);  A = adjacency (FC matrix)"
+        computes: [graph_classification, node_embeddings, disease_prediction, cross_subject_alignment]
+        mathematical_basis:
+          - "Graph convolution: aggregate features from connected nodes using normalized adjacency"
+          - "Chebyshev polynomial approximation for spectral graph filters"
+          - "Dynamic graphs: edge weights from functional connectivity (correlation or coherence)"
+        neuroscience_use:
+          - "Classify psychiatric disorders from resting-state fMRI connectivity"
+          - "Predict cognitive task performance from brain graph topology"
+          - "Learn cross-subject alignment of functional networks"
+        key_papers:
+          - "Ktena et al. (2018, NeuroImage) — Metric learning with spectral graph convolutions on brain connectivity networks"
+        topics: [spectral_dynamics, cognitive_control, emotional_processing]
+
+      - id: deep_spike_sort
+        label: Deep Learning Spike Sorting
+        aliases: [YASS, Kilosort3, MountainSort, neural clustering CNN]
+        computes: [spike_detection, spike_sorting, unit_isolation, template_learning]
+        mathematical_basis:
+          - "Detect: CNN classifier on raw voltage waveforms → spike vs noise"
+          - "Sort: cluster spike waveforms via variational inference (VAMP) or template matching"
+          - "Drift correction: track electrode motion across session"
+        advantages:
+          - "Scale to 1000+ channel probes (Neuropixels)"
+          - "Learns templates from data rather than hand-tuned thresholds"
+        assumptions:
+          stationarity_templates: "Templates should be stable; failing if electrode drifts significantly"
+        key_papers:
+          - "Pachitariu et al. (2016, NeurIPS) — Fast and accurate spike sorting of high-channel count probes with KiloSort"
+        topics: [spectral_dynamics, neural_synchrony]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  - id: transformer_neural
+    label: Transformers & Foundation Models for Neural Data
+    description: "Attention-based architectures learning context-rich representations of neural signals; increasingly pre-trained on large datasets"
+    methods:
+
+      - id: neural_data_transformer
+        label: Neural Data Transformer (NDT)
+        aliases: [NDT, spike transformer, population activity transformer]
+        formula: "Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) * V;  Multi-Head: concat(head_1,...,head_h) * W^O"
+        computes: [masked_spike_prediction, firing_rate_smoothing, cross_area_prediction]
+        mathematical_basis:
+          - "Self-attention: each neuron's activity attends to all other neurons simultaneously"
+          - "Masked token prediction (BERT-style): predict held-out spikes from context"
+          - "Position encoding: temporal position in trial injected into token representation"
+          - "Feed-forward: 2-layer MLP within each transformer block"
+        advantages_over_rnn:
+          - "Parallel computation — no sequential bottleneck"
+          - "Long-range attention — can capture dependencies across full trial"
+          - "Masked pretraining generalizes across sessions and animals"
+        key_papers:
+          - "Ye & Pandarinath (2021) — Representation learning for neural population activity with Neural Data Transformer"
+        topics: [spectral_dynamics, reward_learning, motor_learning]
+
+      - id: bnt
+        label: Brain Neural Transformer (BNT) / Large Neural Models
+        aliases: [BNT, BrainBERT, LaBraM, BENDR, neural foundation model]
+        formula: "Pre-train: predict masked EEG segments; Fine-tune: linear probe for downstream task"
+        computes: [cross_session_representations, brain_age_estimation, disorder_classification, BCI_decode]
+        mathematical_basis:
+          - "Large-scale self-supervised pretraining on diverse EEG/LFP datasets"
+          - "Tokenize EEG: segment into patches (similar to ViT image patches)"
+          - "Contrastive pretraining (BENDR): align representations from same recording, different views"
+        key_papers:
+          - "Costa et al. (2022) — BENDR: Using transformers and a contrastive self-supervised learning task to learn from massive amounts of EEG data"
+          - "Jiang et al. (2024) — Large Brain Model (LaBraM) for electroencephalography"
+        topics: [spectral_dynamics, attention_and_salience, cognitive_control]
+
+      - id: brain_llm_decoder
+        label: Brain Decoder / Brain-to-Text / Brain-to-Image
+        aliases: [brain captioning, fMRI decoding, BrainVoyager, UnCLIP brain]
+        formula: "z_brain = Encoder(EEG/fMRI);  x_reconstructed = Diffusion_Decoder.condition(z_brain)"
+        computes: [imagined_image_reconstruction, speech_decoding, thought_vocalization]
+        mathematical_basis:
+          - "Align brain signal embedding space to CLIP/DALL-E embedding space"
+          - "Ridge regression or MLP maps brain activity → CLIP image/text embedding"
+          - "Conditioned diffusion model generates image from brain-derived embedding"
+          - "Evaluated on reconstruction similarity (R^2, SSIM, CLIP cosine similarity)"
+        assumptions:
+          subject_specificity: "Models typically subject-specific; cross-subject alignment is active research"
+          repetition: "Requires many trials of same stimulus for stable decoding"
+        key_papers:
+          - "Ozcelik & VanRullen (2023) — Natural Scene Reconstruction from fMRI Signals using Generative Latent Diffusion"
+          - "Defossez et al. (2023) — Decoding speech from non-invasive brain recordings"
+        topics: [attention_and_salience, spectral_dynamics]
+        ethical_note: "Raises privacy concerns for mental imagery; consent required for decoded content"
+
+      - id: ssm_mamba_neural
+        label: State Space Models (S4, Mamba) for Neural Sequences
+        aliases: [S4, Mamba, structured SSM, linear attention, SSM neural]
+        formula: "x'(t) = Ax(t) + Bu(t);  y(t) = Cx(t) + Du(t);  Mamba: selective SSM with input-dependent (B,C,Delta)"
+        computes: [long_sequence_modeling, spike_train_prediction, EEG_generation]
+        mathematical_basis:
+          - "Continuous-time state space model discretized for sequences"
+          - "HiPPO initialization: A matrix designed to remember history optimally"
+          - "Mamba: gates parameters selectively — can focus on relevant inputs and ignore noise"
+          - "O(L log L) complexity vs O(L^2) for attention — efficient for long sequences"
+        advantages_over_transformers:
+          - "Linear scaling with sequence length — critical for long (hours) neural recordings"
+          - "Causal: computationally streaming-friendly for real-time BCI"
+        key_papers:
+          - "Gu et al. (2022, ICLR) — Efficiently modeling long sequences with structured state spaces"
+          - "Gu & Dao (2023) — Mamba: Linear-time sequence modeling with selective state spaces"
+        topics: [spectral_dynamics, motor_learning]
+
+      - id: diffusion_eeg
+        label: Diffusion Models for Neural Signal Generation / Augmentation
+        aliases: [score-based models, DDPM EEG, neural data augmentation, EEG synthesis]
+        formula: "Forward: q(x_t|x_0) = N(x_t; sqrt(alpha_t)*x_0, (1-alpha_t)*I);  Reverse: p(x_{t-1}|x_t) = N(mu_theta, sigma_theta)"
+        computes: [synthetic_EEG, data_augmentation, artifact_removal, conditional_generation]
+        mathematical_basis:
+          - "Forward process gradually adds Gaussian noise; reverse process learned to denoise"
+          - "Denoising score matching: neural network learns score function nabla log p(x_t)"
+          - "Classifier-free guidance: condition generation on class label (e.g., motor imagery)"
+        use_cases:
+          augmentation: "Generate synthetic EEG for underrepresented classes in BCI"
+          artifact_removal: "Condition on clean template; diffuse and reverse to remove muscle artifacts"
+          cross_subject: "Generate subject-adapted EEG from mean population template"
+        key_papers:
+          - "Tosun et al. (2023) — Diffusion models for EEG data augmentation"
+        topics: [spectral_dynamics, motor_learning]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  - id: multimodal_integration
+    label: Multimodal Neural Data Integration
+    description: "Methods for integrating signals across recording modalities, resolving temporal-spatial tradeoffs, and discovering cross-modal structure"
+    methods:
+
+      - id: eeg_fmri_fusion
+        label: Simultaneous EEG-fMRI Integration
+        aliases: [EEG-fMRI, simultaneous EEG fMRI, hemodynamic-neural coupling]
+        formula: "BOLD(t) = HRF * neural(t) + noise;  convolution: h(t) = int r(tau)*HRF(t-tau) dtau"
+        computes: [temporal_precision_with_spatial_resolution, source_localization, neurovascular_coupling]
+        mathematical_basis:
+          - "HRF (hemodynamic response function): gamma variate peaking ~5s after neural event"
+          - "Inverse HRF (deconvolution) estimates neural timing from BOLD signal"
+          - "EEG provides trial-by-trial variation; fMRI provides spatial localization"
+          - "Combined: EEG band power regressed against BOLD across regions and time"
+        artifacts:
+          mri_artifact: "MRI scanner generates 50-500μV artifacts at TR repetition rate — requires gradient artifact removal (GAR) then BCG artifact removal"
+        key_papers:
+          - "Goldman et al. (2002) — Simultaneous EEG and fMRI of the alpha rhythm"
+          - "Debener et al. (2006) — Trial-by-trial coupling of concurrent EEG and fMRI identifies the dynamics of performance monitoring"
+        topics: [spectral_dynamics, attention_and_salience, episodic_memory]
+        modalities_linked: [EEG, fMRI]
+
+      - id: calcium_electrophysiology_fusion
+        label: Calcium Imaging + Electrophysiology Fusion
+        aliases: [2P + ephys, calcium-LFP, widefield + neuropixels]
+        formula: "dF/F(t) = (F(t) - F0) / F0;  deconv: spikes ~ Poisson(rate(t));  rate(t) from OASIS/CASCADE"
+        computes: [cell_identity_with_spiking, population_dynamics, excitatory_inhibitory_labeling]
+        mathematical_basis:
+          - "Calcium indicator fluorescence (GCaMP) saturates at high firing rates — non-linear"
+          - "Deconvolution (OASIS, cascade): infer spikes from dF/F using exponential decay model"
+          - "Time constant tau_decay varies by indicator: GCaMP6f ~400ms; jGCaMP7f ~150ms"
+          - "Latency: calcium signal lags spikes by ~50-200ms → must account for alignment"
+        advantages_of_combination:
+          - "Calcium imaging: identify cell types (excitatory vs inhibitory via transgenic lines)"
+          - "Electrophysiology: millisecond temporal precision, catches fast oscillations"
+          - "Combined: label LFP oscillations to specific cell types"
+        key_papers:
+          - "Steinmetz et al. (2021, Science) — Neuropixels 2.0: A miniaturized high-density probe for stable long-term recordings"
+        topics: [spectral_dynamics, neural_synchrony]
+        modalities_linked: [calcium_imaging, LFP, single_unit]
+
+      - id: lfp_fmri_neurovascular
+        label: LFP-fMRI Neurovascular Coupling Analysis
+        aliases: [neurovascular coupling, BOLD-LFP, neural hemodynamic]
+        formula: "BOLD(t) = sum_f w_f * band_power_f(t) convolved with HRF(t)"
+        computes: [neurovascular_coupling, hemodynamic_response_function, frequency_BOLD_mapping]
+        mathematical_basis:
+          - "High-frequency broadband LFP (70-150 Hz) best predicts BOLD signal"
+          - "Linear model: BOLD = sum over frequency bands weighted by coupling coefficient w_f"
+          - "Non-linear effects: BOLD saturation at high firing rates; balloon model for CBF"
+          - "Local field potential gamma correlates with spiking; alpha/beta inversely correlated with BOLD"
+        key_findings:
+          - "High-gamma LFP (70-150 Hz) is the best EEG/LFP predictor of BOLD signal"
+          - "Alpha/beta power NEGATIVELY correlates with BOLD (inhibitory influence)"
+          - "Theta positively correlates with BOLD in hippocampus/PFC"
+        key_papers:
+          - "Logothetis et al. (2001, Nature) — Neurophysiological investigation of the basis of the fMRI signal"
+        topics: [spectral_dynamics, episodic_memory, attention_and_salience]
+        modalities_linked: [LFP, fMRI]
+
+      - id: meg_eeg_source_localization
+        label: MEG/EEG Source Localization (Inverse Problem)
+        aliases: [source reconstruction, beamforming, MNE, LCMV, dSPM, LORETA]
+        formula: "y = Lx + noise;  y: sensors (300×T), L: lead field (300×S), x: sources (S×T);  MNE: x_hat = L^T (L*L^T + lambda*I)^{-1} y"
+        computes: [cortical_source_maps, dipole_location, source_power_spectra]
+        mathematical_basis:
+          - "Forward problem (physics): L maps source currents x to sensor signals y"
+          - "Inverse problem (ill-posed): infinitely many source distributions consistent with any sensor data"
+          - "Minimum norm estimate (MNE): minimum energy source"
+          - "LCMV beamformer: spatially filter to maximize source power at target location"
+          - "dSPM: normalize MNE by noise variance — like z-score of source activation"
+          - "Bayesian: prior over source covariance → posterior over sources"
+        fundamental_limitation:
+          - "Underdetermined system: ~300 sensors but ~10,000 sources — requires regularization"
+          - "Cannot distinguish truly distributed from focal activity without prior"
+          - "Individual MRI required for accurate forward model"
+        modalities_linked: [EEG, MEG]
+        topics: [spectral_dynamics, attention_and_salience, cognitive_control]
+
+      - id: cca_multimodal
+        label: Canonical Correlation Analysis (CCA) for Multimodal Alignment
+        aliases: [CCA, DCCA, kernel CCA, multi-view learning, shared subspace]
+        formula: "maximize corr(u^T X, v^T Y)  s.t.  u^T*Sigma_XX*u = 1, v^T*Sigma_YY*v = 1"
+        computes: [shared_latent_subspace, cross_modal_alignment, transfer_learning_features]
+        mathematical_basis:
+          - "Finds linear projections u, v that maximally correlate two data matrices X (modality 1) and Y (modality 2)"
+          - "Generalized eigenproblem: Sigma_XY * Sigma_YY^{-1} * Sigma_YX * u = lambda * Sigma_XX * u"
+          - "DCCA (Deep CCA): replace linear u,v with neural networks"
+          - "Regularized CCA: needed when n_samples < n_features"
+        neuroscience_use:
+          - "Align fMRI and behavioral data into shared subspace"
+          - "Align EEG across subjects for population-level analysis"
+          - "Find shared structure between spike trains and LFP"
+          - "RSA (Representational Similarity Analysis): compare RDMs across modalities"
+        topics: [spectral_dynamics, attention_and_salience, social_behavior]
+        modalities_linked: [EEG, fMRI, LFP, behavior]
+
+      - id: multimodal_transformer
+        label: Multimodal Neural Transformer (Cross-Attention)
+        aliases: [cross-modal attention, multimodal fusion transformer, dual encoder]
+        formula: "Cross-Attn(Q_modal1, K_modal2, V_modal2) = softmax(Q_modal1 * K_modal2^T / sqrt(d)) * V_modal2"
+        computes: [cross_modal_representations, aligned_embeddings, multimodal_decoding]
+        mathematical_basis:
+          - "Each modality tokenized separately (EEG patch tokens, fMRI ROI tokens, video frame tokens)"
+          - "Cross-attention: queries from one modality attend to keys/values from another"
+          - "Fusion options: early fusion (concatenate), late fusion (separate encoders + MLP), cross-attention (optimal)"
+          - "Contrastive pretraining aligns matched pairs across modalities"
+        use_cases:
+          - "Align EEG with concurrent video (naturalistic paradigms)"
+          - "Fuse simultaneous LFP + calcium imaging into joint representation"
+          - "Brain-to-text decoding: EEG tokens attending to speech spectrogram tokens"
+        key_papers:
+          - "Radford et al. (2021) — Learning transferable visual models from natural language supervision (CLIP)"
+          - "Schneider et al. (2023) — Learnable spectral pooling for audio-visual grounding"
+        topics: [spectral_dynamics, attention_and_salience]
+        modalities_linked: [EEG, fMRI, video, audio, behavior]
+
+      - id: rsa
+        label: Representational Similarity Analysis (RSA)
+        aliases: [RSA, representational geometry, RDM, neural manifold comparison]
+        formula: "RDM_ij = 1 - r(response_i, response_j);  RSA_corr = corr(RDM_neural, RDM_model)"
+        computes: [representational_geometry, cross_species_alignment, model_comparison]
+        mathematical_basis:
+          - "Build representational dissimilarity matrix (RDM): pairwise distances between stimulus representations"
+          - "Compare RDMs across brain regions, subjects, species, or computational models"
+          - "Spearman rank correlation between RDMs: model-brain alignment metric"
+          - "Distance options: 1-Pearson_r, Euclidean, cosine, Mahalanobis"
+        advantages:
+          - "Species-agnostic: compare RDMs from rat LFP and human fMRI without co-registration"
+          - "Model comparison: which DNN layer best explains brain's RDM?"
+          - "Temporal RSA: RDM at each time point reveals when stimulus features are coded"
+        key_papers:
+          - "Kriegeskorte et al. (2008, Frontiers in Systems Neuroscience) — Representational similarity analysis — connecting the branches of systems neuroscience"
+        topics: [spectral_dynamics, episodic_memory, attention_and_salience]
+        modalities_linked: [fMRI, EEG, LFP, single_unit, computational_model]
+
+      - id: spatial_transcriptomics_ephys
+        label: Spatial Transcriptomics + Electrophysiology Integration
+        aliases: [MERFISH+ephys, Allen MERFISH, transcriptomic cell type electrophysiology]
+        formula: "Map ephys clusters to transcriptomic cell types via shared feature space (Patch-seq, MAPseq)"
+        computes: [cell_type_electrophysiology_mapping, gene_expression_firing_rate, transcriptomic_cluster_activity]
+        mathematical_basis:
+          - "Patch-seq: simultaneous patch-clamp recording + single-cell RNA-seq of same cell"
+          - "Align transcriptomic clusters to electrophysiological types via ridge regression / CCA"
+          - "MERFISH: image-based spatial transcriptomics — assign Allen CCF regions to 1000+ genes simultaneously"
+          - "Integration: predict cell-type composition from LFP/MUA activity signatures"
+        key_papers:
+          - "Cadwell et al. (2016, Nature Biotechnology) — Electrophysiological, transcriptomic and morphological profiling of single neurons using Patch-seq"
+          - "Zhang et al. (2023, Science) — Spatially resolved cell atlas of the mouse primary motor cortex by MERFISH"
+        topics: [neural_synchrony, spectral_dynamics, development_and_plasticity]
+        modalities_linked: [single_unit, LFP, transcriptomics, spatial_gene_expression]
+
+      - id: nwb_dandi_crossmodal
+        label: NWB/DANDI Multi-Dataset Cross-Modal Analysis Pipeline
+        aliases: [DANDI meta-analysis, NWB reanalysis, cross-lab integration]
+        formula: "Standardize → ingest → compute shared features → meta-analytic effect size"
+        computes: [cross_lab_replication, meta_analytic_effect_sizes, dataset_harmonization]
+        mathematical_basis:
+          - "NWB (Neurodata Without Borders): standardized HDF5 format for all modalities"
+          - "Effect size meta-analysis: Hedges' g weighted by inverse variance"
+          - "Batch correction: ComBat, Harmony, or z-score normalization per dataset"
+          - "Harmonize different sampling rates, electrode layouts, behavioral task designs"
+        key_papers:
+          - "Teeters et al. (2015, Neuron) — Neurodata Without Borders — Creating a common data format for neurophysiology"
+          - "Bhanu et al. (2022, DANDI — A collaborative archive for neurophysiology)"
+        topics: [spectral_dynamics, episodic_memory, reward_learning]
+        modalities_linked: [all]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  - id: multimodal_modeling
+    label: Computational Modeling Bridging Modalities
+    description: "Computational approaches that explicitly model how signals in one modality relate to signals in another"
+    methods:
+
+      - id: mean_field_theory
+        label: Mean-Field Theory / Neural Mass Models
+        aliases: [Wilson-Cowan, neural mass, mean-field approximation, Jansen-Rit]
+        formula: "dE/dt = (-E + F(w_EE*E - w_EI*I + P_e)) / tau_E;  dI/dt = (-I + F(w_IE*E - w_II*I + P_i)) / tau_I"
+        computes: [population_firing_rates, bifurcation_diagram, oscillation_frequency, spectral_peaks]
+        mathematical_basis:
+          - "Average over all neurons in a population → replace spiking by firing rate"
+          - "Wilson-Cowan: E (excitatory) and I (inhibitory) populations"
+          - "Fixed points (steady states), limit cycles (oscillations), bifurcations"
+          - "Can predict dominant oscillation frequency from connectivity weights"
+        relationship_to_data:
+          - "LFP ≈ sum of synaptic currents → connect to mean-field input currents"
+          - "BOLD ≈ low-pass filtered excitatory population activity"
+          - "Explains why disrupting E/I balance changes oscillation frequency"
+        key_papers:
+          - "Wilson & Cowan (1972) — Excitatory and inhibitory interactions in localized populations"
+        topics: [spectral_dynamics, neural_synchrony]
+
+      - id: dcm_spectral
+        label: Spectral DCM for LFP/EEG Cross-Frequency
+        aliases: [spectral DCM, DCM for cross-spectra, neural mass DCM]
+        formula: "G(omega) = |J(omega)|^{-2} * S;  J(omega) = I*omega - A_eff(omega);  fit to cross-spectral density"
+        computes: [effective_connectivity, cross_frequency_coupling_model, E_I_ratio_inference]
+        mathematical_basis:
+          - "Extension of DCM to frequency domain using neural mass models"
+          - "Effective connectivity estimated by fitting predicted cross-spectral density to observed"
+          - "Accounts for oscillatory dynamics naturally — each region has resonant frequency"
+          - "Can infer E/I ratio, NMDA/GABA receptor parameters from LFP spectra"
+        key_papers:
+          - "Moran et al. (2013) — Consistent spectral predictors for dynamic causal models of steady-state responses"
+        topics: [spectral_dynamics, cognitive_control]
+
+      - id: dimensionality_alignment
+        label: Dimensionality Alignment / Manifold Registration
+        aliases: [hyperalignment, SVCCA, plateau CKA, neural manifold alignment, procrustes]
+        formula: "align: min_W ||W*X - Y||_F  s.t.  W^T*W = I  (Procrustes);  CKA = ||X^T*Y||_F / (||X^T*X||_F * ||Y^T*Y||_F)"
+        computes: [cross_subject_alignment, inter_area_geometry_match, representational_universality]
+        mathematical_basis:
+          - "Procrustes alignment: find orthogonal rotation to best align two subspaces"
+          - "CKA (Centered Kernel Alignment): invariant to orthogonal transformation; compares RDMs with kernel trick"
+          - "SVCCA: SVD + CCA — identify shared subspace between two representations"
+          - "Hyperalignment (Haxby): align fMRI representational spaces across subjects via response patterns"
+        neuroscience_use:
+          - "Compare population codes across rats — do all rats use same low-D manifold?"
+          - "Align EEG brain representations across subjects for multivariate decoding"
+          - "Test whether mouse and human hippocampus share same representational geometry"
+        key_papers:
+          - "Haxby et al. (2011, Neuron) — A common, high-dimensional model of the representational space in human ventral temporal cortex"
+          - "Kornblith et al. (2019) — Similarity of neural network representations revisited"
+        topics: [spectral_dynamics, episodic_memory]
+        modalities_linked: [fMRI, EEG, LFP, single_unit]

@@ -7,11 +7,12 @@ import { OntologyPage } from './pages/OntologyPage'
 import { ReportsPage } from './pages/ReportsPage'
 import { EvaluationPage } from './pages/EvaluationPage'
 import { DemoPage } from './pages/DemoPage'
-import { KnowledgeExplorerPage } from './pages/KnowledgeExplorerPage'
 import { CoveragePage } from './pages/CoveragePage'
 import { BrainAtlasPage } from './pages/BrainAtlasPage'
 import { LabShowcasePage } from './pages/LabShowcasePage'
 import { MethodsKGPage } from './pages/MethodsKGPage'
+import { DisorderMapPage } from './pages/DisorderMapPage'
+import { KnowledgeExplorerPage } from './pages/KnowledgeExplorerPage'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/atlas" element={<BrainAtlasPage />} />
         <Route path="/labs/neatlabs" element={<LabShowcasePage />} />
         <Route path="/methods" element={<MethodsKGPage />} />
+        <Route path="/disorders" element={<DisorderMapPage />} />
       </Routes>
     </Layout>
   )

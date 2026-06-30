@@ -21,6 +21,14 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
+      '/kg': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/methods': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
     },
   },
 })

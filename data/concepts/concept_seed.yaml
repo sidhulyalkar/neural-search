@@ -1,0 +1,300 @@
+# Neuroscience Concept Authority Seed
+# Scholarpedia-inspired curated concept hierarchy.
+# Each concept has: aliases, related_methods, related_modalities, related_regions,
+# testable_predictions, narrower_concepts, broader_concept, motivates_methods.
+# Source authority: expert curation (Scholarpedia-style, not bulk-copied text).
+# License note: concept metadata is our original curation; inspired by Scholarpedia (CC BY-NC-SA).
+
+concepts:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # CORE THEORETICAL FRAMEWORKS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: predictive_coding
+    label: Predictive Coding
+    aliases: [predictive processing, hierarchical inference, Bayesian brain, free energy principle, prediction error minimization]
+    definition: "The brain minimizes prediction errors by maintaining hierarchical generative models. Higher areas send predictions down; lower areas send prediction errors up. Perception and action both minimize free energy."
+    formula: "F = E_q[log q(z) - log p(z,x)] = KL[q(z)||p(z|x)] - log p(x)"
+    concept_type: theory_or_principle
+    broader_concept: bayesian_neuroscience
+    narrower_concepts: [hierarchical_predictive_coding, active_inference, precision_weighting]
+    related_methods: [dcm_spectral, rsa, encoding_model, mismatch_negativity, granger_causality]
+    related_modalities: [eeg, fmri, lfp, meg]
+    related_regions: [prefrontal_cortex, visual_cortex, sensory_cortex, anterior_cingulate_cortex]
+    testable_predictions:
+      - "Prediction errors should be largest at lowest levels of the hierarchy"
+      - "Precision-weighted prediction error: attended stimuli generate larger responses"
+      - "Suppression of predictable stimuli: neural responses diminish with repetition"
+      - "MMN (mismatch negativity): deviant stimuli generate prediction error response"
+    dataset_affordances: [population_recordings, laminar_data, stimulus_metadata, trial_by_trial]
+    topics: [attention_and_salience, episodic_memory, cognitive_control, emotional_processing]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Predictive_coding"
+
+  - id: sparse_coding
+    label: Sparse Coding
+    aliases: [sparse representation, overcomplete dictionary, efficient coding, sparseness]
+    definition: "A neural population encodes stimuli using the minimum number of active units — only a small fraction of neurons fire to any given stimulus. Maximizes representational capacity and minimizes metabolic cost."
+    formula: "min_{a} ||x - Da||^2 + lambda*||a||_1;  where D=dictionary, a=sparse code"
+    concept_type: theory_or_principle
+    broader_concept: neural_coding
+    narrower_concepts: [matching_pursuit, ICA_independent_components, dictionary_learning]
+    related_methods: [ica, pca, nmf, encoding_model, dimensionality_reduction]
+    related_modalities: [calcium_imaging, single_unit, fmri]
+    related_regions: [visual_cortex, auditory_cortex, piriform_cortex, hippocampus]
+    testable_predictions:
+      - "Only 5-10% of neurons respond to any natural stimulus"
+      - "Receptive fields from sparse coding match V1 simple cell filters"
+      - "Increasing sparseness constraints → more specific, localized receptive fields"
+    dataset_affordances: [population_recordings, natural_stimuli, single_neuron_resolution]
+    topics: [neural_synchrony, attention_and_salience]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Sparse_coding"
+
+  - id: attractor_dynamics
+    label: Attractor Networks / Attractor Dynamics
+    aliases: [attractor network, fixed point attractor, Hopfield network, continuous attractor, ring attractor]
+    definition: "Neural circuits settle into stable low-energy states (attractors) representing stored memories or maintained representations. Multiple attractors = multiple stable memories. Energy landscape determines retrieval dynamics."
+    formula: "Energy: E = -0.5 * sum_{ij} w_{ij} * s_i * s_j;  Retrieval: s → nearest energy minimum"
+    concept_type: theory_or_principle
+    broader_concept: dynamical_systems_neuroscience
+    narrower_concepts: [hopfield_network, continuous_attractor, ring_attractor, working_memory_persistent_activity]
+    related_methods: [dimensionality_reduction, neural_ode, lfads, mean_field_theory]
+    related_modalities: [lfp, single_unit, fmri]
+    related_regions: [prefrontal_cortex, hippocampus, entorhinal_cortex]
+    testable_predictions:
+      - "Population activity occupies low-dimensional manifold even from high-dimensional recordings"
+      - "Memory recall shows rotational dynamics (trajectory through state space)"
+      - "Delay period activity maintains stable point attractor in PFC"
+    dataset_affordances: [population_recordings, delay_period_data, trial_by_trial, many_neurons]
+    topics: [working_memory, episodic_memory, decision_making]
+
+  - id: criticality
+    label: Neural Criticality
+    aliases: [critical brain hypothesis, self-organized criticality, neuronal avalanches, edge of chaos, power-law dynamics]
+    definition: "The brain operates near a phase transition between ordered and disordered states (criticality), where dynamic range, information transmission, and information storage are all maximized."
+    formula: "Avalanche size distribution: P(s) ~ s^{-alpha}, alpha≈1.5 (branching parameter sigma→1)"
+    concept_type: theory_or_principle
+    broader_concept: dynamical_systems_neuroscience
+    related_methods: [fooof, fft, pac, neuronal_avalanche_analysis, aperiodic_exponent]
+    related_modalities: [eeg, ecog, lfp, single_unit, fmri]
+    testable_predictions:
+      - "Aperiodic exponent beta ≈ 1 (1/f noise) at criticality"
+      - "Branching parameter sigma = 1 for neuronal avalanche size distributions"
+      - "Long-range temporal correlations in resting neural activity"
+      - "Dynamic range maximized near criticality"
+    dataset_affordances: [raw_lfp_eeg, long_continuous_recordings, resting_state, high_channel_count]
+    topics: [spectral_dynamics, sleep_and_oscillations]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Neuronal_avalanches"
+
+  - id: hebbian_learning
+    label: Hebbian Learning / Synaptic Plasticity Rules
+    aliases: [STDP, LTP, LTD, Hebb rule, fire together wire together, associative plasticity]
+    definition: "Synapses are strengthened when pre and postsynaptic neurons fire together (LTP). Spike-timing-dependent plasticity (STDP): causal spike order (pre→post within ~20ms) potentiates; reverse order depresses."
+    formula: "STDP: delta_w = A+ * exp(-dt/tau+)  if dt>0 (LTP);  A- * exp(dt/tau-)  if dt<0 (LTD)"
+    concept_type: theory_or_principle
+    broader_concept: synaptic_plasticity
+    narrower_concepts: [stdp, bcm_rule, oja_rule, triplet_stdp]
+    related_methods: [cross_correlation, pac, granger_causality]
+    related_modalities: [single_unit, calcium_imaging, patch_seq]
+    testable_predictions:
+      - "LTP induced by theta burst stimulation in hippocampus"
+      - "STDP window: ±20ms causal asymmetry in cortical slices"
+      - "Correlational structure of natural stimuli sculpts connectivity"
+    dataset_affordances: [spike_timing_data, stimulation_protocols, calcium_imaging_longitudinal]
+    topics: [episodic_memory, motor_learning, development_and_plasticity]
+
+  - id: population_coding
+    label: Population Coding
+    aliases: [distributed coding, population vector, decoding, neural code, ensemble coding]
+    definition: "Information is encoded in the pattern of activity across a population of neurons, not in single-cell responses. Allows graded, robust, high-capacity coding beyond what individual neurons could achieve."
+    formula: "Population vector: s_pop = sum_i r_i * c_i;  where r_i=firing rate, c_i=preferred stimulus"
+    concept_type: theory_or_principle
+    broader_concept: neural_coding
+    narrower_concepts: [rate_coding, temporal_coding, phase_coding, mixed_selectivity]
+    related_methods: [dimensionality_reduction, lfads, rsa, neural_data_transformer, decoding]
+    related_modalities: [single_unit, calcium_imaging, lfp]
+    testable_predictions:
+      - "Decoding accuracy increases with N neurons (square root law for Gaussian noise)"
+      - "Population vector predicts motor output before movement onset"
+      - "Neural manifold dimensionality << number of neurons"
+    dataset_affordances: [population_recordings, behavioral_labels, trial_by_trial, many_neurons]
+    topics: [motor_learning, episodic_memory, decision_making, attention_and_salience]
+
+  - id: reinforcement_learning_neural
+    label: Neural Reinforcement Learning / Temporal Difference Learning
+    aliases: [TD learning, Rescorla-Wagner model, prediction error dopamine, Q-learning neural, actor-critic]
+    definition: "Dopamine neurons signal reward prediction error (RPE): actual - expected reward. RPE updates value estimates iteratively (like TD learning). Striatal circuitry implements the critic; cortex implements the actor."
+    formula: "delta_t = r_t + gamma*V(s_{t+1}) - V(s_t);  delta = RPE (dopamine signal)"
+    concept_type: theory_or_principle
+    broader_concept: computational_neuroscience
+    narrower_concepts: [model_free_rl, model_based_rl, habitual_control, goal_directed_control]
+    related_methods: [fiber_photometry, voltammetry, fmri, pac]
+    related_modalities: [lfp, fiber_photometry, single_unit]
+    related_regions: [nucleus_accumbens, dorsal_striatum, prefrontal_cortex, vta, orbitofrontal_cortex]
+    testable_predictions:
+      - "Dopamine phasic bursts predict reward delivery early in training"
+      - "After learning: dopamine bursts move from reward to CS (conditioned stimulus)"
+      - "Reward omission causes dopamine dip at expected reward time"
+    dataset_affordances: [dopamine_voltammetry, fiber_photometry, LFP_striatum, behavioral_choices]
+    topics: [reward_learning, decision_making, motor_learning]
+
+  - id: bayesian_neuroscience
+    label: Bayesian Brain / Bayesian Inference in Neural Computation
+    aliases: [Bayesian brain, probabilistic inference, belief propagation, posterior inference]
+    definition: "The brain performs approximate Bayesian inference: posterior ∝ likelihood × prior. Uncertain sensory evidence is combined with prior expectations based on experience."
+    formula: "P(hypothesis|data) ∝ P(data|hypothesis) * P(hypothesis)"
+    concept_type: theory_or_principle
+    narrower_concepts: [predictive_coding, kalman_filter_brain, sampling_hypothesis]
+    related_methods: [rsa, encoding_model, dcm_spectral, meg_eeg_source_localization]
+    topics: [attention_and_salience, decision_making, episodic_memory]
+
+  - id: neural_oscillation_theory
+    label: Neural Oscillation Theory / Communication Through Coherence
+    aliases: [CTC, communication through coherence, oscillatory synchronization, gamma-theta coupling, gamma band synchrony]
+    definition: "Neural oscillations reflect rhythmic synchronization of populations. Coherence between areas enables selective communication. CTC hypothesis: information transfer occurs specifically during aligned oscillatory phases."
+    formula: "Coherence: C_xy(f) = |S_xy(f)|^2 / (S_xx(f) * S_yy(f));  CTC: input/output coupling at gamma"
+    concept_type: theory_or_principle
+    narrower_concepts: [pac_nesting, cross_frequency_coupling, gamma_attention, theta_memory]
+    related_methods: [coherence, pac, stft, fft, granger_causality]
+    related_modalities: [lfp, ecog, eeg, meg]
+    testable_predictions:
+      - "Inter-areal gamma coherence increases with attention"
+      - "Theta-gamma PAC in hippocampus encodes working memory items"
+      - "Beta desynchronization precedes motor execution"
+    dataset_affordances: [multi_site_lfp, eeg, ecog, task_conditions]
+    topics: [neural_synchrony, spectral_dynamics, attention_and_salience]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Neuronal_oscillations"
+
+  - id: hodgkin_huxley_model
+    label: Hodgkin-Huxley Model
+    aliases: [HH model, conductance-based model, action potential model, voltage-gated channel dynamics]
+    definition: "Biophysical model of action potential generation based on voltage-gated Na+ and K+ conductances with kinetic gating variables m, n, h. Foundation of computational neuroscience."
+    formula: "C dV/dt = I_ext - g_Na * m^3 * h * (V-E_Na) - g_K * n^4 * (V-E_K) - g_L * (V-E_L)"
+    concept_type: computational_model
+    broader_concept: spiking_neuron_models
+    narrower_concepts: [integrate_and_fire, fitzhugh_nagumo, morris_lecar, exponential_IF]
+    related_methods: [patch_seq, mean_field_theory, neural_ode]
+    related_modalities: [patch_seq, single_unit]
+    topics: [spectral_dynamics, development_and_plasticity]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Hodgkin-Huxley_model"
+
+  - id: integrate_and_fire
+    label: Integrate-and-Fire (IF) / Leaky IF Model
+    aliases: [LIF, leaky integrate-and-fire, theta neuron, QIF, exponential IF]
+    definition: "Simplified neuron model: membrane potential integrates inputs with leak. When V crosses threshold, a spike is emitted and V resets. Captures essential input-output relationship without full HH dynamics."
+    formula: "tau dV/dt = -(V - V_rest) + R * I;  if V >= V_thresh: emit spike, V → V_reset"
+    concept_type: computational_model
+    broader_concept: spiking_neuron_models
+    related_methods: [mean_field_theory, neural_ode]
+    topics: [spectral_dynamics]
+
+  - id: dynamic_causal_modelling
+    label: Dynamic Causal Modelling (DCM)
+    aliases: [DCM, spectral DCM, nonlinear DCM, generative model brain connectivity]
+    definition: "Bayesian framework for inferring effective connectivity between brain regions by fitting a biophysical generative model to observed fMRI/EEG data. Tests which connectivity pattern best explains observations."
+    formula: "dx/dt = f(x, u, theta);  y = g(x) + noise;  invert via Laplace approximation (VB)"
+    concept_type: method_framework
+    broader_concept: computational_neuroscience
+    related_methods: [dcm_spectral, granger_causality, coherence, vbm]
+    related_modalities: [fmri, eeg, meg, lfp]
+    topics: [cognitive_control, spectral_dynamics]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Dynamic_causal_modeling"
+
+  - id: information_theory_neural
+    label: Information Theory in Neural Coding
+    aliases: [mutual information, channel capacity, neural entropy, Fisher information, information geometry]
+    definition: "Shannon information theory applied to neural coding: how much information do spike trains carry about stimuli? Mutual information, channel capacity, and Fisher information bound decoding precision."
+    formula: "I(X;Y) = sum_{x,y} p(x,y) * log[p(x,y) / (p(x)p(y))];  H(X) = -sum p(x) log p(x)"
+    concept_type: theory_or_principle
+    broader_concept: neural_coding
+    related_methods: [spike_sorting_deep, dimensionality_reduction, rsa]
+    topics: [neural_synchrony, spectral_dynamics]
+
+  - id: plasticity_mechanisms
+    label: Synaptic Plasticity Mechanisms
+    aliases: [LTP, LTD, synaptic scaling, metaplasticity, structural plasticity, homeostatic plasticity]
+    definition: "Biological mechanisms for modifying synaptic strength: LTP (long-term potentiation), LTD (long-term depression), homeostatic scaling, structural plasticity (spine growth/retraction)."
+    concept_type: biological_mechanism
+    broader_concept: hebbian_learning
+    related_methods: [patch_seq, calcium_imaging, spatial_transcriptomics_ephys]
+    related_modalities: [calcium_imaging, patch_seq, single_unit]
+    topics: [episodic_memory, motor_learning, development_and_plasticity]
+    scholarpedia_url: "https://www.scholarpedia.org/article/Synaptic_plasticity"
+
+  - id: neural_field_theory
+    label: Neural Field Theory / Continuum Neural Models
+    aliases: [NFT, Wilson-Cowan model, Amari model, continuum neural field, cortical wave]
+    definition: "Spatially continuous mean-field approximation of cortical activity treating the cortex as a continuous excitable medium. Describes traveling waves, standing oscillations, spiral waves."
+    formula: "tau * dU(x,t)/dt = -U + integral w(x-x') * f(U(x',t)) dx' + I(x,t)"
+    concept_type: theory_or_principle
+    related_methods: [mean_field_theory, eeg_fmri_fusion, dcm_spectral]
+    topics: [spectral_dynamics, neural_synchrony]
+
+  - id: connectome_theory
+    label: Connectomics / Structural Connectivity Theory
+    aliases: [connectome, structural connectivity, white matter organization, wiring economy]
+    definition: "The complete map of neural connections (connectome) determines functional organization. Wiring minimization principles explain why nearby regions are more densely connected."
+    concept_type: theory_or_principle
+    related_methods: [dti_tractography, structural_mri, electron_microscopy]
+    related_modalities: [dti, structural_mri]
+    topics: [neural_synchrony]
+
+  - id: phase_coding
+    label: Phase Coding / Temporal Coding
+    aliases: [theta phase coding, phase precession, temporal coding, spike phase, time-of-spike]
+    definition: "Information encoded in the precise timing of spikes relative to oscillatory phase. Theta phase precession (place cells fire at progressively earlier theta phases as the animal traverses the place field) encodes spatial position with millisecond precision."
+    formula: "phi(x) = phi_0 - 2*pi*x/lambda;  phase precesses 360° over one place field traversal"
+    concept_type: theory_or_principle
+    broader_concept: neural_coding
+    related_methods: [pac, cross_correlation, spike_LFP_coherence]
+    related_modalities: [lfp, single_unit]
+    related_regions: [hippocampus, entorhinal_cortex, medial_septum]
+    testable_predictions:
+      - "Place cell theta phase precession within field"
+      - "Grid cells show theta phase precession encoding spatial metric"
+    topics: [spatial_navigation, episodic_memory]
+
+  - id: gain_modulation
+    label: Gain Modulation / Divisive Normalization
+    aliases: [gain control, divisive normalization, multiplicative modulation, attention gain]
+    definition: "Neural responses are multiplicatively scaled by contextual inputs (attention, modulatory signals, neural state) rather than just added to. Divisive normalization: response = excitation / (sigma + total activity)."
+    formula: "r_i = (S_i^n) / (sigma^n + sum_j S_j^n);  sigma = semi-saturation constant"
+    concept_type: neural_mechanism
+    broader_concept: neural_coding
+    related_methods: [encoding_model, fmri, single_unit]
+    topics: [attention_and_salience, neural_synchrony]
+
+  - id: decision_theory_neural
+    label: Decision Theory / Drift Diffusion Model
+    aliases: [DDM, accumulator model, race model, drift diffusion, signal detection theory SDT]
+    definition: "Decision-making modeled as evidence accumulation toward a threshold. Drift rate = signal quality; threshold = speed-accuracy tradeoff; noise = variability in sensory input."
+    formula: "dx = a*dt + sigma*dW;  decision when x reaches +B or -B;  RT = time to threshold"
+    concept_type: theory_or_principle
+    broader_concept: computational_neuroscience
+    related_methods: [erp_EEG, fmri, rsa]
+    related_regions: [prefrontal_cortex, basal_ganglia_loop, anterior_cingulate_cortex]
+    topics: [decision_making, attention_and_salience]
+
+  - id: free_energy_principle
+    label: Free Energy Principle (Friston)
+    aliases: [active inference, free energy minimization, variational Bayes brain, Friston free energy]
+    definition: "All brain function (perception, action, learning) can be described as minimizing variational free energy (surprise). Perception infers causes of sensory input; action changes the world to match predictions."
+    formula: "F = D_KL[q(theta)||p(theta|o)] >= -log p(o) = Surprise"
+    concept_type: theory_or_principle
+    broader_concept: bayesian_neuroscience
+    narrower_concepts: [predictive_coding, active_inference, generative_model]
+    related_methods: [dcm_spectral, encoding_model]
+    topics: [cognitive_control, attention_and_salience, decision_making]
+
+  - id: criticality_ei_balance
+    label: Excitation-Inhibition (E/I) Balance
+    aliases: [E/I ratio, excitatory inhibitory balance, E-I balance, cortical balance]
+    definition: "Cortical circuits are balanced between excitation (glutamate) and inhibition (GABA). Disrupted E/I balance changes oscillation frequency, gain, and may underlie several psychiatric disorders."
+    formula: "In balanced state: I_E ~ I_I; fluctuations determine firing; net current balanced near 0"
+    concept_type: neural_mechanism
+    related_methods: [mean_field_theory, dcm_spectral, pac, fooof]
+    related_modalities: [lfp, eeg, patch_seq]
+    testable_predictions:
+      - "GABA reduction → frequency increase in cortical gamma"
+      - "E/I imbalance → aperiodic exponent change (FOOOF)"
+    topics: [neural_synchrony, spectral_dynamics, development_and_plasticity]

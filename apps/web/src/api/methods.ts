@@ -134,3 +134,61 @@ export const fetchParadigms = (params?: { species?: string; topic?: string }) =>
 
 export const fetchStructuralConnections = (params?: { region?: string; min_fa?: number }) =>
   get<StructuralConnection[]>('/methods/structural', params)
+
+export type Modality = {
+  id: string
+  label: string
+  aliases: string[]
+  modality_class: string
+  signal_origin: string
+  temporal_resolution_ms: number | null
+  spatial_resolution_mm: number | null
+  species: string[]
+  invasiveness: string
+  cross_modal_value: string
+  analysis_methods: string[]
+}
+
+export type ModalityDetail = Modality & {
+  frequency_bands?: Record<string, [number, number]>
+  key_features?: string[]
+  limitations?: string[]
+  typical_electrodes?: string[]
+  typical_systems?: string[]
+  bci_use?: string
+  neatlabs_relevance?: string
+}
+
+export type CrossModalPair = {
+  modality_a: string
+  modality_b: string
+  compatibility: 'high' | 'medium' | 'low'
+  complementarity: string
+  combination_methods?: string[]
+  artifacts?: string
+  key_papers?: string[]
+  neatlabs_relevance?: string
+}
+
+export type ModalityGroup = {
+  id: string
+  label: string
+  members: string[]
+  temporal_resolution_tier: string
+  spatial_resolution_tier: string
+}
+
+export const fetchModalities = (params?: {
+  modality_class?: string
+  invasiveness?: string
+  species?: string
+}) => get<Modality[]>('/methods/modalities', params)
+
+export const fetchModalityDetail = (id: string) =>
+  get<ModalityDetail>(`/methods/modalities/${id}`)
+
+export const fetchCrossModalPairs = (params?: { modality?: string; compatibility?: string }) =>
+  get<CrossModalPair[]>('/methods/modalities/cross-modal/pairs', params)
+
+export const fetchModalityGroups = () =>
+  get<ModalityGroup[]>('/methods/modalities/groups/summary')

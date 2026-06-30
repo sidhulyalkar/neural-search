@@ -52,6 +52,8 @@ SUPPORTED_NODE_TYPES = {
     "disorder",          # Clinical neuropsychiatric disorder
     "cell_type",         # Neuron type (PV interneuron, D1-MSN, Purkinje cell)
     "white_matter_tract", # Structural connectivity pathway (arcuate fasciculus, CC)
+    "ontology_region",   # Named anatomical region in our region ontology vocabulary
+    "circuit",           # Named functional circuit (e.g. hippocampal_circuit, fear_circuit)
     # Field-state memory graph node types
     "source_archive",
     "concept",
@@ -218,6 +220,20 @@ SUPPORTED_EDGE_TYPES = {
     "paradigm_targets_topic",              # paradigm → topic
     "paradigm_uses_method",                # paradigm → measurement method
     "paper_uses_paradigm",                 # paper → paradigm
+    # Allen Mouse Connectivity
+    "region_projects_to",                  # region → region (anterograde tracer, mouse)
+    # Concept / theory hierarchy (Scholarpedia-inspired)
+    "concept_narrower_than",               # concept → broader concept
+    "concept_broader_than",                # concept → narrower concepts
+    "concept_motivates_method",            # concept → analysis method it motivates
+    "concept_testable_with_dataset",       # concept → dataset type that can test it
+    "concept_related_to_topic",            # concept → research topic
+    # Disorder-circuit mapping
+    "disorder_disrupts_circuit",           # disorder → circuit it disrupts
+    "disorder_has_biomarker",              # disorder → oscillation biomarker
+    "disorder_modeled_by_paradigm",        # disorder → animal model paradigm
+    "paper_involves_disorder",             # paper → disorder it studies
+    "dataset_models_disorder",             # dataset → disorder model
 }
 
 TOKEN_RE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -386,11 +402,27 @@ class KnowledgeGraphEdge(BaseModel):
 
 
 class KnowledgeGraph(BaseModel):
-    """A lightweight, file-backed knowledge graph container."""
+    """A lightweight, file-backed knowledge graph container.
 
-    nodes: dict[str, KnowledgeGraphNode] = Field(default_factory=dict)
-    edges: dict[str, KnowledgeGraphEdge] = Field(default_factory=dict)
+    Accepts nodes/edges as either dicts (keyed by ID) or lists (auto-indexed).
+    All builders pass lists; the validator normalises to dicts.
+    """
+
+    nodes: dict[str, KnowledgeGraphNode] | list[KnowledgeGraphNode] = Field(default_factory=dict)
+    edges: dict[str, KnowledgeGraphEdge] | list[KnowledgeGraphEdge] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="before")
+    @classmethod
+    def coerce_lists_to_dicts(cls, values: Any) -> Any:
+        if isinstance(values, dict):
+            raw_nodes = values.get("nodes", {})
+            raw_edges = values.get("edges", {})
+            if isinstance(raw_nodes, list):
+                values["nodes"] = {n["node_id"] if isinstance(n, dict) else n.node_id: n for n in raw_nodes}
+            if isinstance(raw_edges, list):
+                values["edges"] = {e["edge_id"] if isinstance(e, dict) else e.edge_id: e for e in raw_edges}
+        return values
 
     @model_validator(mode="after")
     def validate_complete_graph(self) -> KnowledgeGraph:
@@ -398,8 +430,15 @@ class KnowledgeGraph(BaseModel):
         return self
 
 
-def validate_graph(graph: KnowledgeGraph) -> KnowledgeGraph:
-    """Validate graph identity maps and edge references."""
+def validate_graph(graph: KnowledgeGraph, strict: bool = False) -> KnowledgeGraph:
+    """Validate graph identity maps and optionally edge references.
+
+    When ``strict=False`` (default) dangling edge endpoints are allowed so that
+    partial KG layers (e.g. a builder that only creates edges to nodes defined in
+    another layer) can be constructed and later merged without errors.
+    Pass ``strict=True`` to enforce that every edge endpoint resolves to a node
+    present in *this* graph.
+    """
 
     node_ids: set[str] = set()
     for key, node in graph.nodes.items():
@@ -416,10 +455,11 @@ def validate_graph(graph: KnowledgeGraph) -> KnowledgeGraph:
         if edge.edge_id in edge_ids:
             raise ValueError(f"duplicate edge ID: {edge.edge_id}")
         edge_ids.add(edge.edge_id)
-        if edge.source_node_id not in graph.nodes:
-            raise ValueError(f"edge source does not resolve: {edge.source_node_id}")
-        if edge.target_node_id not in graph.nodes:
-            raise ValueError(f"edge target does not resolve: {edge.target_node_id}")
+        if strict:
+            if edge.source_node_id not in node_ids:
+                raise ValueError(f"edge source does not resolve: {edge.source_node_id}")
+            if edge.target_node_id not in node_ids:
+                raise ValueError(f"edge target does not resolve: {edge.target_node_id}")
 
     return graph
 
@@ -515,3 +555,10 @@ def read_graph_jsonl(path: str | Path) -> KnowledgeGraph:
             raise ValueError(f"unknown graph JSONL record on line {line_number}")
 
     return KnowledgeGraph(nodes=nodes, edges=edges, metadata=metadata)
+
+
+# ── Convenience aliases used by all builder modules ────────────────────────
+# Builders import `GraphNode, GraphEdge, KnowledgeGraph` and pass lists of
+# nodes/edges; KnowledgeGraph.coerce_lists_to_dicts handles the conversion.
+GraphNode = KnowledgeGraphNode
+GraphEdge = KnowledgeGraphEdge

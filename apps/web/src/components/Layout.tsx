@@ -9,6 +9,7 @@ const navLinks = [
   { path: '/', label: 'Search', exact: true },
   { path: '/atlas', label: 'Atlas' },
   { path: '/methods', label: 'Methods' },
+  { path: '/disorders', label: 'Disorders' },
   { path: '/labs/neatlabs', label: 'NEATLabs' },
   { path: '/demo', label: 'Demo' },
   { path: '/graph', label: 'Knowledge Graph' },

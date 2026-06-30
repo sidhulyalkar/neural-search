@@ -1,9 +1,8 @@
-"""FastAPI router exposing methods taxonomy, species homology, oscillations, and paradigms."""
+"""FastAPI router exposing methods taxonomy, species homology, oscillations, paradigms, and modalities."""
 
 from __future__ import annotations
 
 import logging
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +23,7 @@ _homology_cache: dict[str, Any] | None = None
 _oscillations_cache: dict[str, Any] | None = None
 _paradigms_cache: dict[str, Any] | None = None
 _hcp_cache: dict[str, Any] | None = None
+_modalities_cache: dict[str, Any] | None = None
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -31,10 +31,27 @@ def _load_yaml(path: Path) -> dict[str, Any]:
         return yaml.safe_load(fh)
 
 
+def _merge_categories(base: dict[str, Any], ext: dict[str, Any]) -> dict[str, Any]:
+    """Merge extension categories into base by appending methods within matching categories."""
+    base_cats = {c["id"]: c for c in base.get("categories", [])}
+    for ext_cat in ext.get("categories", []):
+        cat_id = ext_cat["id"]
+        if cat_id in base_cats:
+            key = "methods" if "methods" in base_cats[cat_id] else "concepts"
+            base_cats[cat_id].setdefault(key, []).extend(ext_cat.get("methods", ext_cat.get("concepts", [])))
+        else:
+            base.setdefault("categories", []).append(ext_cat)
+    return base
+
+
 def _get_methods() -> dict[str, Any]:
     global _methods_cache
     if _methods_cache is None:
-        _methods_cache = _load_yaml(DATA_ROOT / "methods" / "methods_taxonomy.yaml")
+        base = _load_yaml(DATA_ROOT / "methods" / "methods_taxonomy.yaml")
+        ext_path = DATA_ROOT / "methods" / "methods_dl_multimodal.yaml"
+        if ext_path.exists():
+            _merge_categories(base, _load_yaml(ext_path))
+        _methods_cache = base
     return _methods_cache
 
 
@@ -48,14 +65,24 @@ def _get_homology() -> dict[str, Any]:
 def _get_oscillations() -> dict[str, Any]:
     global _oscillations_cache
     if _oscillations_cache is None:
-        _oscillations_cache = _load_yaml(DATA_ROOT / "oscillations" / "oscillation_signatures.yaml")
+        base = _load_yaml(DATA_ROOT / "oscillations" / "oscillation_signatures.yaml")
+        ext_path = DATA_ROOT / "oscillations" / "oscillation_signatures_ext.yaml"
+        if ext_path.exists():
+            ext = _load_yaml(ext_path)
+            base.setdefault("oscillation_signatures", []).extend(ext.get("oscillation_signatures", []))
+        _oscillations_cache = base
     return _oscillations_cache
 
 
 def _get_paradigms() -> dict[str, Any]:
     global _paradigms_cache
     if _paradigms_cache is None:
-        _paradigms_cache = _load_yaml(DATA_ROOT / "paradigms" / "paradigm_registry.yaml")
+        base = _load_yaml(DATA_ROOT / "paradigms" / "paradigm_registry.yaml")
+        ext_path = DATA_ROOT / "paradigms" / "paradigm_registry_ext.yaml"
+        if ext_path.exists():
+            ext = _load_yaml(ext_path)
+            base.setdefault("paradigms", []).extend(ext.get("paradigms", []))
+        _paradigms_cache = base
     return _paradigms_cache
 
 
@@ -64,6 +91,13 @@ def _get_hcp() -> dict[str, Any]:
     if _hcp_cache is None:
         _hcp_cache = _load_yaml(DATA_ROOT / "hcp" / "structural_connectivity_priors.yaml")
     return _hcp_cache
+
+
+def _get_modalities() -> dict[str, Any]:
+    global _modalities_cache
+    if _modalities_cache is None:
+        _modalities_cache = _load_yaml(DATA_ROOT / "modalities" / "modality_registry.yaml")
+    return _modalities_cache
 
 
 # ── Methods endpoints ──────────────────────────────────────────────────────
@@ -313,3 +347,71 @@ def get_structural_neighbors(region_id: str) -> dict[str, Any]:
         "connections": connections,
         "n_connections": len(connections),
     }
+
+
+# ── Modality endpoints ─────────────────────────────────────────────────────
+
+@router.get("/modalities")
+def list_modalities(
+    modality_class: str | None = Query(default=None, description="electrophysiology|hemodynamic|optical|structural|molecular|behavioral"),
+    invasiveness: str | None = Query(default=None, description="invasive|semi_invasive|non_invasive|ex_vivo"),
+    species: str | None = Query(default=None),
+) -> list[dict[str, Any]]:
+    """All recording modalities with properties."""
+    data = _get_modalities()
+    results = []
+    for mod in data.get("modalities", []):
+        if modality_class and mod.get("modality_class") != modality_class:
+            continue
+        if invasiveness and mod.get("invasiveness") != invasiveness:
+            continue
+        if species and species not in mod.get("species", []):
+            continue
+        results.append(
+            {
+                "id": mod["id"],
+                "label": mod.get("label", mod["id"]),
+                "aliases": mod.get("aliases", []),
+                "modality_class": mod.get("modality_class", ""),
+                "signal_origin": mod.get("signal_origin", ""),
+                "temporal_resolution_ms": mod.get("temporal_resolution_ms"),
+                "spatial_resolution_mm": mod.get("spatial_resolution_mm"),
+                "species": mod.get("species", []),
+                "invasiveness": mod.get("invasiveness", ""),
+                "cross_modal_value": mod.get("cross_modal_value", ""),
+                "analysis_methods": mod.get("analysis_methods", []),
+            }
+        )
+    return results
+
+
+@router.get("/modalities/{modality_id}")
+def get_modality(modality_id: str) -> dict[str, Any]:
+    """Full modality details including frequency bands, limitations, and cross-modal value."""
+    data = _get_modalities()
+    for mod in data.get("modalities", []):
+        if mod["id"] == modality_id:
+            return mod
+    raise HTTPException(status_code=404, detail=f"Modality '{modality_id}' not found")
+
+
+@router.get("/modalities/cross-modal/pairs")
+def get_cross_modal_pairs(
+    modality: str | None = Query(default=None, description="Filter pairs involving this modality"),
+    compatibility: str | None = Query(default=None, description="high|medium|low"),
+) -> list[dict[str, Any]]:
+    """Cross-modal compatibility pairs with integration methods."""
+    data = _get_modalities()
+    pairs = data.get("cross_modal_pairs", [])
+    if modality:
+        pairs = [p for p in pairs if p["modality_a"] == modality or p["modality_b"] == modality]
+    if compatibility:
+        pairs = [p for p in pairs if p.get("compatibility") == compatibility]
+    return pairs
+
+
+@router.get("/modalities/groups/summary")
+def get_modality_groups() -> list[dict[str, Any]]:
+    """Modality groups organized by temporal/spatial resolution tier."""
+    data = _get_modalities()
+    return data.get("modality_groups", [])
