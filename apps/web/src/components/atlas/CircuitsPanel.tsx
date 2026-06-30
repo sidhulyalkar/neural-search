@@ -97,12 +97,24 @@ function CircuitCard({
   )
 }
 
+const SCALE_ORDER = ['regional', 'network', 'subcircuit', 'microcircuit', 'oscillatory', 'neuromodulatory', 'systems']
+const SCALE_LABELS: Record<string, string> = {
+  regional: 'Regional Networks',
+  network: 'System Networks',
+  subcircuit: 'Subcircuits',
+  microcircuit: 'Microcircuits',
+  oscillatory: 'Oscillatory',
+  neuromodulatory: 'Neuromodulatory',
+  systems: 'Multi-System',
+}
+
 export function CircuitsPanel({
   onRegionClick,
 }: {
   onRegionClick: (id: string, label: string) => void
 }) {
   const [activeCircuit, setActiveCircuit] = useState<string | null>('visual_pathway')
+  const [activeScale, setActiveScale] = useState<string>('regional')
 
   const { data: circuits = [], isLoading } = useQuery({
     queryKey: ['atlas-circuits'],
@@ -119,18 +131,46 @@ export function CircuitsPanel({
     )
   }
 
+  const scalesPresent = SCALE_ORDER.filter((s) =>
+    circuits.some((c) => (c.scale ?? 'regional') === s)
+  )
+
+  const filtered = circuits.filter((c) => (c.scale ?? 'regional') === activeScale)
+
   return (
     <div className="space-y-3">
       <div className="flex items-baseline gap-2 mb-1">
-        <span className="text-xs font-mono text-neural-400 uppercase tracking-wider">Functional Circuits</span>
-        <span className="text-xs text-neural-700">{circuits.length} pathways</span>
+        <span className="text-xs font-mono text-neural-400 uppercase tracking-wider">Circuits</span>
+        <span className="text-xs text-neural-700">{circuits.length} total</span>
       </div>
       <p className="text-[11px] text-neural-600 leading-snug">
-        Major neuroscience circuits connecting brain regions into functional systems.
-        Click any region node to view its datasets and connections.
+        Multi-scale neural circuits — from cortical microcircuits to whole-brain networks.
+        Click any region to view its datasets.
       </p>
-      <div className="space-y-2 mt-3">
-        {circuits.map((circuit) => (
+
+      {/* Scale selector */}
+      <div className="flex flex-wrap gap-1 pt-1">
+        {scalesPresent.map((s) => {
+          const n = circuits.filter((c) => (c.scale ?? 'regional') === s).length
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => { setActiveScale(s); setActiveCircuit(null) }}
+              className={`text-[9px] font-mono px-2 py-0.5 rounded border transition-colors ${
+                activeScale === s
+                  ? 'border-accent-cyan text-accent-cyan bg-accent-cyan/10'
+                  : 'border-neural-800 text-neural-600 hover:border-neural-700'
+              }`}
+            >
+              {SCALE_LABELS[s] ?? s} ({n})
+            </button>
+          )
+        })}
+      </div>
+
+      <div className="space-y-2 mt-2">
+        {filtered.map((circuit) => (
           <CircuitCard
             key={circuit.id}
             circuit={circuit}
@@ -139,6 +179,11 @@ export function CircuitsPanel({
             onRegionClick={onRegionClick}
           />
         ))}
+        {filtered.length === 0 && (
+          <p className="text-[10px] text-neural-700 font-mono py-3 text-center">
+            No circuits at this scale level.
+          </p>
+        )}
       </div>
     </div>
   )

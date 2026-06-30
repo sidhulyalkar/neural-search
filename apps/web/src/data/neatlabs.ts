@@ -337,6 +337,79 @@ export const NEATLABS = {
   ],
 } as const
 
+// ── Sid Hulyalkar's own publications from this lab ────────────────────────────
+
+export const SID_PAPERS = [
+  {
+    title: 'Beta and high gamma oscillations in the cortico-striatal network reflect reward certainty on a probabilistic reversal learning task',
+    year: 2025,
+    venue: 'Journal of Neuroscience 45',
+    citations: 4,
+    topics: ['spectral_dynamics', 'reward_learning', 'cognitive_control'],
+    regions: ['striatum', 'prefrontal_cortex', 'orbitofrontal_cortex'],
+    species: 'rodent',
+    significance: 'Core thesis paper: beta and high-gamma LFP in cortico-striatal circuits encode reward certainty probabilistically — mechanistic basis for translating oscillatory biomarkers to humans',
+    co_authors: ['MF Koloski', 'M Salimi', 'T Tang', 'SA Barnes', 'J Mishra', 'DS Ramanathan'],
+  },
+  {
+    title: 'Cortico-striatal beta oscillations as a reward-related signal',
+    year: 2024,
+    venue: 'Cognitive, Affective, & Behavioral Neuroscience',
+    citations: 9,
+    topics: ['spectral_dynamics', 'reward_learning'],
+    regions: ['striatum', 'prefrontal_cortex'],
+    species: 'rodent',
+    significance: 'Establishes beta oscillations as a readout of learned reward value in cortico-striatal circuits — first formal characterization of the signal in this task context',
+    co_authors: ['MF Koloski', 'SA Barnes', 'J Mishra', 'DS Ramanathan'],
+  },
+  {
+    title: 'Electrophysiological correlates of rodent default-mode network suppression revealed by large-scale local field potential recordings',
+    year: 2021,
+    venue: 'Cerebral Cortex Communications',
+    citations: 22,
+    topics: ['neural_synchrony', 'spectral_dynamics', 'cognitive_control'],
+    regions: ['prefrontal_cortex', 'posterior_parietal_cortex', 'hippocampus'],
+    species: 'rodent',
+    significance: 'Direct electrophysiological evidence for rodent DMN suppression during task engagement — validates the use of rodent LFP to model human fMRI default mode phenomena',
+    co_authors: ['L Fakhraei', 'M Francoeur', 'PP Balasubramani', 'T Tang', 'DS Ramanathan'],
+  },
+  {
+    title: 'Mapping large-scale networks associated with action, behavioral inhibition and impulsivity',
+    year: 2021,
+    venue: 'eNeuro',
+    citations: 17,
+    topics: ['attention_and_salience', 'cognitive_control', 'executive_function'],
+    regions: ['prefrontal_cortex', 'anterior_cingulate_cortex', 'striatum'],
+    species: 'rodent',
+    significance: 'Maps cortico-striatal networks for impulsivity and inhibition control using multi-site LFP — bridges rodent circuit data with human fMRI inhibition networks',
+    co_authors: ['L Fakhraei', 'M Francoeur', 'P Balasubramani', 'T Tang', 'DS Ramanathan'],
+  },
+  {
+    title: 'Chronic, multi-site recordings supported by two low-cost probe designs for single unit or LFP activity in behaving rats',
+    year: 2021,
+    venue: 'Frontiers in Psychiatry',
+    citations: 18,
+    topics: ['neural_synchrony', 'spectral_dynamics'],
+    regions: ['striatum', 'prefrontal_cortex'],
+    species: 'rodent',
+    significance: 'Open-source probe design enabling affordable large-scale chronic recordings in rodents — methods paper that underpins the entire BrainER translational platform',
+    co_authors: ['MJ Francoeur', 'T Tang', 'L Fakhraei', 'X Wu', 'J Cramer', 'DS Ramanathan'],
+  },
+  {
+    title: 'Open-source Raspberry Pi-based operant box for translational behavioral testing in rodents',
+    year: 2020,
+    venue: 'Journal of Neuroscience Methods 342',
+    citations: 36,
+    topics: ['reward_learning', 'decision_making'],
+    regions: ['orbitofrontal_cortex', 'striatum'],
+    species: 'rodent',
+    significance: 'BrainER hardware platform — standardized, open-source operant box enabling cross-lab replication and direct comparison with human BrainE paradigms',
+    co_authors: ['N Buscher', 'A Ojeda', 'M Francoeur', 'C Claros', 'T Tang', 'A Terry', 'DS Ramanathan'],
+  },
+] as const
+
+export type SidPaper = typeof SID_PAPERS[number]
+
 export type NeatLabsTopic = typeof NEATLABS.kg_topics[number]
 export type NeatLabsCircuit = typeof NEATLABS.kg_circuits[number]
 export type NeatLabsPaper = typeof NEATLABS.highlight_papers[number]

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { NEATLABS } from '../data/neatlabs'
+import { NEATLABS, SID_PAPERS } from '../data/neatlabs'
 
 // ── Topic color map (subset matching NEATLab's KG topics) ─────────────────────
 
@@ -529,6 +529,52 @@ export function LabShowcasePage() {
           {visiblePapers.map((paper) => (
             <PaperCard key={paper.title} paper={paper as Paper} />
           ))}
+        </div>
+      </section>
+
+      {/* ── Your Research ── */}
+      <section>
+        <SectionHeading
+          label="Your Contributions"
+          sub="Sidharth Hulyalkar — Google Scholar"
+        />
+        <p className="text-xs text-neural-600 mb-4 leading-snug max-w-2xl">
+          Your 6 publications from NEATLabs form a coherent research thread: open-source hardware (operant box, chronic probes)
+          enabling multi-site rodent LFP → network mapping (DMN suppression, impulsivity circuits)
+          → oscillatory reward coding (cortico-striatal beta/gamma as a certainty signal).
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          {SID_PAPERS.map((paper) => (
+            <div
+              key={paper.title}
+              className="rounded-xl border border-accent-cyan/30 bg-accent-cyan/5 p-4 flex flex-col gap-2"
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-mono text-neural-600">{paper.year}</span>
+                <SpeciesPill species={paper.species} />
+                <span className="text-[9px] font-mono text-neural-700 ml-auto">{paper.citations} citations</span>
+              </div>
+              <p className="text-sm font-mono text-neural-100 leading-snug">{paper.title}</p>
+              <p className="text-[10px] text-neural-600 italic">{paper.venue}</p>
+              <div className="flex flex-wrap gap-1">
+                {paper.topics.map((t) => (
+                  <Badge key={t} label={t.replace(/_/g, ' ')} color={TOPIC_COLORS[t] ?? '#6b7280'} />
+                ))}
+              </div>
+              <p className="text-[10px] text-neural-500 leading-relaxed border-t border-neural-800 pt-2">
+                {paper.significance}
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl border border-neural-800 bg-neural-900/40 p-4">
+          <p className="text-[11px] text-neural-400 leading-relaxed">
+            <span className="text-accent-cyan font-mono">Research arc:</span>{' '}
+            The cortico-striatal beta oscillation is your primary signal of interest — a mesoscale biomarker
+            sitting at the intersection of dopaminergic reward circuits, oscillatory dynamics, and translatable
+            cognitive paradigms. Your work grounds the KG's most data-sparse gap: cross-species LFP
+            validation of reward circuit oscillations.
+          </p>
         </div>
       </section>
 

@@ -180,6 +180,9 @@ export type Circuit = {
   color: string
   regions: CircuitRegion[]
   topics: string[]
+  scale?: string
+  subcircuit_of?: string
+  human_specific?: boolean
 }
 
 export const atlasApi = {
