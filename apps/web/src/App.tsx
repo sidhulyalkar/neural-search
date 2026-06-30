@@ -10,6 +10,7 @@ import { DemoPage } from './pages/DemoPage'
 import { KnowledgeExplorerPage } from './pages/KnowledgeExplorerPage'
 import { CoveragePage } from './pages/CoveragePage'
 import { BrainAtlasPage } from './pages/BrainAtlasPage'
+import { LabShowcasePage } from './pages/LabShowcasePage'
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/graph" element={<KnowledgeExplorerPage />} />
         <Route path="/coverage" element={<CoveragePage />} />
         <Route path="/atlas" element={<BrainAtlasPage />} />
+        <Route path="/labs/neatlabs" element={<LabShowcasePage />} />
       </Routes>
     </Layout>
   )
