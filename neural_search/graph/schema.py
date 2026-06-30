@@ -42,6 +42,7 @@ SUPPORTED_NODE_TYPES = {
     "institution",
     "author",
     "venue",
+    "atlas_structure",   # A raw Allen structure node
     # Field-state memory graph node types
     "source_archive",
     "concept",
@@ -133,6 +134,9 @@ SUPPORTED_EDGE_TYPES = {
     "experimental_design_requires_modality",
     "experimental_design_requires_behavior",
     "experimental_design_can_use_dataset",
+    "region_is_child_of_region",          # Hierarchical parent-child in Allen CCF
+    "region_structurally_adjacent_to",    # Siblings in Allen CCF hierarchy
+    "ontology_region_maps_to_atlas",      # Our ontology_id → Allen structure
     # Field-state memory graph edge types
     "dataset_from_source",
     "dataset_has_file_artifact",
