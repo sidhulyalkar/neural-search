@@ -14,6 +14,7 @@ const LAYER_MODES: { value: LayerMode; label: string; title: string }[] = [
   { value: 'morphology', label: 'Morphology', title: 'Morphology — structural connectivity and anatomy' },
   { value: 'validation', label: 'Validation', title: 'Validation / Qrels — 175 silver + 3 adjudicated qrels; gold benchmark pending' },
   { value: 'coverage_gaps', label: 'Gaps', title: 'Coverage Gaps — regions or tasks with fewer than 3 datasets' },
+  { value: 'topics', label: 'Topics', title: 'Topic Explorer — 26 canonical neuroscience topics with timelines and coverage' },
 ]
 
 interface GraphControlsProps {

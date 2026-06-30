@@ -16,6 +16,7 @@ import { SuggestedViews } from '../components/graph/SuggestedViews'
 import { OntologyTreePanel } from '../components/graph/OntologyTreePanel'
 import { NodeDetailPanel } from '../components/graph/NodeDetailPanel'
 import { GraphLegend } from '../components/graph/GraphLegend'
+import { TopicsPanel } from '../components/graph/TopicsPanel'
 import type { GraphData, GraphNode, LayerMode, ViewMode } from '../types/graph'
 
 interface ActiveFilters {
@@ -101,7 +102,10 @@ export function KnowledgeExplorerPage() {
       const region = (selectedNode?.meta?.region as string) ?? selectedNode?.label ?? ''
       return fetchFindings({ region, limit: 5 })
     },
-    enabled: Boolean(selectedNode && (selectedNode.type === 'finding_cluster' || selectedNode.type === 'region')),
+    enabled: Boolean(
+      selectedNode &&
+        (selectedNode.type === 'finding_cluster' || selectedNode.type === 'region'),
+    ),
     staleTime: 60_000,
   })
 
@@ -182,11 +186,17 @@ export function KnowledgeExplorerPage() {
           tasks={filters.tasks}
           onFiltersChange={handleFiltersChange}
         />
-        <SuggestedViews
-          activeSlug={activeTopicSlug}
-          companionSlugs={companionSlugs}
-          onViewSelect={handleTopicSelect}
-        />
+
+        {layerMode === 'topics' ? (
+          <TopicsPanel activeSlug={activeTopicSlug} onTopicSelect={handleTopicSelect} />
+        ) : (
+          <SuggestedViews
+            activeSlug={activeTopicSlug}
+            companionSlugs={companionSlugs}
+            onViewSelect={handleTopicSelect}
+          />
+        )}
+
         <OntologyTreePanel onRegionSelect={handleRegionSelect} />
       </div>
 

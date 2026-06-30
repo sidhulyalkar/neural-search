@@ -2,10 +2,13 @@ import type {
   ConsensusRow,
   DatasetNeighborhood,
   FindingRow,
+  FoundationalPaper,
   GalaxyLayout,
   SubgraphResponse,
   SuggestedView,
   TopicGraphResponse,
+  TopicSummary,
+  TopicTimeline,
 } from '../types/graph'
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -72,4 +75,26 @@ export function fetchFindings(params: {
 
 export function fetchDatasetNeighborhood(datasetId: string): Promise<DatasetNeighborhood> {
   return get(`/api/datasets/${encodeURIComponent(datasetId)}/neighborhood`)
+}
+
+// Topic + timeline API (Phase 2 backend)
+export function fetchTopics(): Promise<TopicSummary[]> {
+  return get('/api/topics/')
+}
+
+export function fetchTopicTimeline(
+  slug: string,
+  minYear?: number,
+  maxYear?: number,
+): Promise<TopicTimeline> {
+  const params: Record<string, string | number> = {}
+  if (minYear !== undefined) params['min_year'] = minYear
+  if (maxYear !== undefined) params['max_year'] = maxYear
+  return get(`/api/topics/${encodeURIComponent(slug)}/timeline`, params)
+}
+
+export function fetchTopicAncestors(slug: string, limit?: number): Promise<FoundationalPaper[]> {
+  const params: Record<string, string | number> = {}
+  if (limit !== undefined) params['limit'] = limit
+  return get(`/api/topics/${encodeURIComponent(slug)}/ancestors`, params)
 }
