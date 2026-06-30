@@ -197,3 +197,54 @@ def save_atlas_graph(
         len(edges),
         output_path,
     )
+
+
+if __name__ == "__main__":
+    import yaml  # type: ignore[import]
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+    repo_root = Path(__file__).parent.parent.parent
+    mouse_path = repo_root / "artifacts" / "atlas" / "allen_ccf_mouse_structures.json"
+    human_path = repo_root / "artifacts" / "atlas" / "allen_human_structures.json"
+    ontology_path = repo_root / "data" / "ontology" / "brain_regions.yaml"
+
+    from neural_search.ingestion.allen_structures import load_structures
+
+    mouse = load_structures(mouse_path)
+    human = load_structures(human_path)
+    all_structures = mouse + human
+    logger.info("Loaded %d mouse + %d human structures", len(mouse), len(human))
+
+    nodes = build_atlas_nodes(all_structures)
+    hier_edges = build_atlas_hierarchy_edges(all_structures)
+    co_edges = build_atlas_co_region_edges(mouse)  # siblings only for mouse CCF
+    logger.info("Built %d nodes, %d hierarchy edges, %d co-region edges",
+                len(nodes), len(hier_edges), len(co_edges))
+
+    raw = yaml.safe_load(ontology_path.read_text(encoding="utf-8"))
+    ontology_regions = raw.get("brain_regions", [])
+    mapping = map_ontology_to_allen(ontology_regions, mouse)
+    logger.info("Mapped %d ontology regions to Allen CCF IDs", len(mapping))
+
+    # Build ontology → atlas edges
+    from neural_search.graph.schema import KnowledgeGraphEdge, make_edge_id, make_node_id
+    ontology_edges: list[KnowledgeGraphEdge] = []
+    allen_ids = {s.allen_id for s in all_structures}
+    for onto_id, allen_id in mapping.items():
+        if allen_id not in allen_ids:
+            continue
+        src = make_node_id("brain_region", "ontology", onto_id)
+        tgt = make_node_id("brain_region", "allen", str(allen_id))
+        ontology_edges.append(KnowledgeGraphEdge(
+            edge_id=make_edge_id(src, "ontology_region_maps_to_atlas", tgt),
+            source_node_id=src,
+            target_node_id=tgt,
+            edge_type="ontology_region_maps_to_atlas",
+            directed=True,
+            confidence=1.0,
+        ))
+
+    all_edges = hier_edges + co_edges + ontology_edges
+    save_atlas_graph(nodes, all_edges, ATLAS_GRAPH_PATH)
+    print(f"Atlas graph saved: {len(nodes)} nodes, {len(all_edges)} edges -> {ATLAS_GRAPH_PATH}")

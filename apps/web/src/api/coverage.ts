@@ -135,6 +135,53 @@ export type AtlasCoverageResponse = {
 
 // ── Allen Atlas API client ────────────────────────────────────────────────────
 
+export type RegionDetailTopic = {
+  id: string
+  label: string
+  description: string
+  color: string
+  companion_topics: string[]
+}
+
+export type RegionDetail = {
+  id: string
+  label: string
+  aliases: string[]
+  is_strict: boolean
+  parents: Array<{ id: string; label: string }>
+  children: Array<{ id: string; label: string }>
+  siblings: Array<{ id: string; label: string }>
+  atlas_refs: {
+    allen_ccf_mouse: string | null
+    allen_human: string | null
+    uberon: string | null
+    waxholm_rat: string | null
+  }
+  allen_structure: {
+    allen_id: number
+    acronym: string
+    color_hex: string
+    st_level: number | null
+  } | null
+  connected_topics: RegionDetailTopic[]
+  functional_systems: string[]
+}
+
+export type CircuitRegion = {
+  id: string
+  label: string
+  role: string
+}
+
+export type Circuit = {
+  id: string
+  label: string
+  description: string
+  color: string
+  regions: CircuitRegion[]
+  topics: string[]
+}
+
 export const atlasApi = {
   structures: (species = 'mouse', level?: number, limit = 200) => {
     const q = new URLSearchParams({ species, limit: String(limit) })
@@ -153,4 +200,9 @@ export const atlasApi = {
   mapping: () => get<AllenMappingResponse>('/api/atlas/regions/mapping'),
 
   coverage: () => get<AtlasCoverageResponse>('/api/atlas/coverage'),
+
+  regionDetail: (regionId: string) =>
+    get<RegionDetail>(`/api/atlas/regions/${encodeURIComponent(regionId)}/detail`),
+
+  circuits: () => get<Circuit[]>('/api/atlas/circuits'),
 }

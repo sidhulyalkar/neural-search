@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
-import { coverageApi, atlasApi, type RegionCount, type RegionDataset } from '../api/coverage'
+import { coverageApi, atlasApi, type RegionCount } from '../api/coverage'
 import { BrainSchematic } from '../components/atlas/BrainSchematic'
 import { AllenHierarchyPanel } from '../components/atlas/AllenHierarchyPanel'
+import { RegionDetailPanel } from '../components/atlas/RegionDetailPanel'
+import { CircuitsPanel } from '../components/atlas/CircuitsPanel'
 
 // ── Anatomical grouping ───────────────────────────────────────────────────────
 const ATLAS_GROUPS: Record<string, string[]> = {
@@ -94,57 +95,6 @@ function RegionTile({
       <div className="text-xs font-medium leading-tight truncate">{label}</div>
       <div className="text-xs font-mono opacity-70 mt-0.5">{nDatasets}</div>
     </button>
-  )
-}
-
-function RegionPanel({ regionId, regionLabel }: { regionId: string; regionLabel: string }) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['region-datasets', regionId],
-    queryFn: () => coverageApi.regionDatasets(regionId, { limit: 30 }),
-    enabled: !!regionId,
-  })
-
-  return (
-    <div className="flex flex-col h-full gap-3">
-      <div>
-        <h2 className="font-mono text-base text-white leading-tight">{regionLabel}</h2>
-        <p className="text-xs text-neural-500 mt-0.5">
-          {isLoading ? '…' : `${data?.count ?? 0} datasets`}
-        </p>
-      </div>
-
-      {isLoading && <div className="text-neural-500 text-sm">Loading…</div>}
-      {data && data.datasets.length === 0 && (
-        <div className="text-neural-600 text-sm italic">No datasets found.</div>
-      )}
-
-      <div className="flex flex-col gap-2 overflow-y-auto">
-        {data?.datasets.map((ds: RegionDataset) => (
-          <Link
-            key={ds.dataset_id}
-            to={`/datasets/${encodeURIComponent(ds.dataset_id)}`}
-            className="block bg-neural-900 border border-neural-800 rounded-lg p-3 hover:border-accent-cyan/50 transition-colors"
-          >
-            <div className="text-sm text-neural-100 font-medium leading-snug mb-1 line-clamp-2">
-              {ds.title}
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-neural-500 font-mono">{ds.source}</span>
-              <span className="text-xs text-neural-700">·</span>
-              <span className="text-xs text-neural-500">
-                {((ds.confidence ?? 0) * 100).toFixed(0)}% conf
-              </span>
-              {ds.access_tier && (
-                <>
-                  <span className="text-xs text-neural-700">·</span>
-                  <span className="text-xs text-neural-600">{ds.access_tier}</span>
-                </>
-              )}
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
   )
 }
 
@@ -276,7 +226,7 @@ function AllenCoverageBadge() {
 }
 
 // ── Page ───────────────────────────────────────────────────────────────────────
-type ActiveTab = 'heatmap' | 'hierarchy' | 'stats'
+type ActiveTab = 'heatmap' | 'circuits' | 'hierarchy' | 'stats'
 
 export function BrainAtlasPage() {
   const [selected, setSelected] = useState<{ id: string; label: string } | null>(null)
@@ -339,6 +289,7 @@ export function BrainAtlasPage() {
 
   const TABS: { id: ActiveTab; label: string }[] = [
     { id: 'heatmap', label: 'Coverage Heatmap' },
+    { id: 'circuits', label: 'Circuits' },
     { id: 'hierarchy', label: 'Allen Hierarchy' },
     { id: 'stats', label: 'Atlas Stats' },
   ]
@@ -480,11 +431,15 @@ export function BrainAtlasPage() {
                 <div className="w-72 flex-shrink-0 hidden md:block">
                   <div className="sticky top-24 bg-neural-900/50 border border-neural-800 rounded-xl p-4 max-h-[80vh] overflow-y-auto">
                     {selected ? (
-                      <RegionPanel regionId={selected.id} regionLabel={selected.label} />
+                      <RegionDetailPanel
+                        regionId={selected.id}
+                        regionLabel={selected.label}
+                        onRegionClick={handleTileClick}
+                      />
                     ) : (
                       <div className="text-center py-12">
                         <div className="text-neural-600 text-sm">
-                          Click a brain region to explore its datasets
+                          Click a brain region to explore its datasets, hierarchy, and research topics
                         </div>
                       </div>
                     )}
@@ -492,6 +447,32 @@ export function BrainAtlasPage() {
                 </div>
               </div>
             </>
+          )}
+
+          {/* ── Circuits tab ── */}
+          {activeTab === 'circuits' && (
+            <div className="flex gap-6 items-start">
+              <div className="flex-1 min-w-0">
+                <CircuitsPanel onRegionClick={handleTileClick} />
+              </div>
+              <div className="w-72 flex-shrink-0 hidden md:block">
+                <div className="sticky top-24 bg-neural-900/50 border border-neural-800 rounded-xl p-4 max-h-[80vh] overflow-y-auto">
+                  {selected ? (
+                    <RegionDetailPanel
+                      regionId={selected.id}
+                      regionLabel={selected.label}
+                      onRegionClick={handleTileClick}
+                    />
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-neural-600 text-sm">
+                        Click any region node in a circuit to see its datasets and connections
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           {/* ── Hierarchy tab ── */}
@@ -509,7 +490,11 @@ export function BrainAtlasPage() {
               <div className="w-72 flex-shrink-0 hidden md:block">
                 <div className="sticky top-24 bg-neural-900/50 border border-neural-800 rounded-xl p-4 max-h-[80vh] overflow-y-auto">
                   {selected ? (
-                    <RegionPanel regionId={selected.id} regionLabel={selected.label} />
+                    <RegionDetailPanel
+                      regionId={selected.id}
+                      regionLabel={selected.label}
+                      onRegionClick={handleTileClick}
+                    />
                   ) : (
                     <div className="text-center py-12">
                       <div className="text-neural-600 text-sm">
@@ -530,7 +515,11 @@ export function BrainAtlasPage() {
       {/* Mobile: selected region (below main content) */}
       {selected && (
         <div className="md:hidden mt-6 bg-neural-900/50 border border-neural-800 rounded-xl p-4">
-          <RegionPanel regionId={selected.id} regionLabel={selected.label} />
+          <RegionDetailPanel
+            regionId={selected.id}
+            regionLabel={selected.label}
+            onRegionClick={handleTileClick}
+          />
         </div>
       )}
     </div>
