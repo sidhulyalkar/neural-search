@@ -16,6 +16,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
 from apps.api.graph_router import router as graph_router
+from apps.api.timeline_router import router as timeline_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
@@ -117,6 +118,7 @@ app.add_middleware(
 )
 
 app.include_router(graph_router)
+app.include_router(timeline_router)
 
 
 # Health check

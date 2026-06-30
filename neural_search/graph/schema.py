@@ -38,6 +38,8 @@ SUPPORTED_NODE_TYPES = {
     "institution",
     "author",
     "venue",
+    # Topic taxonomy node types
+    "topic",                   # A canonical research topic from topic_taxonomy.yaml
     # Field-state memory graph node types
     "source_archive",
     "concept",
@@ -100,6 +102,12 @@ SUPPORTED_EDGE_TYPES = {
     "experimental_design_requires_modality",
     "experimental_design_requires_behavior",
     "experimental_design_can_use_dataset",
+    # Citation graph and topic edge types
+    "paper_cites_paper",              # Citation relationship (citing → cited)
+    "topic_encompasses_task",          # Topic includes a task
+    "topic_encompasses_region",        # Topic involves a brain region
+    "paper_foundational_for_topic",    # High-citation paper within a topic
+    "finding_advances_topic",          # Finding contributes to a topic
     # Field-state memory graph edge types
     "dataset_from_source",
     "dataset_has_file_artifact",
