@@ -102,3 +102,55 @@ export const coverageApi = {
     )
   },
 }
+
+// ── Allen Brain Atlas types ───────────────────────────────────────────────────
+
+export type AllenStructure = {
+  allen_id: number
+  acronym: string
+  name: string
+  parent_id: number | null
+  color_hex: string
+  st_level: number
+  children_ids: number[]
+  atlas_id: number
+}
+
+export type AllenStructuresResponse = {
+  species: string
+  total: number
+  structures: AllenStructure[]
+}
+
+export type AllenMappingResponse = {
+  total_mapped: number
+  mapping: Record<string, number>
+}
+
+export type AtlasCoverageResponse = {
+  total_mouse_structures: number
+  total_ontology_mapped: number
+  by_level: Record<number, { total: number; mapped: number }>
+}
+
+// ── Allen Atlas API client ────────────────────────────────────────────────────
+
+export const atlasApi = {
+  structures: (species = 'mouse', level?: number, limit = 200) => {
+    const q = new URLSearchParams({ species, limit: String(limit) })
+    if (level != null) q.set('level', String(level))
+    return get<AllenStructuresResponse>(`/api/atlas/structures?${q}`)
+  },
+
+  structure: (allenId: number) =>
+    get<AllenStructure>(`/api/atlas/structures/${allenId}`),
+
+  children: (allenId: number, recursive = false) => {
+    const q = new URLSearchParams({ recursive: String(recursive) })
+    return get<AllenStructure[]>(`/api/atlas/structures/${allenId}/children?${q}`)
+  },
+
+  mapping: () => get<AllenMappingResponse>('/api/atlas/regions/mapping'),
+
+  coverage: () => get<AtlasCoverageResponse>('/api/atlas/coverage'),
+}
