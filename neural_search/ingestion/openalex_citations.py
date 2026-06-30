@@ -133,6 +133,8 @@ if __name__ == "__main__":
     # Load all normalized paper records (JSONL batches + legacy JSON)
     corpus_papers: list[dict] = []
     for jsonl_path in glob.glob(str(corpus_dir / "**" / "*.jsonl"), recursive=True):
+        if not Path(jsonl_path).is_file():
+            continue
         try:
             with open(jsonl_path, encoding="utf-8") as f:
                 for line in f:
