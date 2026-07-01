@@ -519,6 +519,13 @@ def rung_hybrid_graph(
 
     alias_index = _get_alias_index(graph) if graph is not None else {}
 
+    # Dampen graph_context_score when annotation fields (concepts, regions) provide no
+    # confirming signal.  Without this, NLP-extracted context in graph_context_score
+    # can boost well-connected-but-irrelevant datasets (e.g. popular fMRI datasets
+    # for electrophysiology queries where the annotation has no expected_modalities).
+    has_annotation_signal = bool(q_ctx.get("concepts") or query_regions)
+    gscore_dampen = 1.0 if has_annotation_signal else 0.3
+
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         gscore = graph_context_score(graph, record_id, query_context=q_ctx)
@@ -528,7 +535,7 @@ def rung_hybrid_graph(
             node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
             dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
             rh_score = region_hierarchy_score(dataset_regions, query_regions)
-        total_graph = graph_score_weight * (gscore + cscore + rh_score)
+        total_graph = graph_score_weight * (gscore_dampen * gscore + cscore + rh_score)
         rescored.append((record_id, base_score + total_graph))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]

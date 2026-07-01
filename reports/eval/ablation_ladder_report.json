@@ -4,7 +4,7 @@
       "rung": "bm25",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 14.6,
+      "elapsed_s": 14.8,
       "metrics": {
         "ndcg@10": 0.8023,
         "query_count": 317
@@ -24,7 +24,7 @@
       "rung": "dense_bge",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 59.0,
+      "elapsed_s": 59.4,
       "metrics": {
         "ndcg@10": 0.6898,
         "query_count": 317
@@ -44,9 +44,9 @@
       "rung": "hybrid_graph",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 8.9,
+      "elapsed_s": 9.1,
       "metrics": {
-        "ndcg@10": 0.8265,
+        "ndcg@10": 0.8298,
         "query_count": 317
       }
     },
@@ -64,7 +64,7 @@
       "rung": "typed_kg_qualified",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 0.9,
+      "elapsed_s": 1.0,
       "metrics": {
         "ndcg@10": 0.8196,
         "query_count": 317
@@ -76,7 +76,7 @@
       "queries_run": 317,
       "elapsed_s": 0.3,
       "metrics": {
-        "ndcg@10": 0.8265,
+        "ndcg@10": 0.8298,
         "query_count": 317
       }
     }
