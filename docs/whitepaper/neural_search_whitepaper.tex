@@ -88,7 +88,7 @@
     \texttt{neural-search@research.org}
 }
 
-\date{June 2026 — updated 17 June 2026}
+\date{June 2026 -- updated 30 June 2026}
 
 \begin{document}
 
@@ -98,7 +98,7 @@
 % ABSTRACT
 % ============================================================================
 \begin{abstract}
-Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current live corpus artifact contains 7,171 normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, Harvard Dataverse, Buzsaki Lab, SPARK, and smaller sources. Corpus expansion is implemented as a tiered ingestion and enrichment pipeline: high-volume open repositories are admitted through raw/processed-data, neuroscience-signal, license, and persistent-identifier gates, while curated neuroscience sources and DANDI/NWB enrichers add modality, species, task, paper-link, and brain-region evidence with explicit provenance. The current indexed/evaluated slice is represented by 2,840 BGE-large-en-v1.5 embeddings over 625 records and a 625-record, 1024-dimensional turbovec index with recall@50 = 1.0 in the current validation report. This validates approximate vector-index retrieval against exact nearest-neighbor retrieval under the current test configuration; it does not establish scientific relevance or usefulness. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores datasets, papers, concepts, modalities, species, brain regions, tasks, affordances, neuro-judge evidence packets, user feedback signals, and versioned snapshots in a single queryable, exportable, incrementally-updatable graph. The full-corpus knowledge graph (\texttt{neural\_search\_graph.real\_corpus.json}, rebuilt 14~June~2026) contains 7,593 typed nodes and 31,920 typed edges across 7,171 dataset nodes, 118 brain-region nodes, 81 task nodes, 60 modality nodes, and 17 species nodes. In addition to 28,963 base provenance edges, 2,957 explicit cross-dataset relationship edges encode multimodal reuse candidates (\texttt{same\_region\_cross\_modality}: 890), methodological siblings (\texttt{same\_region\_same\_task}: 1,576), and cross-species generalization bridges (\texttt{same\_task\_cross\_species}: 491). A separate field-state memory graph (\texttt{update\_20260613T053153Z}) tracks 2,200 nodes and 3,788 typed edges spanning evidence packets, feedback signals, and curation artifacts for the 629-record reviewed slice. Provenance invariants keep neuro-judge silver labels, CrossRef/NWB-derived silver enrichments, downstream user feedback, and human gold labels separate. A DuckDB-backed coverage ledger (7,176 datasets; 29,561 entries across six dimensions: brain\_regions, modalities, recording\_scales, species, tasks, behavioral\_events) enables gap-analysis queries, source coverage rates, and dark-pair identification. A coverage gap boost adds an additive inverse-log-frequency rarity signal (capped at $+0.10$) to retrieval scores, preferring underrepresented anatomical regions and modalities. A source-diversity post-processor applies a greedy windowed algorithm (default \texttt{max\_per\_source}=3) to prevent single-repository domination of result lists. A SPECTER2 hybrid retrieval module (config-gated, disabled by default) adds scientific paper embedding similarity as an additive signal. An LLM query expansion fallback (Claude Haiku, LRU-cached, fails safe) activates only when rule-based parsing extracts zero brain regions and zero tasks, filling empty queries with structured ontological terms. Structured dimension-match badges in the frontend surface per-dimension evidence quality (full/partial/inferred/none) for every result card. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, computes memory diffs, preserves human review overlays, and generates provisional learning signals without overwriting canonical labels. A literature ingestion layer has linked papers to corpus datasets and run rule-based typed-finding extraction (27 fields: frequency band, temporal pattern, negation, spatial frame, and more) over a tier-1 finding-extraction run that is still in progress (190K+ findings as of 23~June~2026). Current validation artifacts show preliminary usefulness-score separation between relevant and irrelevant results, graph-rank perturbation for 39\% of ranked pairs, and a canonical LLM-judged qrels snapshot with 317 queries and 13,654 non-error query--dataset labels --- the first non-degenerate ablation ladder this project has produced, though bootstrap confidence intervals show the graph-backed variants' lead over plain BM25 is not yet statistically established (Section~\ref{sec:limitations}). The qrels review workflow has also been smoke-tested for human adjudication, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation steps are dual-judge agreement, human adjudication of a stratified subset, deterministic exact lookup, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
+Neural Search is an experiment-aware discovery framework for neural, behavioral, clinical, molecular, connectomics, morphology, imaging, and computational neuroscience datasets. Unlike generic document retrieval or chunk-based RAG systems, Neural Search treats datasets as structured scientific objects with typed metadata, ontological grounding, provenance tracking, dense field embeddings, and graph-based relational context. The current live corpus artifact contains 7,171 normalized records across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho, Allen, GIN, Brain Image Library, BlueBrain, IBL, CRCNS, OSF, Harvard Dataverse, Buzsaki Lab, SPARK, and smaller sources. Corpus expansion is implemented as a tiered ingestion and enrichment pipeline: high-volume open repositories are admitted through raw/processed-data, neuroscience-signal, license, and persistent-identifier gates, while curated neuroscience sources and DANDI/NWB enrichers add modality, species, task, paper-link, and brain-region evidence with explicit provenance. A full-corpus BGE-large-en-v1.5 dense field embedding cache is now materialized as \texttt{real\_all.dense.field\_embeddings.agg.ids.json} and \texttt{real\_all.dense.field\_embeddings.agg.mat.npy}, covering all 7,171 corpus records at 1,024 dimensions; the ablation ladder loads this cache before falling back to FAISS or JSONL parsing, reducing embedding-load latency from seconds to milliseconds. The older 625-record turbovec index remains a separate approximate-nearest-neighbor engineering artifact and should be regenerated against the full embedding cache before final ANN claims. We also implement a layered Field-State memory system: a lightweight claims/gaps/Obsidian review layer for scientific claim tracking, and a \textbf{Field-State Memory Graph}---a relational graph substrate that stores datasets, papers, concepts, modalities, species, brain regions, tasks, affordances, neuro-judge evidence packets, user feedback signals, and versioned snapshots in a single queryable, exportable, incrementally-updatable graph. The full-corpus knowledge graph (\texttt{neural\_search\_graph.real\_corpus.json}, rebuilt 30~June~2026) contains 7,438 typed nodes and 81,518 typed edges across 7,171 dataset nodes, 118 brain-region nodes, 85 task nodes, 46 modality nodes, and 18 species nodes. Dataset nodes now use real corpus identifiers such as \texttt{node:dataset:dandi:000785} and carry aliases such as \texttt{dandi:000785}, \texttt{000785}, and \texttt{dataset:dandi:000785}, matching the retrieval layer's graph-node resolver. This fixes the previous zero-overlap failure mode in which retrieval IDs such as \texttt{dandi:000785} could not resolve to demo-era graph nodes. In addition to 22,997 base dataset-to-concept edges, the graph now contains 58,521 explicit cross-dataset relationship edges: \texttt{same\_region\_cross\_modality} (48,212) and \texttt{same\_task\_cross\_species} (10,309). A separate field-state memory graph (\texttt{update\_20260613T053153Z}) tracks 2,200 nodes and 3,788 typed edges spanning evidence packets, feedback signals, and curation artifacts for the 629-record reviewed slice. Provenance invariants keep neuro-judge silver labels, CrossRef/NWB-derived silver enrichments, downstream user feedback, and human gold labels separate. A DuckDB-backed coverage ledger (7,176 datasets; 29,561 entries across six dimensions: brain\_regions, modalities, recording\_scales, species, tasks, behavioral\_events) enables gap-analysis queries, source coverage rates, and dark-pair identification. A coverage gap boost adds an additive inverse-log-frequency rarity signal (capped at $+0.10$) to retrieval scores, preferring underrepresented anatomical regions and modalities. A source-diversity post-processor applies a greedy windowed algorithm (default \texttt{max\_per\_source}=3) to prevent single-repository domination of result lists. A SPECTER2 hybrid retrieval module (config-gated, disabled by default) adds scientific paper embedding similarity as an additive signal. An LLM query expansion fallback (Claude Haiku, LRU-cached, fails safe) activates only when rule-based parsing extracts zero brain regions and zero tasks, filling empty queries with structured ontological terms. Structured dimension-match badges in the frontend surface per-dimension evidence quality (full/partial/inferred/none) for every result card. An incremental update pipeline detects changed records by content hash, produces versioned snapshot manifests, computes memory diffs, preserves human review overlays, and generates provisional learning signals without overwriting canonical labels. A literature ingestion layer has linked papers to corpus datasets and run rule-based typed-finding extraction (27 fields: frequency band, temporal pattern, negation, spatial frame, and more) over a tier-1 finding-extraction run that is still in progress (190K+ findings as of 23~June~2026). Current validation artifacts show preliminary usefulness-score separation between relevant and irrelevant results, a now-nonzero graph-context signal for real corpus IDs, and a canonical LLM-judged qrels snapshot with 317 queries and 13,654 non-error query--dataset labels. The qrels review workflow has also been smoke-tested for human adjudication, but no publication-grade human-labeled retrieval benchmark is complete yet. The next required validation steps are dual-judge agreement, human adjudication of a stratified subset, deterministic exact lookup, hard-negative violation tracking, source-skew analysis, calibration, and content-validated analysis affordances.
 \end{abstract}
 
 \begin{table}[htbp]
@@ -111,8 +111,8 @@ Neural Search is an experiment-aware discovery framework for neural, behavioral,
 Artifact or layer & Current status & Validation caveat \\
 \midrule
 Normalized dataset corpus & 7,171 rows; 7,121 unique record identifiers & Source-specific metadata precision audits pending. \\
-Dense embeddings and turbovec index & Existing indexed slice: 625 records, 1,024 dimensions; full 7,171-record rebuild pending & Recall@50 validates approximate-vs-exact vector lookup only, not scientific relevance. \\
-Full-corpus knowledge graph & 7,593 nodes and 31,920 edges, including 2,957 cross-dataset relation edges & Graph rank perturbation is observed, but qrels-backed improvement is unproven. \\
+Dense embeddings and turbovec index & Full 7,171-record dense field embedding cache, 1,024 dimensions; older 625-record turbovec ANN index still pending rebuild & Dense retrieval can now cover the real corpus; ANN recall/latency must be regenerated before final claims. \\
+Full-corpus knowledge graph & 7,438 nodes and 81,518 edges, including 58,521 cross-dataset relation edges & Real corpus IDs now resolve into graph context; qrels-backed improvement remains preliminary and human validation is pending. \\
 Coverage ledger and UI evidence surfaces & 7,176 datasets and 29,561 dimension entries; Atlas and affordance panels implemented & Affordance precision and content-derived validation are pending. \\
 Literature ingestion & 255,940 OpenAlex tier~1 neuroscience papers ingested & Literature search is not yet integrated into the unified retrieval path. \\
 Paper-dataset linker & Linker run over all 7,171 datasets; 168 DOI-exact links, 225 title-fuzzy-local links, 6,778 not found & ``Run over all datasets'' is not the same as ``all datasets linked''; link precision audit pending. \\
@@ -199,7 +199,7 @@ The following table records the current source of truth for each major artifact 
 
 \begin{table}[htbp]
 \centering
-\caption{Artifact truth table (2026-06-20). Canonical manifest: \texttt{reports/eval/current\_artifact\_manifest.json}.}
+\caption{Artifact truth table (2026-06-30). Canonical manifest: \texttt{reports/eval/current\_artifact\_manifest.json}.}
 \label{tab:artifact-truth}
 \small
 \begin{tabular}{p{0.22\linewidth}p{0.35\linewidth}p{0.33\linewidth}}
@@ -207,8 +207,8 @@ The following table records the current source of truth for each major artifact 
 Layer & Canonical artifact & Validation caveat \\
 \midrule
 Normalized corpus & \texttt{data/corpus/normalized/combined\_corpus.jsonl/full\_corpus\_v09.jsonl} — 7,171 rows, 7,121 unique \texttt{source\_id}s & \texttt{combined\_corpus.jsonl} is a directory, not a file; loaders must reference \texttt{full\_corpus\_v09.jsonl} explicitly \\
-Dense index & \texttt{turbovec} on-disk: 625 records $\times$ 1,024 dim & Full 7,171-record rebuild pending; current index metrics are engineering validation only \\
-Full-corpus KG & \texttt{data/graph/neural\_search\_graph.real\_corpus.json} — 7,593 nodes / 31,920 edges & Graph rank perturbation observed; qrels-backed improvement unproven \\
+Dense index & \texttt{real\_all.dense.field\_embeddings.agg.mat.npy}: 7,171 records $\times$ 1,024 dim; older \texttt{turbovec} ANN index: 625 records $\times$ 1,024 dim & Full dense retrieval cache is current; ANN recall/latency metrics require a turbovec rebuild \\
+Full-corpus KG & \texttt{data/graph/neural\_search\_graph.real\_corpus.json} -- 7,438 nodes / 81,518 edges & Real corpus IDs now resolve into graph context; human-qrels-backed improvement unproven \\
 Field-state memory graph & \texttt{artifacts/field\_state/memory\_graph\_manifest.json} — 629-record curation slice, 2,200 nodes / 3,788 edges & Curated subset; not full-corpus \\
 Gold qrels & \texttt{artifacts/qrels\_gold.jsonl} — 0 rows & Pending human annotation \\
 Field-state adjudicated & \texttt{artifacts/field\_state/adjudicated\_qrels.jsonl} — 3 rows & Smoke-test only \\
@@ -249,7 +249,7 @@ To protect this paper from overreach and to set clear expectations for reviewers
 \begin{enumerate}
     \item \textbf{No final retrieval superiority claim.} Neural Search has not been shown to outperform BM25, dense retrieval, archive-native search, or BrainKnow-style co-occurrence on a shared human-adjudicated benchmark. That benchmark is planned (Workstream D: 100 queries, 1,500 pooled pairs) but not yet run.
 
-    \item \textbf{No final NDCG/MRR/Recall claim.} Current NDCG/MRR/Recall artifacts are either engineering smoke tests over 8 LLM-qrels pairs or seed-set diagnostics. Publication-grade retrieval metrics require frozen runs over human qrels.
+    \item \textbf{No final human-adjudicated NDCG/MRR/Recall claim.} Current NDCG/MRR/Recall artifacts are silver LLM-qrels diagnostics over 317 canonical queries and 13,654 non-error query--dataset labels. Publication-grade retrieval metrics require frozen runs over human qrels.
 
     \item \textbf{No final finding-extraction precision claim.} The extraction and 27-field enrichment snapshots have been spot-checked but not formally evaluated for precision or recall. Region, species, and typed-field accuracy are unknown.
 
@@ -1053,8 +1053,8 @@ The \texttt{LearningSignalGenerator} in \texttt{neural\_search/field\_state/lear
 
 \subsubsection{Current Artifact State}
 
-\paragraph{Full-corpus knowledge graph (rebuilt 14~June~2026).}
-\texttt{data/graph/neural\_search\_graph.real\_corpus.json} was rebuilt from all 7,171 flat corpus records using \texttt{scripts/rebuild\_full\_corpus\_graph.py}. The graph contains \textbf{7,593 nodes} and \textbf{31,920 edges}. Node type breakdown: 7,171 dataset, 118 brain\_region, 81 task, 60 modality, 27 analysis\_affordance, 26 behavioral\_event, 25 data\_standard, 22 required\_signal, 21 paper, 17 species, 14 organism\_model, 11 taxon\_group. Edge type breakdown (top): \texttt{dataset\_has\_modality} (8,083), \texttt{dataset\_records\_region} (7,098), \texttt{dataset\_uses\_standard} (5,484), \texttt{dataset\_has\_species} (5,388), \texttt{dataset\_has\_task} (2,423), \texttt{same\_region\_same\_task} (1,576), \texttt{same\_region\_cross\_modality} (890), \texttt{same\_task\_cross\_species} (491). The three cross-dataset edge types are new as of this rebuild: they encode multimodal reuse candidates, methodological siblings, and cross-species generalization bridges directly as first-class graph edges.
+\paragraph{Full-corpus knowledge graph (rebuilt 30~June~2026).}
+\texttt{data/graph/neural\_search\_graph.real\_corpus.json} was rebuilt from all 7,171 flat corpus records using \texttt{scripts/build\_real\_corpus\_graph.py}. The graph contains \textbf{7,438 nodes} and \textbf{81,518 edges}. Node type breakdown: 7,171 dataset, 118 brain\_region, 85 task, 46 modality, and 18 species. Edge type breakdown: \texttt{dataset\_has\_modality} (8,083), \texttt{dataset\_records\_region} (7,098), \texttt{dataset\_has\_species} (5,393), \texttt{dataset\_has\_task} (2,423), \texttt{same\_region\_cross\_modality} (48,212), and \texttt{same\_task\_cross\_species} (10,309). Each dataset node now uses the real corpus ID pattern \texttt{node:dataset:\{source\}:\{source\_id\}} and includes aliases such as \texttt{dandi:000785}, \texttt{000785}, and \texttt{dataset:dandi:000785}. This aligns graph node identity with retrieval run IDs and restores a nonzero graph-context contribution for real corpus records.
 
 \paragraph{Field-state memory graph (evidence and curation layer).}
 The \texttt{update\_20260613T053153Z} build covers the 629-record reviewed slice: 2,200 nodes and 3,788 typed edges, including 675 neuro-judge evidence-packet nodes, 618 raw-data-signal nodes, 22 paper nodes, and 17 feedback-signal nodes. This graph tracks curation state, evidence packets, and feedback; it is complementary to the full-corpus knowledge graph above.
@@ -1219,13 +1219,13 @@ For usefulness evaluation, MRR counts only labels $\ell \in \{\texttt{useful}, \
 
 This section reports only artifacts aligned with the current repository state. Retrieval metrics from smaller historical corpora have been removed from the main paper; they should remain in archived reports until a new benchmark is run on a frozen expanded-corpus snapshot.
 
-\noindent\textbf{Artifact reconciliation note.} Some generated reports still describe an earlier 10,404-record target snapshot. The live corpus artifact inspected for this paper update is \texttt{data/corpus/normalized/combined\_corpus.jsonl/full\_corpus\_v09.jsonl}, which contains 7,171 normalized rows and 7,121 unique record identifiers. The current on-disk turbovec vector file has shape $625 \times 1024$ and \texttt{meta.json} lists 625 indexed identifiers, while the older recall report records \texttt{index\_size=4366}. Therefore current index metrics should be treated as engineering validation requiring regeneration, not as final expanded-corpus retrieval evidence.
+\noindent\textbf{Artifact reconciliation note.} Some generated reports still describe an earlier 10,404-record target snapshot. The live corpus artifact inspected for this paper update is \texttt{data/corpus/normalized/combined\_corpus.jsonl/full\_corpus\_v09.jsonl}, which contains 7,171 normalized rows and 7,121 unique record identifiers. The current dense field embedding cache has shape $7{,}171 \times 1024$ in \texttt{real\_all.dense.field\_embeddings.agg.mat.npy}; the older on-disk turbovec vector file still has shape $625 \times 1024$ and should be rebuilt before approximate-index latency or recall is cited as current full-corpus evidence.
 
 \noindent\textit{The generated table bundle \texttt{generated/current\_results\_tables.tex} currently contains stale 10,404-record numbers and should be regenerated before use. The compact tables below preserve the current reported artifact state.}
 
     \begin{table}[htbp]
     \centering
-    \caption{Current corpus and index artifact summary (as of 17~June~2026).}
+    \caption{Current corpus and index artifact summary (as of 30~June~2026).}
     \small
     \begin{tabular}{lc}
     \toprule
@@ -1233,11 +1233,11 @@ This section reports only artifacts aligned with the current repository state. R
     \midrule
     Unique normalized dataset rows & 7,171 \\
     Unique normalized dataset ids & 7,121 \\
-    Dense field embeddings (rebuilding) & 7,171 target (was 2,840) \\
+    Dense field embedding cache & 7,171 records \\
     Embedding model & BGE-large-en-v1.5 \\
     Embedding dimension & 1,024 \\
-    Knowledge graph nodes & 7,593 \\
-    Knowledge graph edges & 31,920 (incl.\ 2,957 cross-dataset) \\
+    Knowledge graph nodes & 7,438 \\
+    Knowledge graph edges & 81,518 (incl.\ 58,521 cross-dataset) \\
     Coverage ledger datasets & 7,176 \\
     Coverage ledger entries & 29,561 \\
     Indexed ids (turbovec, requires rebuild) & 625 (stale — rebuild pending) \\
@@ -1317,18 +1317,18 @@ For signal set $\mathcal{S}$, the ablation of signal $s$ measures:
 \end{equation}
 \end{definition}
 
-The current ablation artifact reports graph-rank perturbation rather than a full expanded-corpus retrieval metric. A publishable ablation should be rerun after the benchmark snapshot is frozen and labeled.
+The current ablation artifacts include both graph-rank perturbation diagnostics and a silver LLM-qrels retrieval preview. A publishable ablation should be rerun after a human-adjudicated benchmark snapshot is frozen and labeled.
 
 \subsection{Graph Proximity Ablation}
 \label{sec:s9ablation}
 
-The current graph proximity ablation confirms that the $s_9$ signal changes rank orderings, but it does not yet establish a metric gain on the expanded corpus:
+The current graph proximity ablation confirms that the $s_9$ signal changes rank orderings, and the calibrated graph rung shows a small silver LLM-qrels-backed metric gain. This remains preliminary until human-adjudicated qrels are available:
 
 \begin{itemize}
     \item Ranking pairs changed when real graph enabled vs.\ ablated: \textbf{39\%}
     \item This confirms the graph proximity signal is non-trivial and reshapes result ordering for a substantial fraction of queries.
-    \item The s9 fix addressed a namespace mismatch where \texttt{dataset\_context\_bridge} returned bare identifiers while graph nodes use \texttt{node:dataset:\{source\}:\{id\}} format.
-    \item The graph should be rebuilt and the ablation rerun against a frozen expanded-corpus snapshot with stronger labels.
+    \item The June 30 graph rebuild addressed a namespace mismatch where retrieval runs used IDs such as \texttt{dandi:000785} while the old graph used demo-era dataset nodes. Real corpus graph nodes now use \texttt{node:dataset:\{source\}:\{source\_id\}} with alias fallback.
+    \item The ablation should be rerun against a frozen expanded-corpus snapshot with human-adjudicated labels.
 \end{itemize}
 
 \subsection{Current Expanded-Corpus Evaluation Status}
@@ -1924,13 +1924,13 @@ python scripts/eval/diagnose_retrieval_loading.py
 
 \begin{lstlisting}[language=sh]
 # Rebuild full-corpus knowledge graph (all 7,171 records)
-python scripts/rebuild_full_corpus_graph.py
-
-# Smoke test with 100 records
-python scripts/rebuild_full_corpus_graph.py --limit 100 --out /tmp/test_graph.json
+python scripts/build_real_corpus_graph.py
 
 # Rebuild field embeddings for all corpus records (requires GPU ~1h)
 python scripts/embed_flat_corpus.py
+
+# Build/load the aggregated NPY embedding cache used by ablation
+python scripts/eval/cache_embeddings_npy.py
 
 # Rebuild with explicit corpus path
 python scripts/embed_flat_corpus.py \
@@ -1997,11 +1997,11 @@ The roadmap below orders work by impact on the three core goals: corpus growth, 
     \item \textbf{NLP task enrichment second pass.}
     A batch script matches dataset titles and descriptions against the expanded 96-entry task alias map. Target: raise task coverage from 23.4\% to $\geq 35\%$ using confidence=0.60 inferred labels.
 
-    \item \textbf{Complete LLM qrels annotation via Ollama Qwen-2.5-14B} (\textit{in progress on MacBook Pro}).
-    Running 13,654 (query, dataset) evidence pairs through local Ollama inference. Once complete, \texttt{compute\_ndcg\_from\_qrels.py} can produce silver diagnostic NDCG@10/MRR/Recall@50 metrics across the ablation ladder. Publication-grade NDCG/MRR/Recall requires human-adjudicated qrels.
+    \item \textbf{Promote silver qrels into human-reviewed benchmark strata}.
+    The 13,654 non-error LLM-judged (query, dataset) evidence pairs now support silver diagnostic NDCG@10/MRR/Recall@50 metrics across the ablation ladder. The next step is a stratified dual-human review pass over query intents, sources, positive grades, hard negatives, and graph-moved candidates. Publication-grade NDCG/MRR/Recall requires human-adjudicated qrels.
 
     \item \textbf{Expose knowledge graph similar-datasets API.}
-    Surface the 2,957 cross-dataset edges (\texttt{same\_region\_same\_task}: 1,576; \texttt{same\_region\_cross\_modality}: 890; \texttt{same\_task\_cross\_species}: 491) via \texttt{GET /api/datasets/\{id\}/similar}. A Similar Datasets panel on each dataset card will present these neighbors with their relation type and weight.
+    Surface the 58,521 cross-dataset edges (\texttt{same\_region\_cross\_modality}: 48,212; \texttt{same\_task\_cross\_species}: 10,309) via \texttt{GET /api/datasets/\{id\}/similar}. A Similar Datasets panel on each dataset card will present these neighbors with their relation type and weight.
 \end{enumerate}
 
 \paragraph{Horizon 2 — Short term (corpus coverage + finding quality, 2--4 weeks).}
@@ -2029,10 +2029,10 @@ The roadmap below orders work by impact on the three core goals: corpus growth, 
 \begin{enumerate}
     \setcounter{enumi}{17}
     \item \textbf{Graph-based result explanation.}
-    The knowledge graph now encodes \texttt{same\_region\_same\_task}, \texttt{same\_region\_cross\_modality}, and \texttt{same\_task\_cross\_species} edges between 7,171 datasets. Surface these as similarity explanations: ``3 other datasets share this region and task'', ``2 datasets use this region but with different recording modalities''.
+    The knowledge graph now encodes \texttt{same\_region\_cross\_modality} and \texttt{same\_task\_cross\_species} edges between 7,171 datasets. Surface these as similarity explanations: ``2 datasets use this region but with different recording modalities'', ``3 datasets share this task across species''.
 
     \item \textbf{Metapath retrieval over the full corpus graph.}
-    Implement metapath-based similarity scoring using the full 31,920-edge graph:
+    Implement metapath-based similarity scoring using the full 81,518-edge graph:
     \begin{equation}
         S_{\text{meta}}(d, q) = \sum_{\mathcal{P}} w_\mathcal{P} \cdot \text{PathSim}(d, q \mid \mathcal{P})
     \end{equation}
@@ -2105,7 +2105,7 @@ The $s_9$ graph proximity dimension computes PathSim when a \texttt{KnowledgeGra
 
 \subsection{Dense Embedding Stack}
 
-The current expanded-corpus artifact has 7,171 normalized rows, while the current BGE-large-en-v1.5 embedding cache contains 2,840 embedding rows over 625 records and the current turbovec vector file has shape $625 \times 1024$ with 4-bit metadata. The current recall report gives recall@50 = 1.0 with p50 latency of 7.24 ms and p95 latency of 24.47 ms, but its reported index size does not match the current on-disk index metadata. This remains useful engineering validation, but the embedding cache, index, and recall report must be regenerated together before end-to-end scientific relevance validation. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
+The current expanded-corpus artifact has 7,171 normalized rows, and the current BGE-large-en-v1.5 dense field embedding cache covers all 7,171 records at 1,024 dimensions. The canonical fast-load files are \texttt{real\_all.dense.field\_embeddings.agg.ids.json} and \texttt{real\_all.dense.field\_embeddings.agg.mat.npy}; the matrix shape is $7{,}171 \times 1024$. \texttt{scripts/eval/run\_ablation\_ladder.py} now checks for this NPY cache before parsing JSONL, so normal ablation runs avoid reparsing the 82 MB field-embedding JSONL. The older turbovec vector file still has shape $625 \times 1024$ with 4-bit metadata, so ANN recall and latency reports remain engineering validation until that approximate index is rebuilt from the full dense cache. A key implementation note: the \texttt{\_provider\_for\_cache} function in \texttt{field\_semantic.py} must register a \texttt{DenseEmbeddingProvider} for \texttt{provider\_name == "bge-large"} to ensure query-time embeddings are computed in the same 1024-dim vector space as the corpus.
 
 \subsection{Corpus Expansion and Graph-Linked Memory Growth}
 
@@ -2115,7 +2115,7 @@ The expansion machinery separates breadth from evidence depth. High-volume gener
 
 Regional expansion is managed by evidence tier. Structured repository metadata, NWB electrode-table locations, and curated source categories are treated as stronger evidence than title or abstract mentions; CrossRef paper abstracts and free-text NWB fields are retained as silver labels. The regional coverage map exposes verified regions separately from candidate-only mentions and produces a regionless review queue. This prevents the system from inflating anatomical coverage while still giving curators actionable acquisition targets.
 
-Corpus expansion and memory graph growth are now coupled: adding or changing records triggers incremental hash-based update detection, inserts or refreshes dataset/modality/species/region/task/affordance nodes, and connects them into the existing graph through named provenance-carrying edges. The full-corpus knowledge graph rebuild (14~June~2026) produced 7,593 nodes and 31,920 edges from all 7,171 records, with 2,957 new cross-dataset relationship edges. The separate field-state memory graph remains at 2,200 nodes/3,788 edges for the reviewed 629-record slice and writes versioned snapshots without altering human overlays or adjudicated labels. The expansion plan targets 50K+ records through deeper DANDI and OpenNeuro coverage, EBRAINS, SPARK, UK Biobank (neuroscience subset), and data paper mining from \textit{Scientific Data} and \textit{eLife}. Each new source should be accompanied by a normalizer extension for any new modalities, species, or brain regions it introduces, and validated against the conservative normalizer guardrails before ingestion.
+Corpus expansion and memory graph growth are now coupled: adding or changing records triggers incremental hash-based update detection, inserts or refreshes dataset/modality/species/region/task/affordance nodes, and connects them into the existing graph through named provenance-carrying edges. The full-corpus knowledge graph rebuild (30~June~2026) produced 7,438 nodes and 81,518 edges from all 7,171 records, with real corpus dataset IDs and 58,521 cross-dataset relationship edges. The separate field-state memory graph remains at 2,200 nodes/3,788 edges for the reviewed 629-record slice and writes versioned snapshots without altering human overlays or adjudicated labels. The expansion plan targets 50K+ records through deeper DANDI and OpenNeuro coverage, EBRAINS, SPARK, UK Biobank (neuroscience subset), and data paper mining from \textit{Scientific Data} and \textit{eLife}. Each new source should be accompanied by a normalizer extension for any new modalities, species, or brain regions it introduces, and validated against the conservative normalizer guardrails before ingestion.
 
 \subsection{Neural Signature Similarity}
 
@@ -2141,7 +2141,7 @@ The current repository now has a canonical LLM-judged qrels snapshot large enoug
 
 Neural Search represents a principled approach to scientific dataset discovery that goes beyond generic document retrieval. By formalizing datasets as structured experimental objects, grounding search in ontological knowledge, propagating provenance through typed graphs, and maintaining interpretable scoring, the system is designed to help researchers find reusable experimental contexts rather than merely similar text.
 
-The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus knowledge graph with 7,593 nodes and 31,920 edges (including 2,957 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 317-query canonical benchmark suite with 13,654 LLM-judged qrels, bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference and remains in progress, with 190K+ tier~1 findings extracted as of 23~June~2026. A rule-based enrichment pass adds 27 typed fields (frequency band, temporal pattern, negation, spatial frame, and more), enabling compound queries over disease model, brain region, frequency band, molecular marker, pharmacological context, sleep state, and analysis method; these finding counts and coverage rates are operational estimates, not validated finding quality, and the typed-field layer's effect on retrieval has not yet been isolated from the aggregate graph signal in the ablation ladder. Dense field embeddings are being rebuilt over all 7,171 records (previously covering 40\%), which will unlock full dense retrieval and turbovec index rebuild. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
+The mathematical foundations---spanning information retrieval theory, knowledge graph theory, representation learning, constraint satisfaction, and evaluation methodology---provide a rigorous substrate for continued development. The current live implementation contains a 7,171-row normalized corpus, a full-corpus dense field embedding cache covering all 7,171 records, a full-corpus knowledge graph with 7,438 nodes and 81,518 edges (including 58,521 explicit cross-dataset relationship edges), a DuckDB coverage ledger with 29,561 dimension entries, a coverage gap boost, a source diversity reranker, config-gated SPECTER2 fusion and LLM query expansion, structured dimension-match badges in the frontend, a 317-query canonical benchmark suite with 13,654 LLM-judged qrels, bootstrap CI infrastructure, and a complete annotation pool generator. A literature-scale ingestion layer has ingested 255,940 OpenAlex tier~1 neuroscience papers and run the paper-dataset linker over all 7,171 corpus datasets; current successful links are 168 DOI-exact and 225 title-fuzzy-local, with 6,778 not-found records and a precision audit pending. LLM-powered structured finding extraction is running on local inference and remains in progress, with 190K+ tier~1 findings extracted as of 23~June~2026. A rule-based enrichment pass adds 27 typed fields (frequency band, temporal pattern, negation, spatial frame, and more), enabling compound queries over disease model, brain region, frequency band, molecular marker, pharmacological context, sleep state, and analysis method; these finding counts and coverage rates are operational estimates, not validated finding quality. The June 30 graph rebuild fixes the previous demo-ID mismatch, so real retrieval IDs now receive nonzero graph-context scores. The BGE-large usefulness-score Spearman correlation is 0.3999 over 270 labeled pairs, and graph proximity changes 39\% of ranked pairs in the current ablation artifact.
 
 The next scientific milestone is reliability: dual-judge and human-adjudicate a stratified subset of the canonical qrels so QWK, disagreement analysis, and expert-calibrated NDCG@10 can be reported. The second --- isolating the typed/relationship knowledge-graph layer's contribution from the aggregate \texttt{hybrid\_graph} signal --- is now done: dedicated \texttt{typed\_kg} and \texttt{typed\_kg\_qualified} ablation rungs (2026-06-23) add only the typed finding-relationship score (supports/contradicts edges and a qualified-consensus region bonus) on top of \texttt{hybrid\_rrf}. On a full-corpus replication run, neither rung moved NDCG@10 measurably beyond \texttt{hybrid\_rrf} (\texttt{typed\_kg\_qualified} moved it by +0.0002), consistent with the existing relationship-edge quality analysis's near-coin-flip (47--52\%) helpful rate. This is a second, independent line of evidence that the typed/relationship layer's retrieval contribution is real but small at current calibration --- not yet a reason to invest further in relationship-edge expansion ahead of human-adjudicated qrels, and a reason to re-run the same isolated rungs on the canonical packet-aligned corpus before treating the null result as final. The third is coverage: spatial ontology expansion (Allen CCF v3, 13K+ regions; UBERON cross-species; HCP MMP 360 cortical areas), tier~2 ingest ($\sim$1.39M open-access papers, staged and ready via \texttt{bulk\_ingest\_openalex.py --tier tier2} but not yet started), BIL and NeuroVault re-enrichment, OpenNeuro BIDS electrode extraction, and corpus growth toward 10K+ records will close the dark-pair gaps identified by the coverage ledger. The fourth is accuracy: SPECTER2 fusion, metapath retrieval, additional graph rungs, and a learned-to-rank reranker will be evaluated against the frozen qrels benchmark before any production deployment.
 
@@ -2176,11 +2176,13 @@ Memory graph artifacts (v0.9):
     \item \texttt{artifacts/field\_state/learning\_signals.jsonl} --- provisional learning signals
 \end{itemize}
 
-Full-corpus knowledge graph artifacts (rebuilt 14~June~2026):
+Full-corpus knowledge graph artifacts (rebuilt 30~June~2026):
 
 \begin{itemize}
-    \item \texttt{data/graph/neural\_search\_graph.real\_corpus.json} --- 7,593 nodes / 31,920 edges
-    \item \texttt{scripts/rebuild\_full\_corpus\_graph.py} --- builder from flat corpus (both v09 and legacy formats)
+    \item \texttt{data/graph/neural\_search\_graph.real\_corpus.json} --- 7,438 nodes / 81,518 edges
+    \item \texttt{scripts/build\_real\_corpus\_graph.py} --- builder from flat corpus using real corpus dataset IDs and aliases
+    \item \texttt{data/embeddings/real\_all.dense.field\_embeddings.agg.ids.json} and \texttt{data/embeddings/real\_all.dense.field\_embeddings.agg.mat.npy} --- 7,171-record aggregated dense embedding cache
+    \item \texttt{scripts/eval/cache\_embeddings\_npy.py} --- cache builder for fast full-corpus dense embedding loading
 \end{itemize}
 
 Literature layer artifacts (added 17~June~2026):

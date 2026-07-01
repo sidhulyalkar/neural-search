@@ -123,6 +123,12 @@ def compose_kg(
     except Exception as exc:
         log.warning("hcp_connectivity unavailable: %s", exc)
 
+    try:
+        from neural_search.ingestion.scholarpedia_builder import build_scholarpedia_kg
+        layers.append(("scholarpedia", build_scholarpedia_kg))
+    except Exception as exc:
+        log.warning("scholarpedia_builder unavailable: %s", exc)
+
     # Run all core layers
     for name, builder_fn in layers:
         try:

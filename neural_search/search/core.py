@@ -20,6 +20,7 @@ from neural_search.field_state.retrieval_bridge import (
 )
 from neural_search.graph.search_features import (
     compute_graph_features_for_result,
+    compute_kg_layer_scores,
     graph_context_score,
     load_graph_if_exists,
 )
@@ -52,6 +53,7 @@ from neural_search.search.explanation import (
     MatchGroup,
     generate_explanation,
 )
+from neural_search.search.concept_authority import expand_query_with_concepts
 from neural_search.search.field_semantic import (
     field_semantic_score_for_result,
     load_field_semantic_index,
@@ -1060,6 +1062,34 @@ def _augment_result_with_optional_scores(
             result.linked_papers = graph_features.get("linked_papers", [])[:5]
         extra_score += float(weights.get("graph", 0.0)) * graph_score
 
+    # KG layer scoring — NeuroSynth region activation, NER entity coverage, citation authority
+    try:
+        kg_layer_scores = compute_kg_layer_scores(
+            graph,
+            str(result.dataset_id),
+            dict(parsed_query),
+        )
+        result.score_breakdown.update(kg_layer_scores)
+        extra_score += kg_layer_scores["kg_layer_weighted_total"]
+        if kg_layer_scores["neurosynth_region_score"] > 0:
+            result.why_matched.append(
+                f"NeuroSynth region activation: {kg_layer_scores['neurosynth_region_score']:.3f}"
+            )
+        if kg_layer_scores["citation_authority_score"] > 0:
+            result.why_matched.append(
+                f"Citation authority: {kg_layer_scores['citation_authority_score']:.3f}"
+            )
+        if kg_layer_scores.get("kg_concept_score", 0) > 0:
+            result.why_matched.append(
+                f"KG concept match: {kg_layer_scores['kg_concept_score']:.3f}"
+            )
+        if kg_layer_scores.get("region_hierarchy_score", 0) > 0:
+            result.why_matched.append(
+                f"Region hierarchy match: {kg_layer_scores['region_hierarchy_score']:.3f}"
+            )
+    except Exception:
+        pass
+
     # Memory-graph scoring
     if memory_graph_config and memory_graph_config.get("enabled") and memory_graph_store is not None:
         try:
@@ -1271,6 +1301,17 @@ def search_datasets(
     config = _retrieval_config_with_defaults(retrieval_config)
     combined_query = combine_query_and_structured_text(query, structured_query)
     parsed = parse_query(combined_query, config)
+
+    # Scholarpedia concept authority expansion — alias-based concept matching
+    try:
+        concept_slugs = expand_query_with_concepts(combined_query)
+        if concept_slugs:
+            existing = list(parsed.get("concepts", []))
+            merged = list(dict.fromkeys(existing + concept_slugs))
+            parsed["concepts"] = merged
+            parsed["scholarpedia_concepts"] = concept_slugs
+    except Exception:
+        pass  # Concept authority is optional; never fail search
 
     # LLM query expansion fallback — fires only when rule-based parsing finds nothing
     llm_cfg = config.get("llm_expansion", {})

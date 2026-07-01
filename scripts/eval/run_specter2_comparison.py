@@ -83,7 +83,8 @@ def build_specter2_embeddings(corpus_path: Path, out_path: Path) -> None:
                 embeddings = provider.embed_batch(texts)
                 for rec, emb in zip(batch, embeddings, strict=True):
                     did = str(rec.get("dataset_id") or f"{rec.get('source')}:{rec.get('source_id')}")
-                    fout.write(json.dumps({"dataset_id": did, "embedding": emb.tolist()}) + "\n")
+                    emb_list = emb.tolist() if hasattr(emb, "tolist") else list(emb)
+                    fout.write(json.dumps({"dataset_id": did, "embedding": emb_list}) + "\n")
                     n_written += 1
             except Exception as e:
                 log.warning("Batch %d failed: %s", i // BATCH_SIZE, e)
@@ -119,8 +120,9 @@ def retrieve_specter2(
     provider: Any,
     top_k: int = TOP_K,
 ) -> list[tuple[str, float]]:
-    q_emb = provider.embed(query)
-    scores = [(did, cosine_sim(q_emb.tolist(), vec)) for did, vec in zip(ids, vecs, strict=True)]
+    q_emb = provider.embed_batch([query])[0]
+    q_vec = q_emb.tolist() if hasattr(q_emb, "tolist") else list(q_emb)
+    scores = [(did, cosine_sim(q_vec, vec)) for did, vec in zip(ids, vecs, strict=True)]
     scores.sort(key=lambda x: -x[1])
     return scores[:top_k]
 

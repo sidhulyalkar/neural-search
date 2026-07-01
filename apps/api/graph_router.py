@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
+
+log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 CLUSTER_GRAPH_PATH = REPO_ROOT / "artifacts/graph/cluster_graph.json"
@@ -14,6 +17,9 @@ GALAXY_PATH = REPO_ROOT / "artifacts/graph/galaxy_points.json"
 CONSENSUS_PATH = REPO_ROOT / "artifacts/literature/relationships/consensus_summaries.jsonl"
 FINDINGS_PATH = REPO_ROOT / "artifacts/literature/findings_tier1_ollama.jsonl"
 LINKS_PATH = REPO_ROOT / "artifacts/literature/paper_dataset_links.jsonl"
+
+KG_DB_PATH = REPO_ROOT / "data/kg/neural_search_kg.duckdb"
+KG_JSONL_PATH = REPO_ROOT / "artifacts/kg/composed_kg.jsonl"
 
 router = APIRouter()
 
@@ -343,4 +349,80 @@ async def get_dataset_neighborhood(dataset_id: str) -> dict[str, Any]:
         "finding_clusters": finding_clusters,
         "related_datasets": related,
         "consensus_by_region": consensus_by_region,
+    }
+
+
+# ── DuckDB-backed KG endpoints ────────────────────────────────────────────────
+
+def _kg_conn() -> Any:
+    """Return the cached KG DuckDB connection, raising 503 when the store is missing."""
+    if not KG_DB_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="KG store not built. Run: python scripts/kg/build_kg_duckdb.py",
+        )
+    from neural_search.graph.kg_store import load_kg_store
+    return load_kg_store(db_path=str(KG_DB_PATH), jsonl_path=str(KG_JSONL_PATH))
+
+
+@router.get("/api/kg/nodes")
+async def list_kg_nodes(
+    node_type: str = Query("", description="Filter by node_type (exact match)"),
+    label: str = Query("", description="Case-insensitive substring match against label"),
+    limit: int = Query(100, ge=1, le=2000),
+) -> list[dict[str, Any]]:
+    """Query KG nodes from the DuckDB store."""
+    from neural_search.graph.kg_store import query_nodes
+    conn = _kg_conn()
+    return query_nodes(conn, node_type=node_type or None, label_contains=label or None, limit=limit)
+
+
+@router.get("/api/kg/nodes/{node_id:path}")
+async def get_kg_node(node_id: str) -> dict[str, Any]:
+    """Fetch a single KG node by ID. Returns 404 when absent."""
+    from neural_search.graph.kg_store import get_node
+    conn = _kg_conn()
+    node = get_node(conn, node_id)
+    if node is None:
+        raise HTTPException(status_code=404, detail=f"Node not found: {node_id}")
+    return node
+
+
+@router.get("/api/kg/edges")
+async def list_kg_edges(
+    source_id: str = Query("", description="Filter by source_id"),
+    target_id: str = Query("", description="Filter by target_id"),
+    edge_type: str = Query("", description="Filter by edge_type"),
+    limit: int = Query(500, ge=1, le=5000),
+) -> list[dict[str, Any]]:
+    """Query KG edges from the DuckDB store."""
+    from neural_search.graph.kg_store import query_edges
+    conn = _kg_conn()
+    return query_edges(
+        conn,
+        source_id=source_id or None,
+        target_id=target_id or None,
+        edge_type=edge_type or None,
+        limit=limit,
+    )
+
+
+@router.get("/api/kg/stats")
+async def get_kg_stats() -> dict[str, Any]:
+    """Return node/edge counts and type breakdowns from the KG DuckDB store."""
+    conn = _kg_conn()
+    node_count: int = conn.execute("SELECT COUNT(*) FROM kg_nodes").fetchone()[0]
+    edge_count: int = conn.execute("SELECT COUNT(*) FROM kg_edges").fetchone()[0]
+    type_counts = conn.execute(
+        "SELECT node_type, COUNT(*) FROM kg_nodes GROUP BY node_type ORDER BY 2 DESC LIMIT 30"
+    ).fetchall()
+    edge_type_counts = conn.execute(
+        "SELECT edge_type, COUNT(*) FROM kg_edges GROUP BY edge_type ORDER BY 2 DESC LIMIT 30"
+    ).fetchall()
+    return {
+        "node_count": node_count,
+        "edge_count": edge_count,
+        "node_types": {row[0]: row[1] for row in type_counts},
+        "edge_types": {row[0]: row[1] for row in edge_type_counts},
+        "db_path": str(KG_DB_PATH),
     }

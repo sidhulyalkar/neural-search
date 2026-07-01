@@ -9,6 +9,7 @@ import {
   type DisorderDetail,
   type ConceptSummary,
 } from '../api/kg'
+import { BrainCircuitViewer } from '../components/brain/BrainCircuitViewer'
 
 type Tab = 'disorders' | 'circuits' | 'concepts'
 
@@ -166,6 +167,26 @@ function DisorderDetailPanel({ detail }: { detail: DisorderDetail }) {
           {detail.dsm5 && <span className="text-xs text-neural-600 font-mono">DSM-5: {detail.dsm5}</span>}
         </div>
       </div>
+
+      {/* 3D circuit map */}
+      <section>
+        <h3 className="text-xs uppercase tracking-widest text-neural-500 mb-2">3D Circuit Map</h3>
+        <div className="rounded-xl border border-neural-800 overflow-hidden">
+          <BrainCircuitViewer
+            activeCircuits={detail.disrupted_circuits}
+            selectedCircuit={null}
+            extraOscillations={detail.oscillation_biomarkers.map(b => ({
+              band: b.band,
+              region: b.region,
+              note: b.note,
+            }))}
+            height={300}
+          />
+        </div>
+        <p className="text-[9px] text-neural-700 mt-1.5 font-mono">
+          Highlighted circuits = disrupted in {detail.label} · Pulsing rings = measured oscillation biomarkers
+        </p>
+      </section>
 
       {/* Disrupted circuits */}
       <section>

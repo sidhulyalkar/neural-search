@@ -105,7 +105,6 @@ data/graph/
 data/corpus/normalized/
 data/corpus/rejected/
 data/ontology/
-!data/ontology/*.yaml
 artifacts/claims/
 artifacts/field_state/*.jsonl
 artifacts/field_state/concept_memory/*.jsonl
@@ -113,6 +112,16 @@ artifacts/field_state/concept_memory/concept_graph.json
 artifacts/field_state/concept_memory/concept_index.json
 reports/eval/runs/
 reports/eval/*.jsonl
+
+# Large generated/downloaded data artifacts (not versioned)
+apps/web/public/brain.glb
+/brain/
+data/allen/
+data/neurosynth/
+artifacts/citations/
+artifacts/kg/
+artifacts/ner/
+data/kg/*.duckdb
 
 # Live/growing literature extraction outputs (currently 140MB+, exceeds
 # GitHub's 100MB hard limit; regenerate locally, do not version)

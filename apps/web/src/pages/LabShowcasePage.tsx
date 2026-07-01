@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { NEATLABS, SID_PAPERS } from '../data/neatlabs'
+import { BrainCircuitViewer, CIRCUIT_DEFS } from '../components/brain/BrainCircuitViewer'
 
 // ── Topic color map (subset matching NEATLab's KG topics) ─────────────────────
 
@@ -97,9 +98,8 @@ function TranslationalPipeline() {
     <div className="rounded-2xl border border-neural-800 bg-neural-900/40 p-6">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_40px_1fr_40px_1fr] gap-0 items-stretch">
         {steps.map((step, idx) => (
-          <>
+          <React.Fragment key={step.platform}>
             <div
-              key={step.platform}
               className="rounded-xl border p-4 flex flex-col gap-2"
               style={{
                 borderColor:
@@ -132,11 +132,11 @@ function TranslationalPipeline() {
               <p className="text-[10px] text-neural-500 leading-snug mt-auto">{step.why}</p>
             </div>
             {idx < steps.length - 1 && (
-              <div key={`arrow-${idx}`} className="flex items-center justify-center text-neural-700 text-xl select-none">
+              <div className="flex items-center justify-center text-neural-700 text-xl select-none">
                 →
               </div>
             )}
-          </>
+          </React.Fragment>
         ))}
       </div>
       <p className="text-[11px] text-neural-500 italic mt-4 leading-relaxed border-t border-neural-800 pt-4">
@@ -369,6 +369,72 @@ function DirectorCard({ director }: { director: typeof NEATLABS.directors[number
   )
 }
 
+// ── Brain Circuit Section ──────────────────────────────────────────────────────
+
+function BrainCircuitSection() {
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  const handleSelect = (id: string) => {
+    // Empty string = clear (from dismiss button inside viewer)
+    setActiveId(prev => (id === '' || prev === id) ? null : id)
+  }
+
+  return (
+    <section className="space-y-4">
+      <SectionHeading
+        label="Circuit Atlas — 3D Brain Viewer"
+        sub="Neural Engineering & Translation"
+      />
+      <p className="text-xs text-neural-600 leading-snug max-w-2xl">
+        3D visualization of the functional circuits NEATLabs studies, shown inside a real anatomical brain model.
+        Click a node or select a circuit below — the viewer highlights its regions, connections, and oscillation signatures,
+        and links directly to papers and the knowledge graph.
+      </p>
+
+      <div className="rounded-2xl border border-neural-800 bg-neural-950/60 overflow-hidden">
+        {/* Viewer — owns the detail panel internally */}
+        <BrainCircuitViewer
+          activeCircuits={activeId ? [activeId] : []}
+          selectedCircuit={activeId}
+          height={520}
+          onCircuitSelect={handleSelect}
+        />
+
+        {/* Circuit selector strip */}
+        <div className="border-t border-neural-800 px-4 py-3">
+          <div className="flex flex-wrap gap-1.5">
+            {Object.entries(CIRCUIT_DEFS).map(([id, def]) => {
+              const isActive = activeId === id
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleSelect(id)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-mono transition-all"
+                  style={{
+                    borderColor: isActive ? def.color : `${def.color}28`,
+                    backgroundColor: isActive ? `${def.color}1a` : `${def.color}06`,
+                    color: isActive ? def.color : `${def.color}88`,
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-shadow"
+                    style={{
+                      background: def.color,
+                      boxShadow: isActive ? `0 0 6px ${def.color}` : undefined,
+                    }}
+                  />
+                  {def.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ── Main Page ──────────────────────────────────────────────────────────────────
 
 export function LabShowcasePage() {
@@ -399,9 +465,9 @@ export function LabShowcasePage() {
               </a>
             </div>
             <h1 className="text-2xl md:text-3xl font-mono font-bold text-neural-100 tracking-tight leading-tight">
-              {NEATLABS.name}
+              Lab Demo
             </h1>
-            <p className="text-base font-mono text-accent-cyan mt-1">{NEATLABS.acronym}</p>
+            <p className="text-base font-mono text-accent-cyan mt-1">{NEATLABS.name} · {NEATLABS.acronym}</p>
           </div>
         </div>
 
@@ -443,6 +509,9 @@ export function LabShowcasePage() {
           ))}
         </div>
       </section>
+
+      {/* ── 3D Brain Circuit Viewer ── */}
+      <BrainCircuitSection />
 
       {/* ── Translational Pipeline ── */}
       <section>

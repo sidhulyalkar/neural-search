@@ -175,7 +175,7 @@ diversity:
 # SPECTER2 hybrid retrieval — requires pre-built embeddings
 # Run: python scripts/eval/run_specter2_comparison.py --build-embeddings
 specter2:
-  enabled: false
+  enabled: true
   embeddings_path: data/embeddings/specter2_corpus.jsonl
   weight: 0.20
   model: allenai/specter2_base
@@ -183,12 +183,24 @@ specter2:
 # LLM query expansion — fallback when rule-based parsing finds no regions/tasks
 # Requires ANTHROPIC_API_KEY environment variable
 llm_expansion:
-  enabled: false
+  enabled: true
   model: claude-haiku-4-5-20251001
   max_tokens: 256
+  cache_size: 512
 
 hard_negative_filters:
   enabled: true
+
+kg_layers:
+  neurosynth_region_activation:
+    enabled: true
+    weight: 0.025
+  ner_entity_coverage:
+    enabled: true
+    weight: 0.020
+  citation_authority:
+    enabled: true
+    weight: 0.015
 
 # Awareness scoring for broad neuroscience data-form matching
 awareness:

@@ -63,6 +63,7 @@ embeddings = [
 dense = [
   "sentence-transformers>=2.2.0",
   "turbovec>=0.1.0",
+  "faiss-cpu>=1.7.4",
 ]
 notebooks = [
   "jupyter>=1.0.0",

@@ -166,6 +166,8 @@ SUPPORTED_EDGE_TYPES = {
     "method_requires_raw_data",
     "method_requires_region",
     "concept_related_to_concept",
+    "concept_has_alias",
+    "concept_in_domain",
     "concept_requires_affordance",
     "query_requires_modality",
     "query_requires_recording_scale",

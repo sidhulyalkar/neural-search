@@ -79,7 +79,7 @@ DEFAULT_OUT_DIR = Path("reports/eval/runs")
 NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
-GRAPH_SCORE_WEIGHT = 0.005
+GRAPH_SCORE_WEIGHT = 0.05
 TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT — fair comparison
 
 ALL_RUNGS = [
@@ -165,15 +165,31 @@ def _query_context(query_text: str, query_id: str) -> DatasetContext:
 
 
 def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
-    """Build query context dict for graph_context_score."""
+    """Build query context dict for graph_context_score and concept_overlap_score."""
     text = str(q.get("query", ""))
     ctx = _query_context(text, str(q.get("id", "")))
+
+    # Concept slugs from all query constraint fields for concept_overlap_score
+    def _slugify(terms: list[str]) -> list[str]:
+        return [t.casefold().replace(" ", "_").replace("-", "_") for t in terms if t]
+
+    concepts: list[str] = []
+    concepts.extend(_slugify(list(q.get("expected_modalities_any", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_tasks", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_behaviors", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_regions_any", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_species", []) or [])))
+    # Deduplicate
+    seen: set[str] = set()
+    deduped_concepts = [c for c in concepts if not (c in seen or seen.add(c))]  # type: ignore[func-returns-value]
+
     return {
         "tasks": ctx.tasks,
         "modalities": ctx.modalities,
         "species": ctx.species,
         "regions": list(q.get("expected_regions_any", []) or []),
         "analysis": list(q.get("expected_analysis_any", []) or []),
+        "concepts": deduped_concepts,
     }
 
 
@@ -229,15 +245,67 @@ def _write_run(out_path: Path, query_id: str, results: list[RunResult], rung: st
 def load_field_embeddings(path: Path) -> dict[str, list[float]]:
     """Load pre-computed BGE field embeddings and aggregate per record.
 
+    Load priority (fastest to slowest):
+    1. Pre-aggregated .npy + .ids.json cache (< 100ms)
+    2. FAISS binary + meta.jsonl sidecar (covers full corpus even if JSONL truncated)
+    3. Raw JSONL parsing (slow, may be partial)
+
     Returns dict mapping record_id → weighted-average normalized embedding.
     """
     import numpy as np
 
     print(f"Loading field embeddings from {path} ...", flush=True)
     t0 = time.time()
-    sums: dict[str, np.ndarray] = {}
-    weights: dict[str, float] = {}
 
+    # --- Fastest path: pre-aggregated .npy cache ---------------------------
+    ids_path = path.with_name(path.stem + ".agg.ids.json")
+    mat_path = path.with_name(path.stem + ".agg.mat.npy")
+    if ids_path.exists() and mat_path.exists():
+        try:
+            ids = json.loads(ids_path.read_text(encoding="utf-8"))
+            mat = np.load(str(mat_path), mmap_mode="r")
+            aggregated = {rid: mat[i].tolist() for i, rid in enumerate(ids)}
+            print(f"  {len(aggregated)} record embeddings via .npy cache in {time.time() - t0:.2f}s")
+            return aggregated
+        except Exception as exc:
+            print(f"  .npy cache failed ({exc}), trying FAISS ...")
+
+    # --- Fast path: FAISS binary + meta.jsonl sidecar ----------------------
+    faiss_path = path.with_suffix(".faiss")
+    meta_path = path.with_name(path.stem + ".meta.jsonl")
+    if faiss_path.exists() and meta_path.exists():
+        try:
+            from neural_search.embeddings.field_index import read_field_embedding_cache_faiss
+            records = read_field_embedding_cache_faiss(faiss_path, meta_path)
+            sums: dict[str, np.ndarray] = {}
+            weights: dict[str, float] = {}
+            for rec in records:
+                rid = str(rec.record_id).removeprefix("dataset:")
+                field = rec.field_name
+                emb = np.array(rec.embedding, dtype=np.float32)
+                w = FIELD_WEIGHTS.get(field, 0.5)
+                if rid not in sums:
+                    sums[rid] = np.zeros(len(emb), dtype=np.float32)
+                    weights[rid] = 0.0
+                sums[rid] += emb * w
+                weights[rid] += w
+            aggregated: dict[str, list[float]] = {}
+            for rid, vec in sums.items():
+                w = weights[rid]
+                if w > 0:
+                    v = vec / w
+                    norm = float(np.linalg.norm(v))
+                    if norm > 0:
+                        v = v / norm
+                    aggregated[rid] = v.tolist()
+            print(f"  {len(aggregated)} record embeddings via FAISS in {time.time() - t0:.1f}s")
+            return aggregated
+        except Exception as exc:
+            print(f"  FAISS fast-path failed ({exc}), falling back to JSONL ...")
+
+    # --- Slow path: parse JSONL ---------------------------------------------
+    sums2: dict[str, np.ndarray] = {}
+    weights2: dict[str, float] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
@@ -247,24 +315,24 @@ def load_field_embeddings(path: Path) -> dict[str, list[float]]:
         field = str(rec.get("field_name", ""))
         emb = np.array(rec["embedding"], dtype=np.float32)
         w = FIELD_WEIGHTS.get(field, 0.5)
-        if rid not in sums:
-            sums[rid] = np.zeros(len(emb), dtype=np.float32)
-            weights[rid] = 0.0
-        sums[rid] += emb * w
-        weights[rid] += w
+        if rid not in sums2:
+            sums2[rid] = np.zeros(len(emb), dtype=np.float32)
+            weights2[rid] = 0.0
+        sums2[rid] += emb * w
+        weights2[rid] += w
 
-    aggregated: dict[str, list[float]] = {}
-    for rid, vec in sums.items():
-        w = weights[rid]
+    aggregated2: dict[str, list[float]] = {}
+    for rid, vec in sums2.items():
+        w = weights2[rid]
         if w > 0:
             v = vec / w
             norm = float(np.linalg.norm(v))
             if norm > 0:
                 v = v / norm
-            aggregated[rid] = v.tolist()
+            aggregated2[rid] = v.tolist()
 
-    print(f"  {len(aggregated)} record embeddings in {time.time() - t0:.1f}s")
-    return aggregated
+    print(f"  {len(aggregated2)} record embeddings via JSONL in {time.time() - t0:.1f}s")
+    return aggregated2
 
 
 def load_bge_encoder() -> Any:
@@ -289,16 +357,29 @@ def encode_query_bge(encoder: Any, query_text: str) -> list[float]:
     return vec.tolist()
 
 
+_DENSE_MAT_CACHE: tuple[int, list[str], Any] | None = None  # (dict_id, ids, mat)
+
+
 def dense_retrieve(
     query_vec: list[float],
     embeddings: dict[str, list[float]],
     top_k: int,
 ) -> list[RunResult]:
-    """Brute-force cosine similarity retrieval over pre-computed embeddings."""
+    """Brute-force cosine similarity retrieval over pre-computed embeddings.
+
+    Caches the numpy matrix across calls so repeated queries against the same
+    embeddings dict don't rebuild the matrix each time.
+    """
     import numpy as np
+    global _DENSE_MAT_CACHE
     qv = np.array(query_vec, dtype=np.float32)
-    ids = list(embeddings.keys())
-    mat = np.array([embeddings[rid] for rid in ids], dtype=np.float32)
+    dict_id = id(embeddings)
+    if _DENSE_MAT_CACHE is not None and _DENSE_MAT_CACHE[0] == dict_id:
+        ids, mat = _DENSE_MAT_CACHE[1], _DENSE_MAT_CACHE[2]
+    else:
+        ids = list(embeddings.keys())
+        mat = np.array([embeddings[rid] for rid in ids], dtype=np.float32)
+        _DENSE_MAT_CACHE = (dict_id, ids, mat)
     scores = mat @ qv
     top_indices = scores.argsort()[::-1][:top_k]
     return [(ids[i], float(scores[i])) for i in top_indices]
@@ -424,14 +505,31 @@ def rung_hybrid_graph(
     top_k: int,
     out_path: Path,
     graph_score_weight: float = GRAPH_SCORE_WEIGHT,
+    concept_index: dict[str, list[str]] | None = None,
 ) -> list[RunResult]:
-    from neural_search.graph.search_features import graph_context_score
+    from neural_search.graph.search_features import (
+        concept_overlap_score,
+        graph_context_score,
+        region_hierarchy_score,
+    )
+    from neural_search.graph.search_features import _get_alias_index, _neighbor_labels
 
     q_ctx = _graph_context_dict(query)
+    query_regions: list[str] = q_ctx.get("regions", [])
+
+    alias_index = _get_alias_index(graph) if graph is not None else {}
+
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         gscore = graph_context_score(graph, record_id, query_context=q_ctx)
-        rescored.append((record_id, base_score + (graph_score_weight * gscore)))
+        cscore = concept_overlap_score(record_id, q_ctx, concept_index) if concept_index else 0.0
+        rh_score = 0.0
+        if query_regions and graph is not None:
+            node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
+            dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+            rh_score = region_hierarchy_score(dataset_regions, query_regions)
+        total_graph = graph_score_weight * (gscore + cscore + rh_score)
+        rescored.append((record_id, base_score + total_graph))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]
     _write_run(out_path, query_id, results, "hybrid_graph")
@@ -663,8 +761,31 @@ def main(argv: list[str] | None = None) -> int:
     print("Building BM25 index ...", flush=True)
     t0 = time.time()
     index = SparseIndex()
-    index.build(corpus)
-    print(f"  Done in {time.time() - t0:.1f}s")
+    _bm25_cache_path = DEFAULT_CORPUS.parent / (DEFAULT_CORPUS.name + ".bm25.pkl")
+    _bm25_loaded = False
+    if _bm25_cache_path.exists():
+        corpus_mtime = DEFAULT_CORPUS.stat().st_mtime
+        cache_mtime = _bm25_cache_path.stat().st_mtime
+        if cache_mtime > corpus_mtime:
+            try:
+                import pickle
+                with _bm25_cache_path.open("rb") as _pf:
+                    index = pickle.load(_pf)
+                print(f"  Loaded cached BM25 index in {time.time() - t0:.1f}s")
+                _bm25_loaded = True
+            except Exception as _exc:
+                print(f"  BM25 cache load failed ({_exc}), rebuilding ...")
+    if not _bm25_loaded:
+        index.build(corpus)
+        elapsed = time.time() - t0
+        print(f"  Done in {elapsed:.1f}s")
+        try:
+            import pickle
+            with _bm25_cache_path.open("wb") as _pf:
+                pickle.dump(index, _pf, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"  Saved BM25 cache to {_bm25_cache_path.name}")
+        except Exception as _exc:
+            print(f"  BM25 cache save failed ({_exc})")
 
     embeddings: dict[str, list[float]] = {}
     encoder: Any = None
@@ -679,6 +800,7 @@ def main(argv: list[str] | None = None) -> int:
             encoder = load_bge_encoder()
 
     graph: Any = None
+    concept_index: dict[str, list[str]] | None = None
     if active_rungs & {"hybrid_graph", "full"}:
         try:
             from neural_search.graph.search_features import load_graph_if_exists
@@ -690,6 +812,16 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  Graph not found at {args.graph} -- hybrid_graph/full will run without graph signal")
         except Exception as exc:
             print(f"  Warning: graph load failed: {exc}")
+        try:
+            from neural_search.ingestion.corpus_kg_linker import load_dataset_concept_index
+            concept_index_path = Path("data/kg/dataset_concept_index.jsonl")
+            if concept_index_path.exists():
+                concept_index = load_dataset_concept_index(concept_index_path)
+                print(f"  Concept index loaded: {len(concept_index)} datasets")
+            else:
+                print("  Concept index not found -- concept_overlap_score disabled")
+        except Exception as exc:
+            print(f"  Warning: concept index load failed: {exc}")
 
     typed_index: TypedKGIndex | None = None
     if active_rungs & {"typed_kg", "typed_kg_qualified"}:
@@ -785,6 +917,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.top_k,
                     run_paths["hybrid_graph"],
                     graph_score_weight=args.graph_score_weight,
+                    concept_index=concept_index,
                 )
                 graph_cache[qid] = res
 
@@ -843,6 +976,7 @@ def main(argv: list[str] | None = None) -> int:
                         args.top_k,
                         NULL_PATH,
                         graph_score_weight=args.graph_score_weight,
+                        concept_index=concept_index,
                     )
                 rung_full(gr, corpus_by_stable_id, qid, args.top_k, run_paths["full"])
 

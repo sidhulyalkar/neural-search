@@ -7,7 +7,7 @@
 
 \begin{table}[htbp]
 \centering
-\caption{Current corpus and index artifact summary (reconciled 2026-06-20).}
+\caption{Current corpus and index artifact summary (reconciled 2026-06-30).}
 \small
 \begin{tabular}{lc}
 \toprule
@@ -15,16 +15,17 @@ Metric & Value \\
 \midrule
 Unique normalized records & 7,171 \\
 Unique record identifiers & 7,121 \\
-Dense field embeddings & 60,175 (older slice; full rebuild pending) \\
+Dense field embedding cache & 7,171 records \\
 Embedding model & BAAI/bge-large-en-v1.5 \\
 Embedding dimension & 1,024 \\
-Indexed ids (current on-disk) & 625 (full 7,171-record rebuild pending) \\
+Dense embedding matrix & 7,171 $\times$ 1,024 \\
+Indexed ids (older turbovec ANN artifact) & 625 (rebuild pending) \\
 Index bit width & 4 \\
-Vector index recall@50 & 1.0 (on current 625-record slice) \\
-Vector index latency p50 / p95 & 7.24 / 24.47 ms (on current slice) \\
-Full-corpus knowledge graph nodes & 7,593 \\
-Full-corpus knowledge graph edges & 31,920 \\
-Cross-dataset relation edges & 2,957 \\
+Vector index recall@50 & 1.0 (older 625-record ANN slice) \\
+Vector index latency p50 / p95 & 7.24 / 24.47 ms (older ANN slice) \\
+Full-corpus knowledge graph nodes & 7,438 \\
+Full-corpus knowledge graph edges & 81,518 \\
+Cross-dataset relation edges & 58,521 \\
 Gold qrels & 0 (pending human annotation) \\
 Field-state adjudicated qrels & 3 \\
 Silver qrels (diagnostic) & 175 \\
@@ -94,11 +95,11 @@ data\_standards & --- & (regenerate) \\
 Claim & Evidence artifact & Current status & Risk / next validation \\
 \midrule
 Corpus scale (7,171 rows) & full\_corpus\_v09.jsonl & Supported & Freeze manifest with commit/hash metadata \\
-Full-corpus KG (7,593 nodes / 31,920 edges) & neural\_search\_graph.real\_corpus.json & Supported (engineering) & qrels-backed rank improvement unproven \\
-Dense index recall/latency & reports/turbovec\_recall.json & Index validated on 625-record slice & Not end-to-end relevance; full rebuild pending \\
+Full-corpus KG (7,438 nodes / 81,518 edges) & neural\_search\_graph.real\_corpus.json & Supported (engineering) & Real corpus ID graph resolution fixed; human-qrels-backed rank improvement unproven \\
+Dense cache and ANN index & real\_all.dense.field\_embeddings.agg.mat.npy / reports/turbovec\_recall.json & Full dense cache covers 7,171 records; ANN index validated on older 625-record slice & Not end-to-end relevance; turbovec rebuild pending \\
 Usefulness scorer correlation & reports/usefulness\_correlation\_v09.json & Preliminary (Spearman r=0.40) & Needs independent labels \\
 Graph rank perturbation & reports/graph\_ablation.json & Rank behavior observed & Relevance improvement unproven \\
-End-to-end retrieval performance & Pending & Not yet available & Requires human qrels at benchmark scale \\
+Human-adjudicated retrieval performance & Pending & Silver LLM-qrels preview available & Requires human qrels at benchmark scale \\
 Content-validated analysis affordances & Pending & Not yet available & Requires file inspection \\
 Confidence calibration & Pending & Not yet available & Requires ECE on labeled benchmark \\
 \bottomrule

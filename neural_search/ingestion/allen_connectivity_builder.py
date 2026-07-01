@@ -6,9 +6,7 @@ Creates:
 Data source: data/allen/connectivity/ (experiments_df.csv + structure_tree.csv)
 Run download first: python scripts/ingestion/download_allen_connectivity.py
 
-Falls back to API query if local CSVs not available (requires allensdk).
-
-Requires: pip install allensdk pandas
+Falls back to direct Allen REST API query if local CSVs not available (uses httpx).
 """
 
 from __future__ import annotations
@@ -187,22 +185,45 @@ def _load_from_csv() -> tuple[list[GraphNode], list[GraphEdge]] | None:
 
 
 def _load_from_api() -> tuple[list[GraphNode], list[GraphEdge]] | None:
-    """Query Allen API directly via allensdk. Slower but no pre-download needed."""
+    """Query Allen Brain Atlas REST API directly (no allensdk required)."""
     try:
-        from allensdk.core.mouse_connectivity_cache import MouseConnectivityCache
+        import httpx
         import pandas as pd
     except ImportError:
-        log.warning("allensdk not installed; cannot query Allen API.")
+        log.warning("httpx or pandas not installed; cannot query Allen API.")
         return None
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    log.info("Querying Allen Mouse Connectivity API (may take a minute)…")
-    mcc = MouseConnectivityCache(manifest_file=str(MANIFEST_PATH), resolution=100)
-    experiments = mcc.get_experiments(dataframe=True)
-    st = mcc.get_structure_tree()
-    nodes = st.nodes()
-    acronym_to_name = {n["acronym"]: n["name"] for n in nodes}
+    log.info("Querying Allen Mouse Connectivity REST API (may take a minute)…")
 
+    # Fetch experiments
+    exp_url = (
+        "https://api.brain-map.org/api/v2/data/SectionDataSet/query.json"
+        "?criteria=[failed$eqfalse],products[abbreviation$eqMouse%20Connectivity]"
+        "&num_rows=5000&count=false"
+    )
+    try:
+        resp = httpx.get(exp_url, timeout=60.0)
+        resp.raise_for_status()
+        experiments = pd.DataFrame(resp.json().get("msg", []))
+    except Exception as exc:
+        log.warning("Allen experiments API call failed: %s", exc)
+        return None
+
+    # Fetch structure tree (CCF graph_id=1)
+    struct_url = (
+        "https://api.brain-map.org/api/v2/data/Structure/query.json"
+        "?criteria=[graph_id$eq1]&num_rows=5000&count=false"
+    )
+    try:
+        resp = httpx.get(struct_url, timeout=60.0)
+        resp.raise_for_status()
+        structures = resp.json().get("msg", [])
+    except Exception as exc:
+        log.warning("Allen structure tree API call failed: %s", exc)
+        return None
+
+    acronym_to_name = {s["acronym"]: s["name"] for s in structures if "acronym" in s}
     return _build_edges_from_experiments(experiments, acronym_to_name)
 
 

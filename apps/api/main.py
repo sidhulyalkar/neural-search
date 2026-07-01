@@ -1,8 +1,10 @@
 """FastAPI application for Neural Search."""
 
+import hashlib
 import json
 import os
 import re
+import time as _time
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -10,7 +12,10 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
+
+load_dotenv(".env.local", override=False)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
@@ -63,7 +68,9 @@ from neural_search.schemas import (
     OntologyTermRead,
     SearchRequest,
 )
+from neural_search.graph.search_features import load_graph_if_exists
 from neural_search.search import search_datasets
+from neural_search.search.field_semantic import load_field_semantic_index
 
 # When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
 # (useful for CI and quick local demos). Default: full combined corpus.
@@ -80,17 +87,55 @@ NEURO_JUDGE_WATERMARK = (
 # In-memory store for demo (replace with DB in production)
 _demo_data: list[dict[str, Any]] = []
 
+# Search result cache: {cache_key: (result, expires_at)}
+_SEARCH_CACHE: dict[str, tuple[Any, float]] = {}
+_SEARCH_CACHE_TTL = 300  # 5 minutes
+
+
+def _search_cache_key(query: str, filters: Any, structured_query: Any, limit: int) -> str:
+    payload = json.dumps(
+        {"q": (query or "").strip().lower(), "f": filters, "s": structured_query, "n": limit},
+        sort_keys=True,
+        default=str,
+    )
+    return hashlib.sha256(payload.encode()).hexdigest()[:16]
+
+
+def _cache_get(key: str) -> Any | None:
+    entry = _SEARCH_CACHE.get(key)
+    if entry and _time.time() < entry[1]:
+        return entry[0]
+    _SEARCH_CACHE.pop(key, None)
+    return None
+
+
+def _cache_set(key: str, value: Any) -> None:
+    # Evict oldest entries if cache grows large
+    if len(_SEARCH_CACHE) > 200:
+        now = _time.time()
+        expired = [k for k, (_, exp) in _SEARCH_CACHE.items() if now >= exp]
+        for k in expired[:50]:
+            _SEARCH_CACHE.pop(k, None)
+    _SEARCH_CACHE[key] = (value, _time.time() + _SEARCH_CACHE_TTL)
+
 
 def _load_corpus() -> list[dict[str, Any]]:
     return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 
 
+_GRAPH_PATH = "data/graph/neural_search_graph.real_corpus.json"
+_FIELD_EMBEDDINGS_PATH = "data/embeddings/real_all.dense.field_embeddings.jsonl"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load ontology and corpus on startup."""
+    """Load ontology, corpus, and heavy search indices on startup."""
     global _demo_data
     load_ontology()
     _demo_data = _load_corpus()
+    # Pre-warm caches so the first search request isn't slow
+    load_graph_if_exists(_GRAPH_PATH)
+    load_field_semantic_index(_FIELD_EMBEDDINGS_PATH)
     yield
 
 
@@ -371,6 +416,19 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 "structured search filter."
             ),
         )
+
+    # Cache check — skip for exact-ID lookups and very short queries
+    _cache_key = _search_cache_key(
+        request.query or "",
+        request.filters,
+        request.structured_query.model_dump() if request.structured_query else None,
+        request.limit,
+    )
+    _cached = _cache_get(_cache_key)
+    if _cached is not None:
+        _cached.search_time_ms = round((_time.time() - start) * 1000, 1)
+        return _cached
+
     qa_state = load_qa_state()
     demo_data = _ensure_demo_data()
     records_with_qa = [
@@ -474,12 +532,14 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
 
     elapsed = (time.time() - start) * 1000
 
-    return FrontendSearchResponse(
+    final_response = FrontendSearchResponse(
         query=response.query,
         total_count=len(frontend_results),
         results=frontend_results,
         search_time_ms=elapsed,
     )
+    _cache_set(_cache_key, final_response)
+    return final_response
 
 
 @app.post("/api/literature/search", response_model=LiteratureSearchResponse)
