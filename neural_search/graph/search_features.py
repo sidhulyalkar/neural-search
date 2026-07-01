@@ -1044,7 +1044,7 @@ def concept_overlap_score(
     _VOCAB_PREFIXES = ("concept:", "region:", "modality:", "task:", "species:", "behavior:", "node:")
 
     def _slug_norm(s: str) -> str:
-        s = s.casefold().replace("-", "_").replace(" ", "_")
+        s = s.casefold().replace("-", "_").replace(" ", "_").replace("/", "_")
         for pfx in _VOCAB_PREFIXES:
             if s.startswith(pfx):
                 s = s[len(pfx):]

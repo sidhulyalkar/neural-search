@@ -177,9 +177,17 @@ def _field_slugs(record: dict[str, Any]) -> list[str]:
     slugs: list[str] = []
     for field, prefix in _FIELD_SLUG_MAP.items():
         for raw in extract_str_list(record.get(field)):
-            slug = raw.strip().casefold().replace(" ", "_").replace("-", "_")
+            slug = raw.strip().casefold().replace(" ", "_").replace("-", "_").replace("/", "_")
             if slug:
                 slugs.append(f"{prefix}:{slug}")
+
+    # behavioral_events is a list of dicts with "id" or "label"
+    for item in (record.get("behavioral_events") or []):
+        lbl = (item.get("label") or item.get("id") or "") if isinstance(item, dict) else str(item)
+        slug = lbl.strip().casefold().replace(" ", "_").replace("-", "_").replace("/", "_")
+        if slug:
+            slugs.append(f"behavior:{slug}")
+
     return list(dict.fromkeys(slugs))  # deduplicate, preserve order
 
 
@@ -231,6 +239,13 @@ def build_dataset_concept_index(
 
             total_records += 1
             dataset_id = record.get("dataset_id", "")
+            if not dataset_id:
+                # Fall back to source:source_id (stable_id format) for dataset-like records
+                # that lack an explicit dataset_id (e.g. buzsaki, crcns, ibl sources).
+                src = record.get("source", "")
+                sid = str(record.get("source_id") or "")
+                if src and sid and (record.get("brain_regions") or record.get("modalities") or record.get("tasks")):
+                    dataset_id = f"{src}:{sid}"
             if not dataset_id:
                 continue
 

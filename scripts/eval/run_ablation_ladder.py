@@ -79,7 +79,7 @@ DEFAULT_OUT_DIR = Path("reports/eval/runs")
 NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
-GRAPH_SCORE_WEIGHT = 0.05
+GRAPH_SCORE_WEIGHT = 0.10
 TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT — fair comparison
 
 ALL_RUNGS = [
@@ -171,7 +171,7 @@ def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
 
     # Concept slugs from all query constraint fields for concept_overlap_score
     def _slugify(terms: list[str]) -> list[str]:
-        return [t.casefold().replace(" ", "_").replace("-", "_") for t in terms if t]
+        return [t.casefold().replace(" ", "_").replace("-", "_").replace("/", "_") for t in terms if t]
 
     concepts: list[str] = []
     concepts.extend(_slugify(list(q.get("expected_modalities_any", []) or [])))
