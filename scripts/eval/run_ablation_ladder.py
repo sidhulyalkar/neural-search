@@ -64,6 +64,7 @@ import yaml
 from neural_search.graph.typed_kg_features import TypedKGIndex, typed_kg_score
 from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
 from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
+from neural_search.search.concept_authority import expand_query_with_concepts
 from neural_search.search.sparse import SparseIndex
 
 DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl")
@@ -79,7 +80,7 @@ DEFAULT_OUT_DIR = Path("reports/eval/runs")
 NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
-GRAPH_SCORE_WEIGHT = 0.10
+GRAPH_SCORE_WEIGHT = 0.05
 TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT — fair comparison
 
 ALL_RUNGS = [
@@ -140,6 +141,21 @@ _SPECIES_KW: list[tuple[list[str], list[str]]] = [
     (["zebrafish"], ["zebrafish"]),
 ]
 
+_REGION_KW: list[tuple[list[str], list[str]]] = [
+    (["hippocampus", "ca1", "ca3", "dentate gyrus", "subiculum", "sharp.wave", r"\bswr\b", "place cell"], ["hippocampus"]),
+    (["visual cortex", "primary visual", r"\bv1\b", "striate cortex", "extrastriate"], ["visual_cortex"]),
+    (["prefrontal", r"\bpfc\b", "orbitofrontal", r"\bofc\b", "anterior cingulate", r"\bacc\b"], ["prefrontal_cortex"]),
+    (["motor cortex", r"\bm1\b", "primary motor", "premotor", "supplementary motor", "motor area"], ["motor_cortex"]),
+    (["striatum", "basal ganglia", "caudate", "putamen", "nucleus accumbens"], ["striatum"]),
+    (["amygdala", "basolateral amygdala", r"\bbla\b"], ["amygdala"]),
+    (["cerebellum", "cerebellar cortex"], ["cerebellum"]),
+    (["thalamus", "thalamic"], ["thalamus"]),
+    (["auditory cortex", "primary auditory", r"\ba1\b"], ["auditory_cortex"]),
+    (["somatosensory", "barrel cortex", r"\bs1\b"], ["somatosensory_cortex"]),
+    (["entorhinal", "parahippocampal"], ["entorhinal_cortex"]),
+    (["parietal cortex", "posterior parietal"], ["parietal_cortex"]),
+]
+
 
 def _contains_any(text: str, kws: list[str]) -> bool:
     return any(re.search(kw, text, re.IGNORECASE) for kw in kws)
@@ -169,27 +185,53 @@ def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
     text = str(q.get("query", ""))
     ctx = _query_context(text, str(q.get("id", "")))
 
-    # Concept slugs from all query constraint fields for concept_overlap_score
     def _slugify(terms: list[str]) -> list[str]:
         return [t.casefold().replace(" ", "_").replace("-", "_").replace("/", "_") for t in terms if t]
 
+    # Annotation-field concept slugs (authoritative when present)
     concepts: list[str] = []
     concepts.extend(_slugify(list(q.get("expected_modalities_any", []) or [])))
     concepts.extend(_slugify(list(q.get("expected_tasks", []) or [])))
     concepts.extend(_slugify(list(q.get("expected_behaviors", []) or [])))
     concepts.extend(_slugify(list(q.get("expected_regions_any", []) or [])))
     concepts.extend(_slugify(list(q.get("expected_species", []) or [])))
-    # Deduplicate
     seen: set[str] = set()
     deduped_concepts = [c for c in concepts if not (c in seen or seen.add(c))]  # type: ignore[func-returns-value]
+
+    # Annotation-field regions for rh_score
+    annotation_regions = list(q.get("expected_regions_any", []) or [])
+
+    # For queries with no annotation signal, extract concept signals from query text.
+    # This gives cscore and rh_score to unannotated queries that explicitly mention
+    # regions, modalities, or Scholarpedia concepts in their text.
+    has_annotation = bool(deduped_concepts or annotation_regions)
+    text_regions: list[str] = []
+    if not has_annotation:
+        # Strip "NOT X", "WITHOUT X", "EXCLUDING X" phrases to avoid picking up
+        # explicitly excluded concepts (e.g. "NOT epilepsy" → don't boost epilepsy).
+        text_positive = re.sub(
+            r"\b(?:NOT|WITHOUT|EXCLUDING)\s+[^,.]+", "", text, flags=re.IGNORECASE
+        ).strip()
+        text_concepts: list[str] = []
+        # Brain regions from cleaned (NOT-stripped) text — most precise signal
+        for kws, region_labels in _REGION_KW:
+            if _contains_any(text_positive, kws):
+                text_regions.extend(region_labels)
+        text_concepts.extend(_slugify(text_regions))
+        seen2: set[str] = set()
+        deduped_concepts = [c for c in text_concepts if not (c in seen2 or seen2.add(c))]  # type: ignore[func-returns-value]
+        text_regions = list(dict.fromkeys(text_regions))
 
     return {
         "tasks": ctx.tasks,
         "modalities": ctx.modalities,
         "species": ctx.species,
-        "regions": list(q.get("expected_regions_any", []) or []),
+        # Use annotation regions only for rh_score — text-extracted regions are noisier
+        # for hierarchy scoring than for direct concept matching via cscore.
+        "regions": annotation_regions,
         "analysis": list(q.get("expected_analysis_any", []) or []),
         "concepts": deduped_concepts,
+        "_text_extracted": not has_annotation,  # used to keep gscore_dampen=0.3
     }
 
 
@@ -519,11 +561,15 @@ def rung_hybrid_graph(
 
     alias_index = _get_alias_index(graph) if graph is not None else {}
 
-    # Dampen graph_context_score when annotation fields (concepts, regions) provide no
-    # confirming signal.  Without this, NLP-extracted context in graph_context_score
-    # can boost well-connected-but-irrelevant datasets (e.g. popular fMRI datasets
-    # for electrophysiology queries where the annotation has no expected_modalities).
-    has_annotation_signal = bool(q_ctx.get("concepts") or query_regions)
+    # Dampen graph_context_score when annotation fields provide no confirming signal.
+    # Use the raw query annotation fields (not the potentially text-extracted q_ctx)
+    # so that text-extracted concepts don't accidentally unlock full gscore weight
+    # for unannotated queries.
+    has_annotation_signal = bool(
+        query.get("expected_regions_any") or query.get("expected_modalities_any")
+        or query.get("expected_tasks") or query.get("expected_species")
+        or query.get("expected_behaviors")
+    )
     gscore_dampen = 1.0 if has_annotation_signal else 0.3
 
     rescored: list[RunResult] = []
@@ -534,7 +580,7 @@ def rung_hybrid_graph(
         if query_regions and graph is not None:
             node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
             dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
-            rh_score = region_hierarchy_score(dataset_regions, query_regions)
+            rh_score = min(region_hierarchy_score(dataset_regions, query_regions), 0.6)
         total_graph = graph_score_weight * (gscore_dampen * gscore + cscore + rh_score)
         rescored.append((record_id, base_score + total_graph))
     rescored.sort(key=lambda x: -x[1])
@@ -1035,3 +1081,8 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
+
+

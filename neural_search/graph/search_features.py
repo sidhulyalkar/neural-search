@@ -398,7 +398,14 @@ def compute_graph_features_for_result(
         return _empty_features(graph_available=True)
 
     out_index, in_index = _local_edge_indexes(graph)
-    graph_degree = len(out_index.get(node_id, [])) + len(in_index.get(node_id, []))
+    # Exclude dataset_similar_to_dataset edges from degree — they reflect embedding-based
+    # similarity clusters and are densely populated for DANDI/OpenNeuro, inflating scores
+    # for popular platforms relative to specialized archives (buzsaki, crcns, etc.).
+    _SIM_EDGE = "dataset_similar_to_dataset"
+    graph_degree = (
+        sum(1 for e in out_index.get(node_id, []) if e.edge_type != _SIM_EDGE)
+        + sum(1 for e in in_index.get(node_id, []) if e.edge_type != _SIM_EDGE)
+    )
     linked_papers = [paper.label for paper in find_papers_for_dataset(graph, node_id)]
     analysis_affordances = _neighbor_labels(graph, node_id, "dataset_supports_analysis")
     tasks = _neighbor_labels(graph, node_id, "dataset_has_task")
@@ -869,6 +876,71 @@ def expand_region_query(
 
 _CCF_EXPAND_CACHE: dict[str, set[str]] = {}
 
+# Informal region abbreviations → Allen CCF normalized keys.
+# Allen CCF uses "area" not "cortex" and has its own acronyms (MOp, ACA, ORB…).
+_REGION_ALIAS_MAP: dict[str, list[str]] = {
+    "m1": ["mop", "primary_motor_area"],
+    "m2": ["mos", "secondary_motor_area"],
+    "motor_cortex": ["mop", "mos"],
+    "primary_motor_cortex": ["mop", "primary_motor_area"],
+    "s1": ["ssp", "primary_somatosensory_area"],
+    "s2": ["sss", "supplemental_somatosensory_area"],
+    "somatosensory_cortex": ["ssp", "ssf", "sss"],
+    "primary_somatosensory_cortex": ["ssp"],
+    "v1": ["visp", "primary_visual_area"],
+    "primary_visual_cortex": ["visp", "primary_visual_area"],
+    "v2": ["visa", "secondary_visual_area"],
+    "visual_cortex": ["visp", "visa", "visam"],
+    "a1": ["aup", "primary_auditory_area"],
+    "primary_auditory_cortex": ["aup", "primary_auditory_area"],
+    "auditory_cortex": ["aup", "au", "audp"],
+    "acc": ["aca", "anterior_cingulate_area"],
+    "anterior_cingulate_cortex": ["aca", "anterior_cingulate_area"],
+    "ofc": ["orb", "orbital_area"],
+    "orbitofrontal_cortex": ["orb", "orbital_area"],
+    "mpfc": ["pl", "ila"],
+    "medial_prefrontal_cortex": ["pl", "ila", "prelimbic_area", "infralimbic_area"],
+    "pfc": ["prefrontal", "prefrontal_area"],
+    "prefrontal_cortex": ["prefrontal_area"],
+    "dlpfc": ["prefrontal", "prefrontal_area"],
+    "vta": ["ventral_tegmental_area"],
+    "bla": ["basolateral_amygdalar_nucleus"],
+    "nac": ["acb", "accumbens_nucleus"],
+    "nacc": ["acb", "accumbens_nucleus"],
+    "nucleus_accumbens": ["acb", "accumbens_nucleus"],
+    "ca1": ["field_ca1"],
+    "ca3": ["field_ca3"],
+    "dg": ["dentate_gyrus"],
+    "snc": ["substantia_nigra_compact_part"],
+    "snr": ["substantia_nigra_reticular_part"],
+    "hpc": ["hippocampus", "hippocampal_region"],
+    "hip": ["hippocampus", "hippocampal_region"],
+    "lhb": ["lateral_habenular_nucleus"],
+    "mhb": ["medial_habenular_nucleus"],
+}
+
+
+def _expand_region_key(key: str) -> list[str]:
+    """Return *key* plus CCF-compatible synonyms for informal abbreviations.
+
+    Also normalizes "cortex" ↔ "area" since Allen CCF systematically uses "area".
+    """
+    expanded: list[str] = [key]
+    # cortex ↔ area swap (Allen CCF uses "primary_motor_area" not "primary_motor_cortex")
+    if key.endswith("_cortex"):
+        alt = key[:-7] + "_area"
+        if alt not in expanded:
+            expanded.append(alt)
+    elif key.endswith("_area"):
+        alt = key[:-5] + "_cortex"
+        if alt not in expanded:
+            expanded.append(alt)
+    # Direct alias lookup
+    for alias in _REGION_ALIAS_MAP.get(key, []):
+        if alias not in expanded:
+            expanded.append(alias)
+    return expanded
+
 
 def _ccf_expand_key(key: str, ancestors_map: dict[str, set[str]]) -> set[str]:
     """Return all CCF keys semantically matching ``key`` (memoized per normalized key).
@@ -936,8 +1008,10 @@ def region_hierarchy_score(
     if not ancestors_map:
         return 0.0
 
-    ds_keys = [_norm_ccf(r) for r in dataset_regions]
-    q_keys = [_norm_ccf(r) for r in query_regions]
+    ds_keys_raw = [_norm_ccf(r) for r in dataset_regions]
+    q_keys_raw = [_norm_ccf(r) for r in query_regions]
+    ds_keys = list(dict.fromkeys(k for r in ds_keys_raw for k in _expand_region_key(r)))
+    q_keys = list(dict.fromkeys(k for r in q_keys_raw for k in _expand_region_key(r)))
 
     best = 0.0
     for ds in ds_keys:
