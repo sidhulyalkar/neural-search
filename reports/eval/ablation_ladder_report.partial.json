@@ -4,7 +4,7 @@
       "rung": "bm25",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 12.8,
+      "elapsed_s": 13.6,
       "metrics": {
         "ndcg@10": 0.8023,
         "query_count": 317
@@ -29,9 +29,9 @@
       "rung": "hybrid_graph",
       "status": "ok",
       "queries_run": 317,
-      "elapsed_s": 68.9,
+      "elapsed_s": 75.0,
       "metrics": {
-        "ndcg@10": 0.8249,
+        "ndcg@10": 0.8265,
         "query_count": 317
       }
     },

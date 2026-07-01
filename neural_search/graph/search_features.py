@@ -756,39 +756,16 @@ def _norm_ccf(value: str) -> str:
     return value.strip().lower().replace(" ", "_").replace("-", "_")
 
 
-def load_allen_ccf_hierarchy(
-    path: str | Path | None = None,
+_ALLEN_HUMAN_CCF_DEFAULT_PATH = Path(__file__).parents[2] / "artifacts" / "atlas" / "allen_human_structures.json"
+
+
+def _process_ccf_structures(
+    structures: list[dict],
 ) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
-    """Load the Allen CCF mouse brain atlas and build ancestor/descendant maps.
-
-    Returns a pair ``(ancestors_map, descendants_map)`` where each key is a
-    normalized structure name or acronym and each value is the set of normalized
-    names of all ancestors (resp. descendants) of that structure.
-
-    Results are cached in ``_ALLEN_CCF_CACHE`` so the file is only parsed once
-    per process.
-    """
-    global _ALLEN_CCF_CACHE
-    if _ALLEN_CCF_CACHE is not None:
-        return _ALLEN_CCF_CACHE
-
-    atlas_path = Path(path or _ALLEN_CCF_DEFAULT_PATH)
-    if not atlas_path.exists():
-        _ALLEN_CCF_CACHE = ({}, {})
-        return _ALLEN_CCF_CACHE
-
-    try:
-        with atlas_path.open(encoding="utf-8") as fh:
-            structures: list[dict] = json.loads(fh.read())
-    except Exception:
-        _ALLEN_CCF_CACHE = ({}, {})
-        return _ALLEN_CCF_CACHE
-
-    # Build allen_id → structure and allen_id → parent_id lookup tables.
+    """Build (ancestors_map, descendants_map) from an Allen CCF structure list."""
     by_id: dict[int, dict] = {s["allen_id"]: s for s in structures}
     parent_of: dict[int, int | None] = {s["allen_id"]: s.get("parent_id") for s in structures}
 
-    # Build all ancestors for each allen_id (walk up the tree).
     def _ancestors(aid: int) -> set[int]:
         result: set[int] = set()
         current = parent_of.get(aid)
@@ -797,7 +774,6 @@ def load_allen_ccf_hierarchy(
             current = parent_of.get(current)
         return result
 
-    # Build all descendants for each allen_id (walk down via children_ids).
     def _descendants(aid: int) -> set[int]:
         result: set[int] = set()
         stack = list(by_id[aid].get("children_ids") or [])
@@ -810,7 +786,6 @@ def load_allen_ccf_hierarchy(
                 stack.extend(by_id[child_id].get("children_ids") or [])
         return result
 
-    # Helper: collect the normalized name keys for a structure.
     def _keys(s: dict) -> list[str]:
         keys = []
         if s.get("name"):
@@ -819,28 +794,56 @@ def load_allen_ccf_hierarchy(
             keys.append(_norm_ccf(s["acronym"]))
         return keys
 
-    # Build name→set-of-ancestor-names and name→set-of-descendant-names.
     ancestors_map: dict[str, set[str]] = {}
     descendants_map: dict[str, set[str]] = {}
-
     for s in structures:
         aid = s["allen_id"]
-        anc_ids = _ancestors(aid)
-        desc_ids = _descendants(aid)
-
-        anc_names: set[str] = set()
-        for anc_id in anc_ids:
-            if anc_id in by_id:
-                anc_names.update(_keys(by_id[anc_id]))
-
-        desc_names: set[str] = set()
-        for desc_id in desc_ids:
-            if desc_id in by_id:
-                desc_names.update(_keys(by_id[desc_id]))
-
+        anc_names = {n for anc_id in _ancestors(aid) if anc_id in by_id for n in _keys(by_id[anc_id])}
+        desc_names = {n for desc_id in _descendants(aid) if desc_id in by_id for n in _keys(by_id[desc_id])}
         for key in _keys(s):
             ancestors_map[key] = anc_names
             descendants_map[key] = desc_names
+    return ancestors_map, descendants_map
+
+
+def load_allen_ccf_hierarchy(
+    path: str | Path | None = None,
+) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+    """Load Allen CCF mouse + human brain atlases and build merged ancestor/descendant maps.
+
+    Returns a pair ``(ancestors_map, descendants_map)`` where each key is a
+    normalized structure name or acronym and each value is the set of normalized
+    names of all ancestors (resp. descendants) of that structure.  Mouse and
+    human hierarchies are merged so region matching works across both species.
+
+    Results are cached in ``_ALLEN_CCF_CACHE`` so files are only parsed once.
+    """
+    global _ALLEN_CCF_CACHE
+    if _ALLEN_CCF_CACHE is not None:
+        return _ALLEN_CCF_CACHE
+
+    ancestors_map: dict[str, set[str]] = {}
+    descendants_map: dict[str, set[str]] = {}
+
+    for atlas_path in (Path(path or _ALLEN_CCF_DEFAULT_PATH), _ALLEN_HUMAN_CCF_DEFAULT_PATH):
+        if not atlas_path.exists():
+            continue
+        try:
+            structures: list[dict] = json.loads(atlas_path.read_text(encoding="utf-8"))
+            anc, desc = _process_ccf_structures(structures)
+            # Merge: union ancestor/descendant sets for names appearing in multiple atlases
+            for key, anc_set in anc.items():
+                if key in ancestors_map:
+                    ancestors_map[key] |= anc_set
+                else:
+                    ancestors_map[key] = anc_set
+            for key, desc_set in desc.items():
+                if key in descendants_map:
+                    descendants_map[key] |= desc_set
+                else:
+                    descendants_map[key] = desc_set
+        except Exception:
+            pass
 
     _ALLEN_CCF_CACHE = (ancestors_map, descendants_map)
     return _ALLEN_CCF_CACHE
@@ -1038,8 +1041,15 @@ def concept_overlap_score(
     if not dataset_concepts:
         return 0.0
 
+    _VOCAB_PREFIXES = ("concept:", "region:", "modality:", "task:", "species:", "behavior:", "node:")
+
     def _slug_norm(s: str) -> str:
-        return s.casefold().replace("concept:", "").replace("-", "_").replace(" ", "_")
+        s = s.casefold().replace("-", "_").replace(" ", "_")
+        for pfx in _VOCAB_PREFIXES:
+            if s.startswith(pfx):
+                s = s[len(pfx):]
+                break
+        return s
 
     ds_slugs = {_slug_norm(c) for c in dataset_concepts}
     q_slugs = [_slug_norm(c) for c in query_concepts]

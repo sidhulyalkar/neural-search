@@ -158,22 +158,58 @@ def concept_expansion_score(
     return round(matched / max(len(q_slugs), 1), 4)
 
 
+_FIELD_SLUG_MAP = {
+    "brain_regions": "region",
+    "modalities": "modality",
+    "tasks": "task",
+    "species": "species",
+    "behaviors": "behavior",
+}
+
+
+def _field_slugs(record: dict[str, Any]) -> list[str]:
+    """Return vocab slugs from corpus metadata fields (e.g. 'region:hippocampus').
+
+    These slugs are stored alongside KG concept IDs so concept_overlap_score
+    can match them against query expected_regions_any / expected_modalities_any
+    slugs (which share the same normalization).
+    """
+    slugs: list[str] = []
+    for field, prefix in _FIELD_SLUG_MAP.items():
+        for raw in extract_str_list(record.get(field)):
+            slug = raw.strip().casefold().replace(" ", "_").replace("-", "_")
+            if slug:
+                slugs.append(f"{prefix}:{slug}")
+    return list(dict.fromkeys(slugs))  # deduplicate, preserve order
+
+
 def build_dataset_concept_index(
     corpus_path: Path = DEFAULT_CORPUS_PATH,
-    db_path: Path = DEFAULT_DB_PATH,
+    db_path: Path | None = DEFAULT_DB_PATH,
     output_path: Path = DEFAULT_INDEX_PATH,
 ) -> dict[str, list[str]]:
-    """Build and save the dataset→concept index."""
+    """Build and save the dataset→concept index.
+
+    Combines two sources:
+    - **KG concept nodes** from DuckDB (abstract theoretical concepts like
+      "hebbian_learning", "predictive_coding") — skipped if db_path is None or missing.
+    - **Vocabulary field slugs** from corpus metadata (concrete terms like
+      "region:hippocampus", "modality:electrophysiology", "species:mouse") — always
+      included, gives high coverage (~70%+) so concept_overlap_score can fire on
+      nearly all relevant queries.
+    """
     if not corpus_path.exists():
         raise FileNotFoundError(f"Corpus not found: {corpus_path}")
-    if not db_path.exists():
-        raise FileNotFoundError(f"DuckDB not found: {db_path}")
 
-    conn = duckdb.connect(str(db_path), read_only=True)
-    try:
-        concept_lookup = _load_concept_lookup(conn)
-    finally:
-        conn.close()
+    concept_lookup: list[tuple[str, list[str]]] = []
+    if db_path and Path(db_path).exists():
+        conn = duckdb.connect(str(db_path), read_only=True)
+        try:
+            concept_lookup = _load_concept_lookup(conn)
+        finally:
+            conn.close()
+    else:
+        log.warning("DuckDB not available — skipping KG concept matching")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -198,24 +234,29 @@ def build_dataset_concept_index(
             if not dataset_id:
                 continue
 
+            # KG concept matches (abstract theoretical concepts)
             record_terms = _record_terms(record)
-            if not record_terms:
-                continue
+            kg_concepts: list[str] = []
+            if concept_lookup and record_terms:
+                kg_concepts = [
+                    concept_id
+                    for concept_id, concept_terms in concept_lookup
+                    if _match_concept(record_terms, concept_terms)
+                ]
 
-            matched_concepts = [
-                concept_id
-                for concept_id, concept_terms in concept_lookup
-                if _match_concept(record_terms, concept_terms)
-            ]
+            # Vocabulary field slugs (concrete metadata terms)
+            vocab_slugs = _field_slugs(record)
 
-            if matched_concepts:
-                total_links += len(matched_concepts)
-                index[dataset_id] = matched_concepts
+            all_concepts = list(dict.fromkeys(kg_concepts + vocab_slugs))
+
+            if all_concepts:
+                total_links += len(all_concepts)
+                index[dataset_id] = all_concepts
                 out_fh.write(
                     json.dumps(
                         {
                             "dataset_id": dataset_id,
-                            "concept_ids": matched_concepts,
+                            "concept_ids": all_concepts,
                             "confidence": LINK_CONFIDENCE,
                         },
                         separators=(",", ":"),

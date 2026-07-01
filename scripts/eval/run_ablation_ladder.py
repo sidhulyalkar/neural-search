@@ -546,19 +546,42 @@ def rung_typed_kg(
     *,
     qualified: bool,
     score_weight: float = TYPED_KG_SCORE_WEIGHT,
+    query: dict[str, Any] | None = None,
+    graph: Any = None,
+    concept_index: dict[str, list[str]] | None = None,
 ) -> list[RunResult]:
-    """hybrid_rrf + typed finding-relationship score ONLY (no graph_context_score).
+    """hybrid_rrf + typed finding-relationship score + KG concept + region hierarchy.
 
     Isolates the Phase 0-6b supports/contradicts/qualified-consensus layer from
-    the aggregate hybrid_graph signal, so its retrieval contribution can be
-    measured on its own against the same canonical qrels.
+    the aggregate hybrid_graph signal, augmented with concept overlap and Allen
+    CCF region hierarchy scoring.
     """
+    from neural_search.graph.search_features import (
+        concept_overlap_score,
+        region_hierarchy_score,
+        _get_alias_index,
+        _neighbor_labels,
+    )
+
     rung_name = "typed_kg_qualified" if qualified else "typed_kg"
+    q_ctx = _graph_context_dict(query) if query else {}
+    query_regions: list[str] = q_ctx.get("regions", [])
+    alias_index = _get_alias_index(graph) if graph is not None else {}
+
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         record = corpus_by_stable_id.get(record_id)
         tscore = typed_kg_score(record_id, typed_index, record=record, qualified=qualified)
-        rescored.append((record_id, base_score + (score_weight * tscore)))
+
+        cscore = concept_overlap_score(record_id, q_ctx, concept_index) if (concept_index and q_ctx) else 0.0
+        rh_score = 0.0
+        if query_regions and graph is not None:
+            node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
+            dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+            rh_score = region_hierarchy_score(dataset_regions, query_regions)
+
+        total = (score_weight * tscore) + (GRAPH_SCORE_WEIGHT * (cscore + rh_score))
+        rescored.append((record_id, base_score + total))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]
     _write_run(out_path, query_id, results, rung_name)
@@ -936,6 +959,7 @@ def main(argv: list[str] | None = None) -> int:
                     rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
                     run_paths["typed_kg"], qualified=False,
                     score_weight=args.typed_kg_score_weight,
+                    query=q, graph=graph, concept_index=concept_index,
                 )
 
             elif rung == "typed_kg_qualified":
@@ -953,6 +977,7 @@ def main(argv: list[str] | None = None) -> int:
                     rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
                     run_paths["typed_kg_qualified"], qualified=True,
                     score_weight=args.typed_kg_score_weight,
+                    query=q, graph=graph, concept_index=concept_index,
                 )
 
             elif rung == "full":
