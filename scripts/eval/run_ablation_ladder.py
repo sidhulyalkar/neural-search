@@ -1,23 +1,23 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Additive ablation ladder for neural-search retrieval evaluation.
 
 Runs eight retrieval systems in progressive order, writing a TREC-style JSONL
 run file for each rung. Each rung adds one capability on top of the previous:
 
-  rung 1 — bm25                BM25 sparse retrieval
-  rung 2 — bm25_structured     BM25 + usefulness slot matching
-  rung 3 — dense_bge           BGE-large dense retrieval (pre-computed embeddings)
-  rung 4 — hybrid_rrf          RRF(BM25 + BGE-dense)
-  rung 5 — hybrid_graph        hybrid_rrf + knowledge graph context score
-  rung 6 — typed_kg            hybrid_rrf + typed finding-relationship score ONLY
+  rung 1 â€" bm25                BM25 sparse retrieval
+  rung 2 â€" bm25_structured     BM25 + usefulness slot matching
+  rung 3 â€" dense_bge           BGE-large dense retrieval (pre-computed embeddings)
+  rung 4 â€" hybrid_rrf          RRF(BM25 + BGE-dense)
+  rung 5 â€" hybrid_graph        hybrid_rrf + knowledge graph context score
+  rung 6 â€" typed_kg            hybrid_rrf + typed finding-relationship score ONLY
                                 (isolates the Phase 0-6b supports/contradicts layer
-                                 from the aggregate graph signal in rung 5 — added
+                                 from the aggregate graph signal in rung 5 â€" added
                                  2026-06-23 because hybrid_graph mixes linked-paper
                                  counts, affordances, and dataset-similarity edges
                                  together with the typed layer, so a gain or loss
                                  there couldn't be attributed to the typed layer)
-  rung 7 — typed_kg_qualified  typed_kg + qualified-consensus region bonus
-  rung 8 — full                hybrid_graph + source diversity reranking
+  rung 7 â€" typed_kg_qualified  typed_kg + qualified-consensus region bonus
+  rung 8 â€" full                hybrid_graph + source diversity reranking
 
 Use --skip-rungs to exclude slow rungs (dense_bge requires sentence-transformers).
 
@@ -39,7 +39,7 @@ Usage
     # Run all 6 rungs (requires sentence-transformers for dense_bge)
     python scripts/eval/run_ablation_ladder.py
 
-    # Fast run — BM25-only rungs, skip BGE-dependent ones
+    # Fast run â€" BM25-only rungs, skip BGE-dependent ones
     python scripts/eval/run_ablation_ladder.py --skip-rungs dense_bge hybrid_rrf hybrid_graph full
 
     # Custom query set
@@ -81,7 +81,7 @@ NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
 GRAPH_SCORE_WEIGHT = 0.05
-TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT — fair comparison
+TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT â€" fair comparison
 
 ALL_RUNGS = [
     "bm25",
@@ -180,6 +180,87 @@ def _query_context(query_text: str, query_id: str) -> DatasetContext:
     return DatasetContext(dataset_id=f"query:{query_id}", modalities=modalities, tasks=tasks, species=species)
 
 
+# Maps query annotation vocabulary â†’ canonical concept-index vocabulary.
+# Only needed for terms that don't exist in the concept index as-is;
+# replacements are applied in _graph_context_dict before cscore matching.
+_CONCEPT_SYNONYM_MAP: dict[str, list[str]] = {
+    # Species (Latin binomial â†’ common)
+    "homo_sapiens": ["human"],
+    "mus_musculus": ["mouse"],
+    "rattus_norvegicus": ["rat"],
+    "danio_rerio": ["zebrafish"],
+    "macaca_mulatta": ["macaque"],
+    "rhesus": ["macaque"],
+    "rhesus_macaque": ["macaque"],
+    "non_human_primate": ["macaque"],
+    "nonhuman_primate": ["macaque"],
+    # Tasks (annotation term â†’ index term)
+    "2afc": ["two_alternative_forced_choice"],
+    "perceptual_decision": ["decision_making"],
+    "navigation": ["spatial_navigation"],
+    "place_cell_recording": ["spatial_navigation"],
+    "intertemporal_choice": ["delay_discounting"],
+    "seizure_detection": ["seizure_monitoring"],
+    "bci_control": ["closed_loop_control"],
+    "cursor_control": ["closed_loop_control"],
+    "closed_loop_bci": ["closed_loop_control"],
+    "response_inhibition": ["stop_signal_task", "go_nogo"],
+    "motor_planning": ["reaching"],
+    "visuomotor_adaptation": ["reaching"],
+    "sleep_monitoring": ["sleep_wake"],
+    "functional_mri": ["fmri"],
+    "intracellular_ephys": ["patch_clamp"],
+    "electron_microscopy": ["microscopy"],
+    # Regions (informal â†’ index abbreviation or canonical)
+    "m1": ["motor_cortex", "primary_motor_cortex"],
+    "a1": ["auditory_cortex"],
+    "anterior_cingulate_cortex": ["acc"],
+    "orbitofrontal_cortex": ["ofc"],
+    "medial_prefrontal_cortex": ["mpfc"],
+    "primary_visual_cortex": ["v1"],
+    "frontal_cortex": ["prefrontal_cortex"],
+    # Behaviors: null-term removal (0 datasets in concept index — inflate denominator without matching)
+    "response": [],
+    "stimulus_onset": [],
+    "movement": [],
+    "confidence": [],
+    "spatial_position": [],
+    "trial_start": [],
+    "decision": [],
+    "adaptation": [],
+    "speech_onset": [],
+    "waiting": [],
+    "feedback": [],
+    "interictal_spike": [],
+    "position": [],
+    "velocity": [],
+    # Behaviors: useful remappings to terms that DO appear in concept index
+    "ictal_activity": ["seizure_onset"],    # 4 datasets — specific seizure signal
+    "reach_onset": ["reaching"],            # map to task slug (134 datasets)
+    "outcome": ["trial_outcome"],           # 46 datasets
+    "reward_omission": ["omission"],        # 10 datasets
+    "navigation": ["spatial_navigation"],   # map to task slug
+}
+
+
+def _expand_concepts(concepts: list[str]) -> list[str]:
+    """Replace annotation vocabulary terms with canonical concept-index equivalents."""
+    expanded: list[str] = []
+    seen: set[str] = set()
+    for c in concepts:
+        targets = _CONCEPT_SYNONYM_MAP.get(c)
+        if targets:
+            for t in targets:
+                if t not in seen:
+                    expanded.append(t)
+                    seen.add(t)
+        else:
+            if c not in seen:
+                expanded.append(c)
+                seen.add(c)
+    return expanded
+
+
 def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
     """Build query context dict for graph_context_score and concept_overlap_score."""
     text = str(q.get("query", ""))
@@ -197,6 +278,7 @@ def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
     concepts.extend(_slugify(list(q.get("expected_species", []) or [])))
     seen: set[str] = set()
     deduped_concepts = [c for c in concepts if not (c in seen or seen.add(c))]  # type: ignore[func-returns-value]
+    deduped_concepts = _expand_concepts(deduped_concepts)
 
     # Annotation-field regions for rh_score
     annotation_regions = list(q.get("expected_regions_any", []) or [])
@@ -208,12 +290,12 @@ def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
     text_regions: list[str] = []
     if not has_annotation:
         # Strip "NOT X", "WITHOUT X", "EXCLUDING X" phrases to avoid picking up
-        # explicitly excluded concepts (e.g. "NOT epilepsy" → don't boost epilepsy).
+        # explicitly excluded concepts (e.g. "NOT epilepsy" â†’ don't boost epilepsy).
         text_positive = re.sub(
             r"\b(?:NOT|WITHOUT|EXCLUDING)\s+[^,.]+", "", text, flags=re.IGNORECASE
         ).strip()
         text_concepts: list[str] = []
-        # Brain regions from cleaned (NOT-stripped) text — most precise signal
+        # Brain regions from cleaned (NOT-stripped) text â€" most precise signal
         for kws, region_labels in _REGION_KW:
             if _contains_any(text_positive, kws):
                 text_regions.extend(region_labels)
@@ -222,10 +304,23 @@ def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
         deduped_concepts = [c for c in text_concepts if not (c in seen2 or seen2.add(c))]  # type: ignore[func-returns-value]
         text_regions = list(dict.fromkeys(text_regions))
 
+    # For annotated queries, prefer annotation fields over text extraction.
+    # Text extraction uses broad _TASK_KW categories (e.g. "motor_task") that rarely
+    # match specific graph node labels ("go_nogo", "reaching", "reversal_learning").
+    # Text extraction can also pick up negated species ("rats NOT from mice" → "mouse").
+    annotation_species_raw = list(q.get("expected_species", []) or [])
+    # Apply synonym map to annotation tasks so e.g. "2afc" → "two_alternative_forced_choice"
+    # which matches graph task labels directly.
+    annotation_tasks_raw = _expand_concepts(_slugify(list(q.get("expected_tasks", []) or [])))
+    annotation_mods_raw = _slugify(list(q.get("expected_modalities_any", []) or []))
+    gscore_species = annotation_species_raw if annotation_species_raw else ctx.species
+    gscore_tasks = annotation_tasks_raw if annotation_tasks_raw else ctx.tasks
+    gscore_modalities = annotation_mods_raw if annotation_mods_raw else ctx.modalities
+
     return {
-        "tasks": ctx.tasks,
-        "modalities": ctx.modalities,
-        "species": ctx.species,
+        "tasks": gscore_tasks,
+        "modalities": gscore_modalities,
+        "species": gscore_species,
         # Use annotation regions only for rh_score — text-extracted regions are noisier
         # for hierarchy scoring than for direct concept matching via cscore.
         "regions": annotation_regions,
@@ -292,7 +387,7 @@ def load_field_embeddings(path: Path) -> dict[str, list[float]]:
     2. FAISS binary + meta.jsonl sidecar (covers full corpus even if JSONL truncated)
     3. Raw JSONL parsing (slow, may be partial)
 
-    Returns dict mapping record_id → weighted-average normalized embedding.
+    Returns dict mapping record_id â†’ weighted-average normalized embedding.
     """
     import numpy as np
 
@@ -570,7 +665,7 @@ def rung_hybrid_graph(
         or query.get("expected_tasks") or query.get("expected_species")
         or query.get("expected_behaviors")
     )
-    gscore_dampen = 1.0 if has_annotation_signal else 0.3
+    gscore_dampen = 1.0 if has_annotation_signal else 0.0
 
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
@@ -674,9 +769,9 @@ def _normalize_record_id(rid: str) -> str:
 
 
 def _load_auto_labels(path: Path) -> dict[tuple[str, str], str]:
-    """Load annotation_candidates.jsonl → {(query_id, normalized_candidate_id): label}.
+    """Load annotation_candidates.jsonl â†’ {(query_id, normalized_candidate_id): label}.
 
-    Also returns a separate query-text→query_id mapping so canonical queries
+    Also returns a separate query-textâ†’query_id mapping so canonical queries
     can be matched to label query IDs by text similarity.
     """
     if not path.exists():
@@ -1081,6 +1176,7 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 
 
