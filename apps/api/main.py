@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field, field_validator
 from apps.api.atlas_router import router as atlas_router
 from apps.api.claims_router import router as claims_router
 from apps.api.coverage_router import router as coverage_router
+from apps.api.experimentglancer_router import router as experimentglancer_router
 from apps.api.graph_router import router as graph_router
 from apps.api.kg_router import router as kg_router
 from apps.api.methods_router import router as methods_router
@@ -68,6 +69,8 @@ from neural_search.schemas import (
     OntologyTermRead,
     SearchRequest,
 )
+from neural_search.graph.paper_node_builder import get_paper_trust_signals
+from neural_search.graph.reanalysis_candidates import dataset_node_id as _graph_dataset_node_id
 from neural_search.graph.search_features import load_graph_if_exists
 from neural_search.search import search_datasets
 from neural_search.search.field_semantic import load_field_semantic_index
@@ -172,6 +175,7 @@ app.include_router(graph_router)
 app.include_router(atlas_router)
 app.include_router(claims_router)
 app.include_router(coverage_router)
+app.include_router(experimentglancer_router)
 app.include_router(kg_router)
 app.include_router(methods_router)
 app.include_router(spectral_router)
@@ -483,7 +487,12 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 reusable_reason=result.reusable_reason,
                 suggested_next_actions=result.dataset_card_preview.get("suggested_analyses", [])[:3],
                 readiness_score=result.dataset_card_preview.get("analysis_readiness_score"),
-                linked_papers=[_frontend_paper(paper) for paper in papers],
+                linked_papers=[
+                    _frontend_paper(paper, trust_signals=trust)
+                    for paper, trust in zip(
+                        papers, _paper_trust_signals_for_dataset(dataset, papers)
+                    )
+                ],
                 rank=rank,
                 score_breakdown=result.score_breakdown,
                 neuro_judge=neuro_judge,
@@ -508,6 +517,7 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 if r.dataset.get("id") != exact_id and r.dataset.get("source_id") != exact_id
             ]
             exact_papers = exact_record.get("papers", [])
+            exact_trust = _paper_trust_signals_for_dataset(exact_ds, exact_papers)
             pin = FrontendSearchResult(
                 dataset=exact_ds,
                 score=1.0,
@@ -520,7 +530,10 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 reusable_reason=None,
                 suggested_next_actions=[],
                 readiness_score=None,
-                linked_papers=[_frontend_paper(p) for p in exact_papers],
+                linked_papers=[
+                    _frontend_paper(p, trust_signals=t)
+                    for p, t in zip(exact_papers, exact_trust)
+                ],
                 rank=1,
                 score_breakdown={"exact_id_match": 1.0, "final_score": 1.0},
                 prior_feedback=_load_feedback_for_pair(request.query, exact_ds),
@@ -1094,14 +1107,16 @@ async def export_comparison_json(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-def _frontend_paper(paper: dict[str, Any]) -> dict[str, Any]:
+def _frontend_paper(
+    paper: dict[str, Any], *, trust_signals: dict[str, Any] | None = None
+) -> dict[str, Any]:
     authors = paper.get("authors_json") or paper.get("authors") or []
     if authors and isinstance(authors[0], dict):
         authors = [
             author.get("name", author.get("display_name", "Unknown author"))
             for author in authors
         ]
-    return {
+    result = {
         "id": paper.get("id", paper.get("doi", "paper")),
         "title": paper.get("title", "Untitled paper"),
         "authors": authors,
@@ -1109,6 +1124,31 @@ def _frontend_paper(paper: dict[str, Any]) -> dict[str, Any]:
         "doi": paper.get("doi"),
         "url": paper.get("url"),
     }
+    if trust_signals:
+        result.update(trust_signals)
+    return result
+
+
+def _paper_trust_signals_for_dataset(
+    dataset: dict[str, Any], papers: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Best-effort retraction status + link evidence tier, one dict per paper.
+
+    Looks up the production KG (already loaded/cached by `load_graph_if_exists`,
+    see `neural_search.graph.paper_node_builder.get_paper_trust_signals`).
+    Returns a list of `{}` (not an error) when the graph is unavailable --
+    matches this codebase's house style of degrading to "nothing extra to
+    show" rather than failing the request.
+    """
+
+    graph = load_graph_if_exists(_GRAPH_PATH)
+    if graph is None:
+        return [{} for _ in papers]
+    dataset_id = _graph_dataset_node_id(dataset)
+    return [
+        get_paper_trust_signals(graph, doi=paper.get("doi"), dataset_node_id=dataset_id)
+        for paper in papers
+    ]
 
 
 def _frontend_card_payload(
@@ -1140,7 +1180,13 @@ def _frontend_card_payload(
             },
             "url": dataset.get("url"),
             "doi": dataset.get("doi"),
-            "related_papers": [_frontend_paper(paper) for paper in record.get("papers", [])],
+            "related_papers": [
+                _frontend_paper(paper, trust_signals=trust)
+                for paper, trust in zip(
+                    record.get("papers", []),
+                    _paper_trust_signals_for_dataset(dataset, record.get("papers", [])),
+                )
+            ],
             "assets": record.get("assets", []),
             "missing_metadata": card.missing_fields,
             "provenance": card.provenance,

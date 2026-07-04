@@ -50,6 +50,14 @@ export interface Asset {
   modality?: string
 }
 
+export interface PaperRetractionStatus {
+  status: string
+  related_dois: string[]
+  source: string
+  checked_at: string
+  doi?: string
+}
+
 export interface LinkedPaper {
   id: string
   title: string
@@ -62,6 +70,8 @@ export interface LinkedPaper {
   link_evidence?: string[]
   abstract?: string
   abstract_snippet?: string
+  retraction_status?: PaperRetractionStatus | null
+  evidence_tier?: string | null
 }
 
 export interface NeuroJudgeSnapshot {
@@ -171,6 +181,21 @@ export interface ExplanationGroups {
   recording_scale?: DimensionMatch
 }
 
+export interface ExperimentGlancerLayerSummary {
+  layer_id: string
+  kind: string
+  label: string
+  status: 'available' | 'probable' | 'placeholder' | 'unsupported'
+  warnings: string[]
+}
+
+export interface ExperimentGlancerSceneSummary {
+  scene_id: string
+  scene_url: string
+  layers: ExperimentGlancerLayerSummary[]
+  warnings: string[]
+}
+
 export interface SearchResultItem {
   dataset: DatasetRecord
   score: number
@@ -191,6 +216,7 @@ export interface SearchResultItem {
   evidence_packet?: EvidencePacketSummary | null
   prior_feedback?: RetrievalFeedbackEvent[]
   memory_graph_evidence?: MemoryGraphEvidence | null
+  experimentglancer_scene?: ExperimentGlancerSceneSummary | null
   dataset_card_preview?: {
     explanation?: {
       brief?: string
