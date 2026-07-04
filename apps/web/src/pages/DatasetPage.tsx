@@ -12,6 +12,7 @@ import {
   type AffordanceSupportLevel,
   type SimilarDataset,
 } from '../api/search'
+import { getDatasetScene, type ExperimentGlancerScene } from '../api/experimentglancer'
 import {
   SpinnerIcon,
   ExternalLinkIcon,
@@ -179,6 +180,66 @@ function AffordancePanel({ affordances }: { affordances: AffordanceResult[] }) {
   )
 }
 
+function ExperimentGlancerPanel({
+  scene,
+  sceneUrl,
+}: {
+  scene: ExperimentGlancerScene
+  sceneUrl: string
+}) {
+  return (
+    <section className="card">
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <h2 className="text-lg font-semibold">ExperimentGlancer scene</h2>
+        <Link
+          to={sceneUrl}
+          className="text-xs text-accent-cyan hover:text-white transition-colors flex-shrink-0 mt-1"
+        >
+          Open full scene →
+        </Link>
+      </div>
+      <p className="text-xs text-neural-500 mb-3">
+        A synchronized timeline view compiled from this dataset&apos;s metadata and structure.
+      </p>
+
+      {scene.anchors[0] && (
+        <p className="text-xs text-neural-500 mb-3">
+          Anchor: <span className="text-neural-300">{scene.anchors[0].label}</span>{' '}
+          <span className="text-neural-600">— {scene.anchors[0].reason}</span>
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {scene.layers.map((layer) => (
+          <span
+            key={layer.layer_id}
+            title={layer.warnings.join('; ') || layer.label}
+            className={`text-xs border rounded px-2 py-0.5 ${
+              layer.status === 'available'
+                ? 'text-accent-emerald border-accent-emerald/30 bg-accent-emerald/5'
+                : layer.status === 'probable'
+                ? 'text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5'
+                : 'text-neural-500 border-neural-800 bg-neural-900'
+            }`}
+          >
+            {layer.label} · {layer.status}
+          </span>
+        ))}
+      </div>
+
+      {scene.warnings.length > 0 && (
+        <ul className="text-xs text-amber-300/80 space-y-0.5 mb-2">
+          {scene.warnings.slice(0, 4).map((warning) => (
+            <li key={warning}>⚠ {warning}</li>
+          ))}
+        </ul>
+      )}
+
+      <p className="text-xs text-neural-600 break-all font-mono">{sceneUrl}</p>
+    </section>
+  )
+}
+
 export function DatasetPage() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
@@ -200,6 +261,12 @@ export function DatasetPage() {
   const { data: similarData } = useQuery({
     queryKey: ['dataset-similar', id],
     queryFn: () => getSimilarDatasets(id!),
+    enabled: !!id,
+  })
+
+  const { data: sceneData } = useQuery({
+    queryKey: ['dataset-scene', id],
+    queryFn: () => getDatasetScene(id!),
     enabled: !!id,
   })
 
@@ -669,6 +736,13 @@ export function DatasetPage() {
                       <div className="text-xs text-neural-500 mt-1">
                         Link confidence: {Math.round(paper.confidence * 100)}%
                         {paper.link_evidence && paper.link_evidence.length > 0 && ` · ${paper.link_evidence.join(', ')}`}
+                        {paper.evidence_tier && ` · evidence: ${paper.evidence_tier.replace(/_/g, ' ')}`}
+                      </div>
+                    )}
+                    {paper.retraction_status && paper.retraction_status.status !== 'none' && (
+                      <div className="text-xs text-red-400 font-medium mt-1">
+                        ⚠ Publisher record: {paper.retraction_status.status} (via {paper.retraction_status.source}, checked{' '}
+                        {new Date(paper.retraction_status.checked_at).toLocaleDateString()})
                       </div>
                     )}
                   </li>
@@ -803,6 +877,11 @@ export function DatasetPage() {
           {/* Analysis Affordances */}
           {affordancesData && affordancesData.affordances.length > 0 && (
             <AffordancePanel affordances={affordancesData.affordances} />
+          )}
+
+          {/* ExperimentGlancer scene */}
+          {sceneData && (
+            <ExperimentGlancerPanel scene={sceneData.scene} sceneUrl={sceneData.scene_url} />
           )}
 
           {/* Similar Datasets */}

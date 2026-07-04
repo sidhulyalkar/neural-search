@@ -13,6 +13,7 @@ import { LabShowcasePage } from './pages/LabShowcasePage'
 import { MethodsKGPage } from './pages/MethodsKGPage'
 import { DisorderMapPage } from './pages/DisorderMapPage'
 import { KnowledgeExplorerPage } from './pages/KnowledgeExplorerPage'
+import { ExperimentGlancerPage } from './pages/ExperimentGlancerPage'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/labs/neatlabs" element={<LabShowcasePage />} />
         <Route path="/methods" element={<MethodsKGPage />} />
         <Route path="/disorders" element={<DisorderMapPage />} />
+        <Route path="/experimentglancer" element={<ExperimentGlancerPage />} />
       </Routes>
     </Layout>
   )

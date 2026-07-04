@@ -1,0 +1,113 @@
+{
+  "schema_version": "experimentglancer.scene.v1",
+  "scene_id": "eg_dandi_000000_a1b2c3d4e5f6",
+  "created_at": "2026-07-03T00:00:00+00:00",
+  "source": {
+    "kind": "search_result",
+    "query": "visual behavior calcium imaging with lick events",
+    "rank": 1,
+    "retrieval_method": "hybrid_search",
+    "score": 0.87,
+    "score_breakdown": {
+      "ontology_score": 0.8,
+      "analysis_fit_score": 0.72,
+      "readiness": 0.65
+    }
+  },
+  "query_context": {
+    "query": "visual behavior calcium imaging with lick events",
+    "parsed_query": {},
+    "requested_layers": []
+  },
+  "dataset": {
+    "dataset_id": "dandi:000000",
+    "source": "dandi",
+    "source_id": "000000",
+    "title": "Example visual behavior dataset",
+    "url": "https://dandiarchive.org/dandiset/000000",
+    "doi": null,
+    "data_standard": "NWB",
+    "species": ["mouse"],
+    "modalities": ["calcium_imaging", "behavior_video"],
+    "brain_regions": ["visual_cortex"],
+    "tasks": ["visual_change_detection"]
+  },
+  "coordinate_space": {
+    "clock": "nwb_time_seconds",
+    "time_unit": "s",
+    "default_window": {"center_time": null, "pre": 2.0, "post": 5.0},
+    "session_id": null,
+    "subject_id": null,
+    "trial_id": null
+  },
+  "anchors": [
+    {
+      "anchor_id": "overview",
+      "kind": "dataset_overview",
+      "label": "Overview from search match",
+      "time": null,
+      "trial_id": null,
+      "event_type": null,
+      "reason": "No concrete event timestamp was file-validated yet.",
+      "evidence": ["matched calcium imaging", "matched lick events"]
+    }
+  ],
+  "layers": [
+    {
+      "layer_id": "trials",
+      "kind": "timeline.trials",
+      "label": "Trials",
+      "status": "probable",
+      "data_ref": {"kind": "nwb_trials_table", "asset_id": null, "path": null, "column": null, "table": null},
+      "alignment": {"clock": "nwb_time_seconds", "offset": 0},
+      "display": {"track": "timeline", "color": "#7dd3fc"},
+      "provenance": {"evidence_tier": "metadata_inferred", "detector": "dataset_card"},
+      "warnings": ["Trial structure inferred from metadata; file validation pending."]
+    },
+    {
+      "layer_id": "calcium",
+      "kind": "neural.calcium",
+      "label": "Calcium traces",
+      "status": "probable",
+      "data_ref": {"kind": "ophys_roi_traces", "asset_id": null, "path": null, "column": null, "table": null},
+      "alignment": {"clock": "nwb_time_seconds", "offset": 0},
+      "display": {"track": "neural", "color": "#34d399"},
+      "provenance": {"evidence_tier": "metadata_inferred", "detector": "dataset_card"},
+      "warnings": []
+    },
+    {
+      "layer_id": "metadata",
+      "kind": "metadata.labels",
+      "label": "Dataset metadata",
+      "status": "available",
+      "data_ref": {"kind": "dataset_card", "asset_id": null, "path": null, "column": null, "table": null},
+      "alignment": {"clock": "metadata_only", "offset": 0},
+      "display": {"track": "metadata", "color": null},
+      "provenance": {"evidence_tier": "metadata_inferred", "detector": "dataset_card"},
+      "warnings": []
+    },
+    {
+      "layer_id": "provenance",
+      "kind": "provenance.evidence",
+      "label": "Search evidence and provenance",
+      "status": "available",
+      "data_ref": {"kind": "search_result", "asset_id": null, "path": null, "column": null, "table": null},
+      "alignment": {"clock": "metadata_only", "offset": 0},
+      "display": {"track": "metadata", "color": null},
+      "provenance": {"evidence_tier": "metadata_inferred", "detector": "search_result"},
+      "warnings": []
+    }
+  ],
+  "layout": {
+    "primary_view": "timeline",
+    "tracks": ["timeline", "behavior", "neural", "model", "metadata"]
+  },
+  "provenance": {
+    "generated_by": "neural_search.experimentglancer.scene_builder",
+    "generator_version": "v0.1.0",
+    "inputs": {"dataset_id": "dandi:000000", "query": "a91e5c9d6b3f"},
+    "evidence_tier": "metadata_inferred",
+    "missing_requirements": ["file validated event timestamps"]
+  },
+  "warnings": ["video layer requested by query but no video asset detected"]
+}
