@@ -135,6 +135,26 @@ artifacts/literature/findings_tier1_ollama.checkpoint.json
 # scripts/literature/normalize_findings.py.
 artifacts/literature/findings_tier1_normalized.jsonl
 
+# Large generated build artifacts, purged from history 2026-07-04 (see
+# scripts/literature/build_finding_relationships.py, scripts/coverage/,
+# scripts/eval/build_ablation_evidence_packets.py, neural_search/graph/atlas_builder.py,
+# scripts/literature/build_cluster_graph.py, neural_search/ingestion/corpus_kg_linker.py,
+# scripts/generate_annotation_candidates.py for regeneration)
+artifacts/literature/relationships/finding_edges.jsonl
+artifacts/literature/relationships/consensus_summaries.jsonl
+artifacts/literature/relationships/consensus_summaries_qualified.jsonl
+artifacts/literature/relationships/region_cooccurrence.jsonl
+data/reports/coverage/coverage_entries.jsonl
+data/reports/coverage/coverage_states.jsonl
+data/reports/coverage/coverage_completion_worklist.jsonl
+artifacts/ablation_judge/evidence_packets.jsonl
+data/coverage/ledger.duckdb
+data/eval/ablation_corpus_from_packets.jsonl
+artifacts/atlas/atlas_graph.json
+artifacts/graph/cluster_graph.json
+data/kg/dataset_concept_index.jsonl
+data/eval/annotation_candidates.jsonl
+
 # Large model/index/data file types
 *.npy
 *.npz
