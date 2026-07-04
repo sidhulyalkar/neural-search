@@ -17,13 +17,13 @@ This document tracks which whitepaper claims are currently supported by reposito
 |---|---:|---|
 | Dataset corpus | 7,171 rows / 7,121 unique ids | `data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl` |
 | OpenAlex literature corpus | 255,940 tier1 papers (≥100 citations) | `data/corpus/normalized/openalex_neuro/` (26 JSONL shards) |
-| Paper-dataset links | 7,171 / 7,171 corpus datasets linked | `artifacts/literature/paper_dataset_links.jsonl` |
+| Paper-dataset links | Linker ran over 7,171 datasets; 393 have a real OpenAlex match (168 DOI-exact, 225 title-fuzzy-local), 6,778 not found | `artifacts/literature/paper_dataset_links.jsonl` (see `reports/eval/current_artifact_manifest.json`) |
 | Finding extraction | Running — 550 papers, 262 findings @ 47% yield | `artifacts/literature/findings_tier1_ollama.jsonl` |
 | Dense field embeddings | 2,840 rows over 625 records | `data/embeddings/real_all.dense.field_embeddings.jsonl` |
 | Embedding model | BAAI/bge-large-en-v1.5 | embedding rows and provider code |
 | Embedding dimension | 1024 | `data/index/turbovec_dense_1024.index/meta.json` |
 | Indexed ids | 625 | `data/index/turbovec_dense_1024.index/meta.json` |
-| Knowledge graph | 7,593 nodes / 31,920 edges | `artifacts/field_state/current_manifest.json` |
+| Knowledge graph | 7,946 nodes / 144,428 edges (as of 2026-07-02; regenerate via `scripts/build_artifact_manifest.py`, do not hand-edit this row) | `reports/eval/current_artifact_manifest.json` |
 | Weak supervision eval | 13 labeling functions, Obsidian vault, metric tier support | `neural_search/eval/`, `scripts/eval/` |
 
 ## Core Claims
