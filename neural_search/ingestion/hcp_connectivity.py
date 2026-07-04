@@ -131,17 +131,22 @@ def build_connectivity_edges(data: dict[str, Any]) -> list[GraphEdge]:
                 )
             )
 
-        # circuit annotation edges
+        # circuit annotation edges — link both endpoint regions to the circuit
+        # (a GraphEdge's source/target must be node ids; the previous version
+        # pointed source_node_id at `edge_id`, an edge id, which can never
+        # resolve to a node and always dangled).
         for circuit_id in conn.get("circuits", []):
-            edges.append(
-                GraphEdge(
-                    edge_id=f"edge:struct:{src_id}:{tgt_id}:circuit:{circuit_id}",
-                    source_node_id=edge_id,  # meta-edge pointing to the circuit
-                    target_node_id=f"circuit:{circuit_id}",
-                    edge_type="circuit_studied_by_method",
-                    properties={"relation": "structural_substrate"},
+            circuit_node_id = f"circuit:{circuit_id}"
+            for region_id, region_node_id in ((src_id, src_node_id), (tgt_id, tgt_node_id)):
+                edges.append(
+                    GraphEdge(
+                        edge_id=f"edge:struct:{region_id}:circuit:{circuit_id}:{pathway}",
+                        source_node_id=region_node_id,
+                        target_node_id=circuit_node_id,
+                        edge_type="circuit_studied_by_method",
+                        properties={"relation": "structural_substrate", "pathway": pathway},
+                    )
                 )
-            )
 
     return edges
 

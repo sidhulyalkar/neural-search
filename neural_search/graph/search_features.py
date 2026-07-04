@@ -20,10 +20,35 @@ from neural_search.graph.schema import (
 )
 
 DEFAULT_GRAPH_SEARCH_WEIGHTS = {
-    "linked_paper": 0.04,
+    # Set to 0.0 (2026-07-02): this weight (previously 0.04) was configured
+    # speculatively before any paper nodes existed in the production graph —
+    # find_papers_for_dataset() always returned [], so it was permanently
+    # inert. Once neural_search.graph.paper_node_builder populated real
+    # paper_mentions_dataset/paper_uses_dataset edges (494 real matches
+    # across OpenAlex + DataCite), a nonzero weight here measurably
+    # regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8583 on the 317-query
+    # benchmark). Confirmed by isolation (weight alone, zeroed, restores
+    # exactly 0.8594) before committing this comment — same "populate first,
+    # discover the regression after" pattern already caught twice this
+    # session for dataset_old_dataset_new_method_candidate and
+    # dataset_reanalysis_bridge_dataset (see comments below). Data remains
+    # fully in the graph (paper nodes, edges, evidence_tier property) for
+    # its intended purpose — only excluded from ranking until validated
+    # against gold qrels, same treatment as reanalysis_edge below.
+    "linked_paper": 0.0,
     "analysis_affordance": 0.03,
     "relationship_edge": 0.012,
-    "reanalysis_edge": 0.018,
+    # Set to 0.0 (2026-07-01): this weight was configured speculatively
+    # before dataset_old_dataset_new_method_candidate edges were ever
+    # populated. Once populated (59,126 edges, 2026-07-01), a nonzero weight
+    # here contributed to a measured hybrid_graph/full NDCG@10 regression
+    # (0.8594 -> 0.859 after fixing the larger graph_degree contribution
+    # below; 0.8594 exactly with this weight at 0.0). These edges are an
+    # unreviewed heuristic (requires_human_review=True, not yet validated
+    # against gold qrels) — don't let them influence ranking until calibrated.
+    # See reports/architecture_connectivity_audit_2026-07-01.md and
+    # reports/reanalysis_candidates_report.md.
+    "reanalysis_edge": 0.0,
     "requirement_match": 0.01,
     "analysis_requirement_coverage": 0.015,
     "task_match": 0.03,
@@ -401,10 +426,47 @@ def compute_graph_features_for_result(
     # Exclude dataset_similar_to_dataset edges from degree — they reflect embedding-based
     # similarity clusters and are densely populated for DANDI/OpenNeuro, inflating scores
     # for popular platforms relative to specialized archives (buzsaki, crcns, etc.).
-    _SIM_EDGE = "dataset_similar_to_dataset"
+    #
+    # Also exclude REANALYSIS_EDGE_TYPES (2026-07-01): once
+    # dataset_old_dataset_new_method_candidate edges were populated for the
+    # first time (59,126 edges across 80% of datasets), they dominated
+    # generic degree counts enough to flatten this feature's differentiation
+    # and measurably regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8494 on
+    # the 317-query canonical benchmark). These edges are an unreviewed
+    # heuristic signal (requires_human_review=True) surfaced for a different
+    # purpose (reanalysis candidate discovery) and should not feed generic
+    # connectivity scoring, the same reasoning as dataset_similar_to_dataset.
+    #
+    # Also exclude dataset_reanalysis_bridge_dataset (2026-07-01, same session):
+    # populating this edge type (2,517 edges, 818 datasets) also measurably
+    # regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8545), smaller in
+    # magnitude but the same mechanism. Unlike reanalysis_edge below, this
+    # edge type also feeds the (already-tuned, nonzero) relationship_edge
+    # weight via RELATIONSHIP_EDGE_TYPES — excluding it here from the
+    # *degree* feature specifically was sufficient to fully restore 0.8594,
+    # confirmed empirically before committing this comment.
+    # Also exclude paper_mentions_dataset / paper_uses_dataset (2026-07-02,
+    # Phase 1 of the literature-source expansion): these are populated for
+    # the first time in production by neural_search.graph.paper_node_builder.
+    # Excluded pre-emptively, before first measurement, since this count is
+    # expected to grow to the thousands once Crossref/Semantic Scholar/PubMed
+    # linking lands (Phase 2) — matching the same "populate first, discover
+    # the graph_degree regression after" mistake already made and fixed twice
+    # this session for dataset_old_dataset_new_method_candidate and
+    # dataset_reanalysis_bridge_dataset above. These edge types already feed
+    # the dedicated, capped, low-weight linked_paper score directly (see
+    # graph_context_score's paper_edges handling) — that is the intended
+    # ranking signal, not generic node-degree inflation.
+    _DEGREE_EXCLUDED_EDGE_TYPES = {
+        "dataset_similar_to_dataset",
+        "dataset_reanalysis_bridge_dataset",
+        "paper_mentions_dataset",
+        "paper_uses_dataset",
+        *REANALYSIS_EDGE_TYPES,
+    }
     graph_degree = (
-        sum(1 for e in out_index.get(node_id, []) if e.edge_type != _SIM_EDGE)
-        + sum(1 for e in in_index.get(node_id, []) if e.edge_type != _SIM_EDGE)
+        sum(1 for e in out_index.get(node_id, []) if e.edge_type not in _DEGREE_EXCLUDED_EDGE_TYPES)
+        + sum(1 for e in in_index.get(node_id, []) if e.edge_type not in _DEGREE_EXCLUDED_EDGE_TYPES)
     )
     linked_papers = [paper.label for paper in find_papers_for_dataset(graph, node_id)]
     analysis_affordances = _neighbor_labels(graph, node_id, "dataset_supports_analysis")
@@ -585,24 +647,43 @@ _CITATION_INDEGREE_CAP = 50
 
 @lru_cache(maxsize=1)
 def _load_neurosynth_index() -> dict[str, list[float]]:
-    """Build region→[confidence, ...] index from topic_activates_region edges."""
+    """Build region→[confidence, ...] index from topic_activates_region edges.
+
+    Prefers the pre-built artifact cache (fast: ms) but falls back to building
+    directly from source (slow: ~20s, cached in-process via lru_cache) when the
+    cache is missing, rather than silently returning {} — composed_kg.jsonl is
+    gitignored and has no automated regeneration pipeline, so its absence must
+    not silently zero out this score.
+    """
     region_weights: dict[str, list[float]] = defaultdict(list)
-    if not _COMPOSED_KG_PATH.exists():
+    if _COMPOSED_KG_PATH.exists():
+        with _COMPOSED_KG_PATH.open(encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if rec.get("record_type") != "edge":
+                    continue
+                edge = rec.get("edge", {})
+                if edge.get("edge_type") != "topic_activates_region":
+                    continue
+                target = edge.get("target_node_id", "")
+                region_key = target.split(":", 1)[-1]
+                region_weights[region_key].append(float(edge.get("confidence", 0.0)))
+        return dict(region_weights)
+
+    from neural_search.ingestion.neurosynth_builder import build_neurosynth_kg
+
+    try:
+        kg = build_neurosynth_kg()
+    except Exception:  # noqa: BLE001 - source data (NeuroSynth TSV/NPZ) may be absent
         return {}
-    with _COMPOSED_KG_PATH.open(encoding="utf-8") as fh:
-        for line in fh:
-            try:
-                rec = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if rec.get("record_type") != "edge":
-                continue
-            edge = rec.get("edge", {})
-            if edge.get("edge_type") != "topic_activates_region":
-                continue
-            target = edge.get("target_node_id", "")
-            region_key = target.split(":", 1)[-1]
-            region_weights[region_key].append(float(edge.get("confidence", 0.0)))
+    for edge in kg.edges.values():
+        if edge.edge_type != "topic_activates_region":
+            continue
+        region_key = edge.target_node_id.split(":", 1)[-1]
+        region_weights[region_key].append(float(edge.confidence))
     return dict(region_weights)
 
 

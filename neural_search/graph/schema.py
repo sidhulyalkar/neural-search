@@ -466,6 +466,64 @@ def validate_graph(graph: KnowledgeGraph, strict: bool = False) -> KnowledgeGrap
     return graph
 
 
+def _infer_stub_node_type(node_id: str) -> str:
+    parts = node_id.split(":")
+    if parts and parts[0] == "node" and len(parts) >= 3:
+        return parts[1]
+    return parts[0] if parts and parts[0] else "unknown"
+
+
+def resolve_dangling_edges(graph: KnowledgeGraph) -> tuple[KnowledgeGraph, int]:
+    """Create minimal placeholder nodes for any edge endpoint missing from the graph.
+
+    Individual KG builder modules in this repo use a mix of node-id
+    conventions (the canonical ``make_node_id`` scheme and many hand-rolled
+    ``type:id`` schemes), and are frequently authored/merged independently,
+    so cross-builder or self-referential dangling edges are common (see
+    ``reports/architecture_connectivity_audit_2026-07-01.md``). Rather than
+    special-casing every builder's target vocabulary, this creates a minimal
+    node for every dangling endpoint, inferring node_type from the id's
+    leading segment (works for both ``node:type:...`` and ``type:...`` ids).
+
+    Placeholder nodes are marked ``properties={"stub": True, ...}`` so
+    consumers can distinguish them from richly-sourced nodes; they carry a
+    low confidence (0.3) since they represent "this concept exists and is
+    referenced" rather than validated content about it.
+
+    Returns the graph (nodes dict extended in place is NOT mutated — a new
+    KnowledgeGraph is returned) and the number of stub nodes created.
+    """
+
+    existing_ids = set(graph.nodes.keys())
+    referenced_ids: set[str] = set()
+    for edge in graph.edges.values():
+        referenced_ids.add(edge.source_node_id)
+        referenced_ids.add(edge.target_node_id)
+    missing_ids = sorted(referenced_ids - existing_ids)
+
+    if not missing_ids:
+        return graph, 0
+
+    new_nodes = dict(graph.nodes)
+    for node_id in missing_ids:
+        node_type = _infer_stub_node_type(node_id)
+        label_part = node_id.split(":")[-1]
+        new_nodes[node_id] = KnowledgeGraphNode(
+            node_id=node_id,
+            node_type=node_type,
+            label=label_part.replace("_", " ").title(),
+            properties={"stub": True, "source": "auto_generated_placeholder"},
+            confidence=0.3,
+        )
+
+    resolved = KnowledgeGraph(
+        nodes=new_nodes,
+        edges=dict(graph.edges),
+        metadata=dict(graph.metadata),
+    )
+    return resolved, len(missing_ids)
+
+
 def graph_to_dict(graph: KnowledgeGraph) -> dict[str, Any]:
     """Convert a graph to a JSON-serializable dictionary."""
 

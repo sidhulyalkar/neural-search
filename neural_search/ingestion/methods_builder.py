@@ -31,6 +31,8 @@ def _concept_node_id(concept_id: str) -> str:
 
 def build_methods_nodes(taxonomy: dict[str, Any]) -> list[GraphNode]:
     nodes: list[GraphNode] = []
+    seen_quantities: set[str] = set()
+    seen_topics: set[str] = set()
 
     for category in taxonomy.get("categories", []):
         cat_id = category["id"]
@@ -105,11 +107,67 @@ def build_methods_nodes(taxonomy: dict[str, Any]) -> list[GraphNode]:
                 )
             )
 
+            # Target nodes for method_computes/method_used_for_topic edges
+            # (build_methods_edges emits these edges; without the target
+            # nodes existing here too, they dangle when this builder is
+            # merged into a graph that doesn't separately create topic/
+            # concept:quantity nodes, e.g. scripts/build_real_corpus_graph.py).
+            for quantity in item.get("computes", []):
+                quantity_node_id = f"concept:quantity:{quantity}"
+                if quantity_node_id not in seen_quantities:
+                    seen_quantities.add(quantity_node_id)
+                    nodes.append(
+                        GraphNode(
+                            node_id=quantity_node_id,
+                            node_type="concept",
+                            label=quantity.replace("_", " ").title(),
+                            properties={"category_type": "computed_quantity"},
+                        )
+                    )
+
+            for topic_id in item.get("topics", []):
+                topic_node_id = f"topic:{topic_id}"
+                if topic_node_id not in seen_topics:
+                    seen_topics.add(topic_node_id)
+                    nodes.append(
+                        GraphNode(
+                            node_id=topic_node_id,
+                            node_type="topic",
+                            label=topic_id.replace("_", " ").title(),
+                            properties={"source": "methods_taxonomy_reference"},
+                        )
+                    )
+
+            # Target nodes for method_assumes edges (same dangling-edge
+            # reasoning as computes/topics above).
+            if isinstance(item.get("assumptions"), dict):
+                for assump_key in item["assumptions"]:
+                    assump_node_id = f"concept:assumption:{item_id}:{assump_key}"
+                    nodes.append(
+                        GraphNode(
+                            node_id=assump_node_id,
+                            node_type="concept",
+                            label=assump_key.replace("_", " ").title(),
+                            properties={"category_type": "method_assumption", "method": item_id},
+                        )
+                    )
+
     return nodes
+
+
+def known_method_ids(taxonomy: dict[str, Any]) -> set[str]:
+    """All method/concept ids declared anywhere in the taxonomy."""
+
+    return {
+        item["id"]
+        for category in taxonomy.get("categories", [])
+        for item in category.get("methods", category.get("concepts", []))
+    }
 
 
 def build_methods_edges(taxonomy: dict[str, Any]) -> list[GraphEdge]:
     edges: list[GraphEdge] = []
+    known_ids = known_method_ids(taxonomy)
 
     for category in taxonomy.get("categories", []):
         cat_id = category["id"]
@@ -130,8 +188,19 @@ def build_methods_edges(taxonomy: dict[str, Any]) -> list[GraphEdge]:
                 )
             )
 
-            # related_methods
+            # related_methods — skip references to ids not defined anywhere
+            # in the taxonomy (honest gap, e.g. "ccm"/"kalman_filter" are
+            # mentioned as related but have no entry of their own yet) rather
+            # than emitting a dangling edge to a node that doesn't exist.
             for related_id in item.get("related_methods", []):
+                if related_id not in known_ids:
+                    log.debug(
+                        "Skipping method_related_to_method %s -> %s: %s has no taxonomy entry",
+                        item_id,
+                        related_id,
+                        related_id,
+                    )
+                    continue
                 edges.append(
                     GraphEdge(
                         edge_id=f"edge:method:{item_id}:related:{related_id}",

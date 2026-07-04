@@ -1,112 +1,310 @@
 {
-  "generated_at": "2026-06-24T02:24:00Z",
-  "git_commit": "e08b3b7",
-  "reconciliation_note": "Manual reconciliation 2026-06-24, post-merge of claude/latent-usefulness-v08 (eval/qrels branch) into claude/neuronpedia-foundation (KG/claims/vault/frontend branch). data/corpus/normalized/combined_corpus.jsonl is a directory; the live corpus file is full_corpus_v09.jsonl inside it. Unique IDs counted via source_id field (7,121); dataset_id field has only 625 unique values (embedded-slice only). No build_artifact_manifest.py script exists in the repo despite being referenced by docs/REPRODUCIBILITY_CAPSULE.md — this file is still hand-maintained; writing that script is queued as backlog, not done in this pass.",
+  "generated_at": "2026-07-04T00:15:36.483589+00:00",
+  "generated_by": "scripts/build_artifact_manifest.py",
+  "note": "Computed directly from files on disk at generation time. Re-run this script rather than hand-editing this file.",
   "corpus": {
+    "available": true,
     "path": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl",
     "row_count": 7171,
-    "unique_source_ids": 7121,
-    "unique_dataset_ids": 625,
-    "id_field_note": "source_id is the canonical unique identifier (7,121 unique). dataset_id has 625 unique values — covers the embedded/indexed slice only.",
-    "sha256_head_16chars": "4aacecc3e9d37e17"
+    "unique_source_ids": 7171,
+    "unique_dataset_ids": 625
   },
   "knowledge_graph": {
+    "available": true,
     "path": "data/graph/neural_search_graph.real_corpus.json",
-    "nodes": 7593,
-    "edges": 31920,
-    "cross_dataset_edges": 2957,
-    "note": "Full-corpus graph. 7,593 nodes / 31,920 edges as cited in whitepaper."
+    "total_nodes": 12748,
+    "total_edges": 149654,
+    "node_type_counts": {
+      "dataset": 7171,
+      "paper": 4514,
+      "concept": 372,
+      "ontology_region": 122,
+      "brain_region": 118,
+      "task": 85,
+      "method": 61,
+      "modality": 60,
+      "paradigm": 34,
+      "oscillation": 32,
+      "disorder": 28,
+      "analysis_affordance": 27,
+      "circuit": 23,
+      "required_signal": 22,
+      "species": 22,
+      "white_matter_tract": 21,
+      "topic": 18,
+      "data_standard": 14,
+      "behavioral_event": 4
+    },
+    "edge_type_counts": {
+      "dataset_old_dataset_new_method_candidate": 59126,
+      "dataset_similar_to_dataset": 58521,
+      "dataset_has_modality": 8083,
+      "dataset_records_region": 7098,
+      "dataset_has_species": 5393,
+      "paper_mentions_dataset": 4585,
+      "dataset_reanalysis_bridge_dataset": 2517,
+      "dataset_has_task": 2423,
+      "concept_related_to_concept": 195,
+      "analysis_requires_task_structure": 159,
+      "concept_has_alias": 149,
+      "concept_related_to_topic": 116,
+      "analysis_requires_modality": 99,
+      "disorder_disrupts_circuit": 93,
+      "paper_uses_dataset": 91,
+      "method_used_for_topic": 90,
+      "oscillation_measured_by_method": 89,
+      "concept_motivates_method": 76,
+      "region_has_homolog_in": 75,
+      "method_computes": 69,
+      "concept_narrower_than": 51,
+      "finding_advances_topic": 49,
+      "method_supports_analysis": 48,
+      "disorder_has_biomarker": 46,
+      "method_assumes": 45,
+      "region_structurally_adjacent_to": 43,
+      "concept_in_domain": 41,
+      "region_projects_to": 34,
+      "circuit_studied_by_method": 34,
+      "disorder_modeled_by_paradigm": 25,
+      "paradigm_engages_circuit": 24,
+      "same_task_cross_species": 24,
+      "analysis_requires_behavioral_event": 23,
+      "paradigm_targets_topic": 23,
+      "region_structurally_connected": 22,
+      "region_generates_oscillation": 21,
+      "paradigm_validated_cross_species": 21,
+      "concept_broader_than": 16,
+      "method_related_to_method": 11,
+      "region_co_occurs_with_region": 6
+    },
+    "display_edge_counts": {
+      "dataset_old_dataset_new_method_candidate": 59126,
+      "same_region_cross_modality": 48212,
+      "same_task_cross_species": 10333,
+      "dataset_has_modality": 8083,
+      "dataset_records_region": 7098,
+      "dataset_has_species": 5393,
+      "paper_mentions_dataset": 4585,
+      "dataset_reanalysis_bridge_dataset": 2517,
+      "dataset_has_task": 2423,
+      "concept_related_to_concept": 195,
+      "analysis_requires_task_structure": 159,
+      "concept_has_alias": 149,
+      "concept_related_to_topic": 116,
+      "analysis_requires_modality": 99,
+      "disorder_disrupts_circuit": 93,
+      "paper_uses_dataset": 91,
+      "method_used_for_topic": 90,
+      "oscillation_measured_by_method": 89,
+      "concept_motivates_method": 76,
+      "region_has_homolog_in": 75,
+      "method_computes": 69,
+      "concept_narrower_than": 51,
+      "finding_advances_topic": 49,
+      "method_supports_analysis": 48,
+      "disorder_has_biomarker": 46,
+      "method_assumes": 45,
+      "region_structurally_adjacent_to": 43,
+      "concept_in_domain": 41,
+      "region_projects_to": 34,
+      "circuit_studied_by_method": 34,
+      "disorder_modeled_by_paradigm": 25,
+      "paradigm_engages_circuit": 24,
+      "analysis_requires_behavioral_event": 23,
+      "paradigm_targets_topic": 23,
+      "region_structurally_connected": 22,
+      "region_generates_oscillation": 21,
+      "paradigm_validated_cross_species": 21,
+      "concept_broader_than": 16,
+      "method_related_to_method": 11,
+      "region_co_occurs_with_region": 6
+    },
+    "stub_node_count": 252,
+    "metadata": {
+      "allen_connectivity_edges": 34,
+      "builder": "build_real_corpus_graph",
+      "builder_version": "v1.0.0",
+      "concept_edges": 217,
+      "corpus": "C:\\Users\\sidso\\Documents\\neural-search\\data\\corpus\\normalized\\combined_corpus.jsonl\\full_corpus_v09.jsonl",
+      "disorder_edges": 228,
+      "evidence_tier_file_validated_upgrades": 60,
+      "hcp_connectivity_edges": 99,
+      "method_supports_analysis_edges": 48,
+      "methods_kg_nodes": 161,
+      "oscillation_edges": 165,
+      "paper_links_edges": 4676,
+      "paradigm_edges": 92,
+      "reanalysis_bridge_edges": 2517,
+      "reanalysis_candidate_edges": 59126,
+      "record_count": 7171,
+      "reinterpretation_candidate_edges": 0,
+      "scholarpedia_edges": 333,
+      "species_homology_edges": 75,
+      "stub_nodes_created": 252,
+      "taxonomy_requirement_edges": 281
+    }
+  },
+  "reanalysis_edges": {
+    "dataset_old_dataset_new_method_candidate": 59126,
+    "dataset_reanalysis_bridge_dataset": 2517,
+    "dataset_reinterpretation_candidate": 0,
+    "dataset_reprocessing_candidate": 0
   },
   "qrels": {
     "gold": {
       "path": "artifacts/qrels_gold.jsonl",
-      "rows": 0,
-      "status": "empty — pending human annotation campaign"
+      "available": true,
+      "rows": 0
     },
     "silver": {
       "path": "artifacts/qrels_silver.jsonl",
-      "rows": 175,
-      "status": "LLM-generated diagnostic only — not peer-reviewed"
+      "available": true,
+      "rows": 175
     },
     "bronze": {
       "path": "artifacts/qrels_bronze.jsonl",
-      "rows": 319,
-      "status": "LLM-generated diagnostic only — not peer-reviewed"
+      "available": true,
+      "rows": 319
     },
     "field_state_adjudicated": {
       "path": "artifacts/field_state/adjudicated_qrels.jsonl",
-      "rows": 3,
-      "status": "smoke-test only — adjudication workflow verified but not at benchmark scale"
+      "available": true,
+      "rows": 3
     },
     "canonical_llm_silver": {
       "path": "data/qrels/qrels.canonical.jsonl",
-      "rows": 13654,
-      "queries": 317,
-      "label_distribution": {"0": 3311, "1": 5671, "2": 4652, "3": 20},
-      "status": "merged 2026-06-23 from claude/latent-usefulness-v08 — single LLM-judge pass, not human-adjudicated. First non-degenerate ablation ladder this project has produced (see ablation_ladder below). Dual-judge reliability not yet estimable (no pair has two non-error judge labels)."
+      "available": true,
+      "rows": 13654
     }
   },
-  "ablation_ladder": {
-    "path": "reports/eval/ndcg_report.md",
-    "qrels_used": "canonical_llm_silver (13,654 pairs / 317 queries)",
+  "paper_dataset_links": {
+    "available": true,
+    "by_source": {
+      "openalex": {
+        "path": "artifacts/literature/paper_dataset_links.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "not_found": 6768,
+          "title_fuzzy": 10,
+          "title_fuzzy_local": 225,
+          "doi_exact": 168
+        },
+        "real_matches": 403,
+        "real_match_rate": 0.0562
+      },
+      "datacite": {
+        "path": "artifacts/literature/paper_dataset_links.datacite.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "not_applicable_no_dataset_doi": 4784,
+          "not_found": 2296,
+          "datacite_related_identifier": 91
+        },
+        "real_matches": 91,
+        "real_match_rate": 0.0127
+      },
+      "crossref": {
+        "path": "artifacts/literature/paper_dataset_links.crossref.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "crossref_title_fuzzy": 1318,
+          "not_found": 4773,
+          "crossref_doi_exact": 1080
+        },
+        "real_matches": 2398,
+        "real_match_rate": 0.3344
+      },
+      "semantic_scholar": {
+        "path": "artifacts/literature/paper_dataset_links.semantic_scholar.jsonl",
+        "total_rows": 1,
+        "match_method_counts": {
+          "semantic_scholar_title_fuzzy": 1
+        },
+        "real_matches": 1,
+        "real_match_rate": 1.0
+      },
+      "pubmed": {
+        "path": "artifacts/literature/paper_dataset_links.pubmed.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "pubmed_title_fuzzy": 782,
+          "not_found": 5388,
+          "pubmed_doi_exact": 973,
+          "biorxiv_doi_exact": 28
+        },
+        "real_matches": 1783,
+        "real_match_rate": 0.2486
+      }
+    },
+    "combined_datasets_with_real_link": 2510,
+    "path": "artifacts/literature/paper_dataset_links.jsonl",
+    "total_rows": 7171,
+    "match_method_counts": {
+      "not_found": 6768,
+      "title_fuzzy": 10,
+      "title_fuzzy_local": 225,
+      "doi_exact": 168
+    },
+    "real_matches": 403,
+    "real_match_rate": 0.0562
+  },
+  "ablation_benchmark": {
+    "available": true,
+    "path": "reports/eval/ablation_ladder_report.partial.json",
+    "is_partial_run": true,
+    "skipped_rungs": [
+      "bm25",
+      "bm25_structured",
+      "dense_bge"
+    ],
     "rungs": {
-      "bm25": {"ndcg@10": 0.6566, "mrr": 0.8795, "recall@50": 0.6440, "ndcg@10_ci95": [0.6322, 0.6807]},
-      "bm25_structured": {"ndcg@10": 0.6361, "mrr": 0.8587, "recall@50": 0.6138},
-      "dense_bge": {"ndcg@10": 0.5708, "mrr": 0.8829, "recall@50": 0.5384, "ndcg@10_ci95": [0.5464, 0.5939]},
-      "hybrid_rrf": {"ndcg@10": 0.6667, "mrr": 0.9209, "recall@50": 0.7455, "ndcg@10_ci95": [0.6421, 0.6893]},
-      "hybrid_graph": {"ndcg@10": 0.6696, "mrr": 0.9256, "recall@50": 0.7465, "ndcg@10_ci95": [0.6453, 0.6921]},
-      "full": {"ndcg@10": 0.6696, "mrr": 0.9256, "recall@50": 0.7450}
-    },
-    "honest_caveats": [
-      "hybrid_graph/full's NDCG@10 lead over plain bm25 is within bootstrap-CI overlap, not yet statistically established at n=317 queries",
-      "dense_bge underperforming bm25 IS a real, CI-separated negative result (no overlap) worth investigating before citing as a flat claim",
-      "all rungs are evaluated on LLM-silver qrels, not human-adjudicated gold",
-      "relationship_edge_quality.md shows the typed/relationship KG edges sit at ~0.50 helpful rate (close to coin-flip) among judged top-10 promotions, predating the 2026-06-23 Phase 6b qualified-consensus edge types"
-    ]
-  },
-  "vector_index": {
-    "current_on_disk_ids": 625,
-    "full_rebuild_pending": true,
-    "note": "turbovec index covers 625-record embedded slice; full 7,171-record rebuild needed before expanded-corpus retrieval claims"
-  },
-  "literature": {
-    "openalex_papers_ingested": 255940,
-    "doi_exact_links": 168,
-    "title_fuzzy_links": 225,
-    "not_found": 6778,
-    "findings_operational_estimate": 190279,
-    "findings_file": "artifacts/literature/findings_tier1_ollama.jsonl",
-    "findings_file_note": "144MB+ and growing — gitignored as of 2026-06-23, do not commit (exceeds GitHub's 100MB hard limit)",
-    "findings_note": "190,279 findings from 255,940/255,940 papers in the checkpoint as of 2026-06-23 19:09 PDT (74.4% yield) — checkpoint count equals total ingested papers, so this run may be at or near completion; not independently confirmed. Quality not validated at this scale — manual audit template at reports/eval/finding_audit_template.csv is still blank. A 100-sample LLM-judge pass (reports/eval/finding_audit_llm_judge_summary.md) found 88% strict / 92% weighted precision on an earlier extraction snapshot, with dominant errors in result_direction and species — both fields feed directly into the typed-field contradiction_subtype logic, so audit before further relationship-mining at this larger scale."
-  },
-  "stale_reports": [
-    {
-      "path": "reports/eval/corpus_manifest.json",
-      "issue": "claims corpus_size=10404 and treats combined_corpus.jsonl as a file; conflicts with 7,171-row v09 reality"
-    },
-    {
-      "path": "reports/eval/retrieval_loading_diagnostics.md",
-      "issue": "corpus load failed because path is a directory; diagnostics need corpus path updated to full_corpus_v09.jsonl"
-    },
-    {
-      "path": "reports/eval/neuro_judge_retrieval_metrics.md",
-      "issue": "claims 675 annotated pairs; actual adjudicated_qrels.jsonl has 3 rows; treat as stale historical artifact"
-    },
-    {
-      "path": "reports/eval/ndcg_report.md",
-      "issue": "based on 8 LLM-qrels pairs over 1 query; engineering diagnostic only"
-    },
-    {
-      "path": "artifacts/field_state/current_manifest.json",
-      "issue": "points to /tmp/pytest path; 701 nodes / 1 edge; test artifact — not production state"
+      "bm25": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "bm25_structured": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "dense_bge": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "hybrid_rrf": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8124,
+          "query_count": 317
+        }
+      },
+      "hybrid_graph": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8594,
+          "query_count": 317
+        }
+      },
+      "typed_kg": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8483,
+          "query_count": 317
+        }
+      },
+      "typed_kg_qualified": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8483,
+          "query_count": 317
+        }
+      },
+      "full": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8594,
+          "query_count": 317
+        }
+      }
     }
-  ],
-  "source_of_truth_summary": {
-    "corpus": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl — 7,171 rows, 7,121 unique source_ids",
-    "graph": "data/graph/neural_search_graph.real_corpus.json — 7,593 nodes / 31,920 edges",
-    "gold_qrels": "empty — awaiting human annotation",
-    "silver_diagnostic": "artifacts/qrels_silver.jsonl — 175 rows (diagnostic)",
-    "canonical_llm_silver_qrels": "data/qrels/qrels.canonical.jsonl — 13,654 pairs / 317 queries (single LLM judge, first non-degenerate ablation ladder; see ablation_ladder above)",
-    "field_state_memory_graph": "artifacts/field_state/memory_graph_manifest.json — 629-record curation slice, 2,200 nodes / 3,788 edges"
   }
 }

@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from neural_search.awareness.taxonomy import DATA_FORMS, DataForm
+from neural_search.graph.method_registry_builder import build_method_registry_subgraph
 from neural_search.graph.schema import (
     GraphEvidence,
     KnowledgeGraph,
@@ -1046,6 +1047,13 @@ def build_graph_from_records(
 ) -> KnowledgeGraph:
     """Build a provenance-aware graph from normalized datasets and papers."""
 
+    # Deferred import: neural_search.ingestion.methods_builder imports
+    # neural_search.graph.schema, and neural_search.graph's package __init__
+    # eagerly imports this module — a top-level import here would create a
+    # circular import whenever something imports neural_search.ingestion.*
+    # before neural_search.graph.* has finished initializing.
+    from neural_search.ingestion.methods_builder import build_methods_kg
+
     dataset_records = list(datasets)
     paper_records = list(papers)
     subgraphs: list[KnowledgeGraph] = [
@@ -1057,6 +1065,8 @@ def build_graph_from_records(
         for paper in paper_records
     )
     subgraphs.append(build_taxonomy_requirement_subgraph())
+    subgraphs.append(build_methods_kg())
+    subgraphs.append(build_method_registry_subgraph())
     graph = merge_graphs(subgraphs)
     graph.metadata.update(
         {
@@ -1069,6 +1079,13 @@ def build_graph_from_records(
                     edge
                     for edge in graph.edges.values()
                     if edge.edge_type.startswith("analysis_requires_")
+                ]
+            ),
+            "method_supports_analysis_edges": len(
+                [
+                    edge
+                    for edge in graph.edges.values()
+                    if edge.edge_type == "method_supports_analysis"
                 ]
             ),
         }

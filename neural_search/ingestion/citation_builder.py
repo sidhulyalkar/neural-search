@@ -22,7 +22,14 @@ import json
 import logging
 from pathlib import Path
 
-from neural_search.graph.schema import GraphNode, GraphEdge, KnowledgeGraph
+from neural_search.graph.schema import (
+    GraphEdge,
+    GraphNode,
+    KnowledgeGraph,
+    KnowledgeGraphEdge,
+    make_edge_id,
+    make_node_id,
+)
 
 log = logging.getLogger(__name__)
 
@@ -170,6 +177,118 @@ def build_citation_edges(max_edges: int = MAX_EDGES) -> list[GraphEdge]:
         in_corpus, total_read, skipped_unknown,
     )
     return edges
+
+
+def build_citation_edges_for_graph(
+    graph: KnowledgeGraph, max_edges: int = MAX_EDGES
+) -> list[KnowledgeGraphEdge]:
+    """`paper_cites_paper` edges scoped to real, already-merged graph paper nodes.
+
+    This is the version wired into `scripts/build_real_corpus_graph.py`'s
+    `orphaned_layers` (must run *after* the `paper_links` layer so the paper
+    nodes it creates already exist in `graph`). Two real problems with
+    `build_citation_edges()` above made it unsafe to wire in directly:
+
+    1. Its node IDs (`paper:openalex:{bare}`, no `node:` prefix) don't match
+       the production convention (`node:paper:openalex:{bare}`, via
+       `make_node_id`) that `paper_node_builder.py`'s real paper nodes
+       actually use -- wiring it in as-is would create edges pointing at IDs
+       that don't resolve to any real node, silently fabricated into stub
+       nodes by `resolve_dangling_edges()` instead of connecting to the
+       genuine ones.
+    2. `_build_known_paper_ids()` re-scans local `openalex_neuro`/`.papers.jsonl`
+       files independently of what's actually in the graph -- inconsistent
+       with the "only emit edges for what's already a real node in this
+       build" pattern every other orphaned-layer builder follows (see
+       `build_paper_nodes_and_links`'s `if dataset_node_id not in graph.nodes:
+       continue`). Checking `graph.nodes` directly instead is both simpler
+       and correct by construction: it can never reference a node this
+       specific graph build doesn't actually have.
+
+    `citation_edges.jsonl`'s citing/cited IDs are OpenAlex-only (this
+    citation dataset has no DOI/Crossref/PubMed side) -- there is no
+    "generalize to other sources" fix available here, only the ID-scheme and
+    scoping fixes above.
+    """
+
+    if not CITATION_JSONL.exists():
+        log.warning(
+            "Citation edges file not found at %s. Skipping citation layer.", CITATION_JSONL
+        )
+        return []
+
+    known_openalex_node_ids = {
+        node_id
+        for node_id, node in graph.nodes.items()
+        if node.node_type == "paper" and node.properties.get("source") == "openalex"
+    }
+    if not known_openalex_node_ids:
+        log.info("citation_builder: no openalex paper nodes in this graph yet, skipping.")
+        return []
+
+    edges: list[KnowledgeGraphEdge] = []
+    seen_pairs: set[tuple[str, str]] = set()
+    total_read = 0
+    in_corpus = 0
+
+    with open(CITATION_JSONL, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            total_read += 1
+
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            citing_raw = obj.get("citing_paper_id", "")
+            cited_raw = obj.get("cited_paper_id", "")
+            citing_bare = citing_raw.removeprefix("paper:openalex:") if citing_raw else ""
+            cited_bare = cited_raw.removeprefix("paper:openalex:") if cited_raw else ""
+            if not citing_bare or not cited_bare:
+                continue
+
+            citing_node_id = make_node_id("paper", "openalex", citing_bare)
+            cited_node_id = make_node_id("paper", "openalex", cited_bare)
+            if citing_node_id not in known_openalex_node_ids or cited_node_id not in known_openalex_node_ids:
+                continue
+
+            pair = (citing_node_id, cited_node_id)
+            if pair in seen_pairs:
+                continue
+            seen_pairs.add(pair)
+
+            edge_id = make_edge_id(citing_node_id, "paper_cites_paper", cited_node_id)
+            edges.append(
+                KnowledgeGraphEdge(
+                    edge_id=edge_id,
+                    source_node_id=citing_node_id,
+                    target_node_id=cited_node_id,
+                    edge_type="paper_cites_paper",
+                    confidence=1.0,
+                    properties={"citing_year": obj.get("citing_year"), "source": "citation_graph"},
+                )
+            )
+            in_corpus += 1
+            if in_corpus >= max_edges:
+                log.info("citation_builder: reached max_edges cap (%d).", max_edges)
+                break
+
+    log.info(
+        "citation_builder: %d paper_cites_paper edges from %d total rows scanned "
+        "(%d known openalex paper nodes in this graph).",
+        in_corpus, total_read, len(known_openalex_node_ids),
+    )
+    return edges
+
+
+def build_citation_kg_for_graph(graph: KnowledgeGraph, max_edges: int = MAX_EDGES) -> KnowledgeGraph:
+    """Orphaned-layer entry point: `("citations", lambda: build_citation_kg_for_graph(...))`."""
+
+    edges = build_citation_edges_for_graph(graph, max_edges=max_edges)
+    return KnowledgeGraph(nodes=[], edges=edges)
 
 
 def build_citation_kg(max_edges: int = MAX_EDGES) -> KnowledgeGraph:
