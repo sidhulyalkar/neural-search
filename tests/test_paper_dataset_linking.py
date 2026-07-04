@@ -194,8 +194,27 @@ class TestDatasetPaperLink:
             "paper_year",
             "match_method",
             "confidence",
+            "paper_source",
+            "paper_source_id",
         }
         assert expected == field_names
+
+    def test_paper_source_id_defaults_from_openalex_id(self) -> None:
+        """New paper_source/paper_source_id fields (added for Crossref/DataCite/
+        Semantic Scholar/PubMed support) must not break existing OpenAlex-only
+        call sites that never set them explicitly."""
+
+        link = DatasetPaperLink(
+            dataset_record_id="dandi:000004",
+            paper_openalex_id="W123",
+            paper_doi="10.1/x",
+            paper_title="t",
+            paper_year=2020,
+            match_method="doi_exact",
+            confidence=1.0,
+        )
+        assert link.paper_source == "openalex"
+        assert link.paper_source_id == "W123"
 
 
 # ---------------------------------------------------------------------------
@@ -543,3 +562,85 @@ class TestLinkCorpusToLiterature:
 
         assert result[0].match_method == "not_found"
         assert result[0].confidence == 0.0
+
+
+# ---------------------------------------------------------------------------
+# TestTransientLookupError
+# ---------------------------------------------------------------------------
+
+
+class TestTransientLookupError:
+    """Regression tests for a 2026-07-02 incident: a full-corpus live-linking
+    run exhausted this environment's OpenAlex request budget after ~70
+    records (HTTP 429), and the bare `except Exception: return None` that
+    used to wrap every lookup silently converted every subsequent
+    budget-exhausted request into a false "not_found" for the remaining
+    ~7,100 records, corrupting the run with no visible error."""
+
+    def test_lookup_by_doi_raises_on_429(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from neural_search.literature.linking import TransientLookupError
+
+        mock_resp = MagicMock(status_code=429, text="Insufficient budget")
+        monkeypatch.setattr(
+            "neural_search.literature.linking._http_get", lambda *a, **k: mock_resp
+        )
+
+        with pytest.raises(TransientLookupError):
+            lookup_by_doi("10.1038/anything")
+
+    def test_lookup_by_doi_raises_on_5xx(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from neural_search.literature.linking import TransientLookupError
+
+        mock_resp = MagicMock(status_code=503, text="Service unavailable")
+        monkeypatch.setattr(
+            "neural_search.literature.linking._http_get", lambda *a, **k: mock_resp
+        )
+
+        with pytest.raises(TransientLookupError):
+            lookup_by_doi("10.1038/anything")
+
+    def test_lookup_by_title_raises_on_429(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from neural_search.literature.linking import TransientLookupError
+
+        mock_resp = MagicMock(status_code=429, text="Insufficient budget")
+        monkeypatch.setattr(
+            "neural_search.literature.linking._http_get", lambda *a, **k: mock_resp
+        )
+
+        with pytest.raises(TransientLookupError):
+            lookup_by_title("Some title")
+
+    def test_genuine_404_still_returns_none_not_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        mock_resp = MagicMock(status_code=404)
+        mock_resp.raise_for_status.side_effect = Exception("404 Not Found")
+        monkeypatch.setattr(
+            "neural_search.literature.linking._http_get", lambda *a, **k: mock_resp
+        )
+
+        assert lookup_by_doi("10.9999/does-not-exist") is None
+
+    def test_link_corpus_to_literature_stops_early_on_transient_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from neural_search.literature.linking import TransientLookupError
+
+        corpus_file = tmp_path / "corpus.jsonl"
+        _write_corpus(corpus_file, [CORPUS_WITH_DOI, CORPUS_WITHOUT_DOI_FIELD])
+        out_file = tmp_path / "links.jsonl"
+
+        calls = []
+
+        def fake_doi(doi):
+            calls.append(doi)
+            raise TransientLookupError("budget exhausted")
+
+        monkeypatch.setattr("neural_search.literature.linking.lookup_by_doi", fake_doi)
+
+        result = link_corpus_to_literature(corpus_file, out_file)
+
+        # must stop immediately, not process the second record as "not_found"
+        assert result == []
+        assert len(calls) == 1
+        assert out_file.read_text() == ""
