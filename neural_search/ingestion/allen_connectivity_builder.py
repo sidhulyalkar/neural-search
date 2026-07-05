@@ -179,7 +179,7 @@ def _load_from_csv() -> tuple[list[GraphNode], list[GraphEdge]] | None:
     log.info("Loading Allen experiment data from %s…", EXPERIMENTS_PATH)
     experiments = pd.read_csv(EXPERIMENTS_PATH)
     structure_df = pd.read_csv(STRUCTURE_PATH)
-    acronym_to_name = dict(zip(structure_df["acronym"], structure_df["name"]))
+    acronym_to_name = dict(zip(structure_df["acronym"], structure_df["name"], strict=True))
 
     return _build_edges_from_experiments(experiments, acronym_to_name)
 

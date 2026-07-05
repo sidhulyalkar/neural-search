@@ -24,10 +24,10 @@ first two are surfaced but explicitly not validated.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class EvidenceTier(str, Enum):
+class EvidenceTier(StrEnum):
     HEURISTIC_CANDIDATE = "heuristic_candidate"
     EVIDENCE_BACKED_BRIDGE = "evidence_backed_bridge"
     SOURCE_DECLARED = "source_declared"

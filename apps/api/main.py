@@ -119,8 +119,10 @@ def _cache_set(key: str, value: Any) -> None:
     if len(_SEARCH_CACHE) > 200:
         now = _time.time()
         expired = [k for k, (_, exp) in _SEARCH_CACHE.items() if now >= exp]
-        for k in expired[:50]:
+        for k in expired:
             _SEARCH_CACHE.pop(k, None)
+        while len(_SEARCH_CACHE) > 200:
+            _SEARCH_CACHE.pop(next(iter(_SEARCH_CACHE)))
     _SEARCH_CACHE[key] = (value, _time.time() + _SEARCH_CACHE_TTL)
 
 
@@ -385,7 +387,7 @@ def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str,
         for record in records:
             ds = record.get("dataset", {})
             if ds.get("source") == "dandi":
-                sid = re.sub(r'^\D+', '', ds.get("source_id", "")).lstrip('0') or '0'
+                sid = re.sub(r'^\D+', '', ds.get("source_id") or "").lstrip('0') or '0'
                 if sid == (num.lstrip('0') or '0'):
                     return record
 
@@ -395,7 +397,7 @@ def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str,
         sid = on_m.group(1).lower()
         for record in records:
             ds = record.get("dataset", {})
-            if ds.get("source") == "openneuro" and ds.get("source_id", "").lower() == sid:
+            if ds.get("source") == "openneuro" and (ds.get("source_id") or "").lower() == sid:
                 return record
 
     return None
@@ -492,7 +494,7 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 linked_papers=[
                     _frontend_paper(paper, trust_signals=trust)
                     for paper, trust in zip(
-                        papers, _paper_trust_signals_for_dataset(dataset, papers)
+                        papers, _paper_trust_signals_for_dataset(dataset, papers), strict=True
                     )
                 ],
                 rank=rank,
@@ -534,7 +536,7 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 readiness_score=None,
                 linked_papers=[
                     _frontend_paper(p, trust_signals=t)
-                    for p, t in zip(exact_papers, exact_trust)
+                    for p, t in zip(exact_papers, exact_trust, strict=True)
                 ],
                 rank=1,
                 score_breakdown={"exact_id_match": 1.0, "final_score": 1.0},
@@ -1187,6 +1189,7 @@ def _frontend_card_payload(
                 for paper, trust in zip(
                     record.get("papers", []),
                     _paper_trust_signals_for_dataset(dataset, record.get("papers", [])),
+                    strict=True,
                 )
             ],
             "assets": record.get("assets", []),

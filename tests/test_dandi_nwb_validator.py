@@ -101,7 +101,6 @@ def test_inspect_nwb_asset_streaming_reads_real_structure(sample_nwb_bytes):
 @respx.mock
 def test_list_nwb_assets_filters_to_nwb_paths_and_paginates():
     dandiset_id = "000123"
-    base_url = f"{DANDI_API_URL}/dandisets/{dandiset_id}/versions/draft/assets/"
     page2_url = f"{DANDI_API_URL}/dandisets/{dandiset_id}/versions/draft/assets/?page=2"
 
     def handler(request: httpx.Request) -> httpx.Response:

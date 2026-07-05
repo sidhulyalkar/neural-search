@@ -194,7 +194,6 @@ def _find_neurosynth_files() -> dict[str, Path] | None:
 def build_neurosynth_kg() -> KnowledgeGraph:
     """Build KG directly from raw NeuroSynth TSV/NPZ files."""
     try:
-        import numpy as np
         import pandas as pd
         import scipy.sparse
     except ImportError:
@@ -231,9 +230,6 @@ def build_neurosynth_kg() -> KnowledgeGraph:
     # Row order in metadata == row order in feature matrix (NeuroSynth convention).
     # The study key column is 'id' (integer).
     study_ids = meta_df["id"].astype(str).tolist()
-
-    # Build reverse index: study_id -> row index in feature matrix
-    study_to_row: dict[str, int] = {sid: i for i, sid in enumerate(study_ids)}
 
     # Pre-compute: for each coordinate, which MNI region?
     log.info("Mapping %d coordinates to regions…", len(coords_df))
@@ -273,7 +269,9 @@ def build_neurosynth_kg() -> KnowledgeGraph:
         weights = col.data
 
         # Filter by tfidf threshold
-        high_indices = [r for r, w in zip(row_indices, weights) if w >= TFIDF_THRESHOLD]
+        high_indices = [
+            r for r, w in zip(row_indices, weights, strict=True) if w >= TFIDF_THRESHOLD
+        ]
         if len(high_indices) < MIN_STUDY_COUNT:
             continue
 

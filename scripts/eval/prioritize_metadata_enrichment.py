@@ -36,7 +36,7 @@ def build_priorities(failure_report: dict[str, Any]) -> dict[str, Any]:
     intent_field_counts: dict[str, Counter[str]] = defaultdict(Counter)
     source_counts: Counter[str] = Counter()
 
-    for variant, stats in (failure_report.get("variants") or {}).items():
+    for _variant, stats in (failure_report.get("variants") or {}).items():
         field_counts.update(stats.get("fp_metadata_missing_counts") or {})
         field_counts.update(stats.get("fn_metadata_missing_counts") or {})
         mismatch_counts.update(stats.get("fp_mismatch_counts") or {})

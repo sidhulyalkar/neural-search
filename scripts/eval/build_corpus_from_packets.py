@@ -51,7 +51,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.packets.exists():
         print(f"Packets file not found: {args.packets}", file=sys.stderr)
         return 1
-    packets = [json.loads(l) for l in args.packets.read_text(encoding="utf-8").splitlines() if l.strip()]
+    packets = [
+        json.loads(line)
+        for line in args.packets.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     records = build_corpus_records(packets)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", encoding="utf-8") as f:

@@ -287,7 +287,7 @@ def build_graph(corpus: list[dict[str, Any]]) -> KnowledgeGraph:
 
     # Cross-dataset edges: same modality+region
     cross_edge_count = 0
-    for pair, ds_ids in region_modality_datasets.items():
+    for _pair, ds_ids in region_modality_datasets.items():
         if len(ds_ids) < 2:
             continue
         # Cap at 50 partners per pair to avoid edge blowup on popular concepts
@@ -311,7 +311,7 @@ def build_graph(corpus: list[dict[str, Any]]) -> KnowledgeGraph:
                     cross_edge_count += 1
 
     # Cross-dataset edges: same species+task
-    for pair, ds_ids in species_task_datasets.items():
+    for _pair, ds_ids in species_task_datasets.items():
         if len(ds_ids) < 2:
             continue
         partners = ds_ids[:50]

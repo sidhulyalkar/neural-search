@@ -135,7 +135,7 @@ def _filter_graph(
 ) -> tuple[list[dict], list[dict]]:
     if not regions and not species and not tasks:
         # Return top nodes by size
-        sorted_nodes = sorted(nodes, key=lambda n: -n["size"])[:limit]
+        sorted_nodes = sorted(nodes, key=lambda n: -n.get("size", 0))[:limit]
     else:
         region_set = {r.lower() for r in regions}
         # Include nodes whose id or meta.region matches
@@ -264,7 +264,7 @@ async def get_findings(
     rows = _get_findings()
     results = []
     for row in rows:
-        if region and region.lower() not in " ".join(row.get("regions", [])).lower():
+        if region and region.lower() not in " ".join(row.get("regions") or []).lower():
             continue
         if direction and direction != row.get("result_direction", ""):
             continue

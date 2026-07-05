@@ -83,8 +83,10 @@ def _cache_scene(scene: ExperimentGlancerSceneV1) -> None:
     if len(_SCENE_CACHE) > 500:
         now = _time.time()
         expired = [key for key, (_, expires_at) in _SCENE_CACHE.items() if now >= expires_at]
-        for key in expired[:100]:
+        for key in expired:
             _SCENE_CACHE.pop(key, None)
+        while len(_SCENE_CACHE) > 500:
+            _SCENE_CACHE.pop(next(iter(_SCENE_CACHE)))
     _SCENE_CACHE[scene.scene_id] = (scene, _time.time() + _SCENE_CACHE_TTL)
     save_scene(scene)
 

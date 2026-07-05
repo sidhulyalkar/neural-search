@@ -53,7 +53,6 @@ def analyze_edge_quality(
     top_k: int = 10,
 ) -> dict[str, Any]:
     base_ranks = rank_map(base_run)
-    graph_ranks = rank_map(graph_run)
     edge_stats: dict[str, Counter[str]] = defaultdict(Counter)
     examples: dict[str, list[dict[str, Any]]] = {
         "helpful_promotions": [],

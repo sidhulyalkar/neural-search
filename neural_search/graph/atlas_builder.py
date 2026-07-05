@@ -35,7 +35,6 @@ _MAX_SIBLINGS = 5
 
 
 def _node_id(structure: AllenStructure) -> str:
-    atlas_key = ATLAS_LABEL.get(structure.atlas_id, f"atlas_{structure.atlas_id}")
     return make_node_id("brain_region", "allen", str(structure.allen_id))
 
 

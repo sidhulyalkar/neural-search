@@ -32,7 +32,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Corpus file not found: {args.corpus}", file=sys.stderr)
         return 1
 
-    records = [json.loads(l) for l in args.corpus.read_text(encoding="utf-8").splitlines() if l.strip()]
+    records = [
+        json.loads(line)
+        for line in args.corpus.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     provider = DenseEmbeddingProvider()
     print(f"Provider {provider.model_name} dim={provider.dimension}; {len(records)} records", flush=True)
 
@@ -51,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
         for start in range(0, len(items), args.batch_size):
             batch = items[start:start + args.batch_size]
             vectors = provider.embed_batch([t for _, _, t in batch])
-            for (did, field, _text), vec in zip(batch, vectors):
+            for (did, field, _text), vec in zip(batch, vectors, strict=True):
                 f.write(json.dumps({
                     "record_id": did,
                     "field_name": field,

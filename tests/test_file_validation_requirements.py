@@ -11,7 +11,7 @@ from neural_search.graph.openneuro_bids_validator import OpenNeuroValidation
 
 
 def _dandi(**overrides):
-    defaults = dict(dandiset_id="000003", asset_path="a.nwb", size_bytes=100)
+    defaults = {"dandiset_id": "000003", "asset_path": "a.nwb", "size_bytes": 100}
     defaults.update(overrides)
     return DandiAssetValidation(**defaults)
 
@@ -38,7 +38,7 @@ def test_dandi_error_result_never_confirms():
 
 
 def _openneuro(**overrides):
-    defaults = dict(dataset_id="ds000117")
+    defaults = {"dataset_id": "ds000117"}
     defaults.update(overrides)
     return OpenNeuroValidation(**defaults)
 

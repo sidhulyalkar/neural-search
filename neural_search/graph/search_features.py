@@ -1051,7 +1051,7 @@ def _ccf_expand_key(key: str, ancestors_map: dict[str, set[str]]) -> set[str]:
             continue
         # Common leading prefix ≥5 chars
         common = 0
-        for a, b in zip(key, ccf_key):
+        for a, b in zip(key, ccf_key, strict=False):
             if a == b:
                 common += 1
             else:

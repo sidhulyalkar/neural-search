@@ -111,8 +111,6 @@ def stratified_sample(records: list[dict], n: int, seed: int) -> list[dict]:
     def bucket(r: dict) -> str:
         regions = (r.get("regions") or [])
         tasks = (r.get("tasks") or [])
-        modalities = (r.get("modalities") or [])
-        species = (r.get("species") or [])
         direction = r.get("result_direction") or "unknown"
         conf = r.get("confidence", 0.5)
         conf_bucket = "high" if conf >= 0.8 else "medium" if conf >= 0.5 else "low"

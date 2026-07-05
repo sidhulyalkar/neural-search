@@ -82,7 +82,7 @@ def load_jsonl(p: Path) -> list[dict]:
     if not p.exists():
         return []
     with open(p, encoding="utf-8") as f:
-        return [json.loads(l) for l in f if l.strip()]
+        return [json.loads(line) for line in f if line.strip()]
 
 
 def main(argv: list[str] | None = None) -> None:

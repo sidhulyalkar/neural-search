@@ -142,7 +142,7 @@ def main() -> None:
 
     verdicts = Counter(r["human_correct"] for r in rows)
     errs = Counter(r["error_type"] for r in rows if r["human_correct"] != "TRUE")
-    n_true, n_partial, n_false = verdicts["TRUE"], verdicts["PARTIAL"], verdicts["FALSE"]
+    n_true, n_partial = verdicts["TRUE"], verdicts["PARTIAL"]
     print(f"Wrote {out_path}")
     print("Verdicts:", dict(verdicts))
     print("Error types:", dict(errs))

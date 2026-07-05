@@ -238,7 +238,6 @@ _CONCEPT_SYNONYM_MAP: dict[str, list[str]] = {
     "reach_onset": ["reaching"],            # map to task slug (134 datasets)
     "outcome": ["trial_outcome"],           # 46 datasets
     "reward_omission": ["omission"],        # 10 datasets
-    "navigation": ["spatial_navigation"],   # map to task slug
 }
 
 

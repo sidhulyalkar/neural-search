@@ -55,7 +55,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.judgments.exists():
         print(f"Judgments file not found: {args.judgments}", file=sys.stderr)
         return 1
-    judgments = [json.loads(l) for l in args.judgments.read_text(encoding="utf-8").splitlines() if l.strip()]
+    judgments = [
+        json.loads(line)
+        for line in args.judgments.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
     trec, rows = canonicalize(judgments)
     n_in = len(judgments)
     n_errors = sum(1 for r in judgments if "judge_error" in str(r.get("rationale_short", "")))
