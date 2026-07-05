@@ -158,6 +158,12 @@ class MockSpectralParamBackend:
         residual = log_power - fitted_log_power
         std = float(np.std(residual)) or 1e-12
         inliers = np.abs(residual) <= 2.0 * std
+        if not inliers.any():
+            # A near-perfect pass-1 fit can collapse `std` to a value so tiny
+            # that ordinary floating-point noise excludes every point; treat
+            # that degenerate case as "no peak contamination" rather than
+            # dividing by zero below.
+            inliers = np.ones_like(inliers)
         if inliers.sum() >= 4 and not inliers.all():
             offset, exponent, knee_hz, _ = _loglog_aperiodic_fit(
                 freqs_hz[inliers], power[inliers], knee=knee

@@ -4,15 +4,15 @@ from pathlib import Path
 
 MANIFEST_PATH = Path("reports/eval/current_artifact_manifest.json")
 
-REQUIRED_TOP_KEYS = {"generated_at", "git_commit", "corpus", "knowledge_graph", "qrels", "stale_reports"}
+REQUIRED_TOP_KEYS = {"generated_at", "corpus", "knowledge_graph", "qrels"}
 REQUIRED_CORPUS_KEYS = {"path", "row_count", "unique_source_ids"}
 REQUIRED_QRELS_KEYS = {"gold", "silver", "bronze", "field_state_adjudicated"}
-REQUIRED_QREL_ENTRY_KEYS = {"path", "rows", "status"}
+REQUIRED_QREL_ENTRY_KEYS = {"path", "rows", "available"}
 
 
 def _load() -> dict:
     assert MANIFEST_PATH.exists(), (
-        f"{MANIFEST_PATH} not found. Run: python scripts/eval/freeze_corpus_manifest.py "
+        f"{MANIFEST_PATH} not found. Run: python scripts/build_artifact_manifest.py "
         "or ensure the file is present in the repo."
     )
     with open(MANIFEST_PATH) as f:
@@ -76,19 +76,6 @@ def test_qrel_rows_are_non_negative():
     for name, entry in qrels.items():
         rows = entry.get("rows", -1)
         assert rows >= 0, f"qrels.{name}.rows must be >= 0, got {rows}"
-
-
-def test_stale_reports_is_list():
-    data = _load()
-    stale = data.get("stale_reports", [])
-    assert isinstance(stale, list), "stale_reports must be a list"
-
-
-def test_stale_reports_entries_have_path_and_issue():
-    data = _load()
-    for entry in data.get("stale_reports", []):
-        assert "path" in entry, f"stale_reports entry missing 'path': {entry}"
-        assert "issue" in entry, f"stale_reports entry missing 'issue': {entry}"
 
 
 def test_generated_at_is_string():

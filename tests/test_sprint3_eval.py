@@ -157,7 +157,7 @@ class TestComputeNdcgFromQrels:
         qrels = tmp_path / "qrels.trec"
         qrels.write_text("q001 0 neuromorpho:Physio Lab - Medical Faculty - UoI 2\n")
         assert _load_qrels(qrels) == {
-            "q001": {"neuromorpho:Physio Lab - Medical Faculty - UoI": 2}
+            "q001": {"neuromorpho:Physio_Lab_-_Medical_Faculty_-_UoI": 2}
         }
 
 

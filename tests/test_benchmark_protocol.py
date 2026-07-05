@@ -543,6 +543,7 @@ class TestAnalyzeFailures:
             ranked=ranked,
             qrel_scores=qrel_scores,
             qrel_meta=qrel_meta,
+            judgment_meta={},
             query_intent={"q_smoke_001": "META_ANALYSIS"},
             top_k=10,
         )
@@ -562,6 +563,7 @@ class TestAnalyzeFailures:
             ranked=ranked,
             qrel_scores=qrel_scores,
             qrel_meta=qrel_meta,
+            judgment_meta={},
             query_intent={"q_1": "EXPLORATION"},
             top_k=10,
         )

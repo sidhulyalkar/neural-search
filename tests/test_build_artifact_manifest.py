@@ -10,7 +10,14 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 import scripts.build_artifact_manifest as bam
+
+_requires_real_repo_artifacts = pytest.mark.skipif(
+    not (bam.GRAPH_PATH.exists() and bam.CORPUS_PATH.exists()),
+    reason="Live corpus/graph artifacts not available (gitignored generated files)",
+)
 
 
 def _write_jsonl(path, rows):
@@ -80,6 +87,7 @@ def test_graph_section_computes_type_counts_and_stub_nodes(tmp_path, monkeypatch
     assert section["stub_node_count"] == 1
 
 
+@_requires_real_repo_artifacts
 def test_graph_section_display_edge_counts_use_cross_type_property():
     """Regression test: same_region_cross_modality/same_task_cross_species are
     NOT top-level edge_type values, they're a `cross_type` property under the
@@ -182,6 +190,7 @@ def test_qrels_section_reports_zero_rows_for_missing_file(tmp_path, monkeypatch)
     assert section["gold"]["rows"] == 0
 
 
+@_requires_real_repo_artifacts
 def test_build_manifest_on_real_repo_files_is_internally_consistent():
     """Integration check against the real repo (not a fixture): confirms the
     script runs end-to-end and produces cross-referenced-consistent output."""

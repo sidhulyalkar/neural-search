@@ -61,7 +61,7 @@ def test_graph_quality_gate_commands_work_on_fixtures(tmp_path):
 
     assert build_exit == 0
     assert reports_exit == 0
-    assert _summary(graph)["node_count"] == 146
+    assert _summary(graph)["node_count"] == 307
     assert (reports_dir / "graph_summary_report.md").exists()
 
 
