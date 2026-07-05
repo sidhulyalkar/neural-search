@@ -8,6 +8,9 @@ bluebrain,tasks,,,Pending benchmark artifact
 brain_image_library,modalities,,,Pending benchmark artifact
 brain_image_library,species,,,Pending benchmark artifact
 brain_image_library,tasks,,,Pending benchmark artifact
+buzsaki,modalities,,,Pending benchmark artifact
+buzsaki,species,,,Pending benchmark artifact
+buzsaki,tasks,,,Pending benchmark artifact
 crcns,modalities,,,Pending benchmark artifact
 crcns,species,,,Pending benchmark artifact
 crcns,tasks,,,Pending benchmark artifact
@@ -20,6 +23,9 @@ figshare,tasks,,,Pending benchmark artifact
 gin,modalities,,,Pending benchmark artifact
 gin,species,,,Pending benchmark artifact
 gin,tasks,,,Pending benchmark artifact
+harvard_dataverse,modalities,,,Pending benchmark artifact
+harvard_dataverse,species,,,Pending benchmark artifact
+harvard_dataverse,tasks,,,Pending benchmark artifact
 ibl,modalities,,,Pending benchmark artifact
 ibl,species,,,Pending benchmark artifact
 ibl,tasks,,,Pending benchmark artifact
@@ -38,9 +44,9 @@ openneuro,tasks,,,Pending benchmark artifact
 osf,modalities,,,Pending benchmark artifact
 osf,species,,,Pending benchmark artifact
 osf,tasks,,,Pending benchmark artifact
-physionet,modalities,,,Pending benchmark artifact
-physionet,species,,,Pending benchmark artifact
-physionet,tasks,,,Pending benchmark artifact
+spark,modalities,,,Pending benchmark artifact
+spark,species,,,Pending benchmark artifact
+spark,tasks,,,Pending benchmark artifact
 zenodo,modalities,,,Pending benchmark artifact
 zenodo,species,,,Pending benchmark artifact
 zenodo,tasks,,,Pending benchmark artifact
