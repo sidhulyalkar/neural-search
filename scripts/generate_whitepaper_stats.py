@@ -93,6 +93,7 @@ def build_macros(manifest: dict[str, Any]) -> list[str]:
         _macro("DatasetRecordsRegionCount", _fmt(edge_counts.get("dataset_records_region", 0))),
         _macro("DatasetHasSpeciesCount", _fmt(edge_counts.get("dataset_has_species", 0))),
         _macro("DatasetHasTaskCount", _fmt(edge_counts.get("dataset_has_task", 0))),
+        _macro("CitationEdgeCount", _fmt(edge_counts.get("paper_cites_paper", 0))),
         "% Reanalysis edge counts",
         _macro(
             "ReanalysisCandidateEdgeCount",

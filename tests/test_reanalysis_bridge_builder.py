@@ -8,6 +8,7 @@ from neural_search.graph.reanalysis_bridge_builder import (
     build_reanalysis_bridge_edges,
     load_dataset_method_evidence,
     load_dataset_paper_matches,
+    load_dataset_paper_matches_multi_source,
     load_paper_method_mentions,
 )
 from neural_search.graph.schema import GraphNode, KnowledgeGraph, validate_graph
@@ -103,6 +104,51 @@ def test_dataset_with_no_paper_match_produces_no_evidence(tmp_path):
     _write_jsonl(links_path, [])
     _write_jsonl(ner_path, [])
     assert load_dataset_method_evidence(links_path, ner_path) == {}
+
+
+def test_multi_source_matches_resolve_other_sources_via_doi(tmp_path):
+    openalex_path = tmp_path / "paper_dataset_links.jsonl"
+    datacite_path = tmp_path / "paper_dataset_links.datacite.jsonl"
+    _write_jsonl(
+        openalex_path,
+        [
+            # Same paper (by DOI) as a dataset DataCite separately links -- resolvable.
+            {
+                "dataset_record_id": "dandi:000001",
+                "paper_openalex_id": "W1",
+                "paper_doi": "10.1000/known",
+                "match_method": "doi_exact",
+                "confidence": 0.95,
+            },
+        ],
+    )
+    _write_jsonl(
+        datacite_path,
+        [
+            # A different dataset, but the same DOI OpenAlex already knows about -> resolvable.
+            {
+                "dataset_record_id": "zenodo:999",
+                "paper_doi": "10.1000/known",
+                "paper_openalex_id": "",
+                "match_method": "datacite_related_identifier",
+                "confidence": 1.0,
+            },
+            # A DOI OpenAlex has never seen -> not resolvable, dropped (honest gap).
+            {
+                "dataset_record_id": "zenodo:1000",
+                "paper_doi": "10.1000/unknown",
+                "paper_openalex_id": "",
+                "match_method": "datacite_related_identifier",
+                "confidence": 1.0,
+            },
+        ],
+    )
+    matches = load_dataset_paper_matches_multi_source(
+        openalex_path, other_sources={"datacite": (datacite_path, {"datacite_related_identifier"})}
+    )
+    assert set(matches) == {"dandi:000001", "zenodo:999"}
+    assert matches["zenodo:999"]["paper_openalex_id"] == "W1"
+    assert matches["zenodo:999"]["resolved_via"] == "datacite"
 
 
 def _dataset_node(node_id: str) -> GraphNode:

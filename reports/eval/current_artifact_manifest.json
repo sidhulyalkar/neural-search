@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T00:15:36.483589+00:00",
+  "generated_at": "2026-07-04T21:18:06.116660+00:00",
   "generated_by": "scripts/build_artifact_manifest.py",
   "note": "Computed directly from files on disk at generation time. Re-run this script rather than hand-editing this file.",
   "corpus": {
@@ -13,7 +13,7 @@
     "available": true,
     "path": "data/graph/neural_search_graph.real_corpus.json",
     "total_nodes": 12748,
-    "total_edges": 149654,
+    "total_edges": 149998,
     "node_type_counts": {
       "dataset": 7171,
       "paper": 4514,
@@ -44,6 +44,7 @@
       "paper_mentions_dataset": 4585,
       "dataset_reanalysis_bridge_dataset": 2517,
       "dataset_has_task": 2423,
+      "paper_cites_paper": 344,
       "concept_related_to_concept": 195,
       "analysis_requires_task_structure": 159,
       "concept_has_alias": 149,
@@ -87,6 +88,7 @@
       "paper_mentions_dataset": 4585,
       "dataset_reanalysis_bridge_dataset": 2517,
       "dataset_has_task": 2423,
+      "paper_cites_paper": 344,
       "concept_related_to_concept": 195,
       "analysis_requires_task_structure": 159,
       "concept_has_alias": 149,
@@ -124,10 +126,11 @@
       "allen_connectivity_edges": 34,
       "builder": "build_real_corpus_graph",
       "builder_version": "v1.0.0",
+      "citations_edges": 344,
       "concept_edges": 217,
       "corpus": "C:\\Users\\sidso\\Documents\\neural-search\\data\\corpus\\normalized\\combined_corpus.jsonl\\full_corpus_v09.jsonl",
       "disorder_edges": 228,
-      "evidence_tier_file_validated_upgrades": 60,
+      "evidence_tier_file_validated_upgrades": 162,
       "hcp_connectivity_edges": 99,
       "method_supports_analysis_edges": 48,
       "methods_kg_nodes": 161,
@@ -255,7 +258,8 @@
     "skipped_rungs": [
       "bm25",
       "bm25_structured",
-      "dense_bge"
+      "dense_bge",
+      "hybrid_rrf"
     ],
     "rungs": {
       "bm25": {
@@ -271,11 +275,8 @@
         "metrics": {}
       },
       "hybrid_rrf": {
-        "status": "ok",
-        "metrics": {
-          "ndcg@10": 0.8124,
-          "query_count": 317
-        }
+        "status": "skipped",
+        "metrics": {}
       },
       "hybrid_graph": {
         "status": "ok",

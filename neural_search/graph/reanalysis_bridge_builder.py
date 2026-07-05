@@ -76,6 +76,103 @@ def load_dataset_paper_matches(path: Path | str = PAPER_DATASET_LINKS_PATH) -> d
     return matches
 
 
+OTHER_SOURCE_FILES: dict[str, tuple[Path, set[str]]] = {
+    "datacite": (
+        PROJECT_ROOT / "artifacts" / "literature" / "paper_dataset_links.datacite.jsonl",
+        {"datacite_related_identifier"},
+    ),
+    "crossref": (
+        PROJECT_ROOT / "artifacts" / "literature" / "paper_dataset_links.crossref.jsonl",
+        {"crossref_doi_exact", "crossref_title_fuzzy"},
+    ),
+    "pubmed": (
+        PROJECT_ROOT / "artifacts" / "literature" / "paper_dataset_links.pubmed.jsonl",
+        {"pubmed_doi_exact", "pubmed_title_fuzzy", "biorxiv_doi_exact"},
+    ),
+}
+
+
+def _build_doi_to_openalex_index(path: Path | str = PAPER_DATASET_LINKS_PATH) -> dict[str, str]:
+    """DOI -> OpenAlex ID, built only from the OpenAlex link file (the only source that
+    carries a real OpenAlex ID). Used to resolve DataCite/Crossref/PubMed matches (which
+    record `paper_doi` but leave `paper_openalex_id` empty) back to an OpenAlex ID, so they
+    can still join against `ner_kg.jsonl`'s OpenAlex-keyed `paper_uses_method` mentions.
+    """
+
+    index: dict[str, str] = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            doi = row.get("paper_doi")
+            openalex_id = row.get("paper_openalex_id")
+            if doi and openalex_id:
+                index[doi.lower()] = openalex_id
+    return index
+
+
+def load_dataset_paper_matches_multi_source(
+    openalex_path: Path | str = PAPER_DATASET_LINKS_PATH,
+    other_sources: dict[str, tuple[Path, set[str]]] | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Real dataset->paper matches combined across OpenAlex, DataCite, Crossref, and PubMed.
+
+    `load_dataset_paper_matches` (OpenAlex-only) undercounts real linkage: as of 2026-07-04
+    the corpus has 2,510/7,171 real paper links across 5 sources, but only 403 of those are
+    OpenAlex matches, and the reanalysis-bridge/reinterpretation-candidate builders only ever
+    read the OpenAlex file. A DataCite/Crossref/PubMed match is only *usable* here if it
+    resolves to an OpenAlex ID (needed to join against `ner_kg.jsonl`'s method mentions) --
+    resolved via the DOI both records share, since the OpenAlex file itself carries `paper_doi`
+    alongside `paper_openalex_id`.
+
+    **Measured result (2026-07-04, see `reports/reanalysis_insight_report.md`): this resolves
+    only 8 additional matches (401 vs. 393) and adds zero new bridge edges (2,517 either way).**
+    The other ~2,100 DataCite/Crossref/PubMed matches are for papers OpenAlex never ingested at
+    all, so their DOIs don't appear in the OpenAlex file regardless of dataset overlap. The real
+    bottleneck is not paper-dataset linkage breadth -- it's that `ner_kg.jsonl`'s method-mention
+    extraction (`neural_search/ingestion/ner_builder.py`) has only ever run against
+    OpenAlex-ingested paper text. Closing this gap for real needs NER extraction against
+    Crossref/PubMed/DataCite paper records directly, not a smarter join. Kept as a small,
+    correct, tested utility for that future work rather than reverted, since the null result
+    itself is worth having on record precisely (not guessed at).
+    """
+
+    if other_sources is None:
+        other_sources = OTHER_SOURCE_FILES
+
+    matches = load_dataset_paper_matches(openalex_path)
+    doi_to_openalex = _build_doi_to_openalex_index(openalex_path)
+
+    for source_name, (path, real_methods) in other_sources.items():
+        if not Path(path).exists():
+            continue
+        with open(path, encoding="utf-8") as fh:
+            for line in fh:
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                if row.get("match_method") not in real_methods:
+                    continue
+                dataset_record_id = row.get("dataset_record_id")
+                doi = (row.get("paper_doi") or "").lower()
+                if not dataset_record_id or not doi:
+                    continue
+                openalex_id = doi_to_openalex.get(doi)
+                if not openalex_id:
+                    continue  # real link, but not resolvable to an OpenAlex ID yet
+                confidence = row.get("confidence", 0.5)
+                existing = matches.get(dataset_record_id)
+                if existing is not None and existing["confidence"] >= confidence:
+                    continue
+                matches[dataset_record_id] = {
+                    "paper_openalex_id": openalex_id,
+                    "confidence": confidence,
+                    "resolved_via": source_name,
+                }
+    return matches
+
+
 def load_paper_method_mentions(path: Path | str = NER_KG_PATH) -> dict[str, dict[str, float]]:
     """paper_openalex_id -> {method_id: confidence} from paper_uses_method edges."""
 
@@ -99,10 +196,17 @@ def load_paper_method_mentions(path: Path | str = NER_KG_PATH) -> dict[str, dict
 def load_dataset_method_evidence(
     paper_links_path: Path | str = PAPER_DATASET_LINKS_PATH,
     ner_kg_path: Path | str = NER_KG_PATH,
+    *,
+    dataset_papers: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, dict[str, dict[str, Any]]]:
-    """dataset_record_id -> {method_id: {paper_openalex_id, paper_confidence, method_confidence}}."""
+    """dataset_record_id -> {method_id: {paper_openalex_id, paper_confidence, method_confidence}}.
 
-    dataset_papers = load_dataset_paper_matches(paper_links_path)
+    Pass `dataset_papers=load_dataset_paper_matches_multi_source()` to draw matches from all
+    5 literature sources instead of just OpenAlex (the default via `paper_links_path`).
+    """
+
+    if dataset_papers is None:
+        dataset_papers = load_dataset_paper_matches(paper_links_path)
     paper_methods = load_paper_method_mentions(ner_kg_path)
 
     evidence: dict[str, dict[str, dict[str, Any]]] = {}

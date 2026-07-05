@@ -14,6 +14,17 @@
 # high-certainty cheap tasks (benchmark-gatekeeper) over low-certainty
 # expensive ones (literature-linker) when both are due. See
 # playbooks/README.md for the full reasoning.
+#
+# `depends_on` formalizes sequencing for agents whose output is only
+# meaningful (or only safe to trust) after another agent's most recent run:
+# a scheduler chaining multiple agents in one session should run listed
+# dependencies first in the same cycle if they're also due, and should read
+# `neural_search.agents.ledger.last_run_for_agent(dependency)` to confirm the
+# dependency's last outcome before trusting this agent's output. Every agent
+# should also read `artifacts/agents/context_brief.md`
+# (`python -m neural_search.agents.context_brief` to regenerate) before
+# starting its own playbook -- a single, fast, current-state entry point
+# instead of re-deriving the same facts from scratch each run.
 
 version: 1
 
@@ -29,6 +40,7 @@ agents:
       sessions (see obsidian_vault/../memory kg_connectivity_audit).
     trigger: schedule
     schedule_cadence: weekly
+    depends_on: []
     estimated_cost:
       wall_clock_s: 180
       network: false
@@ -54,6 +66,7 @@ agents:
       other graph-modifying agent class depends on.
     trigger: after_any_graph_change
     schedule_cadence: null
+    depends_on: []
     estimated_cost:
       wall_clock_s: 400
       network: false
@@ -78,6 +91,7 @@ agents:
       (dataset_reprocessing_candidate node property).
     trigger: schedule
     schedule_cadence: weekly
+    depends_on: []
     estimated_cost:
       wall_clock_s: 300
       network: true
@@ -98,6 +112,7 @@ agents:
       any source, plus retraction/correction checks on newly-found DOIs.
     trigger: manual
     schedule_cadence: null
+    depends_on: []
     estimated_cost:
       wall_clock_s: 3600
       network: true
@@ -111,3 +126,29 @@ agents:
       is added, per the OpenAlex budget-wall incident in
       file_validation_and_evidence_tiers memory.
     evidence_tier_ceiling: source_declared
+
+  - name: reanalysis-insight-synthesizer
+    playbook: playbooks/reanalysis_insight_synthesizer.md
+    description: >
+      Synthesizes reuse/reanalysis signal already live in the production
+      graph into a ranked, diversity-capped "what to look at first" report
+      (scripts/generate_reanalysis_insight_report.py), and re-tests the
+      "does more paper linkage unlock more reanalysis-bridge evidence"
+      assumption against current data every run instead of trusting a past
+      conclusion. Read-only: does not modify the graph or propose code
+      changes, only re-ranks and re-checks what other agents/builders
+      already produced.
+    trigger: schedule
+    schedule_cadence: weekly
+    depends_on: [kg-connectivity-auditor, benchmark-gatekeeper]
+    estimated_cost:
+      wall_clock_s: 30
+      network: false
+      tokens: low
+    expected_artifact: "reports/reanalysis_insight_report.md (ranked reuse opportunities + re-tested assumptions)"
+    gate: none
+    gate_note: >
+      Read-only synthesis over already-live edges. Should not run against a
+      graph benchmark-gatekeeper hasn't cleared this cycle -- a regressed
+      graph's edge counts may reflect a bug, not real signal.
+    evidence_tier_ceiling: evidence_backed_bridge
