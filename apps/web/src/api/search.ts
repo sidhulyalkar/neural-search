@@ -290,43 +290,43 @@ export async function getSimilarDatasets(
 
 export interface ArtifactManifest {
   generated_at: string
-  git_commit: string
-  reconciliation_note: string
+  generated_by: string
+  note: string
   corpus: {
+    available: boolean
     path: string
     row_count: number
     unique_source_ids: number
     unique_dataset_ids: number
-    id_field_note: string
   }
   knowledge_graph: {
+    available: boolean
     path: string | null
-    nodes: number | null
-    edges: number | null
-    cross_dataset_edges: number
-    note: string
+    total_nodes: number
+    total_edges: number
+    node_type_counts: Record<string, number>
+    edge_type_counts: Record<string, number>
   }
   qrels: {
-    gold: { path: string; rows: number; status: string }
-    silver: { path: string; rows: number; status: string }
-    bronze: { path: string; rows: number; status: string }
-    field_state_adjudicated: { path: string; rows: number; status: string }
+    gold: { path: string; available: boolean; rows: number }
+    silver: { path: string; available: boolean; rows: number }
+    bronze: { path: string; available: boolean; rows: number }
+    field_state_adjudicated: { path: string; available: boolean; rows: number }
+    canonical_llm_silver: { path: string; available: boolean; rows: number }
   }
-  vector_index: {
-    current_on_disk_ids: number
-    full_rebuild_pending: boolean
-    note: string
+  paper_dataset_links: {
+    available: boolean
+    path: string
+    total_rows: number
+    match_method_counts: Record<string, number>
+    real_matches: number
+    real_match_rate: number
+    combined_datasets_with_real_link: number
+    by_source: Record<
+      string,
+      { path: string; total_rows: number; match_method_counts: Record<string, number>; real_matches: number; real_match_rate: number }
+    >
   }
-  literature: {
-    openalex_papers_ingested: number
-    doi_exact_links: number
-    title_fuzzy_links: number
-    not_found: number
-    findings_operational_estimate: number
-    findings_note: string
-  }
-  stale_reports: Array<{ path: string; issue: string }>
-  source_of_truth_summary: Record<string, string>
 }
 
 export async function getArtifactManifest(): Promise<ArtifactManifest> {

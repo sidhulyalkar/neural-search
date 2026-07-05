@@ -34,22 +34,22 @@ function buildEvidenceStats(manifest: Awaited<ReturnType<typeof getArtifactManif
     return [
       { label: 'Dataset records', value: '7,171', tier: 'live' },
       { label: 'Linked papers', value: '168 DOI / 225 fuzzy', tier: 'live' },
-      { label: 'Extracted findings', value: '~12K (operational)', tier: 'silver' },
+      { label: 'Multi-source real matches', value: '2,510', tier: 'silver' },
       { label: 'Silver qrels', value: '175', tier: 'silver' },
       { label: 'Human adjudicated', value: '3 (pending)', tier: 'pending' },
       { label: 'Gold benchmark', value: 'Pending', tier: 'pending' },
     ]
   }
-  const { corpus, literature, qrels } = manifest
-  const doi = literature.doi_exact_links
-  const fuzzy = literature.title_fuzzy_links
-  const findings = literature.findings_operational_estimate
+  const { corpus, paper_dataset_links: links, qrels } = manifest
+  const doi = links.match_method_counts.doi_exact ?? 0
+  const fuzzy = links.match_method_counts.title_fuzzy_local ?? 0
+  const combinedRealMatches = links.combined_datasets_with_real_link
   return [
     { label: 'Dataset records', value: corpus.row_count.toLocaleString(), tier: 'live' },
     { label: 'Linked papers', value: `${doi.toLocaleString()} DOI / ${fuzzy.toLocaleString()} fuzzy`, tier: 'live' },
     {
-      label: 'Extracted findings',
-      value: findings > 0 ? `~${(findings / 1000).toFixed(0)}K (operational)` : 'Pending',
+      label: 'Multi-source real matches',
+      value: combinedRealMatches > 0 ? combinedRealMatches.toLocaleString() : 'Pending',
       tier: 'silver',
     },
     { label: 'Silver qrels', value: qrels.silver.rows.toLocaleString(), tier: 'silver' },
