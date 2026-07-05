@@ -1,0 +1,198 @@
+# Human Connectome Project — Structural Connectivity Priors
+# Source: HCP 1200-subject release, DSI-based tractography (Glasser et al. 2016)
+# These are curated priors for strong structural connections — to be replaced/augmented
+# by actual HCP data download via the methods_builder ingestion script.
+# FA thresholds and streamline counts are approximate population averages.
+#
+# Edge types created: region_structurally_connected (bidirectional, weight=FA_or_streamline_density)
+# Note: DTI tractography cannot determine directionality — use functional/optogenetic data for that.
+
+hcp_metadata:
+  dataset: HCP_1200_subject_release
+  acquisition: 1.25mm_3T_multiband
+  tractography: probabilistic_iFOD2
+  atlas: HCP_MMP_v1.0  # 180 areas per hemisphere
+  reference: "Glasser et al. (2016, Nature) — A multi-modal parcellation of human cerebral cortex"
+  download_url: "https://db.humanconnectome.org"
+  tool: MRtrix3_or_DSI_Studio
+
+# Major white matter pathways with their structural connectivity
+structural_connections:
+
+  # ── Cortico-Striatal Pathways ─────────────────────────────────────────────
+  - source: prefrontal_cortex
+    target: striatum
+    pathway: internal_capsule_anterior_limb
+    fa_estimate: 0.45
+    streamline_density: high
+    functional_relevance: "Cortico-striatal beta coherence pathway (Hulyalkar 2025)"
+    topics: [spectral_dynamics, reward_learning, cognitive_control]
+    circuits: [basal_ganglia_loop, bg_direct_pathway, bg_indirect_pathway, corticostriatal_beta]
+
+  - source: orbitofrontal_cortex
+    target: striatum
+    pathway: internal_capsule_anterior_limb
+    fa_estimate: 0.42
+    functional_relevance: "OFC-striatum pathway for outcome-based reward updating"
+    topics: [reward_learning, decision_making]
+
+  - source: motor_cortex
+    target: striatum
+    pathway: internal_capsule
+    fa_estimate: 0.48
+    functional_relevance: "Corticostriatal motor control pathway"
+    topics: [motor_learning, spectral_dynamics]
+
+  - source: motor_cortex
+    target: spinal_cord
+    pathway: corticospinal_tract
+    fa_estimate: 0.65
+    streamline_density: very_high
+    topics: [motor_learning, development_and_plasticity]
+
+  # ── Hippocampal Connections ────────────────────────────────────────────────
+  - source: hippocampus
+    target: entorhinal_cortex
+    pathway: perforant_path_and_alvear
+    fa_estimate: 0.38
+    topics: [episodic_memory, spatial_navigation]
+
+  - source: hippocampus
+    target: prefrontal_cortex
+    pathway: cingulum_bundle_and_uncinate
+    fa_estimate: 0.40
+    functional_relevance: "HPC-PFC theta synchrony pathway; disrupted in TBI and PTSD"
+    topics: [episodic_memory, fear_and_anxiety, cognitive_control]
+    circuits: [hippocampal_circuit, sharp_wave_ripple]
+
+  - source: hippocampus
+    target: amygdala
+    pathway: amygdalofugal_pathway
+    fa_estimate: 0.35
+    topics: [episodic_memory, fear_and_anxiety]
+
+  # ── Frontal-Parietal (Attention Network) ─────────────────────────────────
+  - source: dlpfc
+    target: posterior_parietal_cortex
+    pathway: superior_longitudinal_fasciculus_I_II
+    fa_estimate: 0.52
+    streamline_density: high
+    functional_relevance: "Fronto-parietal attention network backbone"
+    topics: [attention_and_salience, working_memory, cognitive_control]
+    circuits: [attention_salience, executive_control]
+
+  - source: prefrontal_cortex
+    target: anterior_cingulate_cortex
+    pathway: cingulum_bundle
+    fa_estimate: 0.50
+    topics: [cognitive_control, executive_function]
+
+  # ── Language Pathways (Human-specific) ────────────────────────────────────
+  - source: inferior_frontal_gyrus
+    target: superior_temporal_gyrus
+    pathway: arcuate_fasciculus_direct
+    fa_estimate: 0.48
+    notes: "Highly asymmetric — left > right in most right-handers"
+    human_specific: true
+    topics: [language_and_speech, working_memory]
+    circuits: [arcuate_language]
+
+  - source: inferior_frontal_gyrus
+    target: angular_gyrus
+    pathway: arcuate_fasciculus_anterior_segment
+    fa_estimate: 0.44
+    human_specific: true
+    topics: [language_and_speech]
+
+  # ── Default Mode Network ───────────────────────────────────────────────────
+  - source: medial_prefrontal_cortex
+    target: posterior_cingulate_cortex
+    pathway: cingulum_bundle_medial
+    fa_estimate: 0.44
+    functional_relevance: "Backbone of DMN core subsystem"
+    topics: [episodic_memory, social_behavior]
+    circuits: [default_mode, default_mode_subsystems]
+
+  - source: posterior_cingulate_cortex
+    target: hippocampus
+    pathway: cingulum_bundle_posterior
+    fa_estimate: 0.42
+    topics: [episodic_memory]
+
+  # ── Amygdala Connections ───────────────────────────────────────────────────
+  - source: amygdala
+    target: prefrontal_cortex
+    pathway: uncinate_fasciculus
+    fa_estimate: 0.38
+    functional_relevance: "Emotion regulation pathway; reduced in PTSD and depression"
+    topics: [fear_and_anxiety, emotional_processing]
+    circuits: [fear_circuit, stress_hpa]
+
+  - source: amygdala
+    target: anterior_cingulate_cortex
+    pathway: uncinate_and_cingulum
+    fa_estimate: 0.35
+    topics: [fear_and_anxiety, emotional_processing]
+
+  # ── Thalamo-Cortical Connections ────────────────────────────────────────
+  - source: thalamus
+    target: prefrontal_cortex
+    pathway: anterior_thalamic_radiation
+    fa_estimate: 0.48
+    topics: [cognitive_control, attention_and_salience]
+    circuits: [thalamocortical_sensory, papez_circuit]
+
+  - source: thalamus
+    target: motor_cortex
+    pathway: superior_thalamic_radiation
+    fa_estimate: 0.55
+    topics: [motor_learning]
+
+  - source: thalamus
+    target: sensory_cortex
+    pathway: posterior_thalamic_radiation
+    fa_estimate: 0.52
+    topics: [attention_and_salience]
+
+  # ── Cerebellar Connections ────────────────────────────────────────────────
+  - source: cerebellum
+    target: motor_cortex
+    pathway: superior_cerebellar_peduncle_dentato_thalamo_cortical
+    fa_estimate: 0.58
+    functional_relevance: "Motor prediction and correction pathway"
+    topics: [motor_learning, development_and_plasticity]
+    circuits: [motor_circuit, cerebellar_purkinje]
+
+  - source: cerebellum
+    target: prefrontal_cortex
+    pathway: dentato_thalamo_prefrontal_pathway
+    fa_estimate: 0.42
+    notes: "Human-expanded pathway — posterior cerebellum (Crus I/II) to PFC; minimal in rodents"
+    human_expanded: true
+    topics: [cognitive_control, executive_function]
+
+  # ── Callosal Connections ──────────────────────────────────────────────────
+  - source: left_hemisphere_motor_cortex
+    target: right_hemisphere_motor_cortex
+    pathway: corpus_callosum_body
+    fa_estimate: 0.62
+    streamline_density: very_high
+    topics: [motor_learning]
+
+  - source: left_hemisphere_prefrontal_cortex
+    target: right_hemisphere_prefrontal_cortex
+    pathway: corpus_callosum_genu
+    fa_estimate: 0.55
+    topics: [cognitive_control, executive_function]
+
+# HCP download instructions for actual data integration
+download_instructions:
+  url: "https://db.humanconnectome.org"
+  requires_account: true
+  license: HCP_open_access
+  files_needed:
+    - "HCP_1200.zip → group_360_fiber_FA.csv"
+    - "Group average structural connectivity matrices"
+    - "Tractography pipeline: MRtrix3 tckgen + SIFT2"
+  integration_script: "neural_search/ingestion/hcp_connectivity.py"
+  atlas_mapping: "data/hcp/mmp_to_ontology_mapping.yaml"

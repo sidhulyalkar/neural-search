@@ -1,0 +1,237 @@
+{
+  "queries_path": "data/eval/benchmark_queries_canonical.yaml",
+  "qrels_path": "data/qrels/qrels.canonical.trec",
+  "runs_dir": "reports/eval/runs",
+  "n_queries": 317,
+  "n_labeled_pairs": 13654,
+  "systems": {
+    "bm25": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.8217429957880231,
+        "mrr": 1.0,
+        "recall@50": 0.42424242424242425
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.654167892824126,
+        "mrr": 0.8805342222972402,
+        "recall@50": 0.6437673794027796
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8938604290024411,
+        "mrr": 1.0,
+        "recall@50": 0.6351248862372333
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.6147885065535081,
+        "mrr": 0.8421052631578947,
+        "recall@50": 0.6512041961469711
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7766835620518927,
+        "mrr": 1.0,
+        "recall@50": 0.6875
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.7816793896437871,
+        "mrr": 0.8333333333333334,
+        "recall@50": 0.6797604277442987
+      }
+    },
+    "bm25_structured": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.8720845239032546,
+        "mrr": 1.0,
+        "recall@50": 0.45454545454545453
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.6410590809853023,
+        "mrr": 0.8627438257528744,
+        "recall@50": 0.6167597870821199
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8828180584267096,
+        "mrr": 1.0,
+        "recall@50": 0.604821855934203
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.4562056616342602,
+        "mrr": 0.7302318295739348,
+        "recall@50": 0.5867263427251564
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7766835620518927,
+        "mrr": 1.0,
+        "recall@50": 0.6875
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.849304136751549,
+        "mrr": 1.0,
+        "recall@50": 0.5528099871266254
+      }
+    },
+    "dense_bge": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.8338208781370764,
+        "mrr": 1.0,
+        "recall@50": 0.6060606060606061
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.5670769691019738,
+        "mrr": 0.8813709020040492,
+        "recall@50": 0.5363467666614525
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8736158203021994,
+        "mrr": 1.0,
+        "recall@50": 0.5130869316075101
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.542193456043421,
+        "mrr": 0.9122807017543859,
+        "recall@50": 0.5837492418716432
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7174268401769768,
+        "mrr": 1.0,
+        "recall@50": 0.6875
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.6426482539564357,
+        "mrr": 0.7083333333333334,
+        "recall@50": 0.4387259246130214
+      }
+    },
+    "hybrid_rrf": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.9260852545422736,
+        "mrr": 1.0,
+        "recall@50": 0.8181818181818182
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.6637650534308779,
+        "mrr": 0.9214407180670157,
+        "recall@50": 0.7464912568990473
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8865321896353408,
+        "mrr": 1.0,
+        "recall@50": 0.6255856675767688
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.6287722755560888,
+        "mrr": 0.8758771929824561,
+        "recall@50": 0.7353150751121472
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7536318695434264,
+        "mrr": 1.0,
+        "recall@50": 0.84375
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.8050871056877922,
+        "mrr": 1.0,
+        "recall@50": 0.768337173579109
+      }
+    },
+    "hybrid_graph": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.9260852545422736,
+        "mrr": 1.0,
+        "recall@50": 0.8181818181818182
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.6656147654125729,
+        "mrr": 0.9265378700499808,
+        "recall@50": 0.7470710062694144
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8848153200703092,
+        "mrr": 1.0,
+        "recall@50": 0.6363383557488118
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.6458839120923758,
+        "mrr": 0.8757894736842106,
+        "recall@50": 0.7412849129951364
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7867589812706209,
+        "mrr": 1.0,
+        "recall@50": 0.84375
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.8154510158946436,
+        "mrr": 1.0,
+        "recall@50": 0.7742895545314901
+      }
+    },
+    "full": {
+      "CROSS_DATASET_COMPARISON": {
+        "n_queries": 1,
+        "ndcg@10": 0.9260852545422736,
+        "mrr": 1.0,
+        "recall@50": 0.8181818181818182
+      },
+      "EXPLORATION": {
+        "n_queries": 289,
+        "ndcg@10": 0.6656147654125729,
+        "mrr": 0.9265378700499808,
+        "recall@50": 0.7459011989701635
+      },
+      "PIPELINE_REUSE": {
+        "n_queries": 3,
+        "ndcg@10": 0.8848153200703092,
+        "mrr": 1.0,
+        "recall@50": 0.7120959315063876
+      },
+      "REANALYSIS_FEASIBILITY": {
+        "n_queries": 19,
+        "ndcg@10": 0.6458839120923758,
+        "mrr": 0.8757894736842106,
+        "recall@50": 0.7438179836396621
+      },
+      "REPLICATION": {
+        "n_queries": 1,
+        "ndcg@10": 0.7867589812706209,
+        "mrr": 1.0,
+        "recall@50": 0.84375
+      },
+      "STRICT_LOOKUP": {
+        "n_queries": 4,
+        "ndcg@10": 0.8154510158946436,
+        "mrr": 1.0,
+        "recall@50": 0.6663514400144281
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -105,6 +106,27 @@ def get_task_by_id(task_id: str) -> Task | None:
     return get_ontology().task_by_id.get(task_id)
 
 
+@lru_cache(maxsize=1)
+def _task_alias_index_cached() -> dict[str, str]:
+    """Map normalized alias/label/id/synonym strings to canonical task IDs."""
+    index: dict[str, str] = {}
+    for task in get_all_tasks():
+        for alias in (task.id, task.label, *task.synonyms):
+            key = _normalize_alias_key(alias)
+            if key and key not in index:
+                index[key] = task.id
+    return index
+
+
+def get_task_id_by_alias(text: str) -> str | None:
+    """Resolve a free-text task string to a canonical task ID via exact alias match.
+
+    Same contract as get_region_id_by_alias: case-insensitive, separator-
+    tolerant, exact match only.
+    """
+    return _task_alias_index_cached().get(_normalize_alias_key(text))
+
+
 @lru_cache(maxsize=8)
 def _load_brain_regions_cached(path_string: str) -> tuple[BrainRegion, ...]:
     raw = _load_yaml(path_string)
@@ -198,3 +220,45 @@ def get_regions_by_allen_ccf(structure_id: str) -> list[BrainRegion]:
         r for r in get_brain_regions()
         if r.atlas_refs.get("allen_ccf_mouse") == structure_id
     ]
+
+
+def _normalize_alias_key(text: str) -> str:
+    """Casefold and collapse separators so 'OFC', 'ofc', and 'o_f_c' compare equal.
+
+    Mirrors neural_search.ontology.matcher.normalize_text's separator
+    handling without importing it (matcher.py imports from this module, so
+    importing back would be circular).
+    """
+    lowered = text.casefold()
+    lowered = re.sub(r"[/_-]+", " ", lowered)
+    lowered = re.sub(r"[^a-z0-9+]+", " ", lowered)
+    return re.sub(r"\s+", " ", lowered).strip()
+
+
+@lru_cache(maxsize=1)
+def _region_alias_index_cached() -> dict[str, str]:
+    """Map normalized alias/label/id strings to canonical region IDs.
+
+    Built once and cached — callers that need to resolve many free-text
+    region strings (e.g. literature extraction output) should use
+    ``get_region_id_by_alias`` rather than rebuilding an index per call.
+    """
+    index: dict[str, str] = {}
+    for region in get_brain_regions():
+        for alias in (region.id, region.label, *region.aliases):
+            key = _normalize_alias_key(alias)
+            if key and key not in index:
+                index[key] = region.id
+    return index
+
+
+def get_region_id_by_alias(text: str) -> str | None:
+    """Resolve a free-text region string to a canonical region ID via exact alias match.
+
+    Case-insensitive exact match only, tolerant of underscore/hyphen
+    separators — no fuzzy matching. Intended for cheap, high-volume
+    crosswalk attachment (e.g. literature finding regions), not for
+    search-time query expansion (see
+    ``neural_search.ontology.matcher.match_brain_regions`` for that).
+    """
+    return _region_alias_index_cached().get(_normalize_alias_key(text))

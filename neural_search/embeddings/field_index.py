@@ -251,6 +251,66 @@ def read_field_embedding_cache(
     return records
 
 
+def read_field_embedding_cache_faiss(
+    faiss_path: str | Path,
+    meta_path: str | Path,
+    *,
+    expected_provider_name: str | None = None,
+    expected_model_name: str | None = None,
+    expected_dimension: int | None = None,
+    expected_normalize: bool | None = None,
+) -> list[FieldEmbeddingRecord]:
+    """Read field embeddings from a FAISS binary index + companion metadata JSONL.
+
+    Fast-path alternative to :func:`read_field_embedding_cache` — avoids
+    Pydantic-parsing a multi-hundred-MB JSONL line by line.  Typically 5–20×
+    faster cold load.  Written by ``scripts/build_field_embedding_index.py``.
+    """
+    try:
+        import faiss  # type: ignore[import-untyped]
+    except ModuleNotFoundError as exc:  # pragma: no cover
+        raise RuntimeError(
+            "faiss-cpu is required for the FAISS fast-path loader. "
+            "Install it with: pip install faiss-cpu"
+        ) from exc
+
+
+    index = faiss.read_index(str(Path(faiss_path)))
+    n = index.ntotal
+    dim = index.d
+    vectors = faiss.rev_swig_ptr(index.get_xb(), n * dim).reshape(n, dim)
+
+    records: list[FieldEmbeddingRecord] = []
+    with Path(meta_path).open("r", encoding="utf-8") as handle:
+        for i, line in enumerate(handle):
+            if not line.strip():
+                continue
+            meta = json.loads(line)
+            records.append(
+                FieldEmbeddingRecord(
+                    record_id=meta["record_id"],
+                    record_type=meta["record_type"],
+                    field_name=meta["field_name"],
+                    text=meta["text"],
+                    embedding=vectors[i].tolist(),
+                    provider_name=meta["provider_name"],
+                    model_name=meta["model_name"],
+                    dimension=dim,
+                    normalize=meta["normalize"],
+                    created_at=meta.get("created_at", ""),
+                )
+            )
+
+    validate_field_embedding_cache(
+        records,
+        expected_provider_name=expected_provider_name,
+        expected_model_name=expected_model_name,
+        expected_dimension=expected_dimension,
+        expected_normalize=expected_normalize,
+    )
+    return records
+
+
 def build_cache_from_normalized_path(
     input_path: str | Path,
     output_path: str | Path,

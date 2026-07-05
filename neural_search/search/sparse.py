@@ -117,6 +117,36 @@ class SparseIndex:
 
         self._built = False
 
+    def __getstate__(self) -> dict:
+        return {
+            "config": self.config,
+            "_inverted_index": {t: {d: dict(f) for d, f in docs.items()} for t, docs in self._inverted_index.items()},
+            "_doc_lengths": self._doc_lengths,
+            "_doc_ids": self._doc_ids,
+            "_num_docs": self._num_docs,
+            "_doc_freq": dict(self._doc_freq),
+            "_field_total_lengths": dict(self._field_total_lengths),
+            "_field_doc_counts": dict(self._field_doc_counts),
+            "_idf_cache": self._idf_cache,
+            "_built": self._built,
+        }
+
+    def __setstate__(self, state: dict) -> None:
+        self.config = state["config"]
+        self._inverted_index = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(int)),
+            {t: defaultdict(lambda: defaultdict(int), {d: defaultdict(int, f) for d, f in docs.items()})
+             for t, docs in state["_inverted_index"].items()},
+        )
+        self._doc_lengths = state["_doc_lengths"]
+        self._doc_ids = state["_doc_ids"]
+        self._num_docs = state["_num_docs"]
+        self._doc_freq = Counter(state["_doc_freq"])
+        self._field_total_lengths = defaultdict(int, state["_field_total_lengths"])
+        self._field_doc_counts = defaultdict(int, state["_field_doc_counts"])
+        self._idf_cache = state["_idf_cache"]
+        self._built = state["_built"]
+
     def _tokenize(self, text: str) -> list[str]:
         """Tokenize text into normalized terms."""
         if not text:

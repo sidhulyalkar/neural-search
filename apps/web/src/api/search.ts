@@ -287,3 +287,48 @@ export async function getSimilarDatasets(
     `${API_BASE}/datasets/${encodeURIComponent(datasetId)}/similar?limit=${limit}`
   )
 }
+
+export interface ArtifactManifest {
+  generated_at: string
+  generated_by: string
+  note: string
+  corpus: {
+    available: boolean
+    path: string
+    row_count: number
+    unique_source_ids: number
+    unique_dataset_ids: number
+  }
+  knowledge_graph: {
+    available: boolean
+    path: string | null
+    total_nodes: number
+    total_edges: number
+    node_type_counts: Record<string, number>
+    edge_type_counts: Record<string, number>
+  }
+  qrels: {
+    gold: { path: string; available: boolean; rows: number }
+    silver: { path: string; available: boolean; rows: number }
+    bronze: { path: string; available: boolean; rows: number }
+    field_state_adjudicated: { path: string; available: boolean; rows: number }
+    canonical_llm_silver: { path: string; available: boolean; rows: number }
+  }
+  paper_dataset_links: {
+    available: boolean
+    path: string
+    total_rows: number
+    match_method_counts: Record<string, number>
+    real_matches: number
+    real_match_rate: number
+    combined_datasets_with_real_link: number
+    by_source: Record<
+      string,
+      { path: string; total_rows: number; match_method_counts: Record<string, number>; real_matches: number; real_match_rate: number }
+    >
+  }
+}
+
+export async function getArtifactManifest(): Promise<ArtifactManifest> {
+  return fetchJSON<ArtifactManifest>(`${API_BASE}/artifacts/current-manifest`)
+}

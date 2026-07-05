@@ -26,6 +26,8 @@ import json
 import math
 from pathlib import Path
 
+from scripts.eval.docid import normalize_docid
+
 DEFAULT_QRELS = Path("data/qrels/qrels.trec")
 DEFAULT_RUNS_DIR = Path("reports/eval/runs")
 DEFAULT_OUT = Path("reports/eval/ndcg_report.json")
@@ -37,6 +39,8 @@ RUNG_ORDER = [
     "dense_bge",
     "hybrid_rrf",
     "hybrid_graph",
+    "typed_kg",
+    "typed_kg_qualified",
     "full",
 ]
 
@@ -57,7 +61,10 @@ def _load_qrels(path: Path) -> dict[str, dict[str, int]]:
         parts = line.strip().split()
         if len(parts) < 4:
             continue
-        qid, _zero, did, grade = parts[0], parts[1], parts[2], parts[3]
+        # Treat the final token as the grade and every middle token as the
+        # dataset id, then normalize whitespace so this stays correct for both
+        # freshly-exported (single-token) and legacy (space-containing) qrels.
+        qid, did, grade = parts[0], normalize_docid(" ".join(parts[2:-1])), parts[-1]
         qrels.setdefault(qid, {})[did] = int(grade)
     return qrels
 
@@ -71,7 +78,7 @@ def _load_run(path: Path) -> dict[str, list[tuple[int, str]]]:
         rec = json.loads(line)
         qid = str(rec["query_id"])
         rank = int(rec["rank"])
-        rid = str(rec["record_id"])
+        rid = normalize_docid(str(rec.get("record_id") or rec.get("dataset_id") or rec.get("doc_id")))
         run.setdefault(qid, []).append((rank, rid))
     for qid in run:
         run[qid].sort()
@@ -174,7 +181,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {len(qrels)} queries with judgments ({total_judgments} total pairs)")
 
     if not qrels:
-        print("\nNo qrels found — run run_parallel_llm_qrels.py first.")
+        print("\nNo qrels found -- run run_parallel_llm_qrels.py first.")
         return 1
 
     # Relevance distribution
@@ -190,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
     for rung in RUNG_ORDER:
         rung_path = args.runs_dir / f"{rung}.jsonl"
         if not rung_path.exists():
-            print(f"  {rung:20} — file not found, skipping")
+            print(f"  {rung:20} -- file not found, skipping")
             continue
         metrics = evaluate_rung(rung_path, qrels)
         results[rung] = metrics
@@ -204,7 +211,7 @@ def main(argv: list[str] | None = None) -> int:
     # Write JSON
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(results, indent=2), encoding="utf-8")
-    print(f"\nMetrics → {args.out}")
+    print(f"\nMetrics written -> {args.out}")
 
     # Write Markdown table
     md_lines = [
@@ -226,7 +233,7 @@ def main(argv: list[str] | None = None) -> int:
         )
     md_lines.append("")
     args.md.write_text("\n".join(md_lines), encoding="utf-8")
-    print(f"Markdown → {args.md}")
+    print(f"Markdown written -> {args.md}")
 
     return 0
 

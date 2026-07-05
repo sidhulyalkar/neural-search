@@ -18,6 +18,12 @@ from neural_search.graph.schema import (
     normalize_node_type,
 )
 from neural_search.normalized import make_paper_id
+from neural_search.ontology.cognitive_atlas import get_cogat_match
+from neural_search.ontology.loader import (
+    get_region_atlas_refs,
+    get_region_id_by_alias,
+    get_task_id_by_alias,
+)
 
 KG_BUILDER_NAME = "neural_search.literature.kg_builder"
 KG_BUILDER_VERSION = "v0.1.0"
@@ -52,6 +58,9 @@ def _evidence(
     source_field: str,
     evidence_text: str | None,
     confidence: float,
+    char_start: int | None = None,
+    char_end: int | None = None,
+    sentence_id: int | None = None,
 ) -> GraphEvidence:
     return GraphEvidence(
         evidence_id=(
@@ -65,6 +74,9 @@ def _evidence(
         confidence=confidence,
         extractor_name=KG_BUILDER_NAME,
         extractor_version=KG_BUILDER_VERSION,
+        char_start=char_start,
+        char_end=char_end,
+        sentence_id=sentence_id,
     )
 
 
@@ -286,6 +298,38 @@ def add_papers_from_shards(
     return stats
 
 
+def _region_crosswalk_properties(value: str) -> dict[str, Any]:
+    """Resolve a free-text region string to atlas_refs via exact alias lookup.
+
+    Cheap O(1) lookup against a cached index — safe to call per finding at
+    full-corpus scale (unlike neural_search.ontology.matcher.match_brain_regions,
+    which rebuilds its lookup table on every call).
+    """
+    canonical_id = get_region_id_by_alias(value)
+    if canonical_id is None:
+        return {}
+    atlas_refs = get_region_atlas_refs(canonical_id)
+    if not atlas_refs:
+        return {}
+    return {"canonical_region_id": canonical_id, "atlas_refs": atlas_refs}
+
+
+def _task_crosswalk_properties(value: str) -> dict[str, Any]:
+    """Resolve a free-text task string to a validated Cognitive Atlas match, if any."""
+    canonical_id = get_task_id_by_alias(value)
+    if canonical_id is None:
+        return {}
+    match = get_cogat_match(canonical_id)
+    if match is None:
+        return {}
+    return {
+        "canonical_task_id": canonical_id,
+        "cogat_id": match.cogat_id,
+        "cogat_label": match.cogat_label,
+        "cogat_match_type": match.match_type,
+    }
+
+
 def _concept_node(
     node_type: str,
     value: str,
@@ -300,13 +344,18 @@ def _concept_node(
         evidence_text=value,
         confidence=confidence,
     )
+    properties: dict[str, Any] = {}
+    if node_type == "brain_region":
+        properties.update(_region_crosswalk_properties(value))
+    elif node_type == "task":
+        properties.update(_task_crosswalk_properties(value))
     return KnowledgeGraphNode(
         node_id=make_node_id(node_type, normalize_node_type(value)),
         node_type=node_type,
         label=value,
         aliases=[value],
         source_ids=[source_id],
-        properties={},
+        properties=properties,
         evidence=[evidence],
         confidence=confidence,
         created_at=_now(),
@@ -322,6 +371,9 @@ def _finding_node(record: dict[str, Any]) -> KnowledgeGraphNode:
         source_field="finding_text",
         evidence_text=text,
         confidence=float(record.get("confidence") or 0.0),
+        char_start=record.get("char_start"),
+        char_end=record.get("char_end"),
+        sentence_id=record.get("sentence_id"),
     )
     return KnowledgeGraphNode(
         node_id=make_node_id("finding", finding_id),
@@ -356,6 +408,14 @@ def add_findings_to_graph(
         "tasks": ("task", "finding_involves_task"),
         "modalities": ("modality", "finding_involves_modality"),
         "species": ("species", "finding_involves_species"),
+        # Typed fields from neural_search.literature.typed_finding_extractor.
+        # Only these three are promoted to graph edges for now — the other 24
+        # typed fields stay as finding-record properties until a dedicated
+        # node/edge expansion (see docs/superpowers/plans/2026-06-22-typed-
+        # field-coverage-relationship-expansion.md) is scoped and reviewed.
+        "frequency_band": ("frequency_band", "finding_has_frequency_band"),
+        "temporal_pattern": ("temporal_pattern", "finding_has_temporal_pattern"),
+        "spatial_frame": ("spatial_frame", "finding_has_spatial_frame"),
     }
 
     for record in _iter_jsonl(findings_path):

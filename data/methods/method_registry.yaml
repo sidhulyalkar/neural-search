@@ -1,0 +1,157 @@
+# Methodology Registry overlay: links analysis_family strings (already used by
+# neural_search.awareness.taxonomy.DATA_FORMS and populated into the real corpus
+# graph by neural_search.graph.builder.build_taxonomy_requirement_subgraph) to the
+# named techniques documented in data/methods/methods_taxonomy.yaml.
+#
+# Coverage is intentionally partial: only analysis_families with a defensible
+# technique match are linked here. See reports/methodology_coverage_report.md
+# for the list of unlinked families and why they were left out.
+version: "2.0"
+links:
+  - analysis_family: spike_train_analysis
+    taxonomy_method_ids: [information_theory, population_vector_coding, burst_analysis, spike_lfp_coupling]
+    rationale: >
+      Spike train analysis in extracellular ephys relies on population coding
+      metrics (population_vector_coding), information-theoretic quantification
+      of neural codes (information_theory), and burst/coupling structure
+      (burst_analysis, spike_lfp_coupling).
+    confidence: 0.85
+
+  - analysis_family: time_frequency
+    taxonomy_method_ids: [fft, stft, wavelet_transform, multitaper, hilbert_transform, fooof_specparam]
+    rationale: >
+      Time-frequency analysis of EEG/MEG is directly implemented by spectral
+      decomposition and estimation techniques: FFT/STFT/wavelets for
+      time-frequency representations, multitaper for robust spectral
+      estimation, Hilbert transform for instantaneous phase/amplitude, and
+      FOOOF/specparam for periodic-vs-aperiodic decomposition.
+    confidence: 0.9
+
+  - analysis_family: connectivity
+    taxonomy_method_ids: [granger_causality, transfer_entropy, plv, dti_tractography, dcm]
+    rationale: >
+      Functional, effective, and structural connectivity are estimated by
+      Granger causality and transfer entropy (directed functional/effective
+      connectivity), phase-locking value (functional synchrony), DTI
+      tractography (structural connectivity), and dynamic causal modeling
+      (effective connectivity with a generative model).
+    cross_ref_affordance_id: functional_connectivity
+    confidence: 0.85
+
+  - analysis_family: decoding
+    taxonomy_method_ids: [pca, ica, umap, bayesian_inference]
+    rationale: >
+      Neural decoders commonly reduce dimensionality first (PCA/ICA/UMAP)
+      before classification/regression, or fit a Bayesian generative model of
+      neural activity given stimulus/behavior.
+    confidence: 0.75
+
+  - analysis_family: bci_decoding
+    taxonomy_method_ids: [pca, ica]
+    rationale: >
+      EEG/MEG-based BCI decoding pipelines typically use PCA/ICA for
+      artifact removal and feature-space reduction before classification.
+    cross_ref_affordance_id: bci_decoding
+    confidence: 0.7
+
+  - analysis_family: speech_decoding
+    taxonomy_method_ids: [pca, ica]
+    rationale: >
+      ECoG/sEEG speech decoding pipelines use PCA/ICA for dimensionality
+      reduction and artifact rejection ahead of decoding models.
+    cross_ref_affordance_id: speech_decoding
+    confidence: 0.65
+    requires_human_review: true
+
+  - analysis_family: encoding_modeling
+    taxonomy_method_ids: [information_theory, cramers_rao_bound, efficient_coding, predictive_coding]
+    rationale: >
+      Encoding models are grounded in information-theoretic accounts of
+      neural coding (information_theory, efficient_coding, predictive_coding)
+      and estimator-efficiency bounds for parameter recovery
+      (cramers_rao_bound).
+    cross_ref_affordance_id: encoding_modeling
+    confidence: 0.8
+
+  - analysis_family: reinforcement_learning
+    taxonomy_method_ids: [drift_diffusion_model, bayesian_inference]
+    rationale: >
+      Reinforcement-learning/choice behavior is fit with sequential sampling
+      models of choice and RT (drift_diffusion_model) and Bayesian parameter
+      estimation for RL model fitting.
+    cross_ref_affordance_id: q_learning_modeling
+    confidence: 0.75
+
+  - analysis_family: behavioral_modeling
+    taxonomy_method_ids: [drift_diffusion_model, bayesian_inference, linear_mixed_effects]
+    rationale: >
+      General behavioral modeling spans choice/RT models
+      (drift_diffusion_model), Bayesian parameter inference, and
+      mixed-effects regression for trial-and-subject-level structure.
+    confidence: 0.7
+
+  - analysis_family: event_aligned_analysis
+    taxonomy_method_ids: [cluster_permutation, linear_mixed_effects]
+    rationale: >
+      Event-aligned/peri-event comparisons are the primary use case for
+      cluster-based permutation testing and mixed-effects models that
+      account for repeated trials/subjects.
+    confidence: 0.8
+
+  - analysis_family: clinical_prediction
+    taxonomy_method_ids: [linear_mixed_effects, bayesian_inference]
+    rationale: >
+      Clinical outcome prediction from neural/behavioral features commonly
+      uses mixed-effects models (repeated sessions per patient) and
+      Bayesian inference for calibrated uncertainty.
+    confidence: 0.65
+    requires_human_review: true
+
+  - analysis_family: circuit_mapping
+    taxonomy_method_ids: [dti_tractography]
+    rationale: >
+      Circuit mapping from connectomics/tracing data relies on tractography
+      or analogous structural-pathway reconstruction techniques.
+    confidence: 0.6
+    requires_human_review: true
+
+  - analysis_family: population_dynamics
+    taxonomy_method_ids: [pca, ica, umap]
+    rationale: >
+      Population-dynamics analyses (e.g. calcium imaging) project
+      high-dimensional population activity onto low-dimensional latent
+      trajectories via PCA/ICA/UMAP.
+    cross_ref_affordance_id: latent_dynamics_modeling
+    confidence: 0.75
+
+  - analysis_family: model_comparison
+    taxonomy_method_ids: [bayesian_inference, cramers_rao_bound]
+    rationale: >
+      Comparing computational/biophysical models uses Bayesian model
+      comparison and estimator-efficiency bounds to judge parameter
+      identifiability.
+    confidence: 0.65
+    requires_human_review: true
+
+  - analysis_family: parameter_inference
+    taxonomy_method_ids: [bayesian_inference, cramers_rao_bound]
+    rationale: >
+      Parameter inference for simulations/models is a direct application of
+      Bayesian inference, bounded below in variance by the Cramer-Rao bound.
+    confidence: 0.7
+
+  - analysis_family: mechanistic_modeling
+    taxonomy_method_ids: [dcm, bayesian_inference]
+    rationale: >
+      Mechanistic/generative modeling of neural systems is the explicit use
+      case for dynamic causal modeling, fit via Bayesian inference.
+    confidence: 0.7
+
+  - analysis_family: memory_analysis
+    taxonomy_method_ids: [spike_lfp_coupling, plv]
+    rationale: >
+      Intracranial memory-related analyses commonly rely on
+      oscillatory-coupling metrics (spike-LFP coupling, phase-locking value)
+      linked to encoding/retrieval success.
+    confidence: 0.55
+    requires_human_review: true

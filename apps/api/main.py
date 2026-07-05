@@ -1,8 +1,10 @@
 """FastAPI application for Neural Search."""
 
+import hashlib
 import json
 import os
 import re
+import time as _time
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from datetime import UTC, datetime
@@ -10,17 +12,33 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
+
+load_dotenv(".env.local", override=False)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.atlas_router import router as atlas_router
+from apps.api.claims_router import router as claims_router
+from apps.api.coverage_router import router as coverage_router
+from apps.api.experimentglancer_router import router as experimentglancer_router
 from apps.api.graph_router import router as graph_router
+from apps.api.kg_router import router as kg_router
+from apps.api.methods_router import router as methods_router
+from apps.api.spectral_router import router as spectral_router
+from apps.api.timeline_router import router as timeline_router
 from neural_search.cards import generate_dataset_card_json
 from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
 from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
+from neural_search.graph.paper_node_builder import get_paper_trust_signals
+from neural_search.graph.reanalysis_candidates import (
+    dataset_node_id as _graph_dataset_node_id,
+)
+from neural_search.graph.search_features import load_graph_if_exists
 from neural_search.ingestion import services as ingestion_services
 from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_seed
 from neural_search.notebooks import generate_nwb_starter_notebook
@@ -57,6 +75,7 @@ from neural_search.schemas import (
     SearchRequest,
 )
 from neural_search.search import search_datasets
+from neural_search.search.field_semantic import load_field_semantic_index
 
 # When NEURAL_SEARCH_DEMO_MODE=1, serve only the 26-record demo fixture
 # (useful for CI and quick local demos). Default: full combined corpus.
@@ -73,17 +92,57 @@ NEURO_JUDGE_WATERMARK = (
 # In-memory store for demo (replace with DB in production)
 _demo_data: list[dict[str, Any]] = []
 
+# Search result cache: {cache_key: (result, expires_at)}
+_SEARCH_CACHE: dict[str, tuple[Any, float]] = {}
+_SEARCH_CACHE_TTL = 300  # 5 minutes
+
+
+def _search_cache_key(query: str, filters: Any, structured_query: Any, limit: int) -> str:
+    payload = json.dumps(
+        {"q": (query or "").strip().lower(), "f": filters, "s": structured_query, "n": limit},
+        sort_keys=True,
+        default=str,
+    )
+    return hashlib.sha256(payload.encode()).hexdigest()[:16]
+
+
+def _cache_get(key: str) -> Any | None:
+    entry = _SEARCH_CACHE.get(key)
+    if entry and _time.time() < entry[1]:
+        return entry[0]
+    _SEARCH_CACHE.pop(key, None)
+    return None
+
+
+def _cache_set(key: str, value: Any) -> None:
+    # Evict oldest entries if cache grows large
+    if len(_SEARCH_CACHE) > 200:
+        now = _time.time()
+        expired = [k for k, (_, exp) in _SEARCH_CACHE.items() if now >= exp]
+        for k in expired:
+            _SEARCH_CACHE.pop(k, None)
+        while len(_SEARCH_CACHE) > 200:
+            _SEARCH_CACHE.pop(next(iter(_SEARCH_CACHE)))
+    _SEARCH_CACHE[key] = (value, _time.time() + _SEARCH_CACHE_TTL)
+
 
 def _load_corpus() -> list[dict[str, Any]]:
     return build_demo_seed() if _DEMO_MODE else build_combined_corpus()
 
 
+_GRAPH_PATH = "data/graph/neural_search_graph.real_corpus.json"
+_FIELD_EMBEDDINGS_PATH = "data/embeddings/real_all.dense.field_embeddings.jsonl"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load ontology and corpus on startup."""
+    """Load ontology, corpus, and heavy search indices on startup."""
     global _demo_data
     load_ontology()
     _demo_data = _load_corpus()
+    # Pre-warm caches so the first search request isn't slow
+    load_graph_if_exists(_GRAPH_PATH)
+    load_field_semantic_index(_FIELD_EMBEDDINGS_PATH)
     yield
 
 
@@ -117,6 +176,14 @@ app.add_middleware(
 )
 
 app.include_router(graph_router)
+app.include_router(atlas_router)
+app.include_router(claims_router)
+app.include_router(coverage_router)
+app.include_router(experimentglancer_router)
+app.include_router(kg_router)
+app.include_router(methods_router)
+app.include_router(spectral_router)
+app.include_router(timeline_router)
 
 
 # Health check
@@ -320,7 +387,7 @@ def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str,
         for record in records:
             ds = record.get("dataset", {})
             if ds.get("source") == "dandi":
-                sid = re.sub(r'^\D+', '', ds.get("source_id", "")).lstrip('0') or '0'
+                sid = re.sub(r'^\D+', '', ds.get("source_id") or "").lstrip('0') or '0'
                 if sid == (num.lstrip('0') or '0'):
                     return record
 
@@ -330,7 +397,7 @@ def _try_exact_id_lookup(query: str, records: list[dict[str, Any]]) -> dict[str,
         sid = on_m.group(1).lower()
         for record in records:
             ds = record.get("dataset", {})
-            if ds.get("source") == "openneuro" and ds.get("source_id", "").lower() == sid:
+            if ds.get("source") == "openneuro" and (ds.get("source_id") or "").lower() == sid:
                 return record
 
     return None
@@ -357,6 +424,19 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 "structured search filter."
             ),
         )
+
+    # Cache check — skip for exact-ID lookups and very short queries
+    _cache_key = _search_cache_key(
+        request.query or "",
+        request.filters,
+        request.structured_query.model_dump() if request.structured_query else None,
+        request.limit,
+    )
+    _cached = _cache_get(_cache_key)
+    if _cached is not None:
+        _cached.search_time_ms = round((_time.time() - start) * 1000, 1)
+        return _cached
+
     qa_state = load_qa_state()
     demo_data = _ensure_demo_data()
     records_with_qa = [
@@ -411,7 +491,12 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 reusable_reason=result.reusable_reason,
                 suggested_next_actions=result.dataset_card_preview.get("suggested_analyses", [])[:3],
                 readiness_score=result.dataset_card_preview.get("analysis_readiness_score"),
-                linked_papers=[_frontend_paper(paper) for paper in papers],
+                linked_papers=[
+                    _frontend_paper(paper, trust_signals=trust)
+                    for paper, trust in zip(
+                        papers, _paper_trust_signals_for_dataset(dataset, papers), strict=True
+                    )
+                ],
                 rank=rank,
                 score_breakdown=result.score_breakdown,
                 neuro_judge=neuro_judge,
@@ -436,6 +521,7 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 if r.dataset.get("id") != exact_id and r.dataset.get("source_id") != exact_id
             ]
             exact_papers = exact_record.get("papers", [])
+            exact_trust = _paper_trust_signals_for_dataset(exact_ds, exact_papers)
             pin = FrontendSearchResult(
                 dataset=exact_ds,
                 score=1.0,
@@ -448,7 +534,10 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
                 reusable_reason=None,
                 suggested_next_actions=[],
                 readiness_score=None,
-                linked_papers=[_frontend_paper(p) for p in exact_papers],
+                linked_papers=[
+                    _frontend_paper(p, trust_signals=t)
+                    for p, t in zip(exact_papers, exact_trust, strict=True)
+                ],
                 rank=1,
                 score_breakdown={"exact_id_match": 1.0, "final_score": 1.0},
                 prior_feedback=_load_feedback_for_pair(request.query, exact_ds),
@@ -460,12 +549,14 @@ async def search(request: SearchRequest) -> FrontendSearchResponse:
 
     elapsed = (time.time() - start) * 1000
 
-    return FrontendSearchResponse(
+    final_response = FrontendSearchResponse(
         query=response.query,
         total_count=len(frontend_results),
         results=frontend_results,
         search_time_ms=elapsed,
     )
+    _cache_set(_cache_key, final_response)
+    return final_response
 
 
 @app.post("/api/literature/search", response_model=LiteratureSearchResponse)
@@ -1020,14 +1111,16 @@ async def export_comparison_json(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-def _frontend_paper(paper: dict[str, Any]) -> dict[str, Any]:
+def _frontend_paper(
+    paper: dict[str, Any], *, trust_signals: dict[str, Any] | None = None
+) -> dict[str, Any]:
     authors = paper.get("authors_json") or paper.get("authors") or []
     if authors and isinstance(authors[0], dict):
         authors = [
             author.get("name", author.get("display_name", "Unknown author"))
             for author in authors
         ]
-    return {
+    result = {
         "id": paper.get("id", paper.get("doi", "paper")),
         "title": paper.get("title", "Untitled paper"),
         "authors": authors,
@@ -1035,6 +1128,31 @@ def _frontend_paper(paper: dict[str, Any]) -> dict[str, Any]:
         "doi": paper.get("doi"),
         "url": paper.get("url"),
     }
+    if trust_signals:
+        result.update(trust_signals)
+    return result
+
+
+def _paper_trust_signals_for_dataset(
+    dataset: dict[str, Any], papers: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Best-effort retraction status + link evidence tier, one dict per paper.
+
+    Looks up the production KG (already loaded/cached by `load_graph_if_exists`,
+    see `neural_search.graph.paper_node_builder.get_paper_trust_signals`).
+    Returns a list of `{}` (not an error) when the graph is unavailable --
+    matches this codebase's house style of degrading to "nothing extra to
+    show" rather than failing the request.
+    """
+
+    graph = load_graph_if_exists(_GRAPH_PATH)
+    if graph is None:
+        return [{} for _ in papers]
+    dataset_id = _graph_dataset_node_id(dataset)
+    return [
+        get_paper_trust_signals(graph, doi=paper.get("doi"), dataset_node_id=dataset_id)
+        for paper in papers
+    ]
 
 
 def _frontend_card_payload(
@@ -1066,7 +1184,14 @@ def _frontend_card_payload(
             },
             "url": dataset.get("url"),
             "doi": dataset.get("doi"),
-            "related_papers": [_frontend_paper(paper) for paper in record.get("papers", [])],
+            "related_papers": [
+                _frontend_paper(paper, trust_signals=trust)
+                for paper, trust in zip(
+                    record.get("papers", []),
+                    _paper_trust_signals_for_dataset(dataset, record.get("papers", [])),
+                    strict=True,
+                )
+            ],
             "assets": record.get("assets", []),
             "missing_metadata": card.missing_fields,
             "provenance": card.provenance,
@@ -1293,6 +1418,27 @@ async def get_compilation_report() -> dict[str, Any]:
 async def get_corpus_completeness() -> dict[str, Any]:
     """Field fill rates per source, showing metadata coverage gaps."""
     return compute_corpus_completeness()
+
+
+_MANIFEST_PATH = Path("reports/eval/current_artifact_manifest.json")
+
+
+@app.get("/api/artifacts/current-manifest")
+async def get_current_manifest() -> dict[str, Any]:
+    """Return the canonical artifact manifest (reports/eval/current_artifact_manifest.json).
+
+    This is the single source of truth for corpus size, qrels counts, graph stats,
+    and stale-report warnings. Frontend should read counts from here rather than
+    hardcoding them.
+    """
+    if not _MANIFEST_PATH.exists():
+        raise HTTPException(
+            status_code=503,
+            detail="Artifact manifest not found. Run: python scripts/eval/freeze_corpus_manifest.py",
+        )
+    with open(_MANIFEST_PATH) as f:
+        manifest = json.load(f)
+    return manifest
 
 
 # Evaluation endpoints

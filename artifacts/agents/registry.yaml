@@ -1,0 +1,154 @@
+# Task-class registry for the Neural Search agent orchestration loop.
+#
+# Each entry describes a recurring, auditable unit of work: what triggers
+# it, what it costs, what it's expected to produce, and what gate its output
+# must pass before counting as "committed" rather than just "run". This is
+# descriptive metadata read by a scheduler/playbook, not itself executable
+# -- see playbooks/*.md for the actual step-by-step procedure each agent
+# class follows, and neural_search/agents/ledger.py for the append-only run
+# log this registry's cost/outcome numbers should be checked against.
+#
+# Priority intuition for a scheduler picking what to run next, given a
+# fixed time/compute budget: score each due task by
+# (expected eval/coverage delta) / (estimated_cost.wall_clock_s), and prefer
+# high-certainty cheap tasks (benchmark-gatekeeper) over low-certainty
+# expensive ones (literature-linker) when both are due. See
+# playbooks/README.md for the full reasoning.
+#
+# `depends_on` formalizes sequencing for agents whose output is only
+# meaningful (or only safe to trust) after another agent's most recent run:
+# a scheduler chaining multiple agents in one session should run listed
+# dependencies first in the same cycle if they're also due, and should read
+# `neural_search.agents.ledger.last_run_for_agent(dependency)` to confirm the
+# dependency's last outcome before trusting this agent's output. Every agent
+# should also read `artifacts/agents/context_brief.md`
+# (`python -m neural_search.agents.context_brief` to regenerate) before
+# starting its own playbook -- a single, fast, current-state entry point
+# instead of re-deriving the same facts from scratch each run.
+
+version: 1
+
+agents:
+  - name: kg-connectivity-auditor
+    playbook: playbooks/kg_connectivity_auditor.md
+    description: >
+      Audits whether every KG-producing builder module actually reaches
+      production search (merged into build_real_corpus_graph.py's
+      orphaned_layers, or a confirmed side-channel reader), is dead code, or
+      is a genuine unreconciled orphan. Same procedure that already found
+      and fixed 8/8 orphaned builders and one dead module across two prior
+      sessions (see obsidian_vault/../memory kg_connectivity_audit).
+    trigger: schedule
+    schedule_cadence: weekly
+    depends_on: []
+    estimated_cost:
+      wall_clock_s: 180
+      network: false
+      tokens: medium
+    expected_artifact: >
+      List of {module, status: reachable|side_channel|dead|orphan, evidence}.
+      Any "orphan" finding is a proposal, not an auto-applied fix.
+    gate: none
+    gate_note: >
+      Read-only audit. Any reconnection fix it proposes must go through
+      normal code review and, since it touches the graph, through
+      benchmark-gatekeeper before being considered committed.
+    evidence_tier_ceiling: heuristic_candidate
+
+  - name: benchmark-gatekeeper
+    playbook: playbooks/benchmark_gatekeeper.md
+    description: >
+      Re-runs the NDCG@10 ablation ladder (hybrid_graph/typed_kg/full rungs)
+      against the current production graph and compares to the last
+      recorded baseline. This is the check that has caught 3 real
+      regressions this project's history (graph_degree dilution twice,
+      one inert-then-active score weight) -- it is the mandatory gate every
+      other graph-modifying agent class depends on.
+    trigger: after_any_graph_change
+    schedule_cadence: null
+    depends_on: []
+    estimated_cost:
+      wall_clock_s: 400
+      network: false
+      tokens: low
+    expected_artifact: "NDCG@10 per rung + pass/fail delta vs. baseline"
+    gate: hard_block
+    gate_note: >
+      A KG-modifying agent's output is not "committed" -- only "run" --
+      until this passes. On failure: isolate the cause (don't assume it's
+      the same mechanism as last time; see ablation_results memory, the
+      cause has varied every time) before applying any fix.
+    evidence_tier_ceiling: computed
+
+  - name: file-validation-runner
+    playbook: playbooks/file_validation_runner.md
+    description: >
+      Runs the live DANDI/OpenNeuro file validators
+      (neural_search/graph/dandi_nwb_validator.py,
+      openneuro_bids_validator.py) against the current top-N reanalysis
+      suggestions not yet validated, upgrading confirmed edges to
+      file_validated tier and flagging NWB reprocessing candidates
+      (dataset_reprocessing_candidate node property).
+    trigger: schedule
+    schedule_cadence: weekly
+    depends_on: []
+    estimated_cost:
+      wall_clock_s: 300
+      network: true
+      tokens: low
+    expected_artifact: "confirmed/errored counts, reprocessing candidates found"
+    gate: soft_review
+    gate_note: >
+      Network-dependent and rate-limit-sensitive. A spike in the errored
+      count vs. the previous run should pause escalation to a larger --top-n
+      next time, not be silently retried at the same or larger scale.
+    evidence_tier_ceiling: file_validated
+
+  - name: literature-linker
+    playbook: playbooks/literature_linker.md
+    description: >
+      Runs the crossref/datacite/pubmed/semantic_scholar linkers
+      (neural_search/literature/) against corpus records not yet matched by
+      any source, plus retraction/correction checks on newly-found DOIs.
+    trigger: manual
+    schedule_cadence: null
+    depends_on: []
+    estimated_cost:
+      wall_clock_s: 3600
+      network: true
+      tokens: low
+    expected_artifact: "new paper_dataset_links.<source>.jsonl rows, retraction status updates"
+    gate: soft_review
+    gate_note: >
+      Rate-limited external APIs (Semantic Scholar is currently blocked
+      entirely without an API key). Not safe to run unattended on a fixed
+      schedule yet -- keep as trigger: manual until a budget-aware backoff
+      is added, per the OpenAlex budget-wall incident in
+      file_validation_and_evidence_tiers memory.
+    evidence_tier_ceiling: source_declared
+
+  - name: reanalysis-insight-synthesizer
+    playbook: playbooks/reanalysis_insight_synthesizer.md
+    description: >
+      Synthesizes reuse/reanalysis signal already live in the production
+      graph into a ranked, diversity-capped "what to look at first" report
+      (scripts/generate_reanalysis_insight_report.py), and re-tests the
+      "does more paper linkage unlock more reanalysis-bridge evidence"
+      assumption against current data every run instead of trusting a past
+      conclusion. Read-only: does not modify the graph or propose code
+      changes, only re-ranks and re-checks what other agents/builders
+      already produced.
+    trigger: schedule
+    schedule_cadence: weekly
+    depends_on: [kg-connectivity-auditor, benchmark-gatekeeper]
+    estimated_cost:
+      wall_clock_s: 30
+      network: false
+      tokens: low
+    expected_artifact: "reports/reanalysis_insight_report.md (ranked reuse opportunities + re-tested assumptions)"
+    gate: none
+    gate_note: >
+      Read-only synthesis over already-live edges. Should not run against a
+      graph benchmark-gatekeeper hasn't cleared this cycle -- a regressed
+      graph's edge counts may reflect a bug, not real signal.
+    evidence_tier_ceiling: evidence_backed_bridge

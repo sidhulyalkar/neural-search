@@ -1,0 +1,569 @@
+# Disorder Registry
+# 35 major neuropsychiatric / neurological disorders mapped to:
+#   - disrupted circuits (from the functional_circuits.yaml vocabulary)
+#   - biomarker oscillations
+#   - canonical species models
+#   - diagnostic methods
+#   - key papers (most cited, most relevant)
+
+disorders:
+
+  # ── PSYCHIATRIC ──────────────────────────────────────────────────────────
+
+  - id: schizophrenia
+    label: Schizophrenia
+    icd11: 6A20
+    dsm5: "295.90"
+    type: psychotic_disorder
+    disrupted_circuits:
+      - prefrontal_cortex
+      - dopamine_mesolimbic
+      - thalamocortical_sensory
+      - hippocampal_circuit
+    oscillation_biomarkers:
+      - band: gamma
+        direction: reduced
+        region: prefrontal_cortex
+        note: "40 Hz ASSR deficit; auditory steady-state response"
+      - band: spindle
+        direction: reduced
+        region: thalamus
+        note: "Sleep spindle density reduced; correlates with cognitive impairment"
+      - band: theta
+        direction: increased_frontal
+        note: "MMN theta increase; P300 amplitude reduced"
+    species_models:
+      - species: mouse
+        model: PV_Cre_knockout
+        face_validity: positive_symptoms_only
+      - species: rat
+        model: methylazoxymethanol_MAM
+        face_validity: moderate
+    diagnostic_methods: [EEG_ERP, fMRI_resting_state, neuropsychological_battery]
+    topics: [cognitive_control, working_memory, attention_and_salience]
+    key_papers:
+      - "Uhlhaas & Singer (2010, Nature Reviews Neuroscience) — Abnormal neural oscillations and synchrony in schizophrenia"
+
+  - id: major_depressive_disorder
+    label: Major Depressive Disorder (MDD)
+    icd11: 6A70
+    dsm5: "296.2x"
+    type: mood_disorder
+    disrupted_circuits:
+      - reward_addiction
+      - dopamine_mesolimbic
+      - default_mode
+      - stress_hpa
+      - lc_norepinephrine
+    oscillation_biomarkers:
+      - band: alpha
+        direction: increased_right_frontal
+        region: prefrontal_cortex
+        note: "Right > left frontal alpha (Davidson asymmetry)"
+      - band: theta
+        direction: increased_frontal_midline
+        note: "Elevated frontal theta at rest correlates with rumination"
+    species_models:
+      - species: rat
+        model: CUMS_chronic_unpredictable_stress
+        face_validity: anhedonia_social_avoidance
+      - species: mouse
+        model: chronic_social_defeat
+        face_validity: moderate
+    diagnostic_methods: [EEG_alpha_asymmetry, fMRI_sgACC, neuropsychological_battery]
+    topics: [reward_learning, emotional_processing, fear_and_anxiety]
+    key_papers:
+      - "Hamilton (1960) — A rating scale for depression"
+      - "Nestler & Carlezon (2006, Neuron) — The mesolimbic dopamine reward circuit in depression"
+
+  - id: bipolar_disorder
+    label: Bipolar Disorder
+    icd11: 6A60
+    dsm5: "296.xx"
+    type: mood_disorder
+    disrupted_circuits:
+      - reward_addiction
+      - orbitofrontal_cortex
+      - anterior_cingulate_cortex
+      - dopamine_mesolimbic
+    oscillation_biomarkers:
+      - band: gamma
+        direction: increased_manic_phase
+        note: "Elevated gamma during manic episodes"
+      - band: alpha
+        direction: reduced_interepisode
+    topics: [reward_learning, decision_making, emotional_processing]
+    species_models:
+      - species: rat
+        model: amphetamine_sensitization_or_ouabain
+
+  - id: anxiety_disorder
+    label: Generalized Anxiety Disorder / Anxiety Spectrum
+    icd11: 6B00
+    dsm5: "300.02"
+    type: anxiety_disorder
+    disrupted_circuits:
+      - fear_circuit
+      - basolateral_amygdala
+      - stress_hpa
+      - lc_norepinephrine
+      - prefrontal_cortex
+    oscillation_biomarkers:
+      - band: theta
+        direction: increased_amygdala
+        note: "BLA theta power during threat anticipation"
+      - band: beta
+        direction: increased_frontal
+        note: "Frontal beta excess during worry"
+    species_models:
+      - species: rat
+        model: EPM_fear_conditioning
+      - species: mouse
+        model: elevated_plus_maze
+    diagnostic_methods: [EEG, fMRI_amygdala, behavioral_tests]
+    topics: [fear_and_anxiety, emotional_processing]
+
+  - id: ptsd
+    label: Post-Traumatic Stress Disorder (PTSD)
+    icd11: 6B40
+    dsm5: "309.81"
+    type: trauma_disorder
+    disrupted_circuits:
+      - fear_circuit
+      - basolateral_amygdala
+      - prefrontal_cortex
+      - hippocampal_circuit
+      - default_mode
+    oscillation_biomarkers:
+      - band: theta
+        direction: reduced_hippocampal
+        note: "Reduced hippocampal theta during extinction recall"
+      - band: alpha
+        direction: reduced_occipital
+        note: "Alpha reduction during trauma cue exposure"
+    species_models:
+      - species: rat
+        model: single_prolonged_stress_SPS
+    diagnostic_methods: [EEG, fMRI_vmPFC_amygdala, CAPS_rating]
+    topics: [fear_and_anxiety, episodic_memory, emotional_processing]
+
+  - id: ocd
+    label: Obsessive-Compulsive Disorder (OCD)
+    icd11: 6B20
+    dsm5: "300.3"
+    type: obsessive_compulsive_disorder
+    disrupted_circuits:
+      - basal_ganglia_loop
+      - orbitofrontal_cortex
+      - anterior_cingulate_cortex
+      - corticostriatal_beta
+    oscillation_biomarkers:
+      - band: beta
+        direction: increased_caudate
+        note: "Elevated striatal beta in OCD; parallel to Parkinson beta"
+    species_models:
+      - species: mouse
+        model: SAPAP3_knockout_repetitive_grooming
+    diagnostic_methods: [EEG, fMRI_OFC_striatum, YBOCS_rating]
+    topics: [cognitive_control, decision_making, reward_learning]
+
+  - id: adhd
+    label: Attention Deficit Hyperactivity Disorder (ADHD)
+    icd11: 6A05
+    dsm5: "314.xx"
+    type: neurodevelopmental_disorder
+    disrupted_circuits:
+      - prefrontal_cortex
+      - dopamine_nigrostriatal
+      - dopamine_mesolimbic
+      - lc_norepinephrine
+    oscillation_biomarkers:
+      - band: theta
+        direction: increased_frontal
+        note: "Elevated frontal theta/beta ratio is diagnostic biomarker candidate"
+      - band: beta
+        direction: reduced_frontal
+        note: "Reduced frontal beta coherence"
+      - band: alpha
+        direction: delayed_maturation
+    species_models:
+      - species: rat
+        model: spontaneously_hypertensive_rat_SHR
+    diagnostic_methods: [EEG_theta_beta_ratio, Connors_rating, neuropsychological]
+    topics: [attention_and_salience, cognitive_control, working_memory]
+
+  - id: autism_spectrum_disorder
+    label: Autism Spectrum Disorder (ASD)
+    icd11: 6A02
+    dsm5: "299.00"
+    type: neurodevelopmental_disorder
+    disrupted_circuits:
+      - social_behavior
+      - prefrontal_cortex
+      - default_mode
+      - basal_ganglia_loop
+    oscillation_biomarkers:
+      - band: mu
+        direction: reduced_suppression
+        note: "Mu suppression deficit during action observation (mirror system)"
+      - band: gamma
+        direction: reduced_sensory
+        note: "Reduced auditory gamma response (ASSR)"
+      - band: alpha
+        direction: increased_local
+        note: "Increased local coherence; reduced long-range coherence"
+    species_models:
+      - species: mouse
+        model: SHANK3_knockout
+      - species: mouse
+        model: CNTNAP2_knockout
+      - species: rat
+        model: valproic_acid_prenatal
+    diagnostic_methods: [EEG_mu_suppression, fMRI_social_regions, ADOS_rating]
+    topics: [social_behavior, development_and_plasticity]
+
+  # ── NEUROLOGICAL ──────────────────────────────────────────────────────────
+
+  - id: parkinsons_disease
+    label: Parkinson's Disease (PD)
+    icd11: 8A00
+    type: movement_disorder
+    disrupted_circuits:
+      - dopamine_nigrostriatal
+      - basal_ganglia_loop
+      - corticostriatal_beta
+      - subthalamic_nucleus
+    oscillation_biomarkers:
+      - band: beta
+        direction: increased_STN_putamen
+        region: subthalamic_nucleus
+        note: "Pathological beta (13-30 Hz) in STN and GPi; suppressed by dopamine & DBS"
+      - band: gamma
+        direction: reduced
+        note: "Movement-related gamma burst suppressed in PD"
+    species_models:
+      - species: rat
+        model: 6-OHDA_unilateral
+      - species: mouse
+        model: MPTP
+    diagnostic_methods: [LFP_STN_recording, EEG_beta, DaTscan, UPDRS_rating]
+    topics: [motor_learning, spectral_dynamics, neuromodulation]
+    key_papers:
+      - "Brown et al. (2001, J Neurosci) — Dopamine dependency of oscillations between STN and pallidum"
+
+  - id: alzheimers_disease
+    label: Alzheimer's Disease (AD)
+    icd11: 8A20
+    type: neurodegenerative_disorder
+    disrupted_circuits:
+      - hippocampal_circuit
+      - papez_circuit
+      - default_mode
+      - entorhinal_grid_cells
+    oscillation_biomarkers:
+      - band: theta
+        direction: reduced_hippocampal
+        note: "Hippocampal theta power reduced in early AD; correlates with spatial memory loss"
+      - band: gamma
+        direction: reduced_40hz
+        note: "40 Hz ASSR reduced; entrainment with 40 Hz light/sound may slow progression"
+      - band: alpha
+        direction: reduced_posterior
+        note: "Posterior alpha slowing (marker of progression)"
+      - band: ripple
+        direction: reduced_SWR
+        note: "Sharp-wave ripple density reduced; memory consolidation impaired"
+    species_models:
+      - species: mouse
+        model: APP_PS1_5xFAD
+    diagnostic_methods: [EEG_theta, fMRI_DMN, CSF_Abeta_tau, PET_amyloid]
+    topics: [episodic_memory, spatial_navigation, sleep_and_oscillations]
+
+  - id: epilepsy
+    label: Epilepsy (Focal / Generalized)
+    icd11: 8A60
+    type: seizure_disorder
+    disrupted_circuits:
+      - hippocampal_circuit
+      - thalamocortical_sensory
+    oscillation_biomarkers:
+      - band: hfo_pathological
+        direction: increased
+        note: "Pathological HFOs (80-500 Hz) mark seizure onset zone"
+      - band: spike_wave
+        direction: 3hz_spike_wave
+        note: "3 Hz spike-wave discharge in absence epilepsy"
+    species_models:
+      - species: rat
+        model: pilocarpine_SE_model
+      - species: rat
+        model: kainate_temporal_lobe
+    diagnostic_methods: [EEG_HFO, SEEG, video_EEG, MRI_hippocampus]
+    topics: [spectral_dynamics, development_and_plasticity]
+
+  - id: huntingtons_disease
+    label: Huntington's Disease (HD)
+    icd11: 8A01.10
+    type: neurodegenerative_disorder
+    disrupted_circuits:
+      - basal_ganglia_loop
+      - dopamine_nigrostriatal
+      - corticostriatal_beta
+    oscillation_biomarkers:
+      - band: beta
+        direction: increased_striatum
+        note: "Striatal beta excess similar to PD; involuntary movements may disrupt"
+    species_models:
+      - species: mouse
+        model: R6_2_YAC128
+    topics: [motor_learning, cognitive_control]
+
+  - id: tourette_syndrome
+    label: Tourette Syndrome (TS)
+    icd11: 8A05
+    type: movement_disorder
+    disrupted_circuits:
+      - basal_ganglia_loop
+      - corticostriatal_beta
+      - anterior_cingulate_cortex
+    oscillation_biomarkers:
+      - band: beta
+        direction: reduced_presuppression
+        note: "Reduced corticostriatal beta before voluntary tic suppression"
+    topics: [cognitive_control, motor_learning]
+
+  - id: stroke
+    label: Ischemic Stroke / Cortical Stroke
+    icd11: 8B20
+    type: cerebrovascular
+    disrupted_circuits:
+      - motor_circuit
+      - thalamocortical_sensory
+    oscillation_biomarkers:
+      - band: delta
+        direction: increased_perilesional
+        note: "Slow (<4 Hz) delta in perilesional tissue predicts poor recovery"
+      - band: beta
+        direction: reduced_ipsilesional
+        note: "Ipsilesional beta event-related desynchronization impaired"
+    species_models:
+      - species: rat
+        model: MCAO_middle_cerebral_artery_occlusion
+    diagnostic_methods: [EEG_delta_theta, fMRI_resting_state, DTI_white_matter]
+    topics: [motor_learning, development_and_plasticity]
+
+  - id: tbi
+    label: Traumatic Brain Injury (TBI)
+    icd11: NA07
+    type: acquired_brain_injury
+    disrupted_circuits:
+      - prefrontal_cortex
+      - hippocampal_circuit
+      - default_mode
+    oscillation_biomarkers:
+      - band: theta
+        direction: increased_frontal
+        note: "Frontal theta excess in mTBI; cognitive complaints"
+      - band: alpha
+        direction: reduced_posterior
+        note: "Posterior alpha slowing"
+    species_models:
+      - species: rat
+        model: controlled_cortical_impact_CCI
+      - species: mouse
+        model: lateral_fluid_percussion
+    topics: [working_memory, cognitive_control]
+
+  - id: sleep_disorders
+    label: Sleep Disorders (Insomnia / Narcolepsy / SWD)
+    icd11: 7A00
+    type: sleep_disorder
+    disrupted_circuits:
+      - thalamocortical_sensory
+      - lc_norepinephrine
+      - reward_addiction
+    oscillation_biomarkers:
+      - band: spindle
+        direction: reduced_NREM2
+        note: "Reduced spindle density in insomnia"
+      - band: slow_oscillation
+        direction: reduced_amplitude
+        note: "SWS slow oscillation amplitude reduced in insomnia"
+    topics: [sleep_and_oscillations, episodic_memory]
+
+  - id: substance_use_disorder
+    label: Substance Use Disorder (SUD) / Addiction
+    icd11: 6C40
+    dsm5: "304.xx"
+    type: addiction
+    disrupted_circuits:
+      - reward_addiction
+      - dopamine_mesolimbic
+      - orbitofrontal_cortex
+      - anterior_cingulate_cortex
+      - prefrontal_cortex
+    oscillation_biomarkers:
+      - band: beta
+        direction: increased_craving
+        note: "Corticostriatal beta coherence elevated during drug cue exposure"
+      - band: theta
+        direction: increased_orbitofrontal
+        note: "OFC theta excess during reward anticipation"
+    species_models:
+      - species: rat
+        model: self_administration_escalation
+        note: "FR1 → FR5 → extended access → compulsive use phenotype"
+    topics: [reward_learning, decision_making]
+    key_papers:
+      - "Everitt & Robbins (2005, Nature Neuroscience) — Neural systems of reinforcement for drug addiction"
+
+  - id: chronic_pain
+    label: Chronic Pain / Neuropathic Pain
+    icd11: MG30
+    type: pain_disorder
+    disrupted_circuits:
+      - anterior_cingulate_cortex
+      - thalamocortical_sensory
+      - default_mode
+    oscillation_biomarkers:
+      - band: theta
+        direction: increased_ACC
+        note: "ACC theta during chronic pain states"
+      - band: alpha
+        direction: reduced_thalamic
+        note: "Thalamic alpha reduction in fibromyalgia"
+    topics: [emotional_processing, attention_and_salience]
+
+  - id: als
+    label: Amyotrophic Lateral Sclerosis (ALS)
+    icd11: 8B60
+    type: neurodegenerative_disorder
+    disrupted_circuits:
+      - motor_circuit
+      - corticospinal_tract
+    oscillation_biomarkers:
+      - band: beta
+        direction: reduced_motor
+        note: "Motor cortex beta ERD (desynchronization) impaired"
+    topics: [motor_learning]
+
+  - id: multiple_sclerosis
+    label: Multiple Sclerosis (MS)
+    icd11: 8A40
+    type: demyelinating_disorder
+    disrupted_circuits:
+      - motor_circuit
+      - thalamocortical_sensory
+      - prefrontal_cortex
+    oscillation_biomarkers:
+      - band: alpha
+        direction: increased_rest
+        note: "Resting alpha excess related to fatigue and cognitive slowing"
+    topics: [motor_learning, cognitive_control]
+
+  - id: opioid_use_disorder
+    label: Opioid Use Disorder (OUD)
+    icd11: 6C43
+    type: addiction
+    disrupted_circuits:
+      - reward_addiction
+      - dopamine_mesolimbic
+      - anterior_cingulate_cortex
+      - nucleus_accumbens
+    topics: [reward_learning, decision_making]
+
+  - id: eating_disorders
+    label: Anorexia / Bulimia Nervosa
+    icd11: 6B80
+    type: eating_disorder
+    disrupted_circuits:
+      - reward_addiction
+      - orbitofrontal_cortex
+      - anterior_cingulate_cortex
+    oscillation_biomarkers:
+      - band: beta
+        direction: reduced_reward_response
+        note: "Blunted reward-related beta power to food cues"
+    topics: [reward_learning, decision_making, emotional_processing]
+
+  - id: frontotemporal_dementia
+    label: Frontotemporal Dementia (FTD)
+    icd11: 8A22
+    type: neurodegenerative_disorder
+    disrupted_circuits:
+      - prefrontal_cortex
+      - anterior_cingulate_cortex
+      - orbitofrontal_cortex
+      - default_mode
+    oscillation_biomarkers:
+      - band: alpha
+        direction: frontal_slowing
+        note: "Frontal alpha slowing distinguishes FTD from AD"
+    topics: [cognitive_control, social_behavior, emotional_processing]
+
+  - id: lewy_body_dementia
+    label: Lewy Body Dementia (DLB)
+    icd11: 8A24
+    type: neurodegenerative_disorder
+    disrupted_circuits:
+      - thalamocortical_sensory
+      - dopamine_nigrostriatal
+    oscillation_biomarkers:
+      - band: alpha
+        direction: posterior_slowing
+        note: "Marked posterior alpha/theta slowing in DLB; fluctuating cognition"
+    topics: [sleep_and_oscillations, attention_and_salience]
+
+  - id: dysexecutive_syndrome
+    label: Dysexecutive Syndrome / Frontal Syndrome
+    icd11: MB21.0
+    type: cognitive_syndrome
+    disrupted_circuits:
+      - prefrontal_cortex
+      - anterior_cingulate_cortex
+    oscillation_biomarkers:
+      - band: theta
+        direction: reduced_frontal
+        note: "Frontal theta reduction impairs working memory gating"
+    topics: [cognitive_control, working_memory]
+
+  - id: rett_syndrome
+    label: Rett Syndrome
+    icd11: LD90.4
+    type: neurodevelopmental_disorder
+    disrupted_circuits:
+      - prefrontal_cortex
+      - motor_circuit
+    oscillation_biomarkers:
+      - band: gamma
+        direction: reduced
+        note: "Reduced sensory gamma in MECP2 knockout mice"
+    species_models:
+      - species: mouse
+        model: MECP2_knockout
+    topics: [development_and_plasticity]
+
+  - id: fragile_x
+    label: Fragile X Syndrome (FXS)
+    icd11: LD55.0
+    type: neurodevelopmental_disorder
+    disrupted_circuits:
+      - prefrontal_cortex
+      - basal_ganglia_loop
+    oscillation_biomarkers:
+      - band: gamma
+        direction: reduced_ASSR
+        note: "40 Hz ASSR significantly reduced in FXS (FDA biomarker endpoint)"
+    species_models:
+      - species: mouse
+        model: Fmr1_knockout
+    topics: [development_and_plasticity, social_behavior]
+
+  - id: williams_syndrome
+    label: Williams Syndrome
+    icd11: LD55.4
+    type: neurodevelopmental_disorder
+    disrupted_circuits:
+      - social_behavior
+      - prefrontal_cortex
+    topics: [social_behavior, development_and_plasticity]

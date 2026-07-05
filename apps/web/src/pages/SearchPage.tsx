@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { getArtifactManifest } from '../api/search'
 
 const exampleQueries = [
   'Multi-region calcium imaging of PFC, hippocampus, and striatum during working memory',
@@ -19,9 +21,66 @@ const pillars = [
   { label: 'Provenance', sub: 'papers · QA · readiness' },
 ]
 
+type EvidenceTier = 'live' | 'silver' | 'pending'
+
+interface EvidenceStat {
+  label: string
+  value: string
+  tier: EvidenceTier
+}
+
+function buildEvidenceStats(manifest: Awaited<ReturnType<typeof getArtifactManifest>> | undefined): EvidenceStat[] {
+  if (!manifest) {
+    return [
+      { label: 'Dataset records', value: '7,171', tier: 'live' },
+      { label: 'Linked papers', value: '168 DOI / 225 fuzzy', tier: 'live' },
+      { label: 'Multi-source real matches', value: '2,510', tier: 'silver' },
+      { label: 'Silver qrels', value: '175', tier: 'silver' },
+      { label: 'Human adjudicated', value: '3 (pending)', tier: 'pending' },
+      { label: 'Gold benchmark', value: 'Pending', tier: 'pending' },
+    ]
+  }
+  const { corpus, paper_dataset_links: links, qrels } = manifest
+  const doi = links.match_method_counts.doi_exact ?? 0
+  const fuzzy = links.match_method_counts.title_fuzzy_local ?? 0
+  const combinedRealMatches = links.combined_datasets_with_real_link
+  return [
+    { label: 'Dataset records', value: corpus.row_count.toLocaleString(), tier: 'live' },
+    { label: 'Linked papers', value: `${doi.toLocaleString()} DOI / ${fuzzy.toLocaleString()} fuzzy`, tier: 'live' },
+    {
+      label: 'Multi-source real matches',
+      value: combinedRealMatches > 0 ? combinedRealMatches.toLocaleString() : 'Pending',
+      tier: 'silver',
+    },
+    { label: 'Silver qrels', value: qrels.silver.rows.toLocaleString(), tier: 'silver' },
+    {
+      label: 'Human adjudicated',
+      value: qrels.field_state_adjudicated.rows > 0
+        ? `${qrels.field_state_adjudicated.rows} (smoke-test)`
+        : '0 (pending)',
+      tier: 'pending',
+    },
+    {
+      label: 'Gold benchmark',
+      value: qrels.gold.rows > 0 ? qrels.gold.rows.toLocaleString() : 'Pending qrel completion',
+      tier: 'pending',
+    },
+  ]
+}
+
 export function SearchPage() {
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
+
+  const { data: manifest } = useQuery({
+    queryKey: ['artifact-manifest'],
+    queryFn: getArtifactManifest,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  })
+
+  const corpusCount = manifest?.corpus.row_count.toLocaleString() ?? '7,171'
+  const evidenceStats = buildEvidenceStats(manifest)
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,7 +99,7 @@ export function SearchPage() {
       <div className="pt-24 pb-16">
         <div className="mb-3">
           <span className="font-mono text-xs text-neural-600 tracking-widest uppercase">
-            v2.0 · 873 datasets
+            v2.0 · {corpusCount} dataset records
           </span>
         </div>
 
@@ -86,6 +145,37 @@ export function SearchPage() {
         ))}
       </div>
 
+      {/* Evidence tier strip — live from /api/artifacts/current-manifest */}
+      <div className="mb-12 border border-neural-800/40 rounded-lg px-5 py-4">
+        <p className="text-xs text-neural-600 uppercase tracking-widest mb-3">Evidence Status</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {evidenceStats.map(({ label, value, tier }) => (
+            <div key={label} className="flex flex-col gap-1">
+              <span className="text-xs text-neural-600">{label}</span>
+              <span
+                className={`text-xs font-mono font-medium ${
+                  tier === 'live'
+                    ? 'text-accent-cyan'
+                    : tier === 'silver'
+                      ? 'text-amber-400'
+                      : 'text-neural-600'
+                }`}
+              >
+                {value}
+              </span>
+              {tier === 'silver' && (
+                <span className="text-[10px] text-amber-600 uppercase tracking-wider">
+                  silver · diagnostic
+                </span>
+              )}
+              {tier === 'pending' && (
+                <span className="text-[10px] text-neural-700 uppercase tracking-wider">pending</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Example queries */}
       <div className="mb-16">
         <p className="text-xs text-neural-600 uppercase tracking-widest mb-4">Example queries</p>
@@ -109,7 +199,7 @@ export function SearchPage() {
           Query Pipeline Demo — cognitive control →
         </Link>
         <Link to="/graph" className="text-sm text-neural-500 hover:text-accent-cyan transition-colors">
-          Corpus Map — 873 datasets visualized →
+          Corpus Map — {corpusCount} dataset records →
         </Link>
         <Link to="/ontology" className="text-sm text-neural-500 hover:text-neural-200 transition-colors">
           Browse Ontology →

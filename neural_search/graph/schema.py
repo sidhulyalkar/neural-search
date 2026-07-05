@@ -33,11 +33,27 @@ SUPPORTED_NODE_TYPES = {
     "subject_state",
     "recording_context",
     "finding",
+    "claim",
+    "frequency_band",
+    "temporal_pattern",
+    "spatial_frame",
     "experimental_design",
     "analysis_method",
     "institution",
     "author",
     "venue",
+    "atlas_structure",   # A raw Allen structure node
+    "topic",             # A canonical research topic from topic_taxonomy.yaml
+    # ── Multi-scale KG extensions ──────────────────────────────────────────
+    "method",            # Analysis method (FFT, PAC, Granger causality, etc.)
+    "math_concept",      # Mathematical concept / theorem (Cramér-Rao, Bayes theorem)
+    "paradigm",          # Behavioral/cognitive experimental paradigm
+    "oscillation",       # Named oscillatory phenomenon (theta, beta burst, ripple)
+    "disorder",          # Clinical neuropsychiatric disorder
+    "cell_type",         # Neuron type (PV interneuron, D1-MSN, Purkinje cell)
+    "white_matter_tract", # Structural connectivity pathway (arcuate fasciculus, CC)
+    "ontology_region",   # Named anatomical region in our region ontology vocabulary
+    "circuit",           # Named functional circuit (e.g. hippocampal_circuit, fear_circuit)
     # Field-state memory graph node types
     "source_archive",
     "concept",
@@ -53,6 +69,17 @@ SUPPORTED_NODE_TYPES = {
     "feedback_signal",
     "curation_issue",
     "snapshot_manifest",
+    # Spectral phenotype / aperiodic reanalysis node types
+    "spectral_estimate",
+    "aperiodic_component",
+    "periodic_peak",
+    "spectral_run",
+    "spectral_qc_assessment",
+    "spectral_feature_bundle",
+    "task_state_epoch",
+    "channel",
+    "electrode",
+    "probe",
 }
 
 SUPPORTED_EDGE_TYPES = {
@@ -89,6 +116,13 @@ SUPPORTED_EDGE_TYPES = {
     "method_supports_analysis",
     "region_related_to_task",
     "dataset_similar_to_dataset",
+    "same_region_cross_modality",
+    "same_task_cross_species",
+    "same_region_same_task",
+    "dataset_reanalysis_bridge_dataset",
+    "dataset_old_dataset_new_method_candidate",
+    "dataset_reinterpretation_candidate",
+    "dataset_reprocessing_candidate",
     "paper_related_to_paper",
     "finding_supported_by_dataset",
     "finding_reported_by_paper",
@@ -96,10 +130,29 @@ SUPPORTED_EDGE_TYPES = {
     "finding_involves_task",
     "finding_involves_modality",
     "finding_involves_species",
+    "claim_supports_finding",
+    "claim_contradicts_claim",
+    "claim_supported_by_dataset",
+    "claim_supported_by_paper",
+    "claim_derived_from_finding",
+    "finding_supports_finding",
+    "finding_contradicts_finding",
+    "region_co_occurs_with_region",
+    "finding_has_frequency_band",
+    "finding_has_temporal_pattern",
+    "finding_has_spatial_frame",
     "experimental_design_requires_task",
     "experimental_design_requires_modality",
     "experimental_design_requires_behavior",
     "experimental_design_can_use_dataset",
+    "region_is_child_of_region",          # Hierarchical parent-child in Allen CCF
+    "region_structurally_adjacent_to",    # Siblings in Allen CCF hierarchy
+    "ontology_region_maps_to_atlas",      # Our ontology_id → Allen structure
+    "paper_cites_paper",                  # Citation relationship (citing → cited)
+    "topic_encompasses_task",             # Topic includes a task
+    "topic_encompasses_region",           # Topic involves a brain region
+    "paper_foundational_for_topic",       # High-citation paper within a topic
+    "finding_advances_topic",             # Finding contributes to a topic
     # Field-state memory graph edge types
     "dataset_from_source",
     "dataset_has_file_artifact",
@@ -113,6 +166,8 @@ SUPPORTED_EDGE_TYPES = {
     "method_requires_raw_data",
     "method_requires_region",
     "concept_related_to_concept",
+    "concept_has_alias",
+    "concept_in_domain",
     "concept_requires_affordance",
     "query_requires_modality",
     "query_requires_recording_scale",
@@ -126,6 +181,61 @@ SUPPORTED_EDGE_TYPES = {
     "feedback_marks_result",
     "snapshot_contains_node",
     "snapshot_contains_edge",
+    # Spectral phenotype / aperiodic reanalysis edge types
+    "dataset_has_spectral_feature_bundle",
+    "dataset_has_spectral_estimate",
+    "spectral_estimate_generated_by_run",
+    "spectral_estimate_has_aperiodic_component",
+    "spectral_estimate_has_periodic_peak",
+    "spectral_estimate_has_qc_assessment",
+    "spectral_estimate_measured_in_region",
+    "spectral_estimate_measured_during_state",
+    "spectral_estimate_measured_from_channel",
+    "aperiodic_component_estimated_by_method",
+    "periodic_peak_estimated_by_method",
+    "dataset_reanalyzable_by_pipeline",
+    "dataset_missing_aperiodic_requirement",
+    "dataset_supports_aperiodic_reanalysis",
+    # ── Multi-scale KG extension edge types ───────────────────────────────
+    # Methods / math layer
+    "method_computes",                      # method → what it computes
+    "method_assumes",                       # method → mathematical assumption
+    "method_related_to_method",             # method ↔ related method
+    "method_used_for_topic",                # method → topic it's commonly used in
+    "method_measures_oscillation",          # method → oscillation it quantifies
+    "circuit_studied_by_method",            # circuit → canonical analysis method
+    # Species homology layer
+    "region_has_homolog_in",               # region (species A) → region (species B)
+    "finding_transfers_to_species",        # finding (rodent) → species (human)
+    "paradigm_validated_cross_species",    # paradigm → species pair validation
+    # Oscillation / spectral signatures
+    "region_generates_oscillation",        # region → oscillation (frequency_band, condition)
+    "oscillation_indexes_circuit",         # oscillation → functional circuit
+    "oscillation_measured_by_method",      # oscillation → analysis method
+    # HCP structural connectivity
+    "region_structurally_connected",       # region → region (FA weight, pathway)
+    # NeuroSynth topic-activation
+    "topic_activates_region",              # topic → region (forward inference)
+    "region_implicated_in_topic",          # region → topic (reverse inference)
+    # Paradigm layer
+    "paradigm_engages_circuit",            # paradigm → circuit
+    "paradigm_targets_topic",              # paradigm → topic
+    "paradigm_uses_method",                # paradigm → measurement method
+    "paper_uses_paradigm",                 # paper → paradigm
+    # Allen Mouse Connectivity
+    "region_projects_to",                  # region → region (anterograde tracer, mouse)
+    # Concept / theory hierarchy (Scholarpedia-inspired)
+    "concept_narrower_than",               # concept → broader concept
+    "concept_broader_than",                # concept → narrower concepts
+    "concept_motivates_method",            # concept → analysis method it motivates
+    "concept_testable_with_dataset",       # concept → dataset type that can test it
+    "concept_related_to_topic",            # concept → research topic
+    # Disorder-circuit mapping
+    "disorder_disrupts_circuit",           # disorder → circuit it disrupts
+    "disorder_has_biomarker",              # disorder → oscillation biomarker
+    "disorder_modeled_by_paradigm",        # disorder → animal model paradigm
+    "paper_involves_disorder",             # paper → disorder it studies
+    "dataset_models_disorder",             # dataset → disorder model
 }
 
 TOKEN_RE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -217,6 +327,15 @@ class GraphEvidence(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     extractor_name: str
     extractor_version: str
+    char_start: int | None = Field(default=None, ge=0)
+    char_end: int | None = Field(default=None, ge=0)
+    sentence_id: int | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_span_order(self) -> GraphEvidence:
+        if self.char_start is not None and self.char_end is not None and self.char_end < self.char_start:
+            raise ValueError("char_end cannot be before char_start")
+        return self
 
     @field_validator("evidence_id", "source_id", "extractor_name", "extractor_version")
     @classmethod
@@ -285,11 +404,27 @@ class KnowledgeGraphEdge(BaseModel):
 
 
 class KnowledgeGraph(BaseModel):
-    """A lightweight, file-backed knowledge graph container."""
+    """A lightweight, file-backed knowledge graph container.
 
-    nodes: dict[str, KnowledgeGraphNode] = Field(default_factory=dict)
-    edges: dict[str, KnowledgeGraphEdge] = Field(default_factory=dict)
+    Accepts nodes/edges as either dicts (keyed by ID) or lists (auto-indexed).
+    All builders pass lists; the validator normalises to dicts.
+    """
+
+    nodes: dict[str, KnowledgeGraphNode] | list[KnowledgeGraphNode] = Field(default_factory=dict)
+    edges: dict[str, KnowledgeGraphEdge] | list[KnowledgeGraphEdge] = Field(default_factory=dict)
     metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="before")
+    @classmethod
+    def coerce_lists_to_dicts(cls, values: Any) -> Any:
+        if isinstance(values, dict):
+            raw_nodes = values.get("nodes", {})
+            raw_edges = values.get("edges", {})
+            if isinstance(raw_nodes, list):
+                values["nodes"] = {n["node_id"] if isinstance(n, dict) else n.node_id: n for n in raw_nodes}
+            if isinstance(raw_edges, list):
+                values["edges"] = {e["edge_id"] if isinstance(e, dict) else e.edge_id: e for e in raw_edges}
+        return values
 
     @model_validator(mode="after")
     def validate_complete_graph(self) -> KnowledgeGraph:
@@ -297,8 +432,15 @@ class KnowledgeGraph(BaseModel):
         return self
 
 
-def validate_graph(graph: KnowledgeGraph) -> KnowledgeGraph:
-    """Validate graph identity maps and edge references."""
+def validate_graph(graph: KnowledgeGraph, strict: bool = False) -> KnowledgeGraph:
+    """Validate graph identity maps and optionally edge references.
+
+    When ``strict=False`` (default) dangling edge endpoints are allowed so that
+    partial KG layers (e.g. a builder that only creates edges to nodes defined in
+    another layer) can be constructed and later merged without errors.
+    Pass ``strict=True`` to enforce that every edge endpoint resolves to a node
+    present in *this* graph.
+    """
 
     node_ids: set[str] = set()
     for key, node in graph.nodes.items():
@@ -315,12 +457,71 @@ def validate_graph(graph: KnowledgeGraph) -> KnowledgeGraph:
         if edge.edge_id in edge_ids:
             raise ValueError(f"duplicate edge ID: {edge.edge_id}")
         edge_ids.add(edge.edge_id)
-        if edge.source_node_id not in graph.nodes:
-            raise ValueError(f"edge source does not resolve: {edge.source_node_id}")
-        if edge.target_node_id not in graph.nodes:
-            raise ValueError(f"edge target does not resolve: {edge.target_node_id}")
+        if strict:
+            if edge.source_node_id not in node_ids:
+                raise ValueError(f"edge source does not resolve: {edge.source_node_id}")
+            if edge.target_node_id not in node_ids:
+                raise ValueError(f"edge target does not resolve: {edge.target_node_id}")
 
     return graph
+
+
+def _infer_stub_node_type(node_id: str) -> str:
+    parts = node_id.split(":")
+    if parts and parts[0] == "node" and len(parts) >= 3:
+        return parts[1]
+    return parts[0] if parts and parts[0] else "unknown"
+
+
+def resolve_dangling_edges(graph: KnowledgeGraph) -> tuple[KnowledgeGraph, int]:
+    """Create minimal placeholder nodes for any edge endpoint missing from the graph.
+
+    Individual KG builder modules in this repo use a mix of node-id
+    conventions (the canonical ``make_node_id`` scheme and many hand-rolled
+    ``type:id`` schemes), and are frequently authored/merged independently,
+    so cross-builder or self-referential dangling edges are common (see
+    ``reports/architecture_connectivity_audit_2026-07-01.md``). Rather than
+    special-casing every builder's target vocabulary, this creates a minimal
+    node for every dangling endpoint, inferring node_type from the id's
+    leading segment (works for both ``node:type:...`` and ``type:...`` ids).
+
+    Placeholder nodes are marked ``properties={"stub": True, ...}`` so
+    consumers can distinguish them from richly-sourced nodes; they carry a
+    low confidence (0.3) since they represent "this concept exists and is
+    referenced" rather than validated content about it.
+
+    Returns the graph (nodes dict extended in place is NOT mutated — a new
+    KnowledgeGraph is returned) and the number of stub nodes created.
+    """
+
+    existing_ids = set(graph.nodes.keys())
+    referenced_ids: set[str] = set()
+    for edge in graph.edges.values():
+        referenced_ids.add(edge.source_node_id)
+        referenced_ids.add(edge.target_node_id)
+    missing_ids = sorted(referenced_ids - existing_ids)
+
+    if not missing_ids:
+        return graph, 0
+
+    new_nodes = dict(graph.nodes)
+    for node_id in missing_ids:
+        node_type = _infer_stub_node_type(node_id)
+        label_part = node_id.split(":")[-1]
+        new_nodes[node_id] = KnowledgeGraphNode(
+            node_id=node_id,
+            node_type=node_type,
+            label=label_part.replace("_", " ").title(),
+            properties={"stub": True, "source": "auto_generated_placeholder"},
+            confidence=0.3,
+        )
+
+    resolved = KnowledgeGraph(
+        nodes=new_nodes,
+        edges=dict(graph.edges),
+        metadata=dict(graph.metadata),
+    )
+    return resolved, len(missing_ids)
 
 
 def graph_to_dict(graph: KnowledgeGraph) -> dict[str, Any]:
@@ -414,3 +615,10 @@ def read_graph_jsonl(path: str | Path) -> KnowledgeGraph:
             raise ValueError(f"unknown graph JSONL record on line {line_number}")
 
     return KnowledgeGraph(nodes=nodes, edges=edges, metadata=metadata)
+
+
+# ── Convenience aliases used by all builder modules ────────────────────────
+# Builders import `GraphNode, GraphEdge, KnowledgeGraph` and pass lists of
+# nodes/edges; KnowledgeGraph.coerce_lists_to_dicts handles the conversion.
+GraphNode = KnowledgeGraphNode
+GraphEdge = KnowledgeGraphEdge

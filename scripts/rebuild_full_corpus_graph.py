@@ -26,6 +26,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import logging
 import sys
@@ -58,6 +59,11 @@ def _to_evidence_labels(values: Any, label_type: str) -> list:
         return []
     labels = []
     for v in values:
+        if isinstance(v, str) and v.strip().startswith("{"):
+            try:
+                v = ast.literal_eval(v)
+            except (SyntaxError, ValueError):
+                pass
         if isinstance(v, str) and v.strip():
             val = v.strip()
             labels.append(
@@ -86,6 +92,11 @@ def _to_analysis_affordances(values: Any) -> list:
         return []
     affordances = []
     for v in values:
+        if isinstance(v, str) and v.strip().startswith("{"):
+            try:
+                v = ast.literal_eval(v)
+            except (SyntaxError, ValueError):
+                pass
         if isinstance(v, dict):
             try:
                 affordances.append(AnalysisAffordance.model_validate(v))
@@ -213,7 +224,14 @@ def _add_cross_dataset_edges(
     n_added = 0
     seen_pairs: set[tuple[str, str, str]] = set()
 
-    def _add_edge(src: str, tgt: str, edge_type: str, context: str) -> None:
+    def _add_edge(
+        src: str,
+        tgt: str,
+        edge_type: str,
+        context: str,
+        *,
+        properties: dict[str, Any] | None = None,
+    ) -> None:
         nonlocal n_added
         pair_key = (min(src, tgt), max(src, tgt), edge_type)
         if pair_key in seen_pairs:
@@ -239,6 +257,10 @@ def _add_cross_dataset_edges(
             target_node_id=tgt,
             evidence=[evidence],
             confidence=0.7,
+            properties={
+                "context": context,
+                **(properties or {}),
+            },
             created_at=_now(),
         )
         graph.edges[edge_id] = edge
@@ -262,6 +284,22 @@ def _add_cross_dataset_edges(
                         a, b,
                         "same_region_cross_modality",
                         f"shared_region:{region_id} modalities:{sorted(mods_a)}x{sorted(mods_b)}",
+                        properties={
+                            "relationship_type": "same_region_cross_modality",
+                            "shared_region": region_id,
+                            "source_modalities": sorted(mods_a),
+                            "target_modalities": sorted(mods_b),
+                        },
+                    )
+                    _add_edge(
+                        a, b,
+                        "dataset_reanalysis_bridge_dataset",
+                        f"reanalysis_bridge:shared_region:{region_id}:cross_modality",
+                        properties={
+                            "relationship_type": "multimodal_reanalysis_bridge",
+                            "shared_region": region_id,
+                            "reason": "shared brain region with different modalities",
+                        },
                     )
                     pairs_added += 1
 
@@ -283,6 +321,22 @@ def _add_cross_dataset_edges(
                         a, b,
                         "same_task_cross_species",
                         f"shared_task:{task_id} species:{sorted(sp_a)}x{sorted(sp_b)}",
+                        properties={
+                            "relationship_type": "same_task_cross_species",
+                            "shared_task": task_id,
+                            "source_species": sorted(sp_a),
+                            "target_species": sorted(sp_b),
+                        },
+                    )
+                    _add_edge(
+                        a, b,
+                        "dataset_reinterpretation_candidate",
+                        f"reinterpretation_candidate:shared_task:{task_id}:cross_species",
+                        properties={
+                            "relationship_type": "cross_species_reinterpretation",
+                            "shared_task": task_id,
+                            "reason": "shared task across species can support generalization checks",
+                        },
                     )
                     pairs_added += 1
 
@@ -307,6 +361,22 @@ def _add_cross_dataset_edges(
                         a, b,
                         "same_region_same_task",
                         f"shared_region:{region_id} shared_task:{task_id}",
+                        properties={
+                            "relationship_type": "same_region_same_task",
+                            "shared_region": region_id,
+                            "shared_task": task_id,
+                        },
+                    )
+                    _add_edge(
+                        a, b,
+                        "dataset_reprocessing_candidate",
+                        f"reprocessing_candidate:shared_region:{region_id}:shared_task:{task_id}",
+                        properties={
+                            "relationship_type": "methodological_sibling_reprocessing",
+                            "shared_region": region_id,
+                            "shared_task": task_id,
+                            "reason": "same task and region can support harmonized reprocessing",
+                        },
                     )
                     pairs_added += 1
 
@@ -334,6 +404,17 @@ def main(argv: list[str] | None = None) -> int:
         "--findings",
         type=Path,
         default=ROOT / "artifacts" / "literature" / "findings_v1.jsonl",
+    )
+    parser.add_argument(
+        "--finding-edges",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "relationships" / "finding_edges.jsonl",
+        help="supports/contradicts edges from scripts/literature/build_finding_relationships.py",
+    )
+    parser.add_argument(
+        "--region-cooccurrence",
+        type=Path,
+        default=ROOT / "artifacts" / "literature" / "relationships" / "region_cooccurrence.jsonl",
     )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
@@ -390,6 +471,27 @@ def main(argv: list[str] | None = None) -> int:
         finding_stats = add_findings_to_graph(graph, args.findings)
         log.info("Finding stats: %s", finding_stats)
 
+    relationship_stats: dict[str, int] = {}
+    region_cooccurrence_stats: dict[str, int] = {}
+    if args.finding_edges.exists():
+        from neural_search.literature.relationship_kg_builder import (
+            add_finding_relationships_to_graph,
+            add_region_cooccurrence_to_graph,
+        )
+
+        log.info("Adding finding relationship edges from %s ...", args.finding_edges)
+        relationship_stats = add_finding_relationships_to_graph(graph, args.finding_edges)
+        log.info("Finding relationship stats: %s", relationship_stats)
+
+        if args.region_cooccurrence.exists():
+            log.info(
+                "Adding region co-occurrence edges from %s ...", args.region_cooccurrence
+            )
+            region_cooccurrence_stats = add_region_cooccurrence_to_graph(
+                graph, args.region_cooccurrence
+            )
+            log.info("Region co-occurrence stats: %s", region_cooccurrence_stats)
+
     log.info(
         "Final graph: %d nodes, %d edges (+%d cross-dataset)",
         len(graph.nodes), len(graph.edges), n_cross,
@@ -405,6 +507,8 @@ def main(argv: list[str] | None = None) -> int:
         "cross_dataset_edges": n_cross,
         "literature_stats": literature_stats,
         "finding_stats": finding_stats,
+        "relationship_stats": relationship_stats,
+        "region_cooccurrence_stats": region_cooccurrence_stats,
         "builder_script": "scripts/rebuild_full_corpus_graph.py",
         "builder_version": "v1.0.0",
     })

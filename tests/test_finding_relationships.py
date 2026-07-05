@@ -12,6 +12,7 @@ from neural_search.literature.normalizer import (
 from neural_search.literature.relationship_builder import (
     build_consensus_summaries,
     build_cross_finding_edges,
+    build_qualified_consensus_summaries,
     build_region_cooccurrence_edges,
 )
 
@@ -114,6 +115,114 @@ class TestBuildCrossFindingEdges:
         supports = [e for e in edges if e.edge_type == "supports"]
         assert len(supports) == 0
 
+    def test_negated_finding_does_not_create_supports_edge(self, tmp_path):
+        findings = [
+            {**_base_finding("p1", "p1:f0", ["hippocampus"], "increase"), "negation": True},
+            _base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        supports = [e for e in edges if e.edge_type == "supports"]
+        assert len(supports) == 0
+
+    def test_non_negated_findings_still_create_supports_edge(self, tmp_path):
+        findings = [
+            {**_base_finding("p1", "p1:f0", ["hippocampus"], "increase"), "negation": False},
+            {**_base_finding("p2", "p2:f0", ["hippocampus"], "increase"), "negation": False},
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        supports = [e for e in edges if e.edge_type == "supports"]
+        assert len(supports) >= 1
+
+    def test_contradicts_edge_has_opposite_direction_subtype_by_default(self, tmp_path):
+        findings = [
+            _base_finding("p1", "p1:f0", ["amygdala"], "increase"),
+            _base_finding("p2", "p2:f0", ["amygdala"], "decrease"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        contradicts = [e for e in edges if e.edge_type == "contradicts"]
+        assert len(contradicts) == 1
+        assert contradicts[0].contradiction_subtype == "opposite_direction"
+
+    def test_negated_finding_yields_direct_refutation_subtype(self, tmp_path):
+        findings = [
+            {**_base_finding("p1", "p1:f0", ["amygdala"], "increase"), "negation": True},
+            _base_finding("p2", "p2:f0", ["amygdala"], "decrease"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        contradicts = [e for e in edges if e.edge_type == "contradicts"]
+        assert len(contradicts) == 1
+        assert contradicts[0].contradiction_subtype == "direct_refutation"
+
+    def test_supports_edge_has_no_contradiction_subtype(self, tmp_path):
+        findings = [
+            _base_finding("p1", "p1:f0", ["hippocampus"], "increase"),
+            _base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        supports = [e for e in edges if e.edge_type == "supports"]
+        assert supports[0].contradiction_subtype is None
+
+    def test_mismatched_frequency_band_blocks_false_contradiction(self, tmp_path):
+        # "theta increases" vs "gamma decreases" in the same region are two
+        # different signals, not opposing evidence about the same phenomenon.
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["amygdala"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["amygdala"], "decrease"),
+                "frequency_band": ["gamma"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        assert len([e for e in edges if e.edge_type == "contradicts"]) == 0
+
+    def test_matching_frequency_band_still_contradicts(self, tmp_path):
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["amygdala"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["amygdala"], "decrease"),
+                "frequency_band": ["theta"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        contradicts = [e for e in edges if e.edge_type == "contradicts"]
+        assert len(contradicts) == 1
+
+    def test_one_sided_frequency_band_does_not_block_contradiction(self, tmp_path):
+        # Only one finding has frequency_band populated — not enough
+        # information to claim a mismatch, so today's region-only behavior
+        # still applies.
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["amygdala"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            _base_finding("p2", "p2:f0", ["amygdala"], "decrease"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        edges = build_cross_finding_edges(f)
+        assert len([e for e in edges if e.edge_type == "contradicts"]) == 1
+
     def test_max_edges_cap_respected(self, tmp_path):
         # 10 findings from different papers all sharing a region → many pairs
         findings = [
@@ -199,6 +308,9 @@ class TestBuildConsensusSummaries:
         assert top.region == "hippocampus"
         assert top.direction == "increase"
         assert top.n_papers >= 2
+        assert top.facet_fields == []
+        assert top.specificity_tier == "base"
+        assert top.qualifier_values == {}
 
     def test_contested_finding_has_lower_strength(self, tmp_path):
         # 3 increase vs 2 decrease → strength for increase = 3/5 = 0.6
@@ -224,6 +336,102 @@ class TestBuildConsensusSummaries:
         _write_findings(findings, f)
         records = build_consensus_summaries(f, min_papers=2)
         assert len(records) == 0
+
+
+class TestBuildQualifiedConsensusSummaries:
+    def test_qualified_record_created_for_shared_frequency_band(self, tmp_path):
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        records = build_qualified_consensus_summaries(f, min_papers=2)
+        band_records = [r for r in records if r.facet_fields == ["frequency_band"]]
+        assert len(band_records) == 1
+        assert band_records[0].qualifier_values == {"frequency_band": "theta"}
+        assert band_records[0].specificity_tier == "qualified"
+        assert band_records[0].n_papers == 2
+
+    def test_findings_without_qualifier_field_excluded_from_that_tier(self, tmp_path):
+        findings = [
+            _base_finding("p1", "p1:f0", ["hippocampus"], "increase"),  # no frequency_band
+            _base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        records = build_qualified_consensus_summaries(f, min_papers=2, qualifier_fields=("frequency_band",))
+        assert records == []
+
+    def test_does_not_duplicate_base_tier_records(self, tmp_path):
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        records = build_qualified_consensus_summaries(f, min_papers=2)
+        assert all(r.specificity_tier == "qualified" for r in records)
+
+    def test_different_qualifier_values_split_into_separate_records(self, tmp_path):
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+            },
+            {
+                **_base_finding("p3", "p3:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["gamma"],
+            },
+            {
+                **_base_finding("p4", "p4:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["gamma"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        records = build_qualified_consensus_summaries(
+            f, min_papers=2, qualifier_fields=("frequency_band",)
+        )
+        band_values = {r.qualifier_values["frequency_band"] for r in records}
+        assert band_values == {"theta", "gamma"}
+
+    def test_multiple_qualifier_fields_each_produce_own_tier(self, tmp_path):
+        findings = [
+            {
+                **_base_finding("p1", "p1:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+                "injury_model": ["alzheimer_app"],
+            },
+            {
+                **_base_finding("p2", "p2:f0", ["hippocampus"], "increase"),
+                "frequency_band": ["theta"],
+                "injury_model": ["alzheimer_app"],
+            },
+        ]
+        f = tmp_path / "findings.jsonl"
+        _write_findings(findings, f)
+        records = build_qualified_consensus_summaries(
+            f, min_papers=2, qualifier_fields=("frequency_band", "injury_model")
+        )
+        facets = {tuple(r.facet_fields) for r in records}
+        assert facets == {("frequency_band",), ("injury_model",)}
 
 
 # ---------------------------------------------------------------------------

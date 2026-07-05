@@ -1,0 +1,522 @@
+# Modality Registry
+# Defines all neural recording and neuroimaging modalities with their properties,
+# cross-modal compatibility, and complementary relationships.
+# Used to power the Modalities tab in MethodsKGPage and to enable
+# cross-modal KG edges (modality_complements_modality, method_applicable_to_modality).
+
+modalities:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # ELECTROPHYSIOLOGY
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: single_unit
+    label: Single-Unit Recording (SUA)
+    aliases: [SUA, extracellular recording, tetrode, spike sorting, silicon probe]
+    modality_class: electrophysiology
+    signal_origin: "Action potentials from individual neurons"
+    temporal_resolution_ms: 0.1
+    spatial_resolution_mm: 0.05
+    coverage: "Single cell to hundreds of simultaneously recorded units"
+    species: [rat, mouse, macaque, human_DBS_patients]
+    invasiveness: invasive
+    typical_electrodes: [tetrode, silicon_probe_neuropixels, Utah_array, tungsten_electrode]
+    key_features:
+      - "Millisecond temporal precision"
+      - "Identifies single cell contributions"
+      - "Cell type identity via waveform shape and transgenic labeling"
+      - "Neuropixels: 384 channels, 30kHz sampling, 1 cm probe"
+    limitations:
+      - "Invasive surgery required"
+      - "Limited to accessible brain regions"
+      - "Spike sorting introduces assignment errors"
+      - "Cannot easily target specific cell types without transgenic access"
+    analysis_methods: [spike_sorting, cross_correlation, PSTH, ISI_analysis, LFADS, dimensionality_reduction]
+    cross_modal_value: "Gold standard for temporal precision; provides ground truth for fMRI/EEG signal sources"
+
+  - id: lfp
+    label: Local Field Potential (LFP)
+    aliases: [LFP, local field, multi-unit activity, MUA, local potential]
+    modality_class: electrophysiology
+    signal_origin: "Summed synaptic currents from many neurons in ~250µm radius"
+    temporal_resolution_ms: 1.0
+    spatial_resolution_mm: 0.25
+    coverage: "Single electrode to hundreds via silicon probe"
+    species: [rat, mouse, macaque, human_DBS_patients]
+    invasiveness: invasive
+    typical_electrodes: [tetrode, silicon_probe_neuropixels, stereotrode, DBS_electrode]
+    frequency_bands:
+      delta: [0.5, 4]
+      theta: [4, 12]
+      beta: [12, 30]
+      low_gamma: [30, 60]
+      high_gamma: [60, 150]
+      ripple: [80, 250]
+      fast_ripple: [250, 500]
+    key_features:
+      - "Captures population-level synchrony"
+      - "Access to full oscillation spectrum"
+      - "Stable over longer implantation periods than single units"
+      - "Can record simultaneously with single units on same probe"
+    limitations:
+      - "Spatial averaging — cannot resolve individual cell contributions"
+      - "Volume conduction: adjacent region signals bleed through"
+      - "1/f background makes identifying peaks challenging (use FOOOF)"
+    analysis_methods: [fft, stft, wavelet_transform, pac, coherence, granger_causality, fooof, hilbert_transform]
+    cross_modal_value: "Best rodent translation signal; directly measured in BrainER; bridges to EEG via oscillation signatures"
+
+  - id: ecog
+    label: Electrocorticography (ECoG)
+    aliases: [ECoG, iEEG, intracranial EEG, stereo-EEG, sEEG]
+    modality_class: electrophysiology
+    signal_origin: "Subdural or depth electrode arrays recording from cortical surface/depth"
+    temporal_resolution_ms: 1.0
+    spatial_resolution_mm: 5.0
+    coverage: "Strips/grids covering cm² of cortex; sEEG: bilateral depth electrodes"
+    species: [human_epilepsy_patients, macaque]
+    invasiveness: semi_invasive
+    key_features:
+      - "High SNR compared to scalp EEG"
+      - "Captures high-frequency oscillations (HFO, 80-500 Hz)"
+      - "Clinically acquired: no separate research surgery"
+      - "Can record during awake behavioral tasks"
+    limitations:
+      - "Coverage determined by clinical needs, not research"
+      - "Only epilepsy/DBS patient populations"
+      - "Scar tissue and electrode impedance drift over time"
+    analysis_methods: [fft, coherence, pac, high_gamma_broadband, fooof]
+    cross_modal_value: "Bridge between invasive LFP (animal) and non-invasive EEG (human); confirms scalp EEG signals from cortical source"
+
+  - id: eeg
+    label: Electroencephalography (EEG)
+    aliases: [EEG, scalp EEG, high-density EEG, qEEG, dry EEG]
+    modality_class: electrophysiology
+    signal_origin: "Volume-conducted sum of synchronous postsynaptic currents; mainly pyramidal neurons"
+    temporal_resolution_ms: 1.0
+    spatial_resolution_mm: 20.0
+    coverage: "Whole head; 19-256+ electrodes for HD-EEG"
+    species: [human, macaque, rat_chronic_recording]
+    invasiveness: non_invasive
+    typical_systems: [BrainProducts, ANT_neuro, Cognionics, Emotiv, OpenBCI]
+    frequency_bands:
+      delta: [0.5, 4]
+      theta: [4, 8]
+      alpha: [8, 13]
+      beta: [13, 30]
+      gamma: [30, 100]
+    key_features:
+      - "Millisecond temporal resolution"
+      - "Portable, low-cost, mobile"
+      - "ERPs: P300, N200, N400, CNV"
+      - "Wearable / ambulatory recording possible"
+    limitations:
+      - "Poor spatial resolution (volume conduction, reference problem)"
+      - "Cannot directly record subcortical regions (only indirectly)"
+      - "Susceptible to muscle, eye, and cardiac artifacts"
+      - "Cannot easily resolve sources without MRI and inverse modeling"
+    analysis_methods: [fft, ica, erp, source_localization, pac, coherence, ersp, fooof]
+    cross_modal_value: "Human equivalent of LFP; paired with fMRI for spatiotemporal; BrainE core modality"
+    neatlabs_relevance: "BrainE platform uses EEG for human corticostriatal beta measurement"
+
+  - id: meg
+    label: Magnetoencephalography (MEG)
+    aliases: [MEG, optically pumped MEG, OPM-MEG]
+    modality_class: electrophysiology
+    signal_origin: "Magnetic fields from intracellular currents (tangential to skull surface)"
+    temporal_resolution_ms: 1.0
+    spatial_resolution_mm: 5.0
+    coverage: "Whole head; ~300 SQUID sensors or OPM array"
+    species: [human]
+    invasiveness: non_invasive
+    key_features:
+      - "Better spatial resolution than EEG (reference-free, less volume conduction)"
+      - "Insensitive to radial sources (sulcal walls better than gyral crowns)"
+      - "Ideal for localizing oscillatory sources"
+      - "OPM-MEG: wearable, allows movement during recording"
+    limitations:
+      - "Expensive, shielded room required (conventional SQUID)"
+      - "Insensitive to deep subcortical sources"
+      - "Not compatible with magnetic implants"
+    analysis_methods: [beamforming, source_localization, fft, pac, coherence]
+    cross_modal_value: "Superior source localization to EEG; combines with fMRI for full spatiotemporal picture"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # HEMODYNAMIC / METABOLIC
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: fmri
+    label: Functional MRI (fMRI)
+    aliases: [fMRI, BOLD fMRI, task fMRI, resting-state fMRI, rs-fMRI]
+    modality_class: hemodynamic
+    signal_origin: "Blood-oxygen-level-dependent (BOLD) signal — deoxyHb:oxyHb ratio"
+    temporal_resolution_ms: 1000.0
+    spatial_resolution_mm: 2.0
+    coverage: "Whole brain including deep structures"
+    species: [human, macaque, rat_anesthetized]
+    invasiveness: non_invasive
+    key_features:
+      - "Best spatial resolution of non-invasive methods"
+      - "Covers subcortical structures (hippocampus, striatum, thalamus)"
+      - "Standard tool for human cognitive neuroscience"
+      - "Resting-state: maps functional network organization"
+    limitations:
+      - "Slow temporal resolution (~1-2s BOLD HRF)"
+      - "BOLD is an indirect proxy for neural activity"
+      - "Not suitable for fast oscillation analysis (<0.1 Hz accessible)"
+      - "Expensive, not portable, claustrophobic, noisy"
+    analysis_methods: [glm_fmri, rsa, ica, dcm, seed_correlation, granger_causality, cca_multimodal]
+    cross_modal_value: "Spatial ground truth for whole-brain networks; BOLD correlates with high-gamma LFP"
+
+  - id: nirs
+    label: Near-Infrared Spectroscopy (fNIRS)
+    aliases: [fNIRS, NIRS, functional NIRS, optical neuroimaging]
+    modality_class: hemodynamic
+    signal_origin: "Differential absorption of near-infrared light by oxy/deoxy hemoglobin"
+    temporal_resolution_ms: 100.0
+    spatial_resolution_mm: 10.0
+    coverage: "Cortical surface only; depth penetration ~1.5cm"
+    species: [human, macaque, rat_cortical]
+    invasiveness: non_invasive
+    key_features:
+      - "Portable, mobile — can record during natural movement"
+      - "Compatible with EEG simultaneously"
+      - "Affordable compared to fMRI"
+      - "Better temporal resolution than fMRI"
+    limitations:
+      - "Cannot image subcortical structures"
+      - "Hair, skin pigmentation attenuate signal"
+      - "Spatial resolution inferior to fMRI"
+    analysis_methods: [glm_fmri, ica, coherence]
+    cross_modal_value: "EEG+fNIRS: portable spatiotemporal combo for BCI and naturalistic settings"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # OPTICAL
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: calcium_imaging
+    label: Two-Photon Calcium Imaging
+    aliases: [2P, two-photon, GCaMP, widefield calcium, miniscope]
+    modality_class: optical
+    signal_origin: "Fluorescence from calcium-sensitive indicators (GCaMP) as proxy for spiking"
+    temporal_resolution_ms: 30.0
+    spatial_resolution_mm: 0.005
+    coverage: "Single cells to hundreds in ~500µm² field; widefield: mm²"
+    species: [mouse, rat, zebrafish]
+    invasiveness: invasive
+    key_features:
+      - "Single-cell spatial resolution with cell-type specificity via transgenic lines"
+      - "Identify same cells across days/weeks (longitudinal imaging)"
+      - "Can image 10,000+ neurons simultaneously with volumetric scanning"
+      - "Miniscope: head-mounted, freely behaving"
+    limitations:
+      - "Slow temporal resolution (limited by indicator kinetics; GCaMP ~150-600ms decay)"
+      - "Cannot distinguish fast oscillations (>10 Hz)"
+      - "Requires surgical window implant"
+      - "Photodamage limits long sessions"
+    analysis_methods: [suite2p, CNMF, LFADS, poisson_vae, dimensionality_reduction, calcium_electrophysiology_fusion]
+    cross_modal_value: "Identifies specific cell types contributing to LFP oscillations; links gene expression to activity"
+
+  - id: fiber_photometry
+    label: Fiber Photometry
+    aliases: [fiber phot, dLight, GRAB, photometry, bulk fluorescence]
+    modality_class: optical
+    signal_origin: "Bulk fluorescence from all GCaMP+ cells in fiber's field (~100µm)"
+    temporal_resolution_ms: 50.0
+    spatial_resolution_mm: 0.1
+    coverage: "Single brain region per fiber; typical 1-4 fibers"
+    species: [rat, mouse]
+    invasiveness: invasive
+    key_features:
+      - "Can record from deep regions (striatum, VTA, hippocampus)"
+      - "Dopamine sensors (dLight, GRAB-DA) directly image dopamine release"
+      - "Compatible with freely moving animals during full behavioral tasks"
+      - "Lower cost and surgical complexity than 2P"
+    limitations:
+      - "No spatial resolution within fiber field"
+      - "Bulk signal — mixes cell types"
+      - "Bleaching and movement artifacts"
+    analysis_methods: [fiber_photometry_dFF, spectral_analysis, behavior_neural_correlation]
+    cross_modal_value: "Neurotransmitter-specific: dLight/GRAB-DA images dopamine directly; complementary to LFP for reward circuits"
+    neatlabs_relevance: "Corticostriatal circuit: fiber photometry in striatum combined with LFP coherence"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # STRUCTURAL
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: dti
+    label: Diffusion Tensor Imaging (DTI / dMRI)
+    aliases: [DTI, dMRI, diffusion MRI, tractography, DSI, DKI]
+    modality_class: structural
+    signal_origin: "Water diffusion anisotropy along white matter tracts"
+    temporal_resolution_ms: null
+    spatial_resolution_mm: 2.5
+    coverage: "Whole brain white matter"
+    species: [human, macaque, rat]
+    invasiveness: non_invasive
+    key_metrics:
+      FA: "Fractional anisotropy — 0 (isotropic) to 1 (fully directional)"
+      MD: "Mean diffusivity"
+      RD: "Radial diffusivity"
+      AD: "Axial diffusivity"
+    key_features:
+      - "Maps white matter tracts (tractography)"
+      - "HCP data: 90-min dMRI, 1.25mm resolution"
+      - "FA predicts structural connectivity strength"
+    limitations:
+      - "Crossing fibers: standard DTI cannot resolve; CSD, DSI needed"
+      - "Tractography is probabilistic — false positives common"
+      - "Cannot infer directionality (structural, not functional)"
+    analysis_methods: [tractography, connectome_analysis, network_measures]
+    cross_modal_value: "Structural skeleton underlying functional connectivity; constrains DCM priors"
+
+  - id: structural_mri
+    label: Structural MRI (T1w, T2w, VBM)
+    aliases: [sMRI, T1 MRI, cortical thickness, VBM, morphometry]
+    modality_class: structural
+    signal_origin: "T1 relaxation differences between gray/white matter and CSF"
+    temporal_resolution_ms: null
+    spatial_resolution_mm: 1.0
+    coverage: "Whole brain anatomy"
+    species: [human, macaque, rat]
+    invasiveness: non_invasive
+    key_features:
+      - "Cortical thickness, surface area, volume measures"
+      - "Required for EEG/MEG source localization forward model"
+      - "VBM: voxel-wise gray matter comparisons"
+    limitations:
+      - "No functional information"
+      - "Requires coregistration to functional images"
+    analysis_methods: [freesurfer, vbm, deformation_based_morphometry, atlas_registration]
+    cross_modal_value: "Anatomical ground truth for co-registration; required for source localization; constrains ROI masks"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # MOLECULAR / TRANSCRIPTOMIC
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: spatial_transcriptomics
+    label: Spatial Transcriptomics (MERFISH, Slide-seq, 10x Visium)
+    aliases: [MERFISH, Slide-seq, Visium, spatial RNA, smFISH, Allen MERFISH]
+    modality_class: molecular
+    signal_origin: "mRNA expression detected by in situ hybridization or sequencing"
+    temporal_resolution_ms: null
+    spatial_resolution_mm: 0.01
+    coverage: "Tissue section (10-15mm × 10-15mm); Allen MERFISH: whole mouse brain"
+    species: [mouse, rat, human_postmortem]
+    invasiveness: ex_vivo
+    key_features:
+      - "Identifies cell types by gene expression in their native spatial location"
+      - "Allen MERFISH atlas: 1000+ genes, whole mouse brain, single-cell resolution"
+      - "Links gene expression to anatomy without dissociation"
+    limitations:
+      - "Static snapshot — no temporal dynamics"
+      - "Cannot be combined with live recording (ex vivo)"
+    analysis_methods: [spatial_transcriptomics_ephys, seurat, scanpy, leiden_clustering]
+    cross_modal_value: "Ground truth for cell-type composition in each region; constrains which cell types generate LFP signatures"
+
+  - id: patch_seq
+    label: Patch-seq (Simultaneous Patch-Clamp + scRNA-seq)
+    aliases: [Patch-seq, multimodal single cell, electrophysiology transcriptomics]
+    modality_class: molecular
+    signal_origin: "Single-cell action potentials (patch-clamp) + RNA aspirated from same cell"
+    temporal_resolution_ms: 0.1
+    spatial_resolution_mm: 0.001
+    coverage: "One cell at a time"
+    species: [mouse, rat, human_surgical_specimens]
+    invasiveness: invasive_ex_vivo
+    key_features:
+      - "Links electrical identity to transcriptomic identity for same cell"
+      - "Allen Cell Types Database: 100+ neuron types with intrinsic properties + gene expression"
+    limitations:
+      - "Low throughput: ~50-100 cells per experiment"
+      - "Requires slice preparation — not in vivo"
+    analysis_methods: [spatial_transcriptomics_ephys, cca_multimodal, patch_seq_clustering]
+    cross_modal_value: "Ground truth for cell type—electrophysiology mapping; calibrates cell-type assignments from in vivo LFP"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # BEHAVIORAL / COMPUTATIONAL
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - id: behavior_video
+    label: Behavioral Video Analysis (DeepLabCut, SLEAP, DLC)
+    aliases: [DeepLabCut, SLEAP, pose estimation, behavior tracking, keypoint tracking]
+    modality_class: behavioral
+    signal_origin: "Body pose keypoints estimated from video frames via deep learning"
+    temporal_resolution_ms: 33.0
+    spatial_resolution_mm: 1.0
+    coverage: "Full body; 30fps standard, up to 500fps high-speed"
+    species: [rat, mouse, macaque, human, zebrafish]
+    invasiveness: non_invasive
+    key_features:
+      - "Continuous kinematic data: position, velocity, acceleration per body part"
+      - "Pairs with any electrophysiology for neural-behavioral correlation"
+      - "Unsupervised behavioral segmentation (B-SOiD, MotionMapper)"
+    limitations:
+      - "Requires good lighting, single animal (usually)"
+      - "Occlusion challenges"
+    analysis_methods: [pose_estimation, behavior_neural_correlation, glm_behavior]
+    cross_modal_value: "Neural-behavioral correlation: regress kinematic features against LFP/spike rates"
+
+  - id: pupillometry
+    label: Pupillometry (Arousal Tracking)
+    aliases: [pupil dilation, arousal index, locus coeruleus proxy]
+    modality_class: behavioral
+    signal_origin: "Pupil diameter as proxy for norepinephrine and arousal state"
+    temporal_resolution_ms: 33.0
+    spatial_resolution_mm: null
+    coverage: "Single arousal index"
+    species: [human, macaque, mouse]
+    invasiveness: non_invasive
+    key_features:
+      - "Non-invasive arousal measure"
+      - "Locus coeruleus NE correlates with pupil diameter"
+      - "Can be acquired simultaneously with EEG/MEG"
+    limitations:
+      - "Indirect proxy; affected by many factors (light, cognitive effort, emotion)"
+    analysis_methods: [pupil_dilation_analysis, lc_ne_regression]
+    cross_modal_value: "Add arousal covariate to EEG/fMRI analysis; LC-NE proxy"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CROSS-MODAL COMPATIBILITY MATRIX
+# Each entry describes the scientific value of combining two modalities.
+# ══════════════════════════════════════════════════════════════════════════════
+
+cross_modal_pairs:
+
+  - modality_a: lfp
+    modality_b: single_unit
+    compatibility: high
+    complementarity: "LFP provides oscillation context; single units provide cell-specific spiking. PAC between LFP phase and unit firing reveals oscillatory modulation."
+    combination_methods: [spike_LFP_coherence, phasic_locking, pac]
+    key_papers:
+      - "Fries et al. (2001) — Modulation of oscillatory neuronal synchronization by selective visual attention"
+
+  - modality_a: lfp
+    modality_b: fmri
+    compatibility: high
+    complementarity: "High-gamma LFP predicts BOLD; low-frequency LFP anticorrelates. Reveals which oscillation bands drive hemodynamics."
+    combination_methods: [lfp_fmri_neurovascular, regression_LFP_BOLD]
+    key_papers:
+      - "Logothetis et al. (2001, Nature)"
+
+  - modality_a: eeg
+    modality_b: fmri
+    compatibility: high
+    complementarity: "EEG millisecond temporal dynamics; fMRI whole-brain spatial resolution. Combined: trial-by-trial EEG power predicts fMRI BOLD across regions."
+    combination_methods: [eeg_fmri_fusion, ica_eeg_bold]
+    artifacts: "MRI gradient and BCG artifacts contaminate EEG"
+
+  - modality_a: eeg
+    modality_b: lfp
+    compatibility: high
+    complementarity: "EEG (non-invasive, human) and LFP (invasive, rodent) share oscillation signatures — enables cross-species translation. Key bridge for BrainER-to-BrainE translation."
+    combination_methods: [rsa, cross_species_oscillation_mapping]
+    neatlabs_relevance: "This is the core translational bridge: LFP beta in rats (BrainER) → EEG beta in humans (BrainE)"
+
+  - modality_a: calcium_imaging
+    modality_b: lfp
+    compatibility: high
+    complementarity: "Calcium imaging identifies cell types; LFP captures network oscillations. Together: which cell types pace LFP rhythms?"
+    combination_methods: [calcium_electrophysiology_fusion, cell_type_LFP_correlation]
+
+  - modality_a: fiber_photometry
+    modality_b: lfp
+    compatibility: high
+    complementarity: "Fiber photometry (dLight/GCaMP bulk): neurotransmitter release or population activity. LFP: oscillatory dynamics. Together: dopamine modulation of striatal beta oscillations."
+    combination_methods: [neural_behavior_regression, pac]
+    neatlabs_relevance: "Measure dopamine alongside corticostriatal LFP beta during reward tasks"
+
+  - modality_a: fmri
+    modality_b: dti
+    compatibility: high
+    complementarity: "Functional connectivity (fMRI) constrained by structural connectivity (DTI). DCM uses DTI as prior. Reveals structural substrate of functional networks."
+    combination_methods: [dcm, structural_functional_coupling, ica_resting_state]
+
+  - modality_a: meg
+    modality_b: fmri
+    compatibility: medium
+    complementarity: "MEG source localizes oscillations with better accuracy than EEG; fMRI provides subcortical coverage MEG cannot. Ideal: coregistered MEG + fMRI for spatiotemporal mapping."
+    combination_methods: [meg_eeg_source_localization, multimodal_transformer]
+
+  - modality_a: spatial_transcriptomics
+    modality_b: lfp
+    compatibility: medium
+    complementarity: "Spatial transcriptomics maps cell-type composition per region; LFP indexes regional activity. Enables inferring which cell types generate specific oscillations."
+    combination_methods: [spatial_transcriptomics_ephys, cell_type_LFP_correlation]
+    requires: "Separate experimental sessions or post-hoc atlas matching"
+
+  - modality_a: behavior_video
+    modality_b: single_unit
+    compatibility: high
+    complementarity: "Keypoint kinematics regressed against spike rates enables identification of movement-tuned cells; reveals population coding of posture and action."
+    combination_methods: [behavioral_encoding_models, glm_behavior]
+
+  - modality_a: eeg
+    modality_b: pupillometry
+    compatibility: high
+    complementarity: "Pupil diameter as arousal covariate in EEG analysis; removes confounding LC-NE fluctuations; reveals attention-independent component of alpha/beta dynamics."
+    combination_methods: [pupil_EEG_regression, lc_ne_arousal_model]
+
+  - modality_a: fmri
+    modality_b: behavior_video
+    compatibility: medium
+    complementarity: "Naturalistic paradigm: video of naturalistic environment shown in scanner; identify brain regions encoding visual features, motion, action observation."
+    combination_methods: [encoding_models, rsa]
+
+  - modality_a: ecog
+    modality_b: fmri
+    compatibility: medium
+    complementarity: "ECoG validates fMRI temporal dynamics with direct recording; confirms BOLD correlates with high-gamma broadband; localizes ECoG sites relative to fMRI activations."
+    combination_methods: [ecog_fmri_validation, high_gamma_bold]
+
+  - modality_a: patch_seq
+    modality_b: calcium_imaging
+    compatibility: high
+    complementarity: "Patch-seq: define cell types by electrophysiology + transcriptome. Calcium imaging: find same types in vivo by marker expression. Together: in vivo activity of classified cell types."
+    combination_methods: [spatial_transcriptomics_ephys, cell_type_activity_mapping]
+
+# ══════════════════════════════════════════════════════════════════════════════
+# MODALITY GROUPS (for multi-modal analysis categories)
+# ══════════════════════════════════════════════════════════════════════════════
+
+modality_groups:
+  - id: invasive_ephys
+    label: Invasive Electrophysiology
+    members: [single_unit, lfp, ecog, fiber_photometry]
+    temporal_resolution_tier: "sub-millisecond to millisecond"
+    spatial_resolution_tier: "cellular to regional"
+
+  - id: noninvasive_ephys
+    label: Non-Invasive Electrophysiology
+    members: [eeg, meg]
+    temporal_resolution_tier: "millisecond"
+    spatial_resolution_tier: "centimeter"
+
+  - id: hemodynamic
+    label: Hemodynamic Imaging
+    members: [fmri, nirs]
+    temporal_resolution_tier: "seconds"
+    spatial_resolution_tier: "millimeter to centimeter"
+
+  - id: optical_imaging
+    label: Optical Imaging
+    members: [calcium_imaging, fiber_photometry]
+    temporal_resolution_tier: "tens of milliseconds"
+    spatial_resolution_tier: "cellular to regional"
+
+  - id: structural_imaging
+    label: Structural Imaging
+    members: [dti, structural_mri]
+    temporal_resolution_tier: "static"
+    spatial_resolution_tier: "millimeter"
+
+  - id: molecular
+    label: Molecular / Transcriptomic
+    members: [spatial_transcriptomics, patch_seq]
+    temporal_resolution_tier: "static"
+    spatial_resolution_tier: "cellular"
+
+  - id: behavioral
+    label: Behavioral / Kinematic
+    members: [behavior_video, pupillometry]
+    temporal_resolution_tier: "millisecond to tens of milliseconds"
+    spatial_resolution_tier: "millimeter to centimeter"

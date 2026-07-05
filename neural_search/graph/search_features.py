@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -17,8 +20,35 @@ from neural_search.graph.schema import (
 )
 
 DEFAULT_GRAPH_SEARCH_WEIGHTS = {
-    "linked_paper": 0.04,
+    # Set to 0.0 (2026-07-02): this weight (previously 0.04) was configured
+    # speculatively before any paper nodes existed in the production graph —
+    # find_papers_for_dataset() always returned [], so it was permanently
+    # inert. Once neural_search.graph.paper_node_builder populated real
+    # paper_mentions_dataset/paper_uses_dataset edges (494 real matches
+    # across OpenAlex + DataCite), a nonzero weight here measurably
+    # regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8583 on the 317-query
+    # benchmark). Confirmed by isolation (weight alone, zeroed, restores
+    # exactly 0.8594) before committing this comment — same "populate first,
+    # discover the regression after" pattern already caught twice this
+    # session for dataset_old_dataset_new_method_candidate and
+    # dataset_reanalysis_bridge_dataset (see comments below). Data remains
+    # fully in the graph (paper nodes, edges, evidence_tier property) for
+    # its intended purpose — only excluded from ranking until validated
+    # against gold qrels, same treatment as reanalysis_edge below.
+    "linked_paper": 0.0,
     "analysis_affordance": 0.03,
+    "relationship_edge": 0.012,
+    # Set to 0.0 (2026-07-01): this weight was configured speculatively
+    # before dataset_old_dataset_new_method_candidate edges were ever
+    # populated. Once populated (59,126 edges, 2026-07-01), a nonzero weight
+    # here contributed to a measured hybrid_graph/full NDCG@10 regression
+    # (0.8594 -> 0.859 after fixing the larger graph_degree contribution
+    # below; 0.8594 exactly with this weight at 0.0). These edges are an
+    # unreviewed heuristic (requires_human_review=True, not yet validated
+    # against gold qrels) — don't let them influence ranking until calibrated.
+    # See reports/architecture_connectivity_audit_2026-07-01.md and
+    # reports/reanalysis_candidates_report.md.
+    "reanalysis_edge": 0.0,
     "requirement_match": 0.01,
     "analysis_requirement_coverage": 0.015,
     "task_match": 0.03,
@@ -29,6 +59,29 @@ DEFAULT_GRAPH_SEARCH_WEIGHTS = {
     "degree": 0.01,
 }
 
+RELATIONSHIP_EDGE_TYPES = {
+    "dataset_similar_to_dataset",
+    "same_region_cross_modality",
+    "same_task_cross_species",
+    "same_region_same_task",
+    "dataset_reanalysis_bridge_dataset",
+}
+
+REANALYSIS_EDGE_TYPES = {
+    "dataset_old_dataset_new_method_candidate",
+    "dataset_reinterpretation_candidate",
+    "dataset_reprocessing_candidate",
+}
+
+_LOCAL_EDGE_INDEX_CACHE: dict[
+    int,
+    tuple[int, dict[str, list[KnowledgeGraphEdge]], dict[str, list[KnowledgeGraphEdge]]],
+] = {}
+
+# Reverse alias index: graph_id → {alias/source_id/node_id → canonical node_id}
+# Built once per graph load, makes _resolve_dataset_node_id O(1) instead of O(N)
+_ALIAS_INDEX_CACHE: dict[int, dict[str, str]] = {}
+
 REQUIREMENT_GROUPS = {
     "modality": "modality",
     "recording_scale": "recording_scale",
@@ -38,7 +91,8 @@ REQUIREMENT_GROUPS = {
 }
 
 
-def load_graph_if_exists(path: str | Path | None) -> KnowledgeGraph | None:
+@lru_cache(maxsize=8)
+def load_graph_if_exists(path: str | None) -> KnowledgeGraph | None:
     """Load a graph JSON file if present, otherwise return None."""
 
     if not path:
@@ -55,23 +109,37 @@ def _result_node_id(result_id: str) -> str:
     return dataset_node_id(result_id)
 
 
+def _build_alias_index(graph: KnowledgeGraph) -> dict[str, str]:
+    """Build {alias → canonical_node_id} for all dataset nodes. Called once per graph."""
+    index: dict[str, str] = {}
+    for node in graph.nodes.values():
+        if node.node_type != "dataset":
+            continue
+        nid = node.node_id
+        index[nid] = nid
+        for alias in node.aliases:
+            index[alias] = nid
+        for sid in node.source_ids:
+            index[sid] = nid
+        raw_sid = str(node.properties.get("source_id", ""))
+        if raw_sid:
+            index[raw_sid] = nid
+    return index
+
+
+def _get_alias_index(graph: KnowledgeGraph) -> dict[str, str]:
+    gid = id(graph)
+    if gid not in _ALIAS_INDEX_CACHE:
+        _ALIAS_INDEX_CACHE[gid] = _build_alias_index(graph)
+    return _ALIAS_INDEX_CACHE[gid]
+
+
 def _resolve_dataset_node_id(graph: KnowledgeGraph, result_id: str) -> str:
     candidate = _result_node_id(result_id)
     if candidate in graph.nodes:
         return candidate
-    normalized_result = str(result_id)
-    for node in graph.nodes.values():
-        if node.node_type != "dataset":
-            continue
-        aliases = {
-            node.node_id,
-            *node.aliases,
-            *node.source_ids,
-            str(node.properties.get("source_id", "")),
-        }
-        if normalized_result in aliases:
-            return node.node_id
-    return candidate
+    alias_index = _get_alias_index(graph)
+    return alias_index.get(result_id, candidate)
 
 
 def _neighbor_labels(
@@ -93,15 +161,34 @@ def _get_edges_for_node(
 ) -> list[KnowledgeGraphEdge]:
     """Return edges connected to a node, optionally filtered by type."""
     edges = []
-    for edge in graph.edges.values():
-        if direction in ("out", "both") and edge.source_node_id == node_id:
+    out_index, in_index = _local_edge_indexes(graph)
+    if direction in ("out", "both"):
+        for edge in out_index.get(node_id, []):
             if edge_type is None or edge.edge_type == edge_type:
                 edges.append(edge)
-        elif direction in ("in", "both") and edge.target_node_id == node_id:
+    if direction in ("in", "both"):
+        for edge in in_index.get(node_id, []):
             if edge_type is None or edge.edge_type == edge_type:
                 edges.append(edge)
     # Sort by confidence descending
     return sorted(edges, key=lambda e: e.confidence, reverse=True)
+
+
+def _local_edge_indexes(
+    graph: KnowledgeGraph,
+) -> tuple[dict[str, list[KnowledgeGraphEdge]], dict[str, list[KnowledgeGraphEdge]]]:
+    cache_key = id(graph)
+    edge_count = len(graph.edges)
+    cached = _LOCAL_EDGE_INDEX_CACHE.get(cache_key)
+    if cached and cached[0] == edge_count:
+        return cached[1], cached[2]
+    out_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    in_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    for edge in graph.edges.values():
+        out_index.setdefault(edge.source_node_id, []).append(edge)
+        in_index.setdefault(edge.target_node_id, []).append(edge)
+    _LOCAL_EDGE_INDEX_CACHE[cache_key] = (edge_count, out_index, in_index)
+    return out_index, in_index
 
 
 def _empty_features(*, graph_available: bool) -> dict[str, Any]:
@@ -119,6 +206,8 @@ def _empty_features(*, graph_available: bool) -> dict[str, Any]:
             "animal_types": [],
         },
         "brain_regions": [],
+        "relationship_edges": [],
+        "reanalysis_edges": [],
         "recording_scales": [],
         "matched_query_context": {},
         "requirement_matches": {
@@ -247,6 +336,45 @@ def _requirement_matches(
     return grouped
 
 
+def _relationship_summaries(
+    graph: KnowledgeGraph,
+    dataset_node_id: str,
+    edge_types: set[str],
+) -> list[dict[str, Any]]:
+    """Return compact summaries for cross-dataset and reanalysis edges."""
+
+    summaries: list[dict[str, Any]] = []
+    for edge in _get_edges_for_node(graph, dataset_node_id, direction="both"):
+        if edge.edge_type not in edge_types:
+            continue
+        other_id = (
+            edge.target_node_id
+            if edge.source_node_id == dataset_node_id
+            else edge.source_node_id
+        )
+        other = graph.nodes.get(other_id)
+        summaries.append(
+            {
+                "edge_type": edge.edge_type,
+                "dataset": other.label if other else other_id,
+                "dataset_id": other_id,
+                "confidence": round(edge.confidence, 3),
+                "relationship_type": edge.properties.get("relationship_type"),
+                "method": edge.properties.get("method"),
+                "explanation": edge.properties.get("explanation")
+                or edge.properties.get("context"),
+            }
+        )
+    summaries.sort(
+        key=lambda item: (
+            -float(item["confidence"]),
+            str(item["edge_type"]),
+            str(item["dataset_id"]),
+        )
+    )
+    return summaries
+
+
 def _species_context(
     graph: KnowledgeGraph,
     dataset_node_id: str,
@@ -294,10 +422,51 @@ def compute_graph_features_for_result(
     if node_id not in graph.nodes:
         return _empty_features(graph_available=True)
 
-    graph_degree = sum(
-        1
-        for edge in graph.edges.values()
-        if edge.source_node_id == node_id or edge.target_node_id == node_id
+    out_index, in_index = _local_edge_indexes(graph)
+    # Exclude dataset_similar_to_dataset edges from degree — they reflect embedding-based
+    # similarity clusters and are densely populated for DANDI/OpenNeuro, inflating scores
+    # for popular platforms relative to specialized archives (buzsaki, crcns, etc.).
+    #
+    # Also exclude REANALYSIS_EDGE_TYPES (2026-07-01): once
+    # dataset_old_dataset_new_method_candidate edges were populated for the
+    # first time (59,126 edges across 80% of datasets), they dominated
+    # generic degree counts enough to flatten this feature's differentiation
+    # and measurably regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8494 on
+    # the 317-query canonical benchmark). These edges are an unreviewed
+    # heuristic signal (requires_human_review=True) surfaced for a different
+    # purpose (reanalysis candidate discovery) and should not feed generic
+    # connectivity scoring, the same reasoning as dataset_similar_to_dataset.
+    #
+    # Also exclude dataset_reanalysis_bridge_dataset (2026-07-01, same session):
+    # populating this edge type (2,517 edges, 818 datasets) also measurably
+    # regressed hybrid_graph/full NDCG@10 (0.8594 -> 0.8545), smaller in
+    # magnitude but the same mechanism. Unlike reanalysis_edge below, this
+    # edge type also feeds the (already-tuned, nonzero) relationship_edge
+    # weight via RELATIONSHIP_EDGE_TYPES — excluding it here from the
+    # *degree* feature specifically was sufficient to fully restore 0.8594,
+    # confirmed empirically before committing this comment.
+    # Also exclude paper_mentions_dataset / paper_uses_dataset (2026-07-02,
+    # Phase 1 of the literature-source expansion): these are populated for
+    # the first time in production by neural_search.graph.paper_node_builder.
+    # Excluded pre-emptively, before first measurement, since this count is
+    # expected to grow to the thousands once Crossref/Semantic Scholar/PubMed
+    # linking lands (Phase 2) — matching the same "populate first, discover
+    # the graph_degree regression after" mistake already made and fixed twice
+    # this session for dataset_old_dataset_new_method_candidate and
+    # dataset_reanalysis_bridge_dataset above. These edge types already feed
+    # the dedicated, capped, low-weight linked_paper score directly (see
+    # graph_context_score's paper_edges handling) — that is the intended
+    # ranking signal, not generic node-degree inflation.
+    _DEGREE_EXCLUDED_EDGE_TYPES = {
+        "dataset_similar_to_dataset",
+        "dataset_reanalysis_bridge_dataset",
+        "paper_mentions_dataset",
+        "paper_uses_dataset",
+        *REANALYSIS_EDGE_TYPES,
+    }
+    graph_degree = (
+        sum(1 for e in out_index.get(node_id, []) if e.edge_type not in _DEGREE_EXCLUDED_EDGE_TYPES)
+        + sum(1 for e in in_index.get(node_id, []) if e.edge_type not in _DEGREE_EXCLUDED_EDGE_TYPES)
     )
     linked_papers = [paper.label for paper in find_papers_for_dataset(graph, node_id)]
     analysis_affordances = _neighbor_labels(graph, node_id, "dataset_supports_analysis")
@@ -307,6 +476,8 @@ def compute_graph_features_for_result(
     species = _neighbor_labels(graph, node_id, "dataset_has_species")
     species_context = _species_context(graph, node_id)
     brain_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+    relationship_edges = _relationship_summaries(graph, node_id, RELATIONSHIP_EDGE_TYPES)
+    reanalysis_edges = _relationship_summaries(graph, node_id, REANALYSIS_EDGE_TYPES)
     context = query_context or {}
     query_species = {_norm(value) for value in context.get("species", [])}
     species_terms = {_norm(value) for value in species}
@@ -345,6 +516,8 @@ def compute_graph_features_for_result(
         "species": species,
         "species_context": species_context,
         "brain_regions": brain_regions,
+        "relationship_edges": relationship_edges,
+        "reanalysis_edges": reanalysis_edges,
         "matched_query_context": matched_query_context,
         "requirement_matches": _requirement_matches(graph, node_id),
     }
@@ -384,6 +557,8 @@ def graph_context_score(
     covered_requirement_groups = len(
         [values for values in requirement_matches.values() if values]
     )
+    relationship_count = len(features.get("relationship_edges", []))
+    reanalysis_count = len(features.get("reanalysis_edges", []))
 
     if use_edge_confidence:
         # Weight linked paper edges by confidence
@@ -436,6 +611,8 @@ def graph_context_score(
             min(covered_requirement_groups, 4)
             * score_weights.get("analysis_requirement_coverage", 0.0)
         )
+        score += min(relationship_count, 5) * score_weights.get("relationship_edge", 0.0)
+        score += min(reanalysis_count, 5) * score_weights.get("reanalysis_edge", 0.0)
     else:
         # Original counting-based scoring
         score += min(len(features["linked_papers"]), 3) * score_weights["linked_paper"]
@@ -450,6 +627,629 @@ def graph_context_score(
         score += len(matched.get("species", [])) * score_weights.get("species_match", 0.0)
         score += len(matched.get("taxon_groups", [])) * score_weights.get("taxon_match", 0.0)
         score += len(matched.get("brain_regions", [])) * score_weights["brain_region_match"]
+        score += min(relationship_count, 5) * score_weights.get("relationship_edge", 0.0)
+        score += min(reanalysis_count, 5) * score_weights.get("reanalysis_edge", 0.0)
         score += min(int(features["graph_degree"]), 10) * score_weights["degree"]
 
     return round(min(score, 0.25), 4)
+
+
+# ---------------------------------------------------------------------------
+# KG layer indexes — built lazily from artifact JSONL files
+# ---------------------------------------------------------------------------
+
+_COMPOSED_KG_PATH = Path("artifacts/kg/composed_kg.jsonl")
+_NER_KG_PATH = Path("artifacts/ner/ner_kg.jsonl")
+_CITATION_EDGES_PATH = Path("artifacts/citations/citation_edges.jsonl")
+
+_CITATION_INDEGREE_CAP = 50
+
+
+@lru_cache(maxsize=1)
+def _load_neurosynth_index() -> dict[str, list[float]]:
+    """Build region→[confidence, ...] index from topic_activates_region edges.
+
+    Prefers the pre-built artifact cache (fast: ms) but falls back to building
+    directly from source (slow: ~20s, cached in-process via lru_cache) when the
+    cache is missing, rather than silently returning {} — composed_kg.jsonl is
+    gitignored and has no automated regeneration pipeline, so its absence must
+    not silently zero out this score.
+    """
+    region_weights: dict[str, list[float]] = defaultdict(list)
+    if _COMPOSED_KG_PATH.exists():
+        with _COMPOSED_KG_PATH.open(encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if rec.get("record_type") != "edge":
+                    continue
+                edge = rec.get("edge", {})
+                if edge.get("edge_type") != "topic_activates_region":
+                    continue
+                target = edge.get("target_node_id", "")
+                region_key = target.split(":", 1)[-1]
+                region_weights[region_key].append(float(edge.get("confidence", 0.0)))
+        return dict(region_weights)
+
+    from neural_search.ingestion.neurosynth_builder import build_neurosynth_kg
+
+    try:
+        kg = build_neurosynth_kg()
+    except Exception:  # noqa: BLE001 - source data (NeuroSynth TSV/NPZ) may be absent
+        return {}
+    for edge in kg.edges.values():
+        if edge.edge_type != "topic_activates_region":
+            continue
+        region_key = edge.target_node_id.split(":", 1)[-1]
+        region_weights[region_key].append(float(edge.confidence))
+    return dict(region_weights)
+
+
+@lru_cache(maxsize=1)
+def _load_ner_index() -> dict[str, dict[str, list[str]]]:
+    """Build paper_id→{regions, disorders} index from NER KG edges."""
+    paper_entities: dict[str, dict[str, list[str]]] = defaultdict(
+        lambda: {"regions": [], "disorders": []}
+    )
+    if not _NER_KG_PATH.exists():
+        return {}
+    with _NER_KG_PATH.open(encoding="utf-8") as fh:
+        for line in fh:
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if rec.get("record_type") != "edge":
+                continue
+            edge = rec.get("edge", {})
+            edge_type = edge.get("edge_type", "")
+            src = edge.get("source_node_id", "")
+            tgt = edge.get("target_node_id", "")
+            region_key = tgt.split(":", 1)[-1]
+            if edge_type == "paper_mentions_region":
+                paper_entities[src]["regions"].append(region_key)
+            elif edge_type == "paper_involves_disorder":
+                paper_entities[src]["disorders"].append(region_key)
+    return dict(paper_entities)
+
+
+@lru_cache(maxsize=1)
+def _load_citation_indegree() -> dict[str, int]:
+    """Build paper_id→in-degree index from citation edges JSONL."""
+    indegree: dict[str, int] = defaultdict(int)
+    if not _CITATION_EDGES_PATH.exists():
+        return {}
+    with _CITATION_EDGES_PATH.open(encoding="utf-8") as fh:
+        for line in fh:
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            cited = rec.get("cited_paper_id")
+            if cited:
+                indegree[cited] += 1
+    return dict(indegree)
+
+
+def _norm_region(value: str) -> str:
+    return value.strip().lower().replace(" ", "_").replace("-", "_")
+
+
+# ---------------------------------------------------------------------------
+# Public scoring functions
+# ---------------------------------------------------------------------------
+
+def neurosynth_region_score(
+    graph: KnowledgeGraph | None,
+    parsed_query: dict[str, Any],
+    result_id: str,
+) -> float:
+    """Return [0,1] boost when queried brain regions activate strongly in NeuroSynth."""
+    queried_regions = parsed_query.get("brain_regions", [])
+    if not queried_regions:
+        return 0.0
+    try:
+        index = _load_neurosynth_index()
+    except Exception:
+        return 0.0
+    if not index:
+        return 0.0
+    weights: list[float] = []
+    for region in queried_regions:
+        key = _norm_region(str(region))
+        if key in index:
+            weights.extend(index[key])
+    if not weights:
+        return 0.0
+    return round(min(sum(weights) / len(weights), 1.0), 4)
+
+
+def ner_entity_coverage_score(
+    graph: KnowledgeGraph | None,
+    parsed_query: dict[str, Any],
+    result_id: str,
+) -> float:
+    """Return fraction of queried regions/disorders covered by NER paper mentions."""
+    queried_regions = [_norm_region(r) for r in parsed_query.get("brain_regions", [])]
+    queried_entities = set(queried_regions)
+    if not queried_entities:
+        return 0.0
+
+    paper_node_ids: list[str] = []
+    if graph is not None:
+        try:
+            node_id = _resolve_dataset_node_id(graph, result_id)
+            paper_node_ids = [p.node_id for p in find_papers_for_dataset(graph, node_id)]
+        except Exception:
+            pass
+
+    if not paper_node_ids:
+        return 0.0
+
+    try:
+        ner_index = _load_ner_index()
+    except Exception:
+        return 0.0
+    if not ner_index:
+        return 0.0
+
+    covered: set[str] = set()
+    for paper_node_id in paper_node_ids:
+        ner_key = paper_node_id.removeprefix("node:")
+        entities = ner_index.get(ner_key, {})
+        covered.update(_norm_region(r) for r in entities.get("regions", []))
+        covered.update(_norm_region(d) for d in entities.get("disorders", []))
+
+    matched = queried_entities & covered
+    return round(len(matched) / len(queried_entities), 4)
+
+
+def citation_authority_score(
+    graph: KnowledgeGraph | None,
+    result_id: str,
+    paper_node_ids: list[str],
+) -> float:
+    """Return [0,1] score based on max in-degree of linked papers in citation graph."""
+    if not paper_node_ids:
+        return 0.0
+    try:
+        indegree = _load_citation_indegree()
+    except Exception:
+        return 0.0
+    if not indegree:
+        return 0.0
+
+    scores: list[float] = []
+    for paper_node_id in paper_node_ids:
+        openalex_id = paper_node_id.rsplit(":", 1)[-1]
+        cited_count = indegree.get(openalex_id, 0)
+        scores.append(min(cited_count, _CITATION_INDEGREE_CAP) / _CITATION_INDEGREE_CAP)
+
+    return round(max(scores), 4)
+
+
+# ---------------------------------------------------------------------------
+# Allen CCF hierarchy helpers
+# ---------------------------------------------------------------------------
+
+_ALLEN_CCF_CACHE: tuple[dict[str, set[str]], dict[str, set[str]]] | None = None
+
+_ALLEN_CCF_DEFAULT_PATH = Path(__file__).parents[2] / "artifacts" / "atlas" / "allen_ccf_mouse_structures.json"
+
+
+def _norm_ccf(value: str) -> str:
+    """Normalize a region name for CCF lookup: lowercase, spaces/hyphens → underscores."""
+    return value.strip().lower().replace(" ", "_").replace("-", "_")
+
+
+_ALLEN_HUMAN_CCF_DEFAULT_PATH = Path(__file__).parents[2] / "artifacts" / "atlas" / "allen_human_structures.json"
+
+
+def _process_ccf_structures(
+    structures: list[dict],
+) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+    """Build (ancestors_map, descendants_map) from an Allen CCF structure list."""
+    by_id: dict[int, dict] = {s["allen_id"]: s for s in structures}
+    parent_of: dict[int, int | None] = {s["allen_id"]: s.get("parent_id") for s in structures}
+
+    def _ancestors(aid: int) -> set[int]:
+        result: set[int] = set()
+        current = parent_of.get(aid)
+        while current is not None:
+            result.add(current)
+            current = parent_of.get(current)
+        return result
+
+    def _descendants(aid: int) -> set[int]:
+        result: set[int] = set()
+        stack = list(by_id[aid].get("children_ids") or [])
+        while stack:
+            child_id = stack.pop()
+            if child_id in result:
+                continue
+            result.add(child_id)
+            if child_id in by_id:
+                stack.extend(by_id[child_id].get("children_ids") or [])
+        return result
+
+    def _keys(s: dict) -> list[str]:
+        keys = []
+        if s.get("name"):
+            keys.append(_norm_ccf(s["name"]))
+        if s.get("acronym") and s["acronym"] != s.get("name"):
+            keys.append(_norm_ccf(s["acronym"]))
+        return keys
+
+    ancestors_map: dict[str, set[str]] = {}
+    descendants_map: dict[str, set[str]] = {}
+    for s in structures:
+        aid = s["allen_id"]
+        anc_names = {n for anc_id in _ancestors(aid) if anc_id in by_id for n in _keys(by_id[anc_id])}
+        desc_names = {n for desc_id in _descendants(aid) if desc_id in by_id for n in _keys(by_id[desc_id])}
+        for key in _keys(s):
+            ancestors_map[key] = anc_names
+            descendants_map[key] = desc_names
+    return ancestors_map, descendants_map
+
+
+def load_allen_ccf_hierarchy(
+    path: str | Path | None = None,
+) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+    """Load Allen CCF mouse + human brain atlases and build merged ancestor/descendant maps.
+
+    Returns a pair ``(ancestors_map, descendants_map)`` where each key is a
+    normalized structure name or acronym and each value is the set of normalized
+    names of all ancestors (resp. descendants) of that structure.  Mouse and
+    human hierarchies are merged so region matching works across both species.
+
+    Results are cached in ``_ALLEN_CCF_CACHE`` so files are only parsed once.
+    """
+    global _ALLEN_CCF_CACHE
+    if _ALLEN_CCF_CACHE is not None:
+        return _ALLEN_CCF_CACHE
+
+    ancestors_map: dict[str, set[str]] = {}
+    descendants_map: dict[str, set[str]] = {}
+
+    for atlas_path in (Path(path or _ALLEN_CCF_DEFAULT_PATH), _ALLEN_HUMAN_CCF_DEFAULT_PATH):
+        if not atlas_path.exists():
+            continue
+        try:
+            structures: list[dict] = json.loads(atlas_path.read_text(encoding="utf-8"))
+            anc, desc = _process_ccf_structures(structures)
+            # Merge: union ancestor/descendant sets for names appearing in multiple atlases
+            for key, anc_set in anc.items():
+                if key in ancestors_map:
+                    ancestors_map[key] |= anc_set
+                else:
+                    ancestors_map[key] = anc_set
+            for key, desc_set in desc.items():
+                if key in descendants_map:
+                    descendants_map[key] |= desc_set
+                else:
+                    descendants_map[key] = desc_set
+        except Exception:
+            pass
+
+    _ALLEN_CCF_CACHE = (ancestors_map, descendants_map)
+    return _ALLEN_CCF_CACHE
+
+
+def expand_region_query(
+    regions: list[str],
+    include_descendants: bool = True,
+) -> set[str]:
+    """Return *regions* expanded to include all their descendants via Allen CCF.
+
+    If the atlas is unavailable the original labels are returned unchanged.
+    """
+    _, descendants_map = load_allen_ccf_hierarchy()
+    expanded: set[str] = set()
+    for r in regions:
+        key = _norm_ccf(r)
+        expanded.add(key)
+        if include_descendants and key in descendants_map:
+            expanded.update(descendants_map[key])
+    return expanded
+
+
+_CCF_EXPAND_CACHE: dict[str, set[str]] = {}
+
+# Informal region abbreviations → Allen CCF normalized keys.
+# Allen CCF uses "area" not "cortex" and has its own acronyms (MOp, ACA, ORB…).
+_REGION_ALIAS_MAP: dict[str, list[str]] = {
+    "m1": ["mop", "primary_motor_area"],
+    "m2": ["mos", "secondary_motor_area"],
+    "motor_cortex": ["mop", "mos"],
+    "primary_motor_cortex": ["mop", "primary_motor_area"],
+    "s1": ["ssp", "primary_somatosensory_area"],
+    "s2": ["sss", "supplemental_somatosensory_area"],
+    "somatosensory_cortex": ["ssp", "ssf", "sss"],
+    "primary_somatosensory_cortex": ["ssp"],
+    "v1": ["visp", "primary_visual_area"],
+    "primary_visual_cortex": ["visp", "primary_visual_area"],
+    "v2": ["visa", "secondary_visual_area"],
+    "visual_cortex": ["visp", "visa", "visam"],
+    "a1": ["aup", "primary_auditory_area"],
+    "primary_auditory_cortex": ["aup", "primary_auditory_area"],
+    "auditory_cortex": ["aup", "au", "audp"],
+    "acc": ["aca", "anterior_cingulate_area"],
+    "anterior_cingulate_cortex": ["aca", "anterior_cingulate_area"],
+    "ofc": ["orb", "orbital_area"],
+    "orbitofrontal_cortex": ["orb", "orbital_area"],
+    "mpfc": ["pl", "ila"],
+    "medial_prefrontal_cortex": ["pl", "ila", "prelimbic_area", "infralimbic_area"],
+    "pfc": ["prefrontal", "prefrontal_area"],
+    "prefrontal_cortex": ["prefrontal_area"],
+    "dlpfc": ["prefrontal", "prefrontal_area"],
+    "vta": ["ventral_tegmental_area"],
+    "bla": ["basolateral_amygdalar_nucleus"],
+    "nac": ["acb", "accumbens_nucleus"],
+    "nacc": ["acb", "accumbens_nucleus"],
+    "nucleus_accumbens": ["acb", "accumbens_nucleus"],
+    "ca1": ["field_ca1"],
+    "ca3": ["field_ca3"],
+    "dg": ["dentate_gyrus"],
+    "snc": ["substantia_nigra_compact_part"],
+    "snr": ["substantia_nigra_reticular_part"],
+    "hpc": ["hippocampus", "hippocampal_region"],
+    "hip": ["hippocampus", "hippocampal_region"],
+    "lhb": ["lateral_habenular_nucleus"],
+    "mhb": ["medial_habenular_nucleus"],
+}
+
+
+def _expand_region_key(key: str) -> list[str]:
+    """Return *key* plus CCF-compatible synonyms for informal abbreviations.
+
+    Also normalizes "cortex" ↔ "area" since Allen CCF systematically uses "area".
+    """
+    expanded: list[str] = [key]
+    # cortex ↔ area swap (Allen CCF uses "primary_motor_area" not "primary_motor_cortex")
+    if key.endswith("_cortex"):
+        alt = key[:-7] + "_area"
+        if alt not in expanded:
+            expanded.append(alt)
+    elif key.endswith("_area"):
+        alt = key[:-5] + "_cortex"
+        if alt not in expanded:
+            expanded.append(alt)
+    # Direct alias lookup
+    for alias in _REGION_ALIAS_MAP.get(key, []):
+        if alias not in expanded:
+            expanded.append(alias)
+    return expanded
+
+
+def _ccf_expand_key(key: str, ancestors_map: dict[str, set[str]]) -> set[str]:
+    """Return all CCF keys semantically matching ``key`` (memoized per normalized key).
+
+    Rules (short CCF keys <4 chars excluded from substring/prefix checks):
+    1. Exact match
+    2. key is a non-trivial substring of ccf_key (≥5 chars shared)
+    3. Longest common prefix ≥5 chars (hippocampus↔hippocampal)
+    4. First underscore-token match if token ≥4 chars
+    """
+    if key in _CCF_EXPAND_CACHE:
+        return _CCF_EXPAND_CACHE[key]
+    matches: set[str] = set()
+    if not key or len(key) < 2:
+        _CCF_EXPAND_CACHE[key] = matches
+        return matches
+    key_tokens = key.split("_")
+    for ccf_key in ancestors_map:
+        if ccf_key == key:
+            matches.add(ccf_key)
+            continue
+        if len(ccf_key) < 4:
+            continue
+        # Substring: key embedded in ccf_key
+        if len(key) >= 4 and key in ccf_key:
+            matches.add(ccf_key)
+            continue
+        # Common leading prefix ≥5 chars
+        common = 0
+        for a, b in zip(key, ccf_key, strict=False):
+            if a == b:
+                common += 1
+            else:
+                break
+        if common >= 5:
+            matches.add(ccf_key)
+            continue
+        # First token match (≥4 chars) — "prefrontal" matches "prefrontal_area_*"
+        ccf_first = ccf_key.split("_")[0]
+        if len(ccf_first) >= 4 and ccf_first == key_tokens[0]:
+            matches.add(ccf_key)
+    _CCF_EXPAND_CACHE[key] = matches
+    return matches
+
+
+def region_hierarchy_score(
+    dataset_regions: list[str],
+    query_regions: list[str],
+) -> float:
+    """Return [0, 1] score reflecting Allen CCF hierarchy overlap.
+
+    Scoring per (dataset_region, query_region) pair:
+    - Direct match: 1.0
+    - Query term (or a CCF synonym) is an ancestor of dataset region: 0.7
+    - Dataset region is an ancestor of query term (or synonym): 0.5
+
+    Substring expansion handles cases where query uses "hippocampus" but
+    Allen CCF has "hippocampal_region" / "hippocampal_formation".
+    Returns the maximum score across all pairs, capped at 1.0.
+    """
+    if not dataset_regions or not query_regions:
+        return 0.0
+
+    ancestors_map, _ = load_allen_ccf_hierarchy()
+    if not ancestors_map:
+        return 0.0
+
+    ds_keys_raw = [_norm_ccf(r) for r in dataset_regions]
+    q_keys_raw = [_norm_ccf(r) for r in query_regions]
+    ds_keys = list(dict.fromkeys(k for r in ds_keys_raw for k in _expand_region_key(r)))
+    q_keys = list(dict.fromkeys(k for r in q_keys_raw for k in _expand_region_key(r)))
+
+    best = 0.0
+    for ds in ds_keys:
+        for q in q_keys:
+            # Level 0: exact string match — always score 1.0
+            if ds == q:
+                best = 1.0
+                break
+
+            # Level 1+: CCF hierarchy traversal
+            ds_expanded = _ccf_expand_key(ds, ancestors_map)
+            q_expanded = _ccf_expand_key(q, ancestors_map)
+
+            if ds_expanded or q_expanded:
+                # Direct CCF synonym overlap
+                if ds_expanded & q_expanded:
+                    best = max(best, 1.0)
+                    break
+
+                # Compute combined ancestor set for dataset
+                anc_of_ds: set[str] = set()
+                for dk in ds_expanded:
+                    anc_of_ds.update(ancestors_map.get(dk, set()))
+
+                # Any query synonym is ancestor of dataset region → query is broader
+                if q_expanded & anc_of_ds:
+                    best = max(best, 0.7)
+                    continue
+
+                # Dataset region is ancestor of any query synonym → dataset is broader
+                for qk in q_expanded:
+                    anc_of_q = ancestors_map.get(qk, set())
+                    if ds_expanded & anc_of_q:
+                        best = max(best, 0.5)
+                        break
+
+            # Level 2: prefix fallback — same first token is weak positive signal
+            elif len(ds) >= 4 and ds.split("_")[0] == q.split("_")[0]:
+                best = max(best, 0.4)
+
+        if best >= 1.0:
+            break
+
+    return round(min(best, 1.0), 4)
+
+
+KG_LAYER_WEIGHTS: dict[str, float] = {
+    "neurosynth_region": 0.025,
+    "ner_coverage": 0.020,
+    "citation_authority": 0.015,
+    "kg_concept": 0.08,
+    "region_hierarchy": 0.03,
+}
+
+_KG_CONCEPT_INDEX: dict[str, list[str]] | None = None
+
+
+def load_kg_concept_index(path: str | Path | None = None) -> dict[str, list[str]]:
+    """Load (and cache) the dataset→concept index built by corpus_kg_linker."""
+    global _KG_CONCEPT_INDEX
+    if _KG_CONCEPT_INDEX is not None:
+        return _KG_CONCEPT_INDEX
+    index_path = Path(path or "data/kg/dataset_concept_index.jsonl")
+    if not index_path.exists():
+        _KG_CONCEPT_INDEX = {}
+        return _KG_CONCEPT_INDEX
+    try:
+        from neural_search.ingestion.corpus_kg_linker import load_dataset_concept_index
+        _KG_CONCEPT_INDEX = load_dataset_concept_index(index_path)
+    except Exception:
+        _KG_CONCEPT_INDEX = {}
+    return _KG_CONCEPT_INDEX
+
+
+def concept_overlap_score(
+    dataset_id: str,
+    parsed_query: dict[str, Any],
+    concept_index: dict[str, list[str]] | None = None,
+) -> float:
+    """Return [0, 0.3] score based on concept overlap between query and dataset.
+
+    Uses Scholarpedia-expanded concepts from ``parsed_query["concepts"]`` and
+    checks against the dataset's mapped KG concept nodes.
+    """
+    if concept_index is None:
+        concept_index = load_kg_concept_index()
+    if not concept_index:
+        return 0.0
+
+    query_concepts: list[str] = list(parsed_query.get("concepts") or [])
+    if not query_concepts:
+        return 0.0
+
+    dataset_concepts = concept_index.get(dataset_id, [])
+    if not dataset_concepts:
+        bare = dataset_id.removeprefix("dataset:")
+        dataset_concepts = concept_index.get(bare, [])
+    if not dataset_concepts:
+        prefixed = dataset_id if dataset_id.startswith("dataset:") else f"dataset:{dataset_id}"
+        dataset_concepts = concept_index.get(prefixed, [])
+    if not dataset_concepts:
+        return 0.0
+
+    _VOCAB_PREFIXES = ("concept:", "region:", "modality:", "task:", "species:", "behavior:", "node:")
+
+    def _slug_norm(s: str) -> str:
+        s = s.casefold().replace("-", "_").replace(" ", "_").replace("/", "_")
+        for pfx in _VOCAB_PREFIXES:
+            if s.startswith(pfx):
+                s = s[len(pfx):]
+                break
+        return s
+
+    ds_slugs = {_slug_norm(c) for c in dataset_concepts}
+    q_slugs = [_slug_norm(c) for c in query_concepts]
+    matched = sum(1 for q in q_slugs if q in ds_slugs)
+    raw = matched / max(len(q_slugs), 1)
+    return round(min(raw * 0.3, 0.3), 4)
+
+
+def compute_kg_layer_scores(
+    graph: KnowledgeGraph | None,
+    result_id: str,
+    parsed_query: dict[str, Any],
+    concept_index: dict[str, list[str]] | None = None,
+) -> dict[str, float]:
+    """Compute NeuroSynth, NER, citation, concept-overlap, and region-hierarchy scores."""
+    ns_score = neurosynth_region_score(graph, parsed_query, result_id)
+    ner_score = ner_entity_coverage_score(graph, parsed_query, result_id)
+
+    paper_node_ids: list[str] = []
+    dataset_regions: list[str] = []
+    if graph is not None:
+        try:
+            node_id = _resolve_dataset_node_id(graph, result_id)
+            paper_node_ids = [p.node_id for p in find_papers_for_dataset(graph, node_id)]
+            dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+        except Exception:
+            pass
+    cit_score = citation_authority_score(graph, result_id, paper_node_ids)
+    kg_concept = concept_overlap_score(result_id, parsed_query, concept_index)
+
+    query_regions = list(parsed_query.get("brain_regions") or parsed_query.get("regions") or [])
+    rh_score = region_hierarchy_score(dataset_regions, query_regions) if query_regions else 0.0
+
+    weighted_total = (
+        KG_LAYER_WEIGHTS["neurosynth_region"] * ns_score
+        + KG_LAYER_WEIGHTS["ner_coverage"] * ner_score
+        + KG_LAYER_WEIGHTS["citation_authority"] * cit_score
+        + KG_LAYER_WEIGHTS["kg_concept"] * kg_concept
+        + KG_LAYER_WEIGHTS["region_hierarchy"] * rh_score
+    )
+    return {
+        "neurosynth_region_score": round(ns_score, 4),
+        "ner_entity_coverage_score": round(ner_score, 4),
+        "citation_authority_score": round(cit_score, 4),
+        "kg_concept_score": round(kg_concept, 4),
+        "region_hierarchy_score": round(rh_score, 4),
+        "kg_layer_weighted_total": round(weighted_total, 4),
+    }

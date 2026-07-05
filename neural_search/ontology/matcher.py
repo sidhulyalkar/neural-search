@@ -489,6 +489,10 @@ def match_affordances(text: str, ontology: Ontology | None = None) -> list[Label
         for output in affordance.typical_outputs:
             phrases.append((output, 0.82, "typical_output"))
             phrases.append((output.replace("_", " "), 0.81, "typical_output"))
+        # Add explicit query synonyms (high confidence — these are curated
+        # search trigger terms, not just incidental requirement/output names)
+        for synonym in getattr(affordance, "query_synonyms", []):
+            phrases.append((synonym, 0.92, "query_synonym"))
 
         match = _best_phrase_match(text, affordance.id, affordance.label, "analysis_affordance", phrases)
         if match:

@@ -1,8 +1,7 @@
 reason,count
-no_reuse_license: license 'None' not recognized as open,13185
-no_species_or_modality_signal: no neuroscience keywords found,10243
-not_raw_or_processed_data: resource_type or content suggests non-dataset,446
-no_persistent_identifier: no DOI or accession number,162
-no_reuse_license: license 'No license' not recognized as open,64
-no_reuse_license: license 'Academic Free License (AFL) 3.0' not recognized as open,40
-no_reuse_license: license 'Other' not recognized as open,20
+no_species_or_modality_signal: no neuroscience keywords found,550
+no_reuse_license: license 'None' not recognized as open,137
+not_raw_or_processed_data: resource_type or content suggests non-dataset,44
+no_reuse_license: license 'No license' not recognized as open,16
+no_reuse_license: license 'Academic Free License (AFL) 3.0' not recognized as open,11
+no_reuse_license: license 'Other' not recognized as open,4

@@ -198,6 +198,7 @@ def generate_dataset_card_json(
     extraction: ExtractionResult | Mapping[str, Any],
     linked_papers: Sequence[Any] | None = None,
     assets: Sequence[Any] | None = None,
+    spectral_readiness: Mapping[str, Any] | None = None,
 ) -> DatasetCardRead:
     """Generate a dataset-card JSON object without inventing unsupported claims."""
 
@@ -369,6 +370,7 @@ def generate_dataset_card_json(
         missing_fields=extraction_obj.missing_fields,
         missing_metadata=extraction_obj.missing_fields,
         suggested_analyses=suggested_analyses,
+        spectral_phenotype=dict(spectral_readiness) if spectral_readiness else {},
         provenance={
             "dataset_source": _get_value(dataset, "source", None),
             "dataset_source_id": _get_value(dataset, "source_id", None),
@@ -488,6 +490,7 @@ def generate_dataset_card_markdown(card: DatasetCardRead | Mapping[str, Any]) ->
         f"- **Suggested advanced analysis**: {_fmt(card_obj.analysis_plan.get('suggested_advanced_analysis'))}",
         "",
         _section("Missing Metadata", card_obj.missing_fields),
+        *_kv_section("Spectral Phenotype (Aperiodic Reanalysis)", card_obj.spectral_phenotype),
         *_kv_section("Linked Literature", card_obj.linked_literature),
         *_kv_section("Reuse Instructions", card_obj.reuse_instructions),
         _section("Why Matched", card_obj.why_relevant),

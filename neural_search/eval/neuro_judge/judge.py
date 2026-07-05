@@ -322,6 +322,37 @@ def _completeness_from_dimensions(
     return round(completeness, 4), present, missing
 
 
+def _extract_json_object(text: str) -> dict[str, Any]:
+    """Extract the first complete JSON object from a model response.
+
+    Tolerates two common LLM quirks that broke strict ``json.loads``:
+      * leading prose before the object ("Here is my judgment: {...}")
+      * trailing commentary after the object ("{...}\\n\\nThis is a good match.")
+        which surfaced as ``json.JSONDecodeError: Extra data``.
+
+    Markdown code fences are stripped first. Decoding starts at the first ``{``
+    and uses ``raw_decode`` so anything after the matching ``}`` is ignored.
+    Raises JudgeParseError if no object can be decoded.
+    """
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        stripped = "\n".join(
+            line for line in lines if not line.startswith("```")
+        ).strip()
+
+    start = stripped.find("{")
+    if start == -1:
+        raise JudgeParseError(f"JSON decode error: no object found in response: {stripped[:80]!r}")
+    try:
+        data, _end = json.JSONDecoder().raw_decode(stripped[start:])
+    except json.JSONDecodeError as exc:
+        raise JudgeParseError(f"JSON decode error: {exc}") from exc
+    if not isinstance(data, dict):
+        raise JudgeParseError(f"JSON decode error: expected object, got {type(data).__name__}")
+    return data
+
+
 def _parse_judgment(
     text: str,
     packet: EvidencePacket,
@@ -332,17 +363,7 @@ def _parse_judgment(
 
     Raises JudgeParseError on any failure so callers can build an error judgment.
     """
-    try:
-        # Strip markdown code fences if present
-        stripped = text.strip()
-        if stripped.startswith("```"):
-            lines = stripped.splitlines()
-            stripped = "\n".join(
-                line for line in lines if not line.startswith("```")
-            ).strip()
-        data: dict[str, Any] = json.loads(stripped)
-    except json.JSONDecodeError as exc:
-        raise JudgeParseError(f"JSON decode error: {exc}") from exc
+    data: dict[str, Any] = _extract_json_object(text)
 
     label_raw = data.get("label")
     if label_raw is None:

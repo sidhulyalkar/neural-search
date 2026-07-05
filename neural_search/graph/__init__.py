@@ -56,6 +56,7 @@ from neural_search.graph.schema import (
     normalize_node_type,
     read_graph_json,
     read_graph_jsonl,
+    resolve_dangling_edges,
     validate_graph,
     write_graph_json,
     write_graph_jsonl,
@@ -74,14 +75,6 @@ from neural_search.graph.semantic_edges import (
     build_semantic_dataset_edges,
     get_semantic_neighbors,
     load_and_add_semantic_edges,
-)
-from neural_search.graph.similarity import (
-    DatasetSimilarity,
-    SimilarityWeights,
-    add_similarity_edges_to_graph,
-    build_similarity_edges,
-    compute_dataset_similarity,
-    find_similar_datasets,
 )
 from neural_search.graph.transitive import (
     TransitiveMatch,
@@ -129,6 +122,7 @@ __all__ = [
     "normalize_node_type",
     "read_graph_json",
     "read_graph_jsonl",
+    "resolve_dangling_edges",
     "validate_graph",
     "write_graph_json",
     "write_graph_jsonl",
@@ -183,14 +177,7 @@ __all__ = [
     "find_related_tasks",
     "find_transitive_concepts",
     "get_transitive_boost",
-    # Similarity
-    "DatasetSimilarity",
-    "SimilarityWeights",
-    "add_similarity_edges_to_graph",
     "audit_graph_quality",
-    "build_similarity_edges",
-    "compute_dataset_similarity",
-    "find_similar_datasets",
     # Semantic Edges
     "SemanticEdgeConfig",
     "SemanticEdgeResult",

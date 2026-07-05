@@ -4,24 +4,27 @@ from __future__ import annotations
 
 import difflib
 import json
-import re
 import time
 from collections import Counter, defaultdict
-from collections.abc import Iterator
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 from pathlib import Path
 
+from neural_search.literature.api_client import TransientLookupError
+from neural_search.literature.corpus_io import DatasetPaperLink
+from neural_search.literature.corpus_io import (
+    iter_corpus_records as _iter_corpus_records,
+)
+from neural_search.literature.corpus_io import iter_paper_records as _iter_paper_records
+from neural_search.literature.corpus_io import (
+    make_not_found_link as _make_not_found_link,
+)
+from neural_search.literature.title_match import normalize_title as _normalize_title
+from neural_search.literature.title_match import title_tokens as _title_tokens
 
-@dataclass
-class DatasetPaperLink:
-    dataset_record_id: str
-    paper_openalex_id: str
-    paper_doi: str | None
-    paper_title: str | None
-    paper_year: int | None
-    match_method: str  # "doi_exact" | "title_fuzzy" | "not_found"
-    confidence: float  # 1.0 doi_exact, 0.7-0.9 title_fuzzy, 0.0 not_found
-
+# DatasetPaperLink and TransientLookupError now live in corpus_io.py /
+# api_client.py respectively (shared by the other literature-linking
+# sources added afterward); re-imported above for backward compatibility --
+# existing callers importing them from this module are unaffected.
 
 _OPENALEX_BASE = "https://api.openalex.org"
 _MAILTO = "sid.soccer.21@gmail.com"
@@ -29,25 +32,6 @@ _RATE_LIMIT_SLEEP = 0.15
 _TITLE_MATCH_THRESHOLD = 0.82
 _MAX_TITLE_CANDIDATES = 250
 _MAX_TOKEN_POSTINGS = 8_000
-_TITLE_STOPWORDS = {
-    "and",
-    "are",
-    "based",
-    "data",
-    "dataset",
-    "datasets",
-    "during",
-    "for",
-    "from",
-    "human",
-    "mouse",
-    "neural",
-    "neuronal",
-    "of",
-    "the",
-    "using",
-    "with",
-}
 
 
 def _http_get(url: str, params: dict | None = None):
@@ -92,26 +76,23 @@ def _doi_key(doi: str | None) -> str | None:
     return parsed.lower().strip() if parsed else None
 
 
-def _normalize_title(title: str | None) -> str:
-    if not title:
-        return ""
-    return " ".join(re.findall(r"[a-z0-9]+", title.lower()))
-
-
-def _title_tokens(title: str | None) -> list[str]:
-    normalized = _normalize_title(title)
-    return [
-        token
-        for token in normalized.split()
-        if len(token) >= 4 and token not in _TITLE_STOPWORDS
-    ]
+def _raise_if_transient(resp) -> None:
+    if resp.status_code == 429 or resp.status_code >= 500:
+        raise TransientLookupError(
+            f"OpenAlex request failed with status {resp.status_code}: {resp.text[:300]}"
+        )
 
 
 def lookup_by_doi(doi: str) -> dict | None:
-    """Query OpenAlex by DOI. Returns normalized dict or None on 404/error."""
+    """Query OpenAlex by DOI. Returns normalized dict, or None only on a genuine 404.
+
+    Raises TransientLookupError on 429/5xx — callers must not treat that the
+    same as "not found" (see TransientLookupError's docstring)."""
+
     url = f"{_OPENALEX_BASE}/works/https://doi.org/{doi}"
     try:
         resp = _http_get(url)
+        _raise_if_transient(resp)
         resp.raise_for_status()
         data = resp.json()
         return {
@@ -120,6 +101,8 @@ def lookup_by_doi(doi: str) -> dict | None:
             "title": data.get("title"),
             "year": data.get("publication_year"),
         }
+    except TransientLookupError:
+        raise
     except Exception:
         return None
     finally:
@@ -127,7 +110,10 @@ def lookup_by_doi(doi: str) -> dict | None:
 
 
 def lookup_by_title(title: str, year: int | None = None) -> dict | None:
-    """Search OpenAlex by title. Returns dict if similarity >= 0.75, else None."""
+    """Search OpenAlex by title. Returns dict if similarity >= 0.75, else None
+    on a genuine no-match. Raises TransientLookupError on 429/5xx — see
+    lookup_by_doi."""
+
     params: dict = {
         "search": title,
         "per_page": 1,
@@ -135,6 +121,7 @@ def lookup_by_title(title: str, year: int | None = None) -> dict | None:
     }
     try:
         resp = _http_get(f"{_OPENALEX_BASE}/works", params=params)
+        _raise_if_transient(resp)
         resp.raise_for_status()
         results = resp.json().get("results", [])
         if not results:
@@ -151,50 +138,12 @@ def lookup_by_title(title: str, year: int | None = None) -> dict | None:
             "year": hit.get("publication_year"),
             "similarity": ratio,
         }
+    except TransientLookupError:
+        raise
     except Exception:
         return None
     finally:
         time.sleep(_RATE_LIMIT_SLEEP)
-
-
-def _iter_corpus_records(corpus_path: Path) -> Iterator[dict]:
-    paths = (
-        sorted(corpus_path.glob("*.jsonl"))
-        if corpus_path.is_dir()
-        else [corpus_path]
-    )
-    for p in paths:
-        with p.open() as fh:
-            for line in fh:
-                line = line.strip()
-                if line:
-                    yield json.loads(line)
-
-
-def _iter_paper_records(paper_shards: Path) -> Iterator[dict]:
-    paths = (
-        sorted(paper_shards.glob("*.jsonl"))
-        if paper_shards.is_dir()
-        else [paper_shards]
-    )
-    for path in paths:
-        with path.open() as fh:
-            for line in fh:
-                line = line.strip()
-                if line:
-                    yield json.loads(line)
-
-
-def _make_not_found_link(record_id: str) -> DatasetPaperLink:
-    return DatasetPaperLink(
-        dataset_record_id=record_id,
-        paper_openalex_id="",
-        paper_doi=None,
-        paper_title=None,
-        paper_year=None,
-        match_method="not_found",
-        confidence=0.0,
-    )
 
 
 class LocalPaperIndex:
@@ -274,17 +223,34 @@ def link_corpus_to_literature(
     max_workers: int = 1,
     skip_without_doi: bool = False,
 ) -> list[DatasetPaperLink]:
-    """Process all corpus records and link to OpenAlex papers."""
+    """Process all corpus records and link to OpenAlex papers.
+
+    Stops immediately on TransientLookupError (HTTP 429/5xx, e.g. a quota or
+    budget exhaustion) rather than continuing and writing false "not_found"
+    results for every remaining record — see TransientLookupError's
+    docstring for the incident that made this necessary. Records already
+    resolved before the failure are still written to `out_path`.
+    """
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
     links: list[DatasetPaperLink] = []
 
     with out_path.open("w") as out_fh:
-        for rec in _iter_corpus_records(corpus_path):
+        for i, rec in enumerate(_iter_corpus_records(corpus_path)):
             record_id = f"{rec['source']}:{rec['source_id']}"
             doi = rec.get("doi") or None
             title = rec.get("title") or ""
 
-            link = _resolve_link(record_id, doi, title, skip_without_doi)
+            try:
+                link = _resolve_link(record_id, doi, title, skip_without_doi)
+            except TransientLookupError as exc:
+                print(
+                    f"Aborting after {i}/{'?'} records: transient lookup failure "
+                    f"({exc}). Records processed so far are saved; re-run once "
+                    f"resolved (e.g. quota reset) rather than trusting the "
+                    f"remaining corpus as genuinely unmatched."
+                )
+                break
             out_fh.write(json.dumps(asdict(link)) + "\n")
             links.append(link)
 

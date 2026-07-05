@@ -7,6 +7,14 @@ import {
   logRetrievalFeedback,
   saveFrontendDataset,
 } from '../api/search'
+import { createSceneFromSearchResult, type ExperimentGlancerScene } from '../api/experimentglancer'
+import { SceneReadinessStrip } from './experimentglancer/SceneReadinessStrip'
+import { SceneRationalePanel } from './experimentglancer/SceneRationalePanel'
+import { LayerConfidenceLegend } from './experimentglancer/LayerConfidenceLegend'
+import { SceneComposerModal } from './experimentglancer/SceneComposerModal'
+import { buildSceneRequestContext } from '../lib/sceneRequestContext'
+import { describeMissingLayerAction } from '../lib/missingLayerActions'
+import { applyOpeningModePreset, type SceneComposerOptions } from '../lib/sceneComposerPresets'
 import type { DimensionMatch, ExplanationGroups, FeedbackUsefulness, MemoryGraphEvidence, RetrievalFeedbackEvent, SearchResultItem, WouldUseForAnalysis } from '../types'
 import { RelatedFindingsPanel } from './graph/RelatedFindingsPanel'
 
@@ -118,6 +126,53 @@ function DimensionMatchBadges({ groups }: { groups: ExplanationGroups }) {
           </span>
         )
       })}
+    </div>
+  )
+}
+
+type CoverageLevel = 'present' | 'partial' | 'absent'
+
+function CoverageBar({ result }: { result: SearchResultItem }) {
+  const { dataset, evidence_packet, readiness_score } = result
+  const dims: { label: string; level: CoverageLevel }[] = [
+    { label: 'task', level: (dataset.tasks?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'modality', level: (dataset.modalities?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'species', level: (dataset.species?.length ?? 0) > 0 ? 'present' : 'absent' },
+    { label: 'region', level: (dataset.brain_regions?.length ?? 0) > 0 ? 'present' : 'absent' },
+    {
+      label: 'affordance',
+      level: (evidence_packet?.affordance_matches?.length ?? 0) > 0 ? 'present'
+        : evidence_packet ? 'partial'
+        : 'absent',
+    },
+    {
+      label: 'graph',
+      level: result.memory_graph_evidence ? 'present' : 'absent',
+    },
+    {
+      label: 'readiness',
+      level: typeof readiness_score === 'number'
+        ? readiness_score >= 0.6 ? 'present' : readiness_score >= 0.3 ? 'partial' : 'absent'
+        : 'absent',
+    },
+  ]
+  const colors: Record<CoverageLevel, string> = {
+    present: 'bg-accent-cyan/70',
+    partial: 'bg-amber-400/50',
+    absent: 'bg-neural-800',
+  }
+  return (
+    <div className="flex items-center gap-2 mb-3" title="Coverage: task · modality · species · region · affordance · graph · readiness">
+      <span className="text-xs text-neural-700 flex-shrink-0">coverage</span>
+      <div className="flex gap-1">
+        {dims.map(({ label, level }) => (
+          <span
+            key={label}
+            title={`${label}: ${level}`}
+            className={`inline-block h-1.5 w-5 rounded-sm ${colors[level]}`}
+          />
+        ))}
+      </div>
     </div>
   )
 }
@@ -280,6 +335,11 @@ function EvidencePanel({
                   {paper.abstract_snippet || paper.abstract}
                 </p>
               )}
+              {paper.retraction_status && paper.retraction_status.status !== 'none' && (
+                <p className="mt-1 text-xs text-red-400 font-medium">
+                  ⚠ Publisher record: {paper.retraction_status.status}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -300,6 +360,108 @@ function EvidencePanel({
         {rawJsonOpen && (
           <pre className="mt-3 max-h-72 overflow-auto rounded border border-neural-800 bg-neural-900 p-3 text-xs text-neural-400">
             {JSON.stringify(evidence_packet?.raw_json || evidence_packet || neuro_judge || {}, null, 2)}
+          </pre>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ScenePanel({
+  scene,
+  sceneUrl,
+  rawJsonOpen,
+  onRawJsonToggle,
+}: {
+  scene: ExperimentGlancerScene
+  sceneUrl: string
+  rawJsonOpen: boolean
+  onRawJsonToggle: () => void
+}) {
+  const [copied, setCopied] = useState(false)
+  const absoluteUrl = typeof window !== 'undefined' ? new URL(sceneUrl, window.location.origin).toString() : sceneUrl
+
+  const handleCopy = () => {
+    navigator.clipboard?.writeText(absoluteUrl).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className="mt-5 border border-neural-800/60 rounded-lg p-4 bg-neural-950/70">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <p className="text-xs uppercase tracking-wide text-neural-600">ExperimentGlancer scene</p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="text-xs text-neural-400 hover:text-accent-cyan transition-colors"
+          >
+            {copied ? 'Copied!' : 'Copy shareable URL'}
+          </button>
+          <Link to={sceneUrl} className="text-xs text-accent-cyan hover:text-white transition-colors">
+            Open full scene →
+          </Link>
+        </div>
+      </div>
+
+      <p className="text-xs text-neural-500 mb-3 break-all font-mono">{absoluteUrl}</p>
+
+      <div className="mb-3">
+        <SceneRationalePanel scene={scene} />
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mb-2">
+        {scene.layers.map((layer) => (
+          <span
+            key={layer.layer_id}
+            title={layer.warnings.join('; ') || layer.label}
+            className={`text-xs border rounded px-2 py-0.5 ${
+              layer.status === 'available'
+                ? 'text-accent-emerald border-accent-emerald/30 bg-accent-emerald/5'
+                : layer.status === 'probable'
+                ? 'text-accent-cyan border-accent-cyan/30 bg-accent-cyan/5'
+                : 'text-neural-500 border-neural-800 bg-neural-900'
+            }`}
+          >
+            {layer.label} · {layer.status}
+          </span>
+        ))}
+      </div>
+
+      <div className="mb-3">
+        <LayerConfidenceLegend />
+      </div>
+
+      {scene.warnings.length > 0 && (
+        <div>
+          <p className="text-xs uppercase tracking-wide text-neural-600 mb-1">Missing layer workbench</p>
+          <ul className="space-y-1">
+            {scene.warnings.slice(0, 6).map((warning) => {
+              const action = describeMissingLayerAction(warning)
+              return (
+                <li key={warning} className="text-xs text-neural-400 leading-relaxed">
+                  {warning}
+                  {action && <span className="block text-neural-600">→ {action}</span>}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-3 border-t border-neural-800/60 pt-3">
+        <button
+          type="button"
+          onClick={onRawJsonToggle}
+          className="text-xs text-neural-400 hover:text-neural-200"
+        >
+          {rawJsonOpen ? 'Hide raw scene JSON' : 'View raw scene JSON'}
+        </button>
+        {rawJsonOpen && (
+          <pre className="mt-3 max-h-72 overflow-auto rounded border border-neural-800 bg-neural-900 p-3 text-xs text-neural-400">
+            {JSON.stringify(scene, null, 2)}
           </pre>
         )}
       </div>
@@ -342,11 +504,41 @@ export function DatasetCard({
   } = result
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [rawJsonOpen, setRawJsonOpen] = useState(false)
+  const [scenePanelOpen, setScenePanelOpen] = useState(false)
+  const [sceneJsonOpen, setSceneJsonOpen] = useState(false)
   const [relatedFindingsOpen, setRelatedFindingsOpen] = useState(false)
   const [usefulness, setUsefulness] = useState<FeedbackUsefulness>('unsure')
   const [wouldUse, setWouldUse] = useState<WouldUseForAnalysis>('maybe')
   const [reasonTags, setReasonTags] = useState<string[]>([])
   const [note, setNote] = useState('')
+  const [composerOpen, setComposerOpen] = useState(false)
+
+  const sceneMutation = useMutation({
+    mutationFn: (composerOptions?: SceneComposerOptions) => {
+      const effectiveQuery = queryText || evidence_packet?.query_text || ''
+      const derived = buildSceneRequestContext(result, effectiveQuery)
+      const preset = composerOptions ? applyOpeningModePreset(composerOptions) : null
+      const modelOverlayLayers = composerOptions?.includeModelOverlays
+        ? ['model.predictions', 'model.latent_state']
+        : []
+      return createSceneFromSearchResult({
+        query: effectiveQuery,
+        dataset_id: dataset.id,
+        rank: result.rank ?? null,
+        retrieval_method: result.retrieval_method || 'hybrid_search',
+        score,
+        score_breakdown,
+        requested_layers: Array.from(
+          new Set([...derived.requested_layers, ...(preset?.extraRequestedLayers ?? []), ...modelOverlayLayers]),
+        ),
+        affordance_ids: Array.from(new Set([...derived.affordance_ids, ...(preset?.extraAffordanceIds ?? [])])),
+        anchor_hint: preset?.anchorHint,
+        include_probable_layers: composerOptions?.includeProbableLayers ?? true,
+        deep_introspection: composerOptions?.deepIntrospection ?? false,
+      })
+    },
+    onSuccess: () => setScenePanelOpen(true),
+  })
 
   const notebookMutation = useMutation({
     mutationFn: () => generateNotebook(dataset.id),
@@ -536,6 +728,9 @@ export function DatasetCard({
             />
           )}
 
+          {/* Compact 7-dimension coverage bar */}
+          <CoverageBar result={result} />
+
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge tone="cyan">retrieval {Math.round(score * 100)}</Badge>
             {neuro_judge ? (
@@ -559,6 +754,10 @@ export function DatasetCard({
                 graph {score_breakdown.memory_graph_score > 0 ? '+' : ''}{score_breakdown.memory_graph_score.toFixed(2)}
               </Badge>
             )}
+          </div>
+
+          <div className="mt-2">
+            <SceneReadinessStrip result={result} />
           </div>
 
           {/* Actions */}
@@ -621,6 +820,27 @@ export function DatasetCard({
             <button
               onClick={(e) => {
                 e.preventDefault()
+                if (!scenePanelOpen && !sceneMutation.data) {
+                  sceneMutation.mutate(undefined)
+                }
+                setScenePanelOpen((v) => !v)
+              }}
+              disabled={sceneMutation.isPending}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              {sceneMutation.isPending ? 'Opening scene…' : scenePanelOpen ? 'Close scene' : 'Open Scene'}
+            </button>
+
+            <button
+              onClick={(e) => { e.preventDefault(); setComposerOpen(true) }}
+              className="text-xs text-neural-400 hover:text-neural-200 transition-colors"
+            >
+              Compose…
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault()
                 saveMutation.mutate(false)
                 feedbackMutation.mutate({ saved: true })
               }}
@@ -669,6 +889,34 @@ export function DatasetCard({
                 ? notebookMutation.error.message
                 : 'Notebook generation failed.'}
             </p>
+          )}
+
+          {scenePanelOpen && sceneMutation.data && (
+            <ScenePanel
+              scene={sceneMutation.data.scene}
+              sceneUrl={sceneMutation.data.scene_url}
+              rawJsonOpen={sceneJsonOpen}
+              onRawJsonToggle={() => setSceneJsonOpen((value) => !value)}
+            />
+          )}
+
+          {scenePanelOpen && sceneMutation.error && (
+            <p className="mt-2 text-xs text-red-400">
+              {sceneMutation.error instanceof Error
+                ? sceneMutation.error.message
+                : 'Could not open an ExperimentGlancer scene for this dataset.'}
+            </p>
+          )}
+
+          {composerOpen && (
+            <SceneComposerModal
+              datasetTitle={dataset.title}
+              isGenerating={sceneMutation.isPending}
+              onClose={() => setComposerOpen(false)}
+              onGenerate={(options) => {
+                sceneMutation.mutate(options, { onSuccess: () => setComposerOpen(false) })
+              }}
+            />
           )}
 
           {detailsOpen && (

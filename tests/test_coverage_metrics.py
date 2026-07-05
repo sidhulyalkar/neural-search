@@ -9,11 +9,17 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from neural_search.coverage.duckdb_store import CoverageStore
+from neural_search.coverage.duckdb_store import DEFAULT_DB_PATH, CoverageStore
 
 
 @pytest.fixture(scope="module")
 def store():
+    # CoverageStore() creates DEFAULT_DB_PATH as a side effect of connecting,
+    # even when it doesn't exist yet -- check first so we skip cleanly (e.g.
+    # in CI, where the live ledger isn't committed) instead of instantiating
+    # against an empty stub DB and failing on baseline assertions below.
+    if not DEFAULT_DB_PATH.exists():
+        pytest.skip("Live DuckDB coverage ledger not available")
     s = CoverageStore()
     yield s
     s.close()

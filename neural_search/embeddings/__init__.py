@@ -20,6 +20,7 @@ from neural_search.embeddings.field_index import (
     build_field_embedding_records,
     field_texts_for_record,
     read_field_embedding_cache,
+    read_field_embedding_cache_faiss,
     validate_field_embedding_cache,
     write_field_embedding_cache,
 )
@@ -97,6 +98,7 @@ __all__ = [
     "build_field_embedding_records",
     "field_texts_for_record",
     "read_field_embedding_cache",
+    "read_field_embedding_cache_faiss",
     "validate_field_embedding_cache",
     "write_field_embedding_cache",
     # Fingerprints

@@ -1,13 +1,19 @@
 import sys
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from apps.api.main import app
+from apps.api.main import _GRAPH_PATH, app
 
 client = TestClient(app)
+
+_requires_live_graph = pytest.mark.skipif(
+    not Path(_GRAPH_PATH).exists(),
+    reason="Live corpus graph not available (gitignored generated artifact)",
+)
 
 
 def test_graph_overview_returns_nodes_and_links():
@@ -31,6 +37,7 @@ def test_graph_overview_node_schema():
         assert "color" in node
 
 
+@_requires_live_graph
 def test_graph_subgraph_with_region_filter():
     r = client.get("/api/graph/subgraph", params={"regions": "hippocampus"})
     assert r.status_code == 200

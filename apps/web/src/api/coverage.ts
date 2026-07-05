@@ -102,3 +102,110 @@ export const coverageApi = {
     )
   },
 }
+
+// ── Allen Brain Atlas types ───────────────────────────────────────────────────
+
+export type AllenStructure = {
+  allen_id: number
+  acronym: string
+  name: string
+  parent_id: number | null
+  color_hex: string
+  st_level: number
+  children_ids: number[]
+  atlas_id: number
+}
+
+export type AllenStructuresResponse = {
+  species: string
+  total: number
+  structures: AllenStructure[]
+}
+
+export type AllenMappingResponse = {
+  total_mapped: number
+  mapping: Record<string, number>
+}
+
+export type AtlasCoverageResponse = {
+  total_mouse_structures: number
+  total_ontology_mapped: number
+  by_level: Record<number, { total: number; mapped: number }>
+}
+
+// ── Allen Atlas API client ────────────────────────────────────────────────────
+
+export type RegionDetailTopic = {
+  id: string
+  label: string
+  description: string
+  color: string
+  companion_topics: string[]
+}
+
+export type RegionDetail = {
+  id: string
+  label: string
+  aliases: string[]
+  is_strict: boolean
+  parents: Array<{ id: string; label: string }>
+  children: Array<{ id: string; label: string }>
+  siblings: Array<{ id: string; label: string }>
+  atlas_refs: {
+    allen_ccf_mouse: string | null
+    allen_human: string | null
+    uberon: string | null
+    waxholm_rat: string | null
+  }
+  allen_structure: {
+    allen_id: number
+    acronym: string
+    color_hex: string
+    st_level: number | null
+  } | null
+  connected_topics: RegionDetailTopic[]
+  functional_systems: string[]
+}
+
+export type CircuitRegion = {
+  id: string
+  label: string
+  role: string
+}
+
+export type Circuit = {
+  id: string
+  label: string
+  description: string
+  color: string
+  regions: CircuitRegion[]
+  topics: string[]
+  scale?: string
+  subcircuit_of?: string
+  human_specific?: boolean
+}
+
+export const atlasApi = {
+  structures: (species = 'mouse', level?: number, limit = 200) => {
+    const q = new URLSearchParams({ species, limit: String(limit) })
+    if (level != null) q.set('level', String(level))
+    return get<AllenStructuresResponse>(`/api/atlas/structures?${q}`)
+  },
+
+  structure: (allenId: number) =>
+    get<AllenStructure>(`/api/atlas/structures/${allenId}`),
+
+  children: (allenId: number, recursive = false) => {
+    const q = new URLSearchParams({ recursive: String(recursive) })
+    return get<AllenStructure[]>(`/api/atlas/structures/${allenId}/children?${q}`)
+  },
+
+  mapping: () => get<AllenMappingResponse>('/api/atlas/regions/mapping'),
+
+  coverage: () => get<AtlasCoverageResponse>('/api/atlas/coverage'),
+
+  regionDetail: (regionId: string) =>
+    get<RegionDetail>(`/api/atlas/regions/${encodeURIComponent(regionId)}/detail`),
+
+  circuits: () => get<Circuit[]>('/api/atlas/circuits'),
+}

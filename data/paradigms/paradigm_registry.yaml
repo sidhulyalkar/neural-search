@@ -1,0 +1,220 @@
+# Cross-Species Behavioral Paradigm Registry
+# Maps cognitive task paradigms across species, enabling paradigm_validated_cross_species edges.
+# This captures the NEATLabs core insight: standardized paradigms in BrainER (rodent)
+# and BrainE (human) create the ground truth for translational neuroscience.
+#
+# Confidence levels:
+#   validated: identical construct, directly comparable neural measures
+#   adapted: same construct, different stimuli or response modalities
+#   analogous: same cognitive domain, design differences prevent direct comparison
+
+paradigms:
+
+  # ── Reward Learning & Decision Making ─────────────────────────────────────
+  - id: probabilistic_reversal_learning
+    label: Probabilistic Reversal Learning Task
+    aliases: [PRL, probabilistic reversal, reversal learning, reward reversal]
+    cognitive_construct: cognitive_flexibility_reward_learning
+    description: "Two options with asymmetric reward probabilities (e.g., 80/20). Probabilities reverse after criterion. Measures ability to update value-based decisions when reward contingencies change."
+    circuits_engaged: [basal_ganglia_loop, reward_addiction, orbitofrontal_cortex]
+    topics: [reward_learning, decision_making, cognitive_control]
+    species_implementations:
+      - species: rat
+        platform: BrainER
+        response_modality: lever_press
+        reinforcer: sucrose_solution
+        stimuli: spatial_left_right
+        neural_measure: LFP_corticostriatal
+        validated_in: neatlabs_ucsd
+        key_papers:
+          - "Hulyalkar et al. (2025, J Neuroscience) — Beta/gamma oscillations reflect reward certainty"
+          - "Balasubramani et al. (2021, eNeuro) — Large-scale networks for action/inhibition"
+      - species: human
+        platform: BrainE
+        response_modality: button_press
+        reinforcer: monetary_points
+        stimuli: visual_symbols_or_colors
+        neural_measure: EEG_frontal
+        cross_species_validity: validated
+        notes: "Same probabilistic reversal structure — enables direct beta power comparison"
+      - species: macaque
+        response_modality: saccade_or_touch
+        reinforcer: juice
+        neural_measure: single_unit_OFC
+        cross_species_validity: validated
+    key_neural_signal: corticostriatal_beta
+    key_finding: "Beta oscillations encode reward certainty; high-gamma encodes prediction error. Signal present in rat LFP, potentially measurable in human EEG."
+
+  - id: delay_discounting
+    label: Delay Discounting / Intertemporal Choice
+    aliases: [temporal discounting, impulsive choice, delay aversion]
+    cognitive_construct: temporal_decision_making_impulsivity
+    description: "Choose between smaller immediate reward and larger delayed reward. Steeper discounting indicates more impulsive preference for immediacy."
+    formula: "V(t) = A / (1 + k*t)  [hyperbolic]; V(t) = A * exp(-k*t)  [exponential]"
+    mathematical_note: "Discount parameter k measures impulsivity; hyperbolic fits human behavior better than exponential"
+    circuits_engaged: [reward_addiction, basal_ganglia_loop, orbitofrontal_cortex]
+    topics: [decision_making, reward_learning]
+    species_implementations:
+      - species: rat
+        platform: BrainER
+        response_modality: lever_press
+        stimuli: delay_signaled_by_light_cue
+        reinforcer: food_pellets
+        cross_species_validity: validated
+        key_papers:
+          - "Balasubramani et al. (2021) — Intertemporal choice in rodent models"
+      - species: human
+        response_modality: button_press_or_touchscreen
+        stimuli: monetary_choice_screen
+        cross_species_validity: validated
+        neural_measure: fMRI_vmPFC_striatum
+
+  - id: five_csrtt
+    label: 5-Choice Serial Reaction Time Task (5-CSRTT)
+    aliases: [5-CSRTT, five choice, sustained attention task]
+    cognitive_construct: sustained_attention_impulsivity_inhibition
+    description: "Rodent/human equivalent of continuous performance tasks. Brief light appears in 1 of 5 locations; correct nosepoke/button press required within limited hold. Premature responses = impulsivity; omissions = inattention."
+    circuits_engaged: [attention_salience, basal_ganglia_loop, executive_control]
+    topics: [attention_and_salience, cognitive_control, executive_function]
+    species_implementations:
+      - species: rat
+        platform: touchscreen_operant_box
+        response_modality: nosepoke_or_touchscreen
+        neural_measure: LFP_PFC_striatum
+        cross_species_validity: validated
+      - species: mouse
+        platform: operant_box
+        notes: "Validated in mice — slightly higher error rates"
+        cross_species_validity: validated
+      - species: human
+        platform: CPT_AX_or_CANTAB
+        response_modality: button_press
+        neural_measure: EEG_frontal_P3
+        notes: "Cambridge Neuropsychological Test Automated Battery (CANTAB) version used clinically"
+        cross_species_validity: adapted
+
+  - id: fear_conditioning
+    label: Pavlovian Fear Conditioning
+    aliases: [CFC, contextual fear, cued fear, CS-US conditioning]
+    cognitive_construct: threat_learning_fear_memory
+    description: "Neutral CS (tone/context) paired with aversive US (footshock). After conditioning, CS alone elicits fear response (freezing in rodents, skin conductance/HR in humans). Extinction: CS without US reduces fear."
+    circuits_engaged: [fear_circuit, hippocampal_circuit, stress_hpa]
+    topics: [fear_and_anxiety, episodic_memory, development_and_plasticity]
+    species_implementations:
+      - species: rat
+        response_modality: freezing_behavior
+        neural_measure: LFP_BLA_PFC_hippocampus
+        cross_species_validity: validated
+        key_papers: ["LeDoux (1996) — Emotional Brain"]
+      - species: mouse
+        response_modality: freezing_behavior
+        cross_species_validity: validated
+      - species: human
+        response_modality: skin_conductance_response_ratings
+        stimuli: geometric_shape_or_image_paired_with_shock
+        cross_species_validity: adapted
+        notes: "Footshock replaced by mild wrist shock or aversive sound; freezing replaced by SCR"
+        neural_measure: fMRI_amygdala_vmPFC
+
+  - id: go_nogo
+    label: Go/NoGo Task
+    aliases: [go nogo, inhibitory control, response inhibition]
+    cognitive_construct: response_inhibition_executive_control
+    description: "Respond (Go) to frequent stimulus; withhold response (NoGo) to rare target. Failures (commission errors) index impulsivity. Linked to BG hyperdirect pathway (fast stop)."
+    circuits_engaged: [executive_control, basal_ganglia_loop, bg_hyperdirect_pathway]
+    topics: [cognitive_control, executive_function, attention_and_salience]
+    species_implementations:
+      - species: rat
+        platform: BrainER_touchscreen
+        response_modality: nosepoke
+        neural_measure: LFP_PFC_striatum_STN
+        cross_species_validity: validated
+        key_papers:
+          - "Balasubramani et al. (2021) — Mapping large-scale networks for behavioral inhibition and impulsivity"
+      - species: human
+        response_modality: button_press
+        neural_measure: EEG_P3_N2_beta
+        cross_species_validity: validated
+        notes: "Human NoGo N2 and P3 directly comparable to rodent LFP inhibition signals"
+
+  - id: morris_water_maze
+    label: Morris Water Maze (MWM)
+    aliases: [water maze, MWM, hidden platform task]
+    cognitive_construct: spatial_reference_memory_hippocampus
+    description: "Rat/mouse swim to find hidden platform using distal visual cues. Probe trial (platform removed): time in target quadrant measures memory strength."
+    circuits_engaged: [hippocampal_circuit, spatial_navigation, trisynaptic_loop]
+    topics: [spatial_navigation, episodic_memory]
+    species_implementations:
+      - species: rat
+        response_modality: swimming_to_platform
+        neural_measure: hippocampal_theta_place_cells
+        cross_species_validity: validated
+      - species: mouse
+        response_modality: swimming
+        cross_species_validity: validated
+      - species: human
+        analog: virtual_morris_water_maze
+        platform: VR_headset_or_computer
+        response_modality: joystick_navigation
+        neural_measure: fMRI_hippocampus
+        cross_species_validity: adapted
+        notes: "Virtual analogs validated against rodent; comparable hippocampal engagement"
+
+  - id: nback_task
+    label: N-Back Working Memory Task
+    aliases: [n-back, 2-back, 3-back, working memory updating]
+    cognitive_construct: working_memory_updating
+    description: "Respond when current stimulus matches the one n steps back. N=1,2,3 increases working memory demand. Parametric WM paradigm."
+    circuits_engaged: [executive_control, default_mode]
+    topics: [working_memory, executive_function, cognitive_control]
+    species_implementations:
+      - species: human
+        platform: BrainE
+        response_modality: button_press
+        neural_measure: EEG_frontal_theta_gamma
+        cross_species_validity: validated
+      - species: macaque
+        response_modality: joystick_or_saccade
+        neural_measure: single_unit_DLPFC
+        cross_species_validity: adapted
+      - species: rat
+        analog: delayed_non_match_to_sample
+        response_modality: nosepoke
+        cross_species_validity: analogous
+        notes: "Rats cannot do true n-back; DNMTS is closest rodent equivalent"
+
+  - id: open_field
+    label: Open Field Test
+    aliases: [OFT, novelty exploration, locomotor activity]
+    cognitive_construct: anxiety_exploration_locomotion
+    description: "Animal/participant placed in novel open arena. Thigmotaxis (wall-hugging) and center avoidance index anxiety; locomotion measures activity. Human analog: free exploration of novel room."
+    circuits_engaged: [fear_circuit, stress_hpa]
+    topics: [fear_and_anxiety, social_behavior]
+    species_implementations:
+      - species: rat
+        measure: thigmotaxis_center_time_locomotion
+        neural_measure: HPC_theta_amygdala_LFP
+        cross_species_validity: validated
+      - species: mouse
+        cross_species_validity: validated
+      - species: human
+        analog: virtual_reality_open_field
+        cross_species_validity: analogous
+
+  - id: sustained_attention_task
+    label: Sustained Attention / Vigilance Task
+    aliases: [CPT, continuous performance test, vigilance decrement]
+    cognitive_construct: sustained_attention_vigilance
+    description: "Detect rare targets in sustained stream of stimuli over 20-40 minutes. Performance decrement over time (vigilance decrement) reflects attentional fatigue."
+    circuits_engaged: [attention_salience, lc_norepinephrine]
+    topics: [attention_and_salience, cognitive_control]
+    species_implementations:
+      - species: human
+        platform: BrainE
+        neural_measure: EEG_alpha_theta_P3
+        cross_species_validity: validated
+        key_papers: ["Mishra et al. (2019, Nature Human Behaviour) — Closed-loop digital meditation"]
+      - species: rat
+        platform: BrainER
+        analog: 5-CSRTT_sustained
+        cross_species_validity: adapted

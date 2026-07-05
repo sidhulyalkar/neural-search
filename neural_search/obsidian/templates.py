@@ -134,3 +134,89 @@ def annotation_card_body(
         f"- [ ] Set `audit_status: done` in frontmatter\n\n"
         f"> **Edit in frontmatter:** `label`, `confidence`, `audit_status`\n"
     )
+
+
+def paper_card_frontmatter(record: dict) -> dict:
+    """Build frontmatter dict for a 09_Literature paper card."""
+    return {
+        "type": "paper",
+        "paper_id": record.get("paper_id"),
+        "doi": record.get("doi"),
+        "title": record.get("title"),
+        "authors": record.get("authors") or [],
+        "year": record.get("year"),
+        "n_findings": record.get("n_findings", 0),
+        "finding_ids": record.get("finding_ids") or [],
+        "linked_datasets": record.get("linked_datasets") or [],
+        "modalities": record.get("modalities") or [],
+        "regions": record.get("regions") or [],
+        "species": record.get("species") or [],
+        "extraction_model": record.get("extraction_model"),
+        "extraction_prompt_version": record.get("extraction_prompt_version"),
+        "tags": ["paper", "literature"],
+    }
+
+
+def paper_card_body(record: dict) -> str:
+    title = record.get("title") or record.get("paper_id") or "Unknown Paper"
+    authors = ", ".join(record.get("authors") or []) or "_Unknown_"
+    year = record.get("year") or ""
+    finding_ids = record.get("finding_ids") or []
+    datasets = record.get("linked_datasets") or []
+
+    findings_section = "\n".join(f"- finding_{fid}" for fid in finding_ids) or "_None extracted._"
+    datasets_section = "\n".join(f"- [[{d}]]" for d in datasets) or "_None linked._"
+
+    return (
+        f"# {title}\n\n"
+        f"**Authors:** {authors}  \n"
+        f"**Year:** {year}\n\n"
+        f"## Findings\n{findings_section}\n\n"
+        f"## Linked Datasets\n{datasets_section}\n"
+    )
+
+
+def claim_card_frontmatter(claim: dict) -> dict:
+    """Build frontmatter dict for a 10_Claims claim card."""
+    return {
+        "type": "claim",
+        "claim_id": claim.get("claim_id"),
+        "statement": claim.get("statement"),
+        "direction": claim.get("direction"),
+        "regions": claim.get("regions") or [],
+        "species": claim.get("species") or [],
+        "consensus_confidence": claim.get("consensus_confidence"),
+        "n_supporting_findings": claim.get("n_supporting_findings", 0),
+        "n_contradicting_findings": claim.get("n_contradicting_findings", 0),
+        "magnitude_summary": claim.get("magnitude_summary"),
+        "timescale": claim.get("timescale"),
+        "evidence_strength": claim.get("evidence_strength"),
+        "status": claim.get("status", "active"),
+        "supporting_datasets": claim.get("supporting_datasets") or [],
+        "supporting_papers": claim.get("supporting_papers") or [],
+        "contradicted_by": claim.get("contradicted_by") or [],
+        "synthesis_model": claim.get("synthesis_model"),
+        "synthesis_prompt_version": claim.get("synthesis_prompt_version"),
+        "synthesized_at": claim.get("synthesized_at"),
+        "tags": ["claim", claim.get("direction", "other")],
+    }
+
+
+def claim_card_body(claim: dict) -> str:
+    statement = claim.get("statement") or "_No statement._"
+    agent_digest = claim.get("agent_digest") or "_Not yet generated._"
+    supporting = claim.get("supporting_papers") or []
+    contradicted = claim.get("contradicted_by") or []
+    datasets = claim.get("supporting_datasets") or []
+
+    supporting_section = "\n".join(f"- [[{p}]]" for p in supporting[:20]) or "_None._"
+    contradicted_section = "\n".join(f"- [[{c}]]" for c in contradicted) or "_None._"
+    datasets_section = "\n".join(f"- [[{d}]]" for d in datasets[:20]) or "_None._"
+
+    return (
+        f"# {statement}\n\n"
+        f"## Agent Digest\n{agent_digest}\n\n"
+        f"## Supporting Datasets\n{datasets_section}\n\n"
+        f"## Supporting Papers\n{supporting_section}\n\n"
+        f"## Contradicted By\n{contradicted_section}\n"
+    )

@@ -304,6 +304,7 @@ class DatasetCardRead(BaseModel):
     missing_fields: list[str] = Field(default_factory=list)
     missing_metadata: list[str] = Field(default_factory=list)
     suggested_analyses: list[str] = Field(default_factory=list)
+    spectral_phenotype: dict[str, Any] = Field(default_factory=dict)
     provenance: dict[str, Any] = Field(default_factory=dict)
     card_markdown: str | None = None
     qa_status: DatasetQAStatus = "auto_generated"

@@ -52,6 +52,15 @@ RELATED_DATASET_EDGE_WEIGHTS = {
 
 PAPER_DATASET_EDGES = {"paper_uses_dataset", "paper_mentions_dataset"}
 
+_EDGE_INDEX_CACHE: dict[
+    int,
+    tuple[
+        int,
+        dict[str, list[KnowledgeGraphEdge]],
+        dict[str, list[KnowledgeGraphEdge]],
+    ],
+] = {}
+
 
 @dataclass(frozen=True)
 class RelatedItem:
@@ -96,10 +105,11 @@ def _out_edges(
     edge_types: Iterable[str] | None = None,
 ) -> list[KnowledgeGraphEdge]:
     wanted = _edge_types(edge_types)
+    out_index, _ = _edge_indexes(graph)
     return [
         edge
-        for edge in graph.edges.values()
-        if edge.source_node_id == node_id and _matches_edge(edge, wanted)
+        for edge in out_index.get(node_id, [])
+        if _matches_edge(edge, wanted)
     ]
 
 
@@ -109,11 +119,31 @@ def _in_edges(
     edge_types: Iterable[str] | None = None,
 ) -> list[KnowledgeGraphEdge]:
     wanted = _edge_types(edge_types)
+    _, in_index = _edge_indexes(graph)
     return [
         edge
-        for edge in graph.edges.values()
-        if edge.target_node_id == node_id and _matches_edge(edge, wanted)
+        for edge in in_index.get(node_id, [])
+        if _matches_edge(edge, wanted)
     ]
+
+
+def _edge_indexes(
+    graph: KnowledgeGraph,
+) -> tuple[dict[str, list[KnowledgeGraphEdge]], dict[str, list[KnowledgeGraphEdge]]]:
+    """Return per-node edge indexes, rebuilt if graph edge count changes."""
+
+    cache_key = id(graph)
+    edge_count = len(graph.edges)
+    cached = _EDGE_INDEX_CACHE.get(cache_key)
+    if cached and cached[0] == edge_count:
+        return cached[1], cached[2]
+    out_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    in_index: dict[str, list[KnowledgeGraphEdge]] = {}
+    for edge in graph.edges.values():
+        out_index.setdefault(edge.source_node_id, []).append(edge)
+        in_index.setdefault(edge.target_node_id, []).append(edge)
+    _EDGE_INDEX_CACHE[cache_key] = (edge_count, out_index, in_index)
+    return out_index, in_index
 
 
 def get_node(graph: KnowledgeGraph, node_id: str) -> KnowledgeGraphNode | None:

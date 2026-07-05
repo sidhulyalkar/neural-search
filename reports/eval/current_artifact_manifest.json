@@ -1,0 +1,311 @@
+{
+  "generated_at": "2026-07-04T21:18:06.116660+00:00",
+  "generated_by": "scripts/build_artifact_manifest.py",
+  "note": "Computed directly from files on disk at generation time. Re-run this script rather than hand-editing this file.",
+  "corpus": {
+    "available": true,
+    "path": "data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl",
+    "row_count": 7171,
+    "unique_source_ids": 7171,
+    "unique_dataset_ids": 625
+  },
+  "knowledge_graph": {
+    "available": true,
+    "path": "data/graph/neural_search_graph.real_corpus.json",
+    "total_nodes": 12748,
+    "total_edges": 149998,
+    "node_type_counts": {
+      "dataset": 7171,
+      "paper": 4514,
+      "concept": 372,
+      "ontology_region": 122,
+      "brain_region": 118,
+      "task": 85,
+      "method": 61,
+      "modality": 60,
+      "paradigm": 34,
+      "oscillation": 32,
+      "disorder": 28,
+      "analysis_affordance": 27,
+      "circuit": 23,
+      "required_signal": 22,
+      "species": 22,
+      "white_matter_tract": 21,
+      "topic": 18,
+      "data_standard": 14,
+      "behavioral_event": 4
+    },
+    "edge_type_counts": {
+      "dataset_old_dataset_new_method_candidate": 59126,
+      "dataset_similar_to_dataset": 58521,
+      "dataset_has_modality": 8083,
+      "dataset_records_region": 7098,
+      "dataset_has_species": 5393,
+      "paper_mentions_dataset": 4585,
+      "dataset_reanalysis_bridge_dataset": 2517,
+      "dataset_has_task": 2423,
+      "paper_cites_paper": 344,
+      "concept_related_to_concept": 195,
+      "analysis_requires_task_structure": 159,
+      "concept_has_alias": 149,
+      "concept_related_to_topic": 116,
+      "analysis_requires_modality": 99,
+      "disorder_disrupts_circuit": 93,
+      "paper_uses_dataset": 91,
+      "method_used_for_topic": 90,
+      "oscillation_measured_by_method": 89,
+      "concept_motivates_method": 76,
+      "region_has_homolog_in": 75,
+      "method_computes": 69,
+      "concept_narrower_than": 51,
+      "finding_advances_topic": 49,
+      "method_supports_analysis": 48,
+      "disorder_has_biomarker": 46,
+      "method_assumes": 45,
+      "region_structurally_adjacent_to": 43,
+      "concept_in_domain": 41,
+      "region_projects_to": 34,
+      "circuit_studied_by_method": 34,
+      "disorder_modeled_by_paradigm": 25,
+      "paradigm_engages_circuit": 24,
+      "same_task_cross_species": 24,
+      "analysis_requires_behavioral_event": 23,
+      "paradigm_targets_topic": 23,
+      "region_structurally_connected": 22,
+      "region_generates_oscillation": 21,
+      "paradigm_validated_cross_species": 21,
+      "concept_broader_than": 16,
+      "method_related_to_method": 11,
+      "region_co_occurs_with_region": 6
+    },
+    "display_edge_counts": {
+      "dataset_old_dataset_new_method_candidate": 59126,
+      "same_region_cross_modality": 48212,
+      "same_task_cross_species": 10333,
+      "dataset_has_modality": 8083,
+      "dataset_records_region": 7098,
+      "dataset_has_species": 5393,
+      "paper_mentions_dataset": 4585,
+      "dataset_reanalysis_bridge_dataset": 2517,
+      "dataset_has_task": 2423,
+      "paper_cites_paper": 344,
+      "concept_related_to_concept": 195,
+      "analysis_requires_task_structure": 159,
+      "concept_has_alias": 149,
+      "concept_related_to_topic": 116,
+      "analysis_requires_modality": 99,
+      "disorder_disrupts_circuit": 93,
+      "paper_uses_dataset": 91,
+      "method_used_for_topic": 90,
+      "oscillation_measured_by_method": 89,
+      "concept_motivates_method": 76,
+      "region_has_homolog_in": 75,
+      "method_computes": 69,
+      "concept_narrower_than": 51,
+      "finding_advances_topic": 49,
+      "method_supports_analysis": 48,
+      "disorder_has_biomarker": 46,
+      "method_assumes": 45,
+      "region_structurally_adjacent_to": 43,
+      "concept_in_domain": 41,
+      "region_projects_to": 34,
+      "circuit_studied_by_method": 34,
+      "disorder_modeled_by_paradigm": 25,
+      "paradigm_engages_circuit": 24,
+      "analysis_requires_behavioral_event": 23,
+      "paradigm_targets_topic": 23,
+      "region_structurally_connected": 22,
+      "region_generates_oscillation": 21,
+      "paradigm_validated_cross_species": 21,
+      "concept_broader_than": 16,
+      "method_related_to_method": 11,
+      "region_co_occurs_with_region": 6
+    },
+    "stub_node_count": 252,
+    "metadata": {
+      "allen_connectivity_edges": 34,
+      "builder": "build_real_corpus_graph",
+      "builder_version": "v1.0.0",
+      "citations_edges": 344,
+      "concept_edges": 217,
+      "corpus": "C:\\Users\\sidso\\Documents\\neural-search\\data\\corpus\\normalized\\combined_corpus.jsonl\\full_corpus_v09.jsonl",
+      "disorder_edges": 228,
+      "evidence_tier_file_validated_upgrades": 162,
+      "hcp_connectivity_edges": 99,
+      "method_supports_analysis_edges": 48,
+      "methods_kg_nodes": 161,
+      "oscillation_edges": 165,
+      "paper_links_edges": 4676,
+      "paradigm_edges": 92,
+      "reanalysis_bridge_edges": 2517,
+      "reanalysis_candidate_edges": 59126,
+      "record_count": 7171,
+      "reinterpretation_candidate_edges": 0,
+      "scholarpedia_edges": 333,
+      "species_homology_edges": 75,
+      "stub_nodes_created": 252,
+      "taxonomy_requirement_edges": 281
+    }
+  },
+  "reanalysis_edges": {
+    "dataset_old_dataset_new_method_candidate": 59126,
+    "dataset_reanalysis_bridge_dataset": 2517,
+    "dataset_reinterpretation_candidate": 0,
+    "dataset_reprocessing_candidate": 0
+  },
+  "qrels": {
+    "gold": {
+      "path": "artifacts/qrels_gold.jsonl",
+      "available": true,
+      "rows": 0
+    },
+    "silver": {
+      "path": "artifacts/qrels_silver.jsonl",
+      "available": true,
+      "rows": 175
+    },
+    "bronze": {
+      "path": "artifacts/qrels_bronze.jsonl",
+      "available": true,
+      "rows": 319
+    },
+    "field_state_adjudicated": {
+      "path": "artifacts/field_state/adjudicated_qrels.jsonl",
+      "available": true,
+      "rows": 3
+    },
+    "canonical_llm_silver": {
+      "path": "data/qrels/qrels.canonical.jsonl",
+      "available": true,
+      "rows": 13654
+    }
+  },
+  "paper_dataset_links": {
+    "available": true,
+    "by_source": {
+      "openalex": {
+        "path": "artifacts/literature/paper_dataset_links.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "not_found": 6768,
+          "title_fuzzy": 10,
+          "title_fuzzy_local": 225,
+          "doi_exact": 168
+        },
+        "real_matches": 403,
+        "real_match_rate": 0.0562
+      },
+      "datacite": {
+        "path": "artifacts/literature/paper_dataset_links.datacite.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "not_applicable_no_dataset_doi": 4784,
+          "not_found": 2296,
+          "datacite_related_identifier": 91
+        },
+        "real_matches": 91,
+        "real_match_rate": 0.0127
+      },
+      "crossref": {
+        "path": "artifacts/literature/paper_dataset_links.crossref.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "crossref_title_fuzzy": 1318,
+          "not_found": 4773,
+          "crossref_doi_exact": 1080
+        },
+        "real_matches": 2398,
+        "real_match_rate": 0.3344
+      },
+      "semantic_scholar": {
+        "path": "artifacts/literature/paper_dataset_links.semantic_scholar.jsonl",
+        "total_rows": 1,
+        "match_method_counts": {
+          "semantic_scholar_title_fuzzy": 1
+        },
+        "real_matches": 1,
+        "real_match_rate": 1.0
+      },
+      "pubmed": {
+        "path": "artifacts/literature/paper_dataset_links.pubmed.jsonl",
+        "total_rows": 7171,
+        "match_method_counts": {
+          "pubmed_title_fuzzy": 782,
+          "not_found": 5388,
+          "pubmed_doi_exact": 973,
+          "biorxiv_doi_exact": 28
+        },
+        "real_matches": 1783,
+        "real_match_rate": 0.2486
+      }
+    },
+    "combined_datasets_with_real_link": 2510,
+    "path": "artifacts/literature/paper_dataset_links.jsonl",
+    "total_rows": 7171,
+    "match_method_counts": {
+      "not_found": 6768,
+      "title_fuzzy": 10,
+      "title_fuzzy_local": 225,
+      "doi_exact": 168
+    },
+    "real_matches": 403,
+    "real_match_rate": 0.0562
+  },
+  "ablation_benchmark": {
+    "available": true,
+    "path": "reports/eval/ablation_ladder_report.partial.json",
+    "is_partial_run": true,
+    "skipped_rungs": [
+      "bm25",
+      "bm25_structured",
+      "dense_bge",
+      "hybrid_rrf"
+    ],
+    "rungs": {
+      "bm25": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "bm25_structured": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "dense_bge": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "hybrid_rrf": {
+        "status": "skipped",
+        "metrics": {}
+      },
+      "hybrid_graph": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8594,
+          "query_count": 317
+        }
+      },
+      "typed_kg": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8483,
+          "query_count": 317
+        }
+      },
+      "typed_kg_qualified": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8483,
+          "query_count": 317
+        }
+      },
+      "full": {
+        "status": "ok",
+        "metrics": {
+          "ndcg@10": 0.8594,
+          "query_count": 317
+        }
+      }
+    }
+  }
+}

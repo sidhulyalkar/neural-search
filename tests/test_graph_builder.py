@@ -123,6 +123,48 @@ def test_dataset_subgraph_contains_expected_concept_edges():
     assert graph.edges[make_edge_id(dataset_id, "dataset_has_task", task_id)].evidence
 
 
+def test_brain_region_node_carries_atlas_crosswalk():
+    dataset = _dataset()
+    graph = build_dataset_subgraph(dataset)
+    region_node_id = make_node_id("brain_region", "orbitofrontal_cortex")
+
+    region_node = graph.nodes[region_node_id]
+    assert region_node.properties["canonical_region_id"] == "OFC"
+    assert region_node.properties["atlas_refs"]["uberon"] == "UBERON:0004169"
+    assert region_node.properties["atlas_refs"]["allen_ccf_mouse"] == "714"
+
+
+def test_unmatched_region_label_has_no_atlas_refs():
+    dataset = _dataset(
+        brain_regions=[_label("brain_region", "not_a_real_region_xyz")],
+    )
+    graph = build_dataset_subgraph(dataset)
+    region_node_id = make_node_id("brain_region", "not_a_real_region_xyz")
+
+    region_node = graph.nodes[region_node_id]
+    assert "atlas_refs" not in region_node.properties
+
+
+def test_task_node_carries_cognitive_atlas_crosswalk():
+    dataset = _dataset()  # uses _label("task", "reversal_learning")
+    graph = build_dataset_subgraph(dataset)
+    task_node_id = make_node_id("task", "reversal_learning")
+
+    task_node = graph.nodes[task_node_id]
+    assert task_node.properties["canonical_task_id"] == "reversal_learning"
+    assert task_node.properties["cogat_label"] == "reversal learning task"
+    assert task_node.properties["cogat_id"]
+
+
+def test_unmatched_task_label_has_no_cogat_fields():
+    dataset = _dataset(tasks=[_label("task", "not_a_real_task_xyz")])
+    graph = build_dataset_subgraph(dataset)
+    task_node_id = make_node_id("task", "not_a_real_task_xyz")
+
+    task_node = graph.nodes[task_node_id]
+    assert "cogat_id" not in task_node.properties
+
+
 def test_paper_subgraph_contains_authors_labels_and_dataset_links():
     paper = _paper()
     graph = build_paper_subgraph(paper)

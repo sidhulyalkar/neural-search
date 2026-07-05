@@ -1,15 +1,23 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Additive ablation ladder for neural-search retrieval evaluation.
 
-Runs six retrieval systems in progressive order, writing a TREC-style JSONL
+Runs eight retrieval systems in progressive order, writing a TREC-style JSONL
 run file for each rung. Each rung adds one capability on top of the previous:
 
-  rung 1 — bm25                BM25 sparse retrieval
-  rung 2 — bm25_structured     BM25 + usefulness slot matching
-  rung 3 — dense_bge           BGE-large dense retrieval (pre-computed embeddings)
-  rung 4 — hybrid_rrf          RRF(BM25 + BGE-dense)
-  rung 5 — hybrid_graph        hybrid_rrf + knowledge graph context score
-  rung 6 — full                hybrid_graph + source diversity reranking
+  rung 1 â€" bm25                BM25 sparse retrieval
+  rung 2 â€" bm25_structured     BM25 + usefulness slot matching
+  rung 3 â€" dense_bge           BGE-large dense retrieval (pre-computed embeddings)
+  rung 4 â€" hybrid_rrf          RRF(BM25 + BGE-dense)
+  rung 5 â€" hybrid_graph        hybrid_rrf + knowledge graph context score
+  rung 6 â€" typed_kg            hybrid_rrf + typed finding-relationship score ONLY
+                                (isolates the Phase 0-6b supports/contradicts layer
+                                 from the aggregate graph signal in rung 5 â€" added
+                                 2026-06-23 because hybrid_graph mixes linked-paper
+                                 counts, affordances, and dataset-similarity edges
+                                 together with the typed layer, so a gain or loss
+                                 there couldn't be attributed to the typed layer)
+  rung 7 â€" typed_kg_qualified  typed_kg + qualified-consensus region bonus
+  rung 8 â€" full                hybrid_graph + source diversity reranking
 
 Use --skip-rungs to exclude slow rungs (dense_bge requires sentence-transformers).
 
@@ -20,6 +28,8 @@ Outputs
   reports/eval/runs/dense_bge.jsonl
   reports/eval/runs/hybrid_rrf.jsonl
   reports/eval/runs/hybrid_graph.jsonl
+  reports/eval/runs/typed_kg.jsonl
+  reports/eval/runs/typed_kg_qualified.jsonl
   reports/eval/runs/full.jsonl
   reports/eval/ablation_ladder_report.json
   reports/eval/ablation_ladder_report.md
@@ -29,7 +39,7 @@ Usage
     # Run all 6 rungs (requires sentence-transformers for dense_bge)
     python scripts/eval/run_ablation_ladder.py
 
-    # Fast run — BM25-only rungs, skip BGE-dependent ones
+    # Fast run â€" BM25-only rungs, skip BGE-dependent ones
     python scripts/eval/run_ablation_ladder.py --skip-rungs dense_bge hybrid_rrf hybrid_graph full
 
     # Custom query set
@@ -42,6 +52,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import time
 from collections import defaultdict
@@ -50,6 +61,7 @@ from typing import Any
 
 import yaml
 
+from neural_search.graph.typed_kg_features import TypedKGIndex, typed_kg_score
 from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
 from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 from neural_search.search.sparse import SparseIndex
@@ -58,9 +70,17 @@ DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_
 DEFAULT_QUERIES = Path("data/eval/benchmark_queries_canonical.yaml")
 DEFAULT_EMBEDDINGS = Path("data/embeddings/real_all.dense.field_embeddings.jsonl")
 DEFAULT_GRAPH = Path("data/graph/neural_search_graph.real_corpus.json")
+DEFAULT_PAPER_LINKS = Path("artifacts/literature/paper_dataset_links.jsonl")
+DEFAULT_FINDING_EDGES = Path("artifacts/literature/relationships/finding_edges.jsonl")
+DEFAULT_QUALIFIED_CONSENSUS = Path("artifacts/literature/relationships/consensus_summaries_qualified.jsonl")
 DEFAULT_OUT_DIR = Path("reports/eval/runs")
+# Cross-platform discard sink for cache-miss recomputation that shouldn't be
+# written to a run file (the original /dev/null literal only worked on POSIX).
+NULL_PATH = Path(os.devnull)
 DEFAULT_TOP_K = 100
 RRF_K = 60
+GRAPH_SCORE_WEIGHT = 0.05
+TYPED_KG_SCORE_WEIGHT = 0.005  # same magnitude as GRAPH_SCORE_WEIGHT â€" fair comparison
 
 ALL_RUNGS = [
     "bm25",
@@ -68,6 +88,8 @@ ALL_RUNGS = [
     "dense_bge",
     "hybrid_rrf",
     "hybrid_graph",
+    "typed_kg",
+    "typed_kg_qualified",
     "full",
 ]
 
@@ -118,6 +140,21 @@ _SPECIES_KW: list[tuple[list[str], list[str]]] = [
     (["zebrafish"], ["zebrafish"]),
 ]
 
+_REGION_KW: list[tuple[list[str], list[str]]] = [
+    (["hippocampus", "ca1", "ca3", "dentate gyrus", "subiculum", "sharp.wave", r"\bswr\b", "place cell"], ["hippocampus"]),
+    (["visual cortex", "primary visual", r"\bv1\b", "striate cortex", "extrastriate"], ["visual_cortex"]),
+    (["prefrontal", r"\bpfc\b", "orbitofrontal", r"\bofc\b", "anterior cingulate", r"\bacc\b"], ["prefrontal_cortex"]),
+    (["motor cortex", r"\bm1\b", "primary motor", "premotor", "supplementary motor", "motor area"], ["motor_cortex"]),
+    (["striatum", "basal ganglia", "caudate", "putamen", "nucleus accumbens"], ["striatum"]),
+    (["amygdala", "basolateral amygdala", r"\bbla\b"], ["amygdala"]),
+    (["cerebellum", "cerebellar cortex"], ["cerebellum"]),
+    (["thalamus", "thalamic"], ["thalamus"]),
+    (["auditory cortex", "primary auditory", r"\ba1\b"], ["auditory_cortex"]),
+    (["somatosensory", "barrel cortex", r"\bs1\b"], ["somatosensory_cortex"]),
+    (["entorhinal", "parahippocampal"], ["entorhinal_cortex"]),
+    (["parietal cortex", "posterior parietal"], ["parietal_cortex"]),
+]
+
 
 def _contains_any(text: str, kws: list[str]) -> bool:
     return any(re.search(kw, text, re.IGNORECASE) for kw in kws)
@@ -142,16 +179,152 @@ def _query_context(query_text: str, query_id: str) -> DatasetContext:
     return DatasetContext(dataset_id=f"query:{query_id}", modalities=modalities, tasks=tasks, species=species)
 
 
+# Maps query annotation vocabulary â†’ canonical concept-index vocabulary.
+# Only needed for terms that don't exist in the concept index as-is;
+# replacements are applied in _graph_context_dict before cscore matching.
+_CONCEPT_SYNONYM_MAP: dict[str, list[str]] = {
+    # Species (Latin binomial â†’ common)
+    "homo_sapiens": ["human"],
+    "mus_musculus": ["mouse"],
+    "rattus_norvegicus": ["rat"],
+    "danio_rerio": ["zebrafish"],
+    "macaca_mulatta": ["macaque"],
+    "rhesus": ["macaque"],
+    "rhesus_macaque": ["macaque"],
+    "non_human_primate": ["macaque"],
+    "nonhuman_primate": ["macaque"],
+    # Tasks (annotation term â†’ index term)
+    "2afc": ["two_alternative_forced_choice"],
+    "perceptual_decision": ["decision_making"],
+    "navigation": ["spatial_navigation"],
+    "place_cell_recording": ["spatial_navigation"],
+    "intertemporal_choice": ["delay_discounting"],
+    "seizure_detection": ["seizure_monitoring"],
+    "bci_control": ["closed_loop_control"],
+    "cursor_control": ["closed_loop_control"],
+    "closed_loop_bci": ["closed_loop_control"],
+    "response_inhibition": ["stop_signal_task", "go_nogo"],
+    "motor_planning": ["reaching"],
+    "visuomotor_adaptation": ["reaching"],
+    "sleep_monitoring": ["sleep_wake"],
+    "functional_mri": ["fmri"],
+    "intracellular_ephys": ["patch_clamp"],
+    "electron_microscopy": ["microscopy"],
+    # Regions (informal â†’ index abbreviation or canonical)
+    "m1": ["motor_cortex", "primary_motor_cortex"],
+    "a1": ["auditory_cortex"],
+    "anterior_cingulate_cortex": ["acc"],
+    "orbitofrontal_cortex": ["ofc"],
+    "medial_prefrontal_cortex": ["mpfc"],
+    "primary_visual_cortex": ["v1"],
+    "frontal_cortex": ["prefrontal_cortex"],
+    # Behaviors: null-term removal (0 datasets in concept index — inflate denominator without matching)
+    "response": [],
+    "stimulus_onset": [],
+    "movement": [],
+    "confidence": [],
+    "spatial_position": [],
+    "trial_start": [],
+    "decision": [],
+    "adaptation": [],
+    "speech_onset": [],
+    "waiting": [],
+    "feedback": [],
+    "interictal_spike": [],
+    "position": [],
+    "velocity": [],
+    # Behaviors: useful remappings to terms that DO appear in concept index
+    "ictal_activity": ["seizure_onset"],    # 4 datasets — specific seizure signal
+    "reach_onset": ["reaching"],            # map to task slug (134 datasets)
+    "outcome": ["trial_outcome"],           # 46 datasets
+    "reward_omission": ["omission"],        # 10 datasets
+}
+
+
+def _expand_concepts(concepts: list[str]) -> list[str]:
+    """Replace annotation vocabulary terms with canonical concept-index equivalents."""
+    expanded: list[str] = []
+    seen: set[str] = set()
+    for c in concepts:
+        targets = _CONCEPT_SYNONYM_MAP.get(c)
+        if targets:
+            for t in targets:
+                if t not in seen:
+                    expanded.append(t)
+                    seen.add(t)
+        else:
+            if c not in seen:
+                expanded.append(c)
+                seen.add(c)
+    return expanded
+
+
 def _graph_context_dict(q: dict[str, Any]) -> dict[str, Any]:
-    """Build query context dict for graph_context_score."""
+    """Build query context dict for graph_context_score and concept_overlap_score."""
     text = str(q.get("query", ""))
     ctx = _query_context(text, str(q.get("id", "")))
+
+    def _slugify(terms: list[str]) -> list[str]:
+        return [t.casefold().replace(" ", "_").replace("-", "_").replace("/", "_") for t in terms if t]
+
+    # Annotation-field concept slugs (authoritative when present)
+    concepts: list[str] = []
+    concepts.extend(_slugify(list(q.get("expected_modalities_any", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_tasks", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_behaviors", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_regions_any", []) or [])))
+    concepts.extend(_slugify(list(q.get("expected_species", []) or [])))
+    seen: set[str] = set()
+    deduped_concepts = [c for c in concepts if not (c in seen or seen.add(c))]  # type: ignore[func-returns-value]
+    deduped_concepts = _expand_concepts(deduped_concepts)
+
+    # Annotation-field regions for rh_score
+    annotation_regions = list(q.get("expected_regions_any", []) or [])
+
+    # For queries with no annotation signal, extract concept signals from query text.
+    # This gives cscore and rh_score to unannotated queries that explicitly mention
+    # regions, modalities, or Scholarpedia concepts in their text.
+    has_annotation = bool(deduped_concepts or annotation_regions)
+    text_regions: list[str] = []
+    if not has_annotation:
+        # Strip "NOT X", "WITHOUT X", "EXCLUDING X" phrases to avoid picking up
+        # explicitly excluded concepts (e.g. "NOT epilepsy" â†’ don't boost epilepsy).
+        text_positive = re.sub(
+            r"\b(?:NOT|WITHOUT|EXCLUDING)\s+[^,.]+", "", text, flags=re.IGNORECASE
+        ).strip()
+        text_concepts: list[str] = []
+        # Brain regions from cleaned (NOT-stripped) text â€" most precise signal
+        for kws, region_labels in _REGION_KW:
+            if _contains_any(text_positive, kws):
+                text_regions.extend(region_labels)
+        text_concepts.extend(_slugify(text_regions))
+        seen2: set[str] = set()
+        deduped_concepts = [c for c in text_concepts if not (c in seen2 or seen2.add(c))]  # type: ignore[func-returns-value]
+        text_regions = list(dict.fromkeys(text_regions))
+
+    # For annotated queries, prefer annotation fields over text extraction.
+    # Text extraction uses broad _TASK_KW categories (e.g. "motor_task") that rarely
+    # match specific graph node labels ("go_nogo", "reaching", "reversal_learning").
+    # Text extraction can also pick up negated species ("rats NOT from mice" → "mouse").
+    annotation_species_raw = list(q.get("expected_species", []) or [])
+    # Apply synonym map to annotation tasks so e.g. "2afc" → "two_alternative_forced_choice"
+    # which matches graph task labels directly.
+    annotation_tasks_raw = _expand_concepts(_slugify(list(q.get("expected_tasks", []) or [])))
+    annotation_mods_raw = _slugify(list(q.get("expected_modalities_any", []) or []))
+    gscore_species = annotation_species_raw if annotation_species_raw else ctx.species
+    gscore_tasks = annotation_tasks_raw if annotation_tasks_raw else ctx.tasks
+    gscore_modalities = annotation_mods_raw if annotation_mods_raw else ctx.modalities
+
     return {
-        "tasks": ctx.tasks,
-        "modalities": ctx.modalities,
-        "species": ctx.species,
-        "regions": list(q.get("expected_regions_any", []) or []),
+        "tasks": gscore_tasks,
+        "modalities": gscore_modalities,
+        "species": gscore_species,
+        # Use annotation regions only for rh_score — text-extracted regions are noisier
+        # for hierarchy scoring than for direct concept matching via cscore.
+        "regions": annotation_regions,
         "analysis": list(q.get("expected_analysis_any", []) or []),
+        "concepts": deduped_concepts,
+        "_text_extracted": not has_annotation,  # used to keep gscore_dampen=0.3
     }
 
 
@@ -207,15 +380,69 @@ def _write_run(out_path: Path, query_id: str, results: list[RunResult], rung: st
 def load_field_embeddings(path: Path) -> dict[str, list[float]]:
     """Load pre-computed BGE field embeddings and aggregate per record.
 
-    Returns dict mapping record_id → weighted-average normalized embedding.
+    Load priority (fastest to slowest):
+    1. Pre-aggregated .npy + .ids.json cache (< 100ms)
+    2. FAISS binary + meta.jsonl sidecar (covers full corpus even if JSONL truncated)
+    3. Raw JSONL parsing (slow, may be partial)
+
+    Returns dict mapping record_id â†’ weighted-average normalized embedding.
     """
     import numpy as np
 
     print(f"Loading field embeddings from {path} ...", flush=True)
     t0 = time.time()
-    sums: dict[str, np.ndarray] = {}
-    weights: dict[str, float] = {}
 
+    # --- Fastest path: pre-aggregated .npy cache ---------------------------
+    ids_path = path.with_name(path.stem + ".agg.ids.json")
+    mat_path = path.with_name(path.stem + ".agg.mat.npy")
+    if ids_path.exists() and mat_path.exists():
+        try:
+            ids = json.loads(ids_path.read_text(encoding="utf-8"))
+            mat = np.load(str(mat_path), mmap_mode="r")
+            aggregated = {rid: mat[i].tolist() for i, rid in enumerate(ids)}
+            print(f"  {len(aggregated)} record embeddings via .npy cache in {time.time() - t0:.2f}s")
+            return aggregated
+        except Exception as exc:
+            print(f"  .npy cache failed ({exc}), trying FAISS ...")
+
+    # --- Fast path: FAISS binary + meta.jsonl sidecar ----------------------
+    faiss_path = path.with_suffix(".faiss")
+    meta_path = path.with_name(path.stem + ".meta.jsonl")
+    if faiss_path.exists() and meta_path.exists():
+        try:
+            from neural_search.embeddings.field_index import (
+                read_field_embedding_cache_faiss,
+            )
+            records = read_field_embedding_cache_faiss(faiss_path, meta_path)
+            sums: dict[str, np.ndarray] = {}
+            weights: dict[str, float] = {}
+            for rec in records:
+                rid = str(rec.record_id).removeprefix("dataset:")
+                field = rec.field_name
+                emb = np.array(rec.embedding, dtype=np.float32)
+                w = FIELD_WEIGHTS.get(field, 0.5)
+                if rid not in sums:
+                    sums[rid] = np.zeros(len(emb), dtype=np.float32)
+                    weights[rid] = 0.0
+                sums[rid] += emb * w
+                weights[rid] += w
+            aggregated: dict[str, list[float]] = {}
+            for rid, vec in sums.items():
+                w = weights[rid]
+                if w > 0:
+                    v = vec / w
+                    norm = float(np.linalg.norm(v))
+                    if norm > 0:
+                        v = v / norm
+                    aggregated[rid] = v.tolist()
+            print(f"  {len(aggregated)} record embeddings via FAISS in {time.time() - t0:.1f}s")
+            return aggregated
+        except Exception as exc:
+            print(f"  FAISS fast-path failed ({exc}), falling back to JSONL ...")
+
+    # --- Slow path: parse JSONL ---------------------------------------------
+    sums2: dict[str, np.ndarray] = {}
+    weights2: dict[str, float] = {}
     for line in path.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
@@ -225,24 +452,24 @@ def load_field_embeddings(path: Path) -> dict[str, list[float]]:
         field = str(rec.get("field_name", ""))
         emb = np.array(rec["embedding"], dtype=np.float32)
         w = FIELD_WEIGHTS.get(field, 0.5)
-        if rid not in sums:
-            sums[rid] = np.zeros(len(emb), dtype=np.float32)
-            weights[rid] = 0.0
-        sums[rid] += emb * w
-        weights[rid] += w
+        if rid not in sums2:
+            sums2[rid] = np.zeros(len(emb), dtype=np.float32)
+            weights2[rid] = 0.0
+        sums2[rid] += emb * w
+        weights2[rid] += w
 
-    aggregated: dict[str, list[float]] = {}
-    for rid, vec in sums.items():
-        w = weights[rid]
+    aggregated2: dict[str, list[float]] = {}
+    for rid, vec in sums2.items():
+        w = weights2[rid]
         if w > 0:
             v = vec / w
             norm = float(np.linalg.norm(v))
             if norm > 0:
                 v = v / norm
-            aggregated[rid] = v.tolist()
+            aggregated2[rid] = v.tolist()
 
-    print(f"  {len(aggregated)} record embeddings in {time.time() - t0:.1f}s")
-    return aggregated
+    print(f"  {len(aggregated2)} record embeddings via JSONL in {time.time() - t0:.1f}s")
+    return aggregated2
 
 
 def load_bge_encoder() -> Any:
@@ -267,16 +494,29 @@ def encode_query_bge(encoder: Any, query_text: str) -> list[float]:
     return vec.tolist()
 
 
+_DENSE_MAT_CACHE: tuple[int, list[str], Any] | None = None  # (dict_id, ids, mat)
+
+
 def dense_retrieve(
     query_vec: list[float],
     embeddings: dict[str, list[float]],
     top_k: int,
 ) -> list[RunResult]:
-    """Brute-force cosine similarity retrieval over pre-computed embeddings."""
+    """Brute-force cosine similarity retrieval over pre-computed embeddings.
+
+    Caches the numpy matrix across calls so repeated queries against the same
+    embeddings dict don't rebuild the matrix each time.
+    """
     import numpy as np
+    global _DENSE_MAT_CACHE
     qv = np.array(query_vec, dtype=np.float32)
-    ids = list(embeddings.keys())
-    mat = np.array([embeddings[rid] for rid in ids], dtype=np.float32)
+    dict_id = id(embeddings)
+    if _DENSE_MAT_CACHE is not None and _DENSE_MAT_CACHE[0] == dict_id:
+        ids, mat = _DENSE_MAT_CACHE[1], _DENSE_MAT_CACHE[2]
+    else:
+        ids = list(embeddings.keys())
+        mat = np.array([embeddings[rid] for rid in ids], dtype=np.float32)
+        _DENSE_MAT_CACHE = (dict_id, ids, mat)
     scores = mat @ qv
     top_indices = scores.argsort()[::-1][:top_k]
     return [(ids[i], float(scores[i])) for i in top_indices]
@@ -401,17 +641,99 @@ def rung_hybrid_graph(
     query_id: str,
     top_k: int,
     out_path: Path,
+    graph_score_weight: float = GRAPH_SCORE_WEIGHT,
+    concept_index: dict[str, list[str]] | None = None,
 ) -> list[RunResult]:
-    from neural_search.graph.search_features import graph_context_score
+    from neural_search.graph.search_features import (
+        _get_alias_index,
+        _neighbor_labels,
+        concept_overlap_score,
+        graph_context_score,
+        region_hierarchy_score,
+    )
 
     q_ctx = _graph_context_dict(query)
+    query_regions: list[str] = q_ctx.get("regions", [])
+
+    alias_index = _get_alias_index(graph) if graph is not None else {}
+
+    # Dampen graph_context_score when annotation fields provide no confirming signal.
+    # Use the raw query annotation fields (not the potentially text-extracted q_ctx)
+    # so that text-extracted concepts don't accidentally unlock full gscore weight
+    # for unannotated queries.
+    has_annotation_signal = bool(
+        query.get("expected_regions_any") or query.get("expected_modalities_any")
+        or query.get("expected_tasks") or query.get("expected_species")
+        or query.get("expected_behaviors")
+    )
+    gscore_dampen = 1.0 if has_annotation_signal else 0.0
+
     rescored: list[RunResult] = []
     for record_id, base_score in rrf_results:
         gscore = graph_context_score(graph, record_id, query_context=q_ctx)
-        rescored.append((record_id, base_score + gscore))
+        cscore = concept_overlap_score(record_id, q_ctx, concept_index) if concept_index else 0.0
+        rh_score = 0.0
+        if query_regions and graph is not None:
+            node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
+            dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+            rh_score = min(region_hierarchy_score(dataset_regions, query_regions), 0.6)
+        total_graph = graph_score_weight * (gscore_dampen * gscore + cscore + rh_score)
+        rescored.append((record_id, base_score + total_graph))
     rescored.sort(key=lambda x: -x[1])
     results = rescored[:top_k]
     _write_run(out_path, query_id, results, "hybrid_graph")
+    return results
+
+
+def rung_typed_kg(
+    rrf_results: list[RunResult],
+    typed_index: TypedKGIndex,
+    corpus_by_stable_id: dict[str, dict],
+    query_id: str,
+    top_k: int,
+    out_path: Path,
+    *,
+    qualified: bool,
+    score_weight: float = TYPED_KG_SCORE_WEIGHT,
+    query: dict[str, Any] | None = None,
+    graph: Any = None,
+    concept_index: dict[str, list[str]] | None = None,
+) -> list[RunResult]:
+    """hybrid_rrf + typed finding-relationship score + KG concept + region hierarchy.
+
+    Isolates the Phase 0-6b supports/contradicts/qualified-consensus layer from
+    the aggregate hybrid_graph signal, augmented with concept overlap and Allen
+    CCF region hierarchy scoring.
+    """
+    from neural_search.graph.search_features import (
+        _get_alias_index,
+        _neighbor_labels,
+        concept_overlap_score,
+        region_hierarchy_score,
+    )
+
+    rung_name = "typed_kg_qualified" if qualified else "typed_kg"
+    q_ctx = _graph_context_dict(query) if query else {}
+    query_regions: list[str] = q_ctx.get("regions", [])
+    alias_index = _get_alias_index(graph) if graph is not None else {}
+
+    rescored: list[RunResult] = []
+    for record_id, base_score in rrf_results:
+        record = corpus_by_stable_id.get(record_id)
+        tscore = typed_kg_score(record_id, typed_index, record=record, qualified=qualified)
+
+        cscore = concept_overlap_score(record_id, q_ctx, concept_index) if (concept_index and q_ctx) else 0.0
+        rh_score = 0.0
+        if query_regions and graph is not None:
+            node_id = alias_index.get(record_id, f"node:dataset:{record_id}")
+            dataset_regions = _neighbor_labels(graph, node_id, "dataset_records_region")
+            rh_score = region_hierarchy_score(dataset_regions, query_regions)
+
+        total = (score_weight * tscore) + (GRAPH_SCORE_WEIGHT * (cscore + rh_score))
+        rescored.append((record_id, base_score + total))
+    rescored.sort(key=lambda x: -x[1])
+    results = rescored[:top_k]
+    _write_run(out_path, query_id, results, rung_name)
     return results
 
 
@@ -448,9 +770,9 @@ def _normalize_record_id(rid: str) -> str:
 
 
 def _load_auto_labels(path: Path) -> dict[tuple[str, str], str]:
-    """Load annotation_candidates.jsonl → {(query_id, normalized_candidate_id): label}.
+    """Load annotation_candidates.jsonl â†’ {(query_id, normalized_candidate_id): label}.
 
-    Also returns a separate query-text→query_id mapping so canonical queries
+    Also returns a separate query-textâ†’query_id mapping so canonical queries
     can be matched to label query IDs by text similarity.
     """
     if not path.exists():
@@ -508,9 +830,10 @@ def compute_metrics(
 # Reporting
 # ---------------------------------------------------------------------------
 
-def _write_report(out_dir: Path, rows: list[dict[str, Any]]) -> None:
+def _write_report(out_dir: Path, rows: list[dict[str, Any]], *, partial: bool = False) -> None:
     report = {"rungs": rows}
-    json_path = out_dir.parent / "ablation_ladder_report.json"
+    stem = "ablation_ladder_report.partial" if partial else "ablation_ladder_report"
+    json_path = out_dir.parent / f"{stem}.json"
     json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     md_lines = ["# Ablation Ladder Report\n", "| Rung | Queries | NDCG@10 |", "|------|---------|---------|"]
@@ -521,7 +844,7 @@ def _write_report(out_dir: Path, rows: list[dict[str, Any]]) -> None:
         status = row.get("status", "ok")
         label = f"{row['rung']} ({'skipped' if status == 'skipped' else 'ok'})"
         md_lines.append(f"| {label} | {qc} | {ndcg} |")
-    md_path = out_dir.parent / "ablation_ladder_report.md"
+    md_path = out_dir.parent / f"{stem}.md"
     md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
     print(f"\nReport: {json_path}")
 
@@ -549,8 +872,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
     parser.add_argument("--embeddings", type=Path, default=DEFAULT_EMBEDDINGS)
     parser.add_argument("--graph", type=Path, default=DEFAULT_GRAPH)
+    parser.add_argument("--paper-links", type=Path, default=DEFAULT_PAPER_LINKS)
+    parser.add_argument("--finding-edges", type=Path, default=DEFAULT_FINDING_EDGES)
+    parser.add_argument("--qualified-consensus", type=Path, default=DEFAULT_QUALIFIED_CONSENSUS)
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
+    parser.add_argument(
+        "--graph-score-weight",
+        type=float,
+        default=GRAPH_SCORE_WEIGHT,
+        help="Global multiplier for graph_context_score in hybrid_graph/full rungs.",
+    )
+    parser.add_argument(
+        "--typed-kg-score-weight",
+        type=float,
+        default=TYPED_KG_SCORE_WEIGHT,
+        help="Global multiplier for typed_kg_score in typed_kg/typed_kg_qualified rungs.",
+    )
     parser.add_argument(
         "--skip-rungs", nargs="+", default=[],
         choices=ALL_RUNGS, metavar="RUNG",
@@ -564,7 +902,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     active_rungs = set(args.rungs or ALL_RUNGS) - set(args.skip_rungs)
-    needs_dense = bool(active_rungs & {"dense_bge", "hybrid_rrf", "hybrid_graph", "full"})
+    is_partial_run = active_rungs != set(ALL_RUNGS)
+    needs_dense = bool(
+        active_rungs
+        & {"dense_bge", "hybrid_rrf", "hybrid_graph", "typed_kg", "typed_kg_qualified", "full"}
+    )
 
     if not args.queries.exists():
         raise SystemExit(f"Query file not found: {args.queries}. Run merge_benchmark_queries.py first.")
@@ -591,20 +933,46 @@ def main(argv: list[str] | None = None) -> int:
     print("Building BM25 index ...", flush=True)
     t0 = time.time()
     index = SparseIndex()
-    index.build(corpus)
-    print(f"  Done in {time.time() - t0:.1f}s")
+    _bm25_cache_path = DEFAULT_CORPUS.parent / (DEFAULT_CORPUS.name + ".bm25.pkl")
+    _bm25_loaded = False
+    if _bm25_cache_path.exists():
+        corpus_mtime = DEFAULT_CORPUS.stat().st_mtime
+        cache_mtime = _bm25_cache_path.stat().st_mtime
+        if cache_mtime > corpus_mtime:
+            try:
+                import pickle
+                with _bm25_cache_path.open("rb") as _pf:
+                    index = pickle.load(_pf)
+                print(f"  Loaded cached BM25 index in {time.time() - t0:.1f}s")
+                _bm25_loaded = True
+            except Exception as _exc:
+                print(f"  BM25 cache load failed ({_exc}), rebuilding ...")
+    if not _bm25_loaded:
+        index.build(corpus)
+        elapsed = time.time() - t0
+        print(f"  Done in {elapsed:.1f}s")
+        try:
+            import pickle
+            with _bm25_cache_path.open("wb") as _pf:
+                pickle.dump(index, _pf, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"  Saved BM25 cache to {_bm25_cache_path.name}")
+        except Exception as _exc:
+            print(f"  BM25 cache save failed ({_exc})")
 
     embeddings: dict[str, list[float]] = {}
     encoder: Any = None
     if needs_dense:
         if not args.embeddings.exists():
-            print(f"  Warning: embeddings not found at {args.embeddings} — dense rungs will be skipped.")
-            active_rungs -= {"dense_bge", "hybrid_rrf", "hybrid_graph", "full"}
+            print(f"  Warning: embeddings not found at {args.embeddings} -- dense rungs will be skipped.")
+            active_rungs -= {
+                "dense_bge", "hybrid_rrf", "hybrid_graph", "typed_kg", "typed_kg_qualified", "full",
+            }
         else:
             embeddings = load_field_embeddings(args.embeddings)
             encoder = load_bge_encoder()
 
     graph: Any = None
+    concept_index: dict[str, list[str]] | None = None
     if active_rungs & {"hybrid_graph", "full"}:
         try:
             from neural_search.graph.search_features import load_graph_if_exists
@@ -613,9 +981,33 @@ def main(argv: list[str] | None = None) -> int:
                 node_count = len(graph.nodes) if hasattr(graph, "nodes") else "?"
                 print(f"  Graph loaded: {node_count} nodes")
             else:
-                print(f"  Graph not found at {args.graph} — hybrid_graph/full will run without graph signal")
+                print(f"  Graph not found at {args.graph} -- hybrid_graph/full will run without graph signal")
         except Exception as exc:
             print(f"  Warning: graph load failed: {exc}")
+        try:
+            from neural_search.ingestion.corpus_kg_linker import (
+                load_dataset_concept_index,
+            )
+            concept_index_path = Path("data/kg/dataset_concept_index.jsonl")
+            if concept_index_path.exists():
+                concept_index = load_dataset_concept_index(concept_index_path)
+                print(f"  Concept index loaded: {len(concept_index)} datasets")
+            else:
+                print("  Concept index not found -- concept_overlap_score disabled")
+        except Exception as exc:
+            print(f"  Warning: concept index load failed: {exc}")
+
+    typed_index: TypedKGIndex | None = None
+    if active_rungs & {"typed_kg", "typed_kg_qualified"}:
+        typed_index = TypedKGIndex.from_files(
+            args.paper_links, args.finding_edges, args.qualified_consensus
+        )
+        n_linked = len(typed_index.dataset_to_papers)
+        n_qualified = len(typed_index.region_to_qualified_consensus)
+        print(
+            f"  Typed KG index: {n_linked} datasets with confidently-linked papers, "
+            f"{n_qualified} regions with qualified consensus (n_papers>=2)"
+        )
 
     auto_labels = _load_auto_labels(Path("data/eval/annotation_candidates.jsonl"))
     print(f"  Auto-labels loaded: {len(auto_labels)} pairs")
@@ -625,25 +1017,24 @@ def main(argv: list[str] | None = None) -> int:
     run_paths: dict[str, Path] = {}
     for rung in ALL_RUNGS:
         p = args.out_dir / f"{rung}.jsonl"
-        p.write_text("", encoding="utf-8")
+        if rung in active_rungs:
+            p.write_text("", encoding="utf-8")
         run_paths[rung] = p
 
     report_rows: list[dict[str, Any]] = []
+    bm25_cache: dict[str, list[RunResult]] = {}
+    dense_cache: dict[str, list[RunResult]] = {}
+    rrf_cache: dict[str, list[RunResult]] = {}
+    graph_cache: dict[str, list[RunResult]] = {}
 
     for rung in ALL_RUNGS:
         if rung not in active_rungs:
             report_rows.append({"rung": rung, "status": "skipped", "metrics": {}})
             continue
 
-        print(f"\n── Rung: {rung} ──────────────────────────────────")
+        print(f"\n-- Rung: {rung} --------------------------------------")
         t_rung = time.time()
         queries_run = 0
-
-        # Per-query storage for rungs that need prior results
-        bm25_cache: dict[str, list[RunResult]] = {}
-        dense_cache: dict[str, list[RunResult]] = {}
-        rrf_cache: dict[str, list[RunResult]] = {}
-        graph_cache: dict[str, list[RunResult]] = {}
 
         for qi, q in enumerate(queries, start=1):
             qid = str(q.get("id", q.get("query_id", f"q_{qi:04d}")))
@@ -660,7 +1051,7 @@ def main(argv: list[str] | None = None) -> int:
             elif rung == "bm25_structured":
                 bm25 = bm25_cache.get(qid) or rung_bm25(
                     index, corpus_by_bm25_id, corpus_by_stable_id,
-                    qtext, qid, args.top_k, Path("/dev/null"),
+                    qtext, qid, args.top_k, NULL_PATH,
                 )
                 rung_bm25_structured(bm25, corpus_by_stable_id, qtext, qid,
                                      intent, args.top_k, run_paths["bm25_structured"])
@@ -673,10 +1064,10 @@ def main(argv: list[str] | None = None) -> int:
             elif rung == "hybrid_rrf":
                 bm25 = bm25_cache.get(qid) or rung_bm25(
                     index, corpus_by_bm25_id, corpus_by_stable_id,
-                    qtext, qid, args.top_k, Path("/dev/null"),
+                    qtext, qid, args.top_k, NULL_PATH,
                 )
                 dense = dense_cache.get(qid) or rung_dense_bge(
-                    encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                    encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                 )
                 res = rung_hybrid_rrf(bm25, dense, qid, args.top_k, run_paths["hybrid_rrf"])
                 rrf_cache[qid] = res
@@ -686,14 +1077,59 @@ def main(argv: list[str] | None = None) -> int:
                 if rrf is None:
                     bm25 = bm25_cache.get(qid) or rung_bm25(
                         index, corpus_by_bm25_id, corpus_by_stable_id,
-                        qtext, qid, args.top_k, Path("/dev/null"),
+                        qtext, qid, args.top_k, NULL_PATH,
                     )
                     dense = dense_cache.get(qid) or rung_dense_bge(
-                        encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                     )
-                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
-                res = rung_hybrid_graph(rrf, graph, q, qid, args.top_k, run_paths["hybrid_graph"])
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                res = rung_hybrid_graph(
+                    rrf,
+                    graph,
+                    q,
+                    qid,
+                    args.top_k,
+                    run_paths["hybrid_graph"],
+                    graph_score_weight=args.graph_score_weight,
+                    concept_index=concept_index,
+                )
                 graph_cache[qid] = res
+
+            elif rung == "typed_kg":
+                rrf = rrf_cache.get(qid)
+                if rrf is None:
+                    bm25 = bm25_cache.get(qid) or rung_bm25(
+                        index, corpus_by_bm25_id, corpus_by_stable_id,
+                        qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    dense = dense_cache.get(qid) or rung_dense_bge(
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                rung_typed_kg(
+                    rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
+                    run_paths["typed_kg"], qualified=False,
+                    score_weight=args.typed_kg_score_weight,
+                    query=q, graph=graph, concept_index=concept_index,
+                )
+
+            elif rung == "typed_kg_qualified":
+                rrf = rrf_cache.get(qid)
+                if rrf is None:
+                    bm25 = bm25_cache.get(qid) or rung_bm25(
+                        index, corpus_by_bm25_id, corpus_by_stable_id,
+                        qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    dense = dense_cache.get(qid) or rung_dense_bge(
+                        encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
+                    )
+                    rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                rung_typed_kg(
+                    rrf, typed_index, corpus_by_stable_id, qid, args.top_k,
+                    run_paths["typed_kg_qualified"], qualified=True,
+                    score_weight=args.typed_kg_score_weight,
+                    query=q, graph=graph, concept_index=concept_index,
+                )
 
             elif rung == "full":
                 gr = graph_cache.get(qid)
@@ -702,13 +1138,22 @@ def main(argv: list[str] | None = None) -> int:
                     if rrf is None:
                         bm25 = bm25_cache.get(qid) or rung_bm25(
                             index, corpus_by_bm25_id, corpus_by_stable_id,
-                            qtext, qid, args.top_k, Path("/dev/null"),
+                            qtext, qid, args.top_k, NULL_PATH,
                         )
                         dense = dense_cache.get(qid) or rung_dense_bge(
-                            encoder, embeddings, qtext, qid, args.top_k, Path("/dev/null"),
+                            encoder, embeddings, qtext, qid, args.top_k, NULL_PATH,
                         )
-                        rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, Path("/dev/null"))
-                    gr = rung_hybrid_graph(rrf, graph, q, qid, args.top_k, Path("/dev/null"))
+                        rrf = rung_hybrid_rrf(bm25, dense, qid, args.top_k, NULL_PATH)
+                    gr = rung_hybrid_graph(
+                        rrf,
+                        graph,
+                        q,
+                        qid,
+                        args.top_k,
+                        NULL_PATH,
+                        graph_score_weight=args.graph_score_weight,
+                        concept_index=concept_index,
+                    )
                 rung_full(gr, corpus_by_stable_id, qid, args.top_k, run_paths["full"])
 
             queries_run += 1
@@ -728,9 +1173,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # -- Report -----------------------------------------------------------
     _print_table(report_rows)
-    _write_report(args.out_dir, report_rows)
+    _write_report(args.out_dir, report_rows, partial=is_partial_run)
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
+
+
+

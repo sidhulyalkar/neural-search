@@ -162,8 +162,9 @@ def test_graph_rejects_edges_that_reference_missing_nodes():
         edge_type="dataset_has_task",
     )
 
-    with pytest.raises(ValidationError, match="edge target does not resolve"):
-        KnowledgeGraph(nodes={dataset.node_id: dataset}, edges={edge.edge_id: edge})
+    graph = KnowledgeGraph(nodes={dataset.node_id: dataset}, edges={edge.edge_id: edge})
+    with pytest.raises(ValueError, match="edge target does not resolve"):
+        validate_graph(graph, strict=True)
 
 
 def test_graph_rejects_mismatched_identity_map_keys():

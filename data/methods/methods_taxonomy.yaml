@@ -1,0 +1,604 @@
+# Neural Measurement Methods Taxonomy
+# Covers the mathematical foundations, assumptions, and limitations of
+# the analytical methods used across neuroscience.
+# Each method links to KG topics it most commonly appears in.
+
+categories:
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: signal_processing
+    label: Signal Processing
+    description: Transformations of neural time-series to extract meaningful features
+    methods:
+
+      - id: fft
+        label: Fast Fourier Transform
+        aliases: [Fourier transform, DFT, power spectrum]
+        formula: "X[k] = sum_{n=0}^{N-1} x[n] * exp(-i*2*pi*k*n/N)"
+        computes: [power_spectral_density, phase_spectrum, amplitude_spectrum]
+        mathematical_basis:
+          - "Decomposes signal into sum of sinusoids at discrete frequencies"
+          - "Based on orthogonality of complex exponentials"
+          - "Cooley-Tukey algorithm: O(N log N) vs O(N^2) for DFT"
+        assumptions:
+          stationarity: "Signal statistics (mean, variance) must be constant over time. Violated during cognitive task transitions, sleep stage changes, burst firing."
+          linearity: "Signal is a linear superposition — non-linear interactions (e.g., cross-frequency coupling) are invisible"
+          periodicity: "Implicitly assumes the signal repeats; edge artifacts handled by windowing (Hann, Hamming, Blackman)"
+          infinite_duration: "True PSD defined for infinite signals; finite windows introduce spectral leakage"
+        limitations:
+          - "No time resolution: a 10 Hz oscillation at t=0 and t=10s appear identical"
+          - "Heisenberg-Gabor uncertainty: delta_f * delta_t >= 1/(4*pi)"
+          - "Spectral leakage from finite window; sidelobes obscure weak peaks near strong ones"
+          - "Assumes ergodicity — single trial may not represent ensemble statistics"
+        related_methods: [stft, multitaper, wavelet_transform, hilbert_transform]
+        topics: [spectral_dynamics, neural_synchrony, sleep_and_oscillations]
+        key_papers:
+          - "Cooley & Tukey (1965) — An algorithm for the machine calculation of complex Fourier series"
+          - "Thomson (1982) — Spectrum estimation and harmonic analysis (multitaper)"
+
+      - id: stft
+        label: Short-Time Fourier Transform
+        aliases: [spectrogram, sliding window FFT]
+        formula: "STFT{x}(t,f) = integral x(tau)*w(tau-t)*exp(-i*2*pi*f*tau) dtau"
+        computes: [time_frequency_representation, spectrogram]
+        assumptions:
+          local_stationarity: "Signal assumed stationary within each window; window length sets the stationarity assumption"
+          window_choice: "Fixed time-frequency resolution for all frequencies (unlike wavelets)"
+        limitations:
+          - "Fixed time-frequency resolution tradeoff set at analysis time — can't change post-hoc"
+          - "Low frequencies need long windows (poor time resolution); high frequencies need short windows"
+        related_methods: [fft, wavelet_transform, multitaper]
+        topics: [spectral_dynamics, neural_synchrony]
+
+      - id: wavelet_transform
+        label: Wavelet Transform (CWT/DWT)
+        aliases: [Morlet wavelet, continuous wavelet transform]
+        formula: "CWT(a,b) = (1/sqrt(a)) * integral x(t) * conj(psi((t-b)/a)) dt"
+        computes: [time_frequency_representation, multi_scale_analysis]
+        mathematical_basis:
+          - "Scaling (dilation) a controls frequency; translation b controls time"
+          - "Morlet wavelet: psi(t) = exp(-t^2/(2*sigma^2)) * exp(i*omega_0*t)"
+          - "Frequency resolution scales with frequency (constant Q-factor)"
+        assumptions:
+          mother_wavelet: "Choice of mother wavelet (Morlet, Mexican hat, Daubechies) determines what features are detected"
+          admissibility: "psi must satisfy integral psi(t)dt = 0 (zero mean)"
+        advantages_over_fft:
+          - "Multi-resolution: fine time resolution at high frequencies, fine frequency resolution at low"
+          - "Handles non-stationary signals naturally"
+        topics: [spectral_dynamics, neural_synchrony, sleep_and_oscillations]
+
+      - id: multitaper
+        label: Multitaper Spectral Estimation
+        aliases: [Thomson multitaper, DPSS, Slepian sequences]
+        formula: "S_MT(f) = (1/K) * sum_{k=1}^{K} |sum_t x(t)*w_k(t)*exp(-i*2*pi*ft)|^2"
+        computes: [power_spectral_density, coherence, spectrograms]
+        mathematical_basis:
+          - "Uses K orthogonal tapers (DPSS/Slepian sequences) that maximize energy concentration in bandwidth W"
+          - "Reduces variance of spectral estimate by averaging K independent estimates"
+          - "Trade: bandwidth W vs variance reduction (more tapers = smoother but lower resolution)"
+        assumptions:
+          stationarity: "Required within the analysis window (same as FFT)"
+          bandwidth: "Half-bandwidth W = (K+1)/(2*N*dt) determines spectral smoothing"
+        advantages:
+          - "Reduced spectral leakage vs single-taper FFT"
+          - "Principled variance control — each taper is mathematically optimal"
+        software: [MNE-Python, FieldTrip, Chronux, scipy.signal]
+        topics: [spectral_dynamics, neural_synchrony, sleep_and_oscillations]
+        key_papers:
+          - "Thomson (1982) — Spectrum estimation and harmonic analysis"
+          - "Mitra & Pesaran (1999) — Analysis of dynamic brain imaging data"
+
+      - id: hilbert_transform
+        label: Hilbert Transform & Analytic Signal
+        formula: "H{x}(t) = (1/pi) * PV integral x(tau)/(t-tau) dtau;  z(t) = x(t) + i*H{x}(t)"
+        computes: [instantaneous_amplitude, instantaneous_phase, instantaneous_frequency]
+        mathematical_basis:
+          - "Analytic signal z(t) has one-sided spectrum (only positive frequencies)"
+          - "Envelope: A(t) = |z(t)|;  Phase: phi(t) = angle(z(t))"
+          - "Frequency: f(t) = (1/2*pi) * d(phi)/dt"
+        assumptions:
+          narrow_band: "Signal should be narrow-band before applying — apply to bandpass-filtered signal only"
+          oscillatory: "Phase is only meaningful for signals with clear oscillatory structure"
+        pitfalls:
+          - "Applying to broadband signal yields meaningless instantaneous phase"
+          - "Edge effects at signal boundaries (zero-pad)"
+        use_cases: [phase_amplitude_coupling, phase_locking_value, spike_LFP_coupling]
+        topics: [spectral_dynamics, neural_synchrony]
+
+      - id: pac
+        label: Phase-Amplitude Coupling (PAC)
+        aliases: [cross-frequency coupling, CFC, theta-gamma coupling]
+        formula: "MVL = (1/N) * sum_{t=1}^{N} A_high(t) * exp(i*phi_low(t));  MI = (H_max - H(A|phi)) / H_max"
+        computes: [cross_frequency_coupling, modulation_index]
+        mathematical_basis:
+          - "Modulation Index (Tort 2010): entropy of amplitude distribution across phase bins"
+          - "Mean Vector Length (Canolty 2006): complex mean of high-freq amplitude weighted by low-freq phase"
+          - "Both require: (1) bandpass filter for low-freq phase, (2) bandpass + Hilbert for high-freq amplitude"
+        assumptions:
+          stationarity: "PAC estimates require sufficient data for stable statistics (typically >5 minutes LFP)"
+          independence: "Low-freq and high-freq bands must not overlap spectrally"
+          oscillatory_validity: "Both components must have genuine oscillatory structure (not aperiodic noise)"
+        critical_limitation:
+          spurious_pac: "Aperiodic (1/f) signals and sharp waveforms (e.g., sawtooth LFP) generate spurious PAC — must control with FOOOF/specparam first"
+        key_variants: [MVL, MI, PLV_based_PAC, generalized_linear_model_PAC]
+        topics: [spectral_dynamics, neural_synchrony, episodic_memory]
+        key_papers:
+          - "Canolty et al. (2006, Science) — High gamma power is phase-locked to theta oscillations in human neocortex"
+          - "Tort et al. (2010, J Neurophysiol) — Measuring phase-amplitude coupling between neuronal oscillations"
+          - "Donoghue et al. (2020, Nature Neuroscience) — Parameterizing neural power spectra into periodic and aperiodic components"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: connectivity_methods
+    label: Connectivity & Causality
+    description: Methods for measuring directed and undirected relationships between neural signals
+    methods:
+
+      - id: granger_causality
+        label: Granger Causality
+        aliases: [GC, conditional Granger, spectral Granger, PDC, DTF]
+        formula: "F_{Y->X} = ln( Sigma^2_{x|x_past} / Sigma^2_{x|x_past,y_past} )"
+        computes: [directed_information_flow, predictive_influence]
+        mathematical_basis:
+          - "Autoregressive model: x(t) = sum_k A_k*x(t-k) + sum_k B_k*y(t-k) + noise"
+          - "Y Granger-causes X if including Y's past significantly reduces prediction error for X"
+          - "Spectral decomposition via Fourier of AR coefficients gives frequency-resolved GC"
+          - "Partial Directed Coherence (PDC) and DTF are normalized spectral variants"
+        assumptions:
+          linearity: "Assumes linear relationship between signals — misses non-linear interactions"
+          stationarity: "AR model coefficients must be constant (violated during task transitions)"
+          gaussian_noise: "Residuals must be Gaussian; bootstrapping if violated"
+          no_unobserved_confounds: "Shared input from unmeasured region will appear as spurious causality"
+          cointegration: "Non-stationary signals may show spurious GC — pre-whiten or difference"
+        critical_misunderstanding:
+          - "Granger 'causality' is predictive causality, NOT mechanistic causality"
+          - "GC can be entirely mediated by a third region — check conditional GC"
+          - "Volume conduction in EEG creates instantaneous non-causal correlations"
+        related_methods: [transfer_entropy, dti_tractography, dcm, ccm]
+        topics: [spectral_dynamics, neural_synchrony, cognitive_control]
+        key_papers:
+          - "Granger (1969, Econometrica) — Investigating causal relations by econometric models"
+          - "Brovelli et al. (2004, PNAS) — Beta oscillations in a large-scale sensorimotor cortical network"
+
+      - id: transfer_entropy
+        label: Transfer Entropy
+        aliases: [TE, conditional mutual information, directed information]
+        formula: "TE_{Y->X} = sum p(x_{t+1}, x_t^k, y_t^l) * log[ p(x_{t+1}|x_t^k,y_t^l) / p(x_{t+1}|x_t^k) ]"
+        computes: [directed_information_flow, non_linear_causality]
+        mathematical_basis:
+          - "Measures reduction in uncertainty about X's future when Y's past is known, given X's past"
+          - "Model-free (no linearity assumption) — equivalent to Granger for Gaussian processes"
+          - "Uses k past samples of X and l past samples of Y"
+        advantages_over_granger:
+          - "Detects non-linear interactions"
+          - "No distributional assumptions"
+        limitations:
+          - "Data-hungry — needs much more data than GC for reliable estimates"
+          - "Sensitive to embedding dimension choices k, l"
+          - "Computationally expensive for high-dimensional data"
+        topics: [spectral_dynamics, neural_synchrony]
+
+      - id: plv
+        label: Phase Locking Value (PLV) & Coherence
+        aliases: [PLV, coherence, phase coherence, inter-site phase clustering]
+        formula: "PLV = |(1/N) * sum_{t=1}^{N} exp(i*(phi_1(t) - phi_2(t)))|;  Coh(f) = |S_12(f)|^2 / (S_11(f)*S_22(f))"
+        computes: [phase_synchrony, spectral_coherence]
+        mathematical_basis:
+          - "PLV: magnitude of mean phase difference vector across trials/time"
+          - "Coherence: normalized cross-spectrum (includes both amplitude and phase)"
+          - "iPLV (imaginary PLV): removes zero-lag contributions (conservative for EEG)"
+        assumptions:
+          oscillatory: "Both signals must have meaningful phase — requires narrow-band filtering first"
+          stationarity: "Phase relationship must be stable within analysis window"
+        pitfalls:
+          volume_conduction: "In EEG, same source appears at multiple electrodes — creates spurious coherence"
+          common_reference: "Reference electrode introduces artificial correlations"
+        correction_methods: [imaginary_coherence, lagged_coherence, iPLV, pairwise_phase_consistency]
+        topics: [neural_synchrony, spectral_dynamics, cognitive_control]
+
+      - id: dti_tractography
+        label: Diffusion Tensor Imaging Tractography
+        aliases: [DTI, DWI tractography, white matter tracts, structural connectivity]
+        formula: "D = [[Dxx,Dxy,Dxz],[Dxy,Dyy,Dyz],[Dxz,Dyz,Dzz]];  FA = sqrt(3/2) * sqrt(sum(lambda_i-lambda_bar)^2) / sqrt(sum lambda_i^2)"
+        computes: [fractional_anisotropy, mean_diffusivity, structural_connectome]
+        mathematical_basis:
+          - "Water diffusivity is a 3x3 symmetric tensor D"
+          - "Eigenvectors of D give principal diffusion directions"
+          - "FA = 0 (isotropic) to 1 (purely anisotropic along one axis)"
+          - "Streamline tractography: integrate along principal eigenvector field"
+        assumptions:
+          single_fiber: "DTI assumes one fiber population per voxel — HARDI/CSD corrects multi-fiber crossings"
+          crossing_fibers: "Standard DTI fails at fiber crossings (~90% of white matter voxels)"
+          spatial_resolution: "3mm voxels cannot resolve millimeter-scale fiber organization"
+        limitations:
+          - "Cannot determine directionality — A->B vs B->A indistinguishable"
+          - "False positives from kissing/crossing fibers"
+          - "No validation in living humans (only post-mortem tracer studies)"
+        species_notes:
+          mouse: "Mouse tractography requires 75-200 micron resolution; ex-vivo better than in-vivo"
+          human: "HCP provides 1.25mm resolution — best in-vivo human structural data"
+        topics: [development_and_plasticity, spatial_navigation]
+
+      - id: dcm
+        label: Dynamic Causal Modelling (DCM)
+        aliases: [DCM, effective connectivity, Bayesian model comparison]
+        formula: "dz/dt = f(z, u, theta);  y = g(z) + noise;  inference via variational Bayes on theta"
+        computes: [effective_connectivity, model_evidence, Bayesian_model_selection]
+        mathematical_basis:
+          - "State-space model of hidden neural dynamics (neural mass model)"
+          - "Hemodynamic forward model (Balloon model) for fMRI"
+          - "Free energy approximation to model evidence for Bayesian comparison"
+          - "Spectral DCM for LFP/EEG (frequency domain)"
+        assumptions:
+          model_space: "Must specify all candidate connectivity architectures a priori"
+          generative_model: "Assumes a specific generative model (Balloon model for fMRI) — wrong model -> wrong inference"
+        critical_points:
+          - "Model comparison only within user-defined model space"
+          - "Computational cost limits to ~10 regions typically"
+        related_methods: [granger_causality, state_space_models, kalman_filter]
+        topics: [cognitive_control, attention_and_salience, emotional_processing]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: dimensionality_reduction
+    label: Dimensionality Reduction & Latent Variables
+    description: Methods for extracting low-dimensional structure from high-dimensional neural data
+    methods:
+
+      - id: pca
+        label: Principal Component Analysis (PCA)
+        formula: "C = (1/(n-1))*X^T*X;  C*v_i = lambda_i*v_i;  Z = X*V_k"
+        computes: [principal_components, explained_variance, low_dimensional_embedding]
+        mathematical_basis:
+          - "Eigendecomposition of covariance matrix — finds axes of maximum variance"
+          - "Components are orthogonal — captures linear variance structure"
+          - "SVD: X = U*Sigma*V^T — PCA = columns of V"
+        assumptions:
+          linearity: "Captures only linear structure — misses non-linear manifolds"
+          gaussian: "Optimal for Gaussian distributions; works less well for non-Gaussian spike count data"
+          equal_variance: "Features should be scaled if different units (z-score first)"
+        use_cases: [multielectrode_array_analysis, EEG_source_separation, population_decoding]
+        topics: [spectral_dynamics, neural_synchrony, cognitive_control]
+
+      - id: ica
+        label: Independent Component Analysis (ICA)
+        aliases: [FastICA, Infomax, JADE, extended Infomax]
+        formula: "x = A*s;  goal: find W=A^{-1} such that s=W*x has maximally independent components"
+        computes: [statistically_independent_sources, artifact_removal, source_separation]
+        mathematical_basis:
+          - "Maximizes non-Gaussianity of components (Central Limit Theorem: mixtures are more Gaussian)"
+          - "Negentropy: J(y) = H(y_Gaussian) - H(y);  maximize J"
+          - "FastICA: iterative fixed-point algorithm for negentropy maximization"
+        assumptions:
+          statistical_independence: "Sources must be statistically independent (not just uncorrelated)"
+          non_gaussianity: "At most one source can be Gaussian — if all are Gaussian, ICA fails"
+          linear_mixing: "x = A*s (no convolutive mixing)"
+          square_mixing: "Number of sources <= number of sensors"
+        use_cases:
+          EEG: "Artifact removal (eye blinks, muscle, cardiac) — standard preprocessing"
+          fMRI: "Decompose BOLD signal into functional networks (dual regression)"
+        neuroscience_applications: [EEG_artifact_removal, fMRI_decomposition]
+        topics: [spectral_dynamics, neural_synchrony, attention_and_salience]
+
+      - id: umap
+        label: UMAP (Uniform Manifold Approximation and Projection)
+        aliases: [UMAP, non-linear dimensionality reduction, neural manifold]
+        formula: "Minimize cross-entropy between high-D fuzzy simplicial set and low-D representation"
+        computes: [low_dimensional_embedding, neural_manifold, population_geometry]
+        mathematical_basis:
+          - "Models data as a weighted graph based on k-nearest neighbors with exponential decay"
+          - "Optimizes low-D graph to have same topological structure (cross-entropy loss)"
+          - "Riemannian geometry framework — locally Euclidean manifold assumption"
+        assumptions:
+          manifold: "Data lies on a low-dimensional smooth manifold embedded in high-D space"
+          uniform_density: "Data points locally uniform on the manifold (handled by adaptive metric)"
+        caveats:
+          - "Distances in UMAP embedding NOT preserved — only topology/neighborhood structure"
+          - "Non-deterministic: different random seeds give different layouts"
+          - "Cannot handle new data without re-fitting (unlike PCA)"
+        neuroscience_use:
+          - "Visualizing population codes in multielectrode recordings"
+          - "Analyzing representational geometry (RSA alternatives)"
+          - "Trajectories through neural state space during behavior"
+        topics: [spectral_dynamics, reward_learning, motor_learning]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: statistical_methods
+    label: Statistical Methods
+    description: Inferential and model-selection frameworks for neural data analysis
+    methods:
+
+      - id: cluster_permutation
+        label: Cluster-Based Permutation Test
+        aliases: [mass univariate, cluster correction, nonparametric correction]
+        formula: "T_cluster = max_k sum_{i in C_k} T_i;  p = P(T_cluster^null >= T_cluster^obs)"
+        computes: [corrected_p_values, significant_time_frequency_clusters]
+        mathematical_basis:
+          - "Exploits spatial/temporal autocorrelation to define clusters of adjacent significant effects"
+          - "Null distribution built by permuting condition labels (labels scrambled B times)"
+          - "Cluster statistic (sum or max of T-values) compared to permutation null"
+          - "FWER control without assuming independence of tests"
+        advantages:
+          - "No assumption of independent tests (unlike Bonferroni)"
+          - "Naturally accounts for spatio-temporal autocorrelation in EEG/fMRI"
+          - "Non-parametric — distribution-free"
+        limitations:
+          - "No inference about cluster location within a significant cluster"
+          - "Cannot test a priori hypotheses about specific time points"
+          - "Susceptible to inflation if cluster-forming threshold too low"
+        software: [MNE-Python, FieldTrip, randomise_FSL]
+        topics: [spectral_dynamics, neural_synchrony, attention_and_salience]
+        key_papers:
+          - "Maris & Oostenveld (2007, J Neurosci Methods) — Nonparametric statistical testing of EEG- and MEG-data"
+
+      - id: linear_mixed_effects
+        label: Linear Mixed Effects Models (LME)
+        aliases: [LME, multilevel model, hierarchical linear model, GLMM]
+        formula: "y = X*beta + Z*u + epsilon;  u ~ N(0,G);  epsilon ~ N(0,R)"
+        computes: [fixed_effects, random_effects, variance_components]
+        mathematical_basis:
+          - "Fixed effects X*beta: population-level predictors"
+          - "Random effects Z*u: subject/session-level deviations (BLUP)"
+          - "Restricted maximum likelihood (REML) for variance component estimation"
+          - "Random slopes allow each subject to have their own effect size"
+        assumptions:
+          normality: "Residuals should be normally distributed (check with QQ plot)"
+          homoscedasticity: "Residual variance constant (can relax with heteroscedastic models)"
+          independence_of_subjects: "Different subjects independent (not different trials from same session)"
+        why_over_ANOVA:
+          - "Handles missing data without listwise deletion"
+          - "Accounts for repeated measures without sphericity assumption"
+          - "Models continuous predictors naturally"
+        topics: [spectral_dynamics, reward_learning, cognitive_control, attention_and_salience]
+
+      - id: bayesian_inference
+        label: Bayesian Inference & Bayes Factors
+        formula: "p(theta|data) = p(data|theta)*p(theta) / p(data);  BF_10 = p(data|H_1) / p(data|H_0)"
+        computes: [posterior_distribution, Bayes_factor, credible_intervals]
+        mathematical_basis:
+          - "Posterior = (Likelihood * Prior) / Evidence"
+          - "Bayes Factor: ratio of marginal likelihoods — how much more evidence supports H1 vs H0"
+          - "BF > 10: strong evidence; BF > 30: very strong evidence; BF < 1/3: evidence for H0"
+          - "MCMC (NUTS, HMC) or variational Bayes for posterior computation"
+        advantages_over_frequentist:
+          - "Can quantify evidence for null hypothesis (BF < 1)"
+          - "Posterior credible intervals have direct probability interpretation"
+          - "Prior encodes domain knowledge explicitly (principled regularization)"
+        limitations:
+          - "Results sensitive to prior choice — requires sensitivity analysis"
+          - "Computationally expensive for complex hierarchical models"
+        software: [Stan, PyMC, JASP, BayesFactor_R]
+        topics: [spectral_dynamics, decision_making, reward_learning]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: neural_coding_theory
+    label: Neural Coding Theory & Mathematical Concepts
+    description: Mathematical frameworks that define how information is represented and transformed in neural circuits
+    concepts:
+
+      - id: information_theory
+        label: Information Theory in Neuroscience
+        foundational_paper: "Shannon (1948) — A Mathematical Theory of Communication"
+        key_quantities:
+          entropy: "H(X) = -sum_x p(x)*log_2(p(x))  [bits]"
+          mutual_information: "I(X;Y) = H(X) + H(Y) - H(X,Y)"
+          channel_capacity: "C = max_{p(x)} I(X;Y)  [bits/sec]"
+        neural_interpretation:
+          - "Entropy of spike train = uncertainty about next spike timing"
+          - "Mutual information = how much the neural response reduces uncertainty about the stimulus"
+          - "Efficient coding hypothesis: neurons maximize information subject to metabolic cost"
+        assumptions:
+          ergodicity: "Time averages equal ensemble averages — requires long recordings"
+          stationarity: "Required for reliable entropy estimates"
+        neural_limit:
+          - "Direct MI estimation in high dimensions requires massive data; use model-based or dimensionality reduction first"
+        topics: [spectral_dynamics, neural_synchrony, reward_learning]
+
+      - id: population_vector_coding
+        label: Population Vector Code
+        formula: "stimulus_vector = sum_i r_i * c_i  (weighted sum of preferred directions)"
+        circuit: "motor_cortex"
+        mathematical_basis:
+          - "Each neuron i has preferred stimulus direction c_i (cosine tuning)"
+          - "Firing rate r_i = r_max * cos(theta - theta_i) + baseline"
+          - "Population vector from all neurons accurately encodes direction"
+        generality: "Extends to any circular/vectorial quantity: orientation, head direction, movement angle"
+        key_papers:
+          - "Georgopoulos et al. (1986, Science) — Neuronal population coding of movement direction"
+        topics: [motor_learning, spatial_navigation]
+
+      - id: efficient_coding
+        label: Efficient Coding Hypothesis (Barlow 1961)
+        formula: "Maximize: I(stimulus; response) / cost(response)  subject to metabolic constraint"
+        principle: "Sensory systems are shaped by evolution to encode natural stimuli optimally — maximizing information with minimum spikes"
+        predictions:
+          - "Receptive fields should match statistics of natural stimuli (e.g., Gabor filters in V1 for natural images)"
+          - "Redundancy reduction: remove correlations across neurons (ICA-like)"
+          - "Neural response distributions should be maximally entropy-given constraints"
+        evidence_for:
+          - "V1 simple cells match Gabor (natural image) filters"
+          - "Retinal center-surround removes spatial correlations"
+          - "Auditory cortex tuning matches 1/f spectrum of natural sounds"
+        limitations:
+          - "Efficient for natural stimuli — may be sub-optimal for artificial lab stimuli"
+          - "Ignores downstream read-out efficiency and behavioral relevance"
+        topics: [attention_and_salience, spectral_dynamics]
+
+      - id: predictive_coding
+        label: Predictive Coding & Free Energy Principle
+        aliases: [Karl Friston FEP, active inference, Rao-Ballard, hierarchical predictive coding]
+        formula: "minimize F = D_KL[q(theta)||p(theta|o)] = E_q[log q(theta) - log p(theta,o)]"
+        principle: "Brain minimizes 'surprise' (free energy) by either updating internal models (perception) or changing sensory input (action). Each cortical layer sends predictions down and prediction errors up."
+        mathematical_basis:
+          - "Free energy F is an upper bound on surprise log p(o) (Jensen's inequality)"
+          - "Variational inference: approximate posterior q(theta) ~ p(theta|o)"
+          - "Hierarchical message passing: precision-weighted prediction errors"
+        circuit_implementation:
+          - "Superficial pyramidal cells: carry prediction errors (to higher areas)"
+          - "Deep pyramidal cells: carry predictions (to lower areas)"
+          - "Consistent with known laminar projections"
+        key_papers:
+          - "Rao & Ballard (1999, Nature Neuroscience) — Predictive coding in the visual cortex"
+          - "Friston (2010, Nature Reviews Neuroscience) — The free-energy principle"
+        topics: [attention_and_salience, fear_and_anxiety, emotional_processing, decision_making]
+
+      - id: drift_diffusion_model
+        label: Drift-Diffusion Model (DDM)
+        aliases: [Ratcliff DDM, accumulator model, sequential sampling, LATER]
+        formula: "dx = mu*dt + sigma*dW;  decision at x = +/-a (threshold)"
+        computes: [reaction_time_distribution, accuracy, speed_accuracy_tradeoff]
+        mathematical_basis:
+          - "Evidence accumulation: Brownian motion (Wiener process) with drift mu toward correct boundary"
+          - "Drift mu: signal-to-noise of sensory evidence"
+          - "Boundary a: caution / speed-accuracy emphasis"
+          - "Starting point z: a priori bias"
+          - "Non-decision time t0: perceptual + motor delays"
+        neural_implementation:
+          - "LIP (lateral intraparietal) neurons show ramp-like accumulation up to threshold"
+          - "Striatal D1/D2 balance sets effective boundary (dopamine modulates a)"
+          - "Predicts beta oscillation desynchronization as movement initiation signal"
+        topics: [decision_making, reward_learning, cognitive_control]
+        key_papers:
+          - "Ratcliff (1978) — A theory of memory retrieval"
+          - "Gold & Shadlen (2007, Neuron) — The neural basis of decision making"
+
+      - id: cramers_rao_bound
+        label: Cramér-Rao Bound & Fisher Information
+        formula: "Var(theta_hat) >= 1/I(theta);  I(theta) = E[(d/dtheta log p(x|theta))^2]"
+        principle: "No unbiased estimator can have variance lower than the inverse of Fisher Information. Sets the theoretical limit of how precisely a stimulus can be decoded from population activity."
+        neural_relevance:
+          - "Fisher Information of population code determines theoretical discrimination threshold"
+          - "Tuning curve width and gain set the information content"
+          - "Explains why narrow tuning is not always better (coverage vs precision tradeoff)"
+        topics: [spectral_dynamics, attention_and_salience]
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: oscillation_analysis
+    label: Oscillation & Rhythm Analysis
+    description: Methods specific to characterizing neural rhythms and their behavioral correlates
+    methods:
+
+      - id: fooof_specparam
+        label: FOOOF / Specparam (Parameterizing Neural Power Spectra)
+        aliases: [specparam, aperiodic exponent, 1/f fitting, FOOOF]
+        formula: "P(f) = L(f) + sum_k G_k * exp(-(f-CF_k)^2 / (2*BW_k^2));  L(f) = b - log(k + f^chi)"
+        computes: [aperiodic_exponent, periodic_peaks, center_frequency, bandwidth]
+        mathematical_basis:
+          - "Decomposes power spectrum into aperiodic 1/f-like component + Gaussian periodic peaks"
+          - "Aperiodic exponent chi: steeper slope = more inhibition, less E/I balance toward excitation"
+          - "Peaks: center frequency (CF), bandwidth (BW), power (relative to aperiodic)"
+        why_it_matters:
+          - "Classic band power measures confound aperiodic changes with true oscillatory changes"
+          - "Theta 'increase' might be aperiodic flattening, not more theta oscillation"
+          - "beta_power = beta_peak + aperiodic_offset_at_beta — these can move independently"
+        circuit_relevance:
+          corticostriatal_beta: "Must separate beta peak from aperiodic to characterize true beta oscillation"
+        topics: [spectral_dynamics, neural_synchrony, sleep_and_oscillations, reward_learning]
+        key_papers:
+          - "Donoghue et al. (2020, Nature Neuroscience) — Parameterizing neural power spectra into periodic and aperiodic components"
+
+      - id: burst_analysis
+        label: Oscillatory Burst Detection
+        aliases: [beta bursts, transient oscillations, oscillatory episodes]
+        formula: "burst: time points where amplitude(t) > threshold (e.g., 75th percentile)"
+        computes: [burst_rate, burst_duration, burst_amplitude, inter_burst_interval]
+        mathematical_basis:
+          - "Extract instantaneous amplitude via Hilbert of bandpass signal"
+          - "Threshold crossings define burst start/stop"
+          - "Burst probability per trial condition replaces mean power"
+        why_better_than_mean_power:
+          - "Beta oscillation is actually transient bursts (~200ms), not sustained"
+          - "Mean power conflates burst rate vs duration vs amplitude"
+          - "Burst timing within trial (relative to movement onset) is mechanistically specific"
+        relevance: "Cortico-striatal beta paper (Hulyalkar 2025) — the certainty signal is best characterized as burst properties"
+        topics: [spectral_dynamics, motor_learning, reward_learning]
+        key_papers:
+          - "Feingold et al. (2015, PNAS) — Bursts of beta oscillation differentiate postperformance activity in the striatum and motor cortex"
+          - "Tinkhauser et al. (2017) — The modulatory effect of adaptive deep brain stimulation on beta bursts in Parkinson's disease"
+
+      - id: spike_lfp_coupling
+        label: Spike-LFP Phase Coupling
+        aliases: [spike-field coherence, LFP-spike coupling, preferred phase]
+        formula: "PPC = (1/N^2) * (|sum_n exp(i*phi_n)|^2 - N) / (N*(N-1));  or circular statistics"
+        computes: [spike_phase_preference, pairwise_phase_consistency, modulation_depth]
+        mathematical_basis:
+          - "For each spike, extract LFP phase at that moment (Hilbert of bandpass LFP)"
+          - "Circular statistics: Rayleigh test for non-uniformity; mean resultant length"
+          - "PPC (Vinck 2010): bias-corrected, not inflated by spike count"
+        assumptions:
+          filtering: "LFP must be filtered before Hilbert — and NOT the recording containing the spike (avoid contamination)"
+          stationarity: "Phase preference should be stable across analyzed period"
+        topics: [spectral_dynamics, neural_synchrony, reward_learning]
+        key_papers:
+          - "Vinck et al. (2010, NeuroImage) — The pairwise phase consistency: a bias-free measure of rhythmic neuronal synchronization"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  - id: causal_manipulation
+    label: Causal Manipulation Methods
+    description: Experimental methods for establishing causal circuit relationships
+    methods:
+
+      - id: optogenetics
+        label: Optogenetics
+        aliases: [channelrhodopsin, halorhodopsin, archaerhodopsin, ChR2, opto]
+        computes: [causal_activation, causal_inhibition, circuit_mapping]
+        mathematical_basis:
+          - "ChR2: blue light (470nm) opens cation channel -> depolarization -> spike"
+          - "eNpHR/Arch: yellow/green light -> hyperpolarization -> inhibition"
+          - "Kinetics: tau_on, tau_off determine temporal precision (ms-scale for soma-targeted)"
+          - "Light penetration: exponential decay I(z) = I_0 * exp(-z/delta); delta~0.2mm brain"
+        advantages:
+          - "Cell-type specificity via Cre-driver lines"
+          - "Millisecond temporal precision — can entrain oscillations"
+          - "Bidirectional: activate vs inhibit same cell type"
+        limitations:
+          - "Not yet in humans (only during neurosurgery)"
+          - "Viral spread limits spatial specificity"
+          - "Heat generation from illumination"
+          - "Opsins require long expression time (~4 weeks)"
+        translational_link: "Animal optogenetics establishes causal claims that justify non-invasive human stimulation (TMS/tDCS) of homologous regions"
+        topics: [spectral_dynamics, reward_learning, fear_and_anxiety, motor_learning, neuromodulation]
+
+      - id: tms
+        label: Transcranial Magnetic Stimulation (TMS)
+        aliases: [TMS, rTMS, theta burst stimulation, TBS, ppTMS]
+        formula: "B = mu_0*I/(2*pi*r);  V_induced = -dPhi/dt = -N*A*dB/dt"
+        computes: [cortical_excitability, motor_evoked_potentials, cortical_mapping]
+        mathematical_basis:
+          - "Time-varying magnetic field induces electric field via Faraday's law"
+          - "E field induces current in cortical neurons — sufficient to trigger APs"
+          - "Focal figure-8 coil: spatial resolution ~0.5-1cm, depth ~2-3cm"
+          - "TBS (theta burst): 50Hz bursts at 5Hz — LTP-like (iTBS) or LTD-like (cTBS)"
+        assumptions:
+          targetability: "Cannot precisely target deep structures without navigated TMS + fMRI guidance"
+          individual_variability: "MEP threshold varies 2x across subjects — requires calibration"
+        species_note: "No direct rodent TMS equivalent (skull too small); TBS paradigm in humans maps to optogenetic LTP induction protocols"
+        topics: [fear_and_anxiety, neuromodulation, cognitive_control, development_and_plasticity]
+        key_papers:
+          - "Huang et al. (2005, Neuron) — Theta burst stimulation of the human motor cortex"
+
+      - id: tdcs
+        label: Transcranial Direct Current Stimulation (tDCS)
+        formula: "J = sigma*E;  I_density = I / electrode_area"
+        computes: [cortical_excitability_modulation, polarity_dependent_effects]
+        mathematical_basis:
+          - "Sub-threshold direct current shifts resting membrane potential"
+          - "Anodal: depolarizes (~1mA for 10-20 min) -> increased excitability"
+          - "Cathodal: hyperpolarizes -> decreased excitability"
+          - "Current density J = I/A must be <0.029 mA/cm^2 for safety"
+        topics: [neuromodulation, cognitive_control, development_and_plasticity]
+
+      - id: dreadds
+        label: DREADDs (Designer Receptors Exclusively Activated by Designer Drugs)
+        aliases: [chemogenetics, hM3Dq, hM4Di, CNO, clozapine]
+        computes: [chemogenetic_activation, chemogenetic_inhibition, circuit_manipulation]
+        mathematical_basis:
+          - "Mutated muscarinic GPCR with no endogenous ligand affinity"
+          - "hM3Dq (excitatory): CNO activates Gq -> PLC -> IP3 -> Ca2+ -> depolarization"
+          - "hM4Di (inhibitory): CNO activates Gi -> adenylyl cyclase inhibition -> hyperpolarization"
+          - "Temporal resolution: minutes-hours (slower than opto but longer-lasting)"
+        advantages_vs_optogenetics:
+          - "No fiber implant needed — systemic CNO injection"
+          - "Can target deep structures without light delivery issues"
+        limitations:
+          - "CNO converts to clozapine in vivo — control conditions critical"
+          - "Minutes-scale temporal resolution — cannot manipulate specific oscillatory cycles"
+        topics: [reward_learning, fear_and_anxiety, neuromodulation, cognitive_control]

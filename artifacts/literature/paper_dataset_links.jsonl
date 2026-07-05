@@ -1,12 +1,12 @@
 {"dataset_record_id": "dandi:000785", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000640", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000004", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000004", "paper_openalex_id": "W3007951719", "paper_doi": "10.1038/s41597-020-0415-9", "paper_title": "A NWB-based dataset and processing pipeline of human single-neuron activity during a declarative memory task", "paper_year": 2020, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000045", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000579", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000678", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:001079", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:001371", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:001550", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:001371", "paper_openalex_id": "W4410635584", "paper_doi": "10.1038/s41467-025-60122-8", "paper_title": "New information triggers prospective codes to adapt for flexible navigation", "paper_year": 2025, "match_method": "title_fuzzy", "confidence": 0.9}
+{"dataset_record_id": "dandi:001550", "paper_openalex_id": "W4404814344", "paper_doi": "10.1038/s41586-024-08433-6", "paper_title": "Individual variability of neural computations underlying flexible decisions", "paper_year": 2024, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000003", "paper_openalex_id": "W2581980900", "paper_doi": "10.1016/j.neuron.2016.12.011", "paper_title": "Physiological Properties and Behavioral Correlates of Hippocampal Granule Cells and Mossy Cells", "paper_year": 2017, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000005", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000006", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
@@ -16,12 +16,12 @@
 {"dataset_record_id": "dandi:000010", "paper_openalex_id": "W2081432059", "paper_doi": "10.1038/nature14178", "paper_title": "A motor cortex circuit for motor planning and movement", "paper_year": 2015, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000011", "paper_openalex_id": "W2336155947", "paper_doi": "10.1038/nature17643", "paper_title": "Robust neuronal dynamics in premotor cortex during motor planning", "paper_year": 2016, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000012", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000013", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000013", "paper_openalex_id": "W2168232109", "paper_doi": "10.7554/elife.06619", "paper_title": "Low-noise encoding of active touch by layer 4 in the somatosensory cortex", "paper_year": 2015, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000015", "paper_openalex_id": "W2614257994", "paper_doi": "10.1016/j.neuron.2017.05.005", "paper_title": "A Map of Anticipatory Activity in Mouse Motor Cortex", "paper_year": 2017, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000016", "paper_openalex_id": "W2988660047", "paper_doi": "10.1016/j.neuron.2019.09.045", "paper_title": "Excitatory and Inhibitory Subnetworks Are Equally Selective during Decision-Making and Emerge Simultaneously during Learning", "paper_year": 2019, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000017", "paper_openalex_id": "W2989785130", "paper_doi": "10.1038/s41586-019-1787-x", "paper_title": "Distributed coding of choice, action and engagement across the mouse brain", "paper_year": 2019, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000018", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000019", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000019", "paper_openalex_id": "W2967178183", "paper_doi": "10.6084/m9.figshare.c.4617263.v4", "paper_title": "Human ECoG speaking consonant-vowel syllables", "paper_year": 2020, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000020", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000021", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000022", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
@@ -36,9 +36,9 @@
 {"dataset_record_id": "dandi:000031", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000032", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000033", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000034", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000034", "paper_openalex_id": "W3104213443", "paper_doi": "10.7554/elife.61834", "paper_title": "SpikeInterface, a unified framework for spike sorting", "paper_year": 2020, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000035", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000036", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000036", "paper_openalex_id": "W4226281036", "paper_doi": "10.1523/eneuro.0280-21.2021", "paper_title": "Measuring Stimulus-Evoked Neurophysiological Differentiation in Distinct Populations of Neurons in Mouse Visual Cortex", "paper_year": 2022, "match_method": "title_fuzzy", "confidence": 0.8939393939393939}
 {"dataset_record_id": "dandi:000037", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000038", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000039", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
@@ -49,14 +49,14 @@
 {"dataset_record_id": "dandi:000044", "paper_openalex_id": "W2310925872", "paper_doi": "10.1126/science.aad1935", "paper_title": "Diversity in neural firing dynamics supports both rigid and learned hippocampal sequences", "paper_year": 2016, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000046", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000047", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000048", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000048", "paper_openalex_id": "W2979556935", "paper_doi": "10.1101/800102", "paper_title": "On the correspondence of electrical and optical physiology in <i>in vivo</i> population-scale two-photon calcium imaging", "paper_year": 2019, "match_method": "title_fuzzy", "confidence": 0.8461538461538461}
 {"dataset_record_id": "dandi:000049", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000050", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000051", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000052", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000053", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000054", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
-{"dataset_record_id": "dandi:000055", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
+{"dataset_record_id": "dandi:000054", "paper_openalex_id": "W7152570903", "paper_doi": "10.48324/dandi.000054/0.260409.0433", "paper_title": "Plitt & Giocomo (2021) Experience Dependent Contextual Codes in the Hippocampus. Nat Neuro", "paper_year": 2026, "match_method": "title_fuzzy", "confidence": 0.9}
+{"dataset_record_id": "dandi:000055", "paper_openalex_id": "W4226090302", "paper_doi": "10.1038/s41597-022-01280-y", "paper_title": "AJILE12: Long-term naturalistic human intracranial neural recordings and pose", "paper_year": 2022, "match_method": "title_fuzzy", "confidence": 0.9}
 {"dataset_record_id": "dandi:000056", "paper_openalex_id": "W1965070330", "paper_doi": "10.1038/nn.3968", "paper_title": "Internally organized mechanisms of the head direction sense", "paper_year": 2015, "match_method": "title_fuzzy_local", "confidence": 0.95}
 {"dataset_record_id": "dandi:000058", "paper_openalex_id": "", "paper_doi": null, "paper_title": null, "paper_year": null, "match_method": "not_found", "confidence": 0.0}
 {"dataset_record_id": "dandi:000059", "paper_openalex_id": "W3034889226", "paper_doi": "10.1016/j.neuron.2020.05.023", "paper_title": "Cooling of Medial Septum Reveals Theta Phase Lag Coordination of Hippocampal Cell Assemblies", "paper_year": 2020, "match_method": "title_fuzzy_local", "confidence": 0.95}

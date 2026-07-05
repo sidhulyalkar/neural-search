@@ -130,6 +130,193 @@ def test_add_findings_creates_finding_and_concept_edges(tmp_path):
     validate_graph(graph)
 
 
+def test_add_findings_attaches_region_atlas_crosswalk(tmp_path):
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W123",
+                "finding_id": "paper:openalex:W123:f0",
+                "finding_text": "Replay increases in hippocampus after learning.",
+                "result_direction": "increase",
+                "regions": ["hippocampus"],
+                "species": [],
+                "modalities": [],
+                "tasks": [],
+                "confidence": 0.86,
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    region_id = make_node_id("brain_region", "hippocampus")
+    region_node = graph.nodes[region_id]
+    assert region_node.properties["canonical_region_id"] == "hippocampus"
+    assert region_node.properties["atlas_refs"]["uberon"] == "UBERON:0002421"
+    validate_graph(graph)
+
+
+def test_add_findings_unmatched_region_has_no_atlas_refs(tmp_path):
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W124",
+                "finding_id": "paper:openalex:W124:f0",
+                "finding_text": "Activity changed in a made-up brain area.",
+                "result_direction": "increase",
+                "regions": ["not a real brain area"],
+                "species": [],
+                "modalities": [],
+                "tasks": [],
+                "confidence": 0.7,
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    region_id = make_node_id("brain_region", "not_a_real_brain_area")
+    region_node = graph.nodes[region_id]
+    assert "atlas_refs" not in region_node.properties
+    validate_graph(graph)
+
+
+def test_add_findings_attaches_task_cogat_crosswalk(tmp_path):
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W123",
+                "finding_id": "paper:openalex:W123:f0",
+                "finding_text": "Performance improved on the stroop task after training.",
+                "result_direction": "increase",
+                "regions": [],
+                "species": [],
+                "modalities": [],
+                "tasks": ["stroop_task"],
+                "confidence": 0.8,
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    task_id = make_node_id("task", "stroop_task")
+    task_node = graph.nodes[task_id]
+    assert task_node.properties["canonical_task_id"] == "stroop_task"
+    assert task_node.properties["cogat_label"] == "Stroop task"
+    validate_graph(graph)
+
+
+def test_add_findings_propagates_evidence_span(tmp_path):
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W123",
+                "finding_id": "paper:openalex:W123:f0",
+                "finding_text": "CA1 replay increases after spatial learning.",
+                "result_direction": "increase",
+                "regions": ["CA1"],
+                "species": ["mouse"],
+                "modalities": [],
+                "tasks": [],
+                "confidence": 0.86,
+                "char_start": 42,
+                "char_end": 88,
+                "sentence_id": 2,
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    finding_id = make_node_id("finding", "paper:openalex:W123:f0")
+    evidence = graph.nodes[finding_id].evidence[0]
+    assert evidence.char_start == 42
+    assert evidence.char_end == 88
+    assert evidence.sentence_id == 2
+    validate_graph(graph)
+
+
+def test_add_findings_creates_typed_field_edges(tmp_path):
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W123",
+                "finding_id": "paper:openalex:W123:f0",
+                "finding_text": "Theta oscillations increased transiently in the hippocampus.",
+                "result_direction": "increase",
+                "regions": ["hippocampus"],
+                "species": [],
+                "modalities": [],
+                "tasks": [],
+                "confidence": 0.8,
+                "frequency_band": ["theta"],
+                "temporal_pattern": ["transient"],
+                "spatial_frame": ["local"],
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    finding_id = make_node_id("finding", "paper:openalex:W123:f0")
+    band_id = make_node_id("frequency_band", "theta")
+    pattern_id = make_node_id("temporal_pattern", "transient")
+    frame_id = make_node_id("spatial_frame", "local")
+    assert make_edge_id(finding_id, "finding_has_frequency_band", band_id) in graph.edges
+    assert make_edge_id(finding_id, "finding_has_temporal_pattern", pattern_id) in graph.edges
+    assert make_edge_id(finding_id, "finding_has_spatial_frame", frame_id) in graph.edges
+    validate_graph(graph)
+
+
+def test_add_findings_without_typed_fields_skips_typed_edges(tmp_path):
+    """Backward compatibility: raw (un-enriched) finding records produce no typed edges."""
+    findings = tmp_path / "findings.jsonl"
+    _write_jsonl(
+        findings,
+        [
+            {
+                "paper_id": "paper:openalex:W999",
+                "finding_id": "paper:openalex:W999:f0",
+                "finding_text": "Some finding text.",
+                "result_direction": "increase",
+                "regions": [],
+                "species": [],
+                "modalities": [],
+                "tasks": [],
+                "confidence": 0.8,
+            }
+        ],
+    )
+    graph = KnowledgeGraph()
+
+    add_findings_to_graph(graph, findings)
+
+    typed_edges = [
+        e
+        for e in graph.edges.values()
+        if e.edge_type
+        in {"finding_has_frequency_band", "finding_has_temporal_pattern", "finding_has_spatial_frame"}
+    ]
+    assert typed_edges == []
+    validate_graph(graph)
+
+
 def test_duplicate_papers_are_merged_not_readded(tmp_path):
     shard = tmp_path / "tier1_batch_0000.jsonl"
     paper = {

@@ -10,7 +10,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -104,12 +104,56 @@ data/index/
 data/graph/
 data/corpus/normalized/
 data/corpus/rejected/
+data/ontology/
+artifacts/claims/
 artifacts/field_state/*.jsonl
 artifacts/field_state/concept_memory/*.jsonl
 artifacts/field_state/concept_memory/concept_graph.json
 artifacts/field_state/concept_memory/concept_index.json
 reports/eval/runs/
 reports/eval/*.jsonl
+
+# Large generated/downloaded data artifacts (not versioned)
+apps/web/public/brain.glb
+/brain/
+data/allen/
+data/neurosynth/
+artifacts/citations/
+artifacts/kg/
+artifacts/ner/
+data/kg/*.duckdb
+
+# Live/growing literature extraction outputs (currently 140MB+, exceeds
+# GitHub's 100MB hard limit; regenerate locally, do not version)
+artifacts/literature/findings_tier1_ollama.jsonl
+artifacts/literature/findings_tier1_ollama.checkpoint.json
+
+# Full-scale normalized findings (now derived from the full 190K-finding
+# extraction as of 2026-06-24, 270MB+ -- also exceeds the 100MB limit. The
+# previous small 12,609-record/7.7MB snapshot is still in git history at
+# e9b0c21; this path is untracked going forward. Regenerate via
+# scripts/literature/normalize_findings.py.
+artifacts/literature/findings_tier1_normalized.jsonl
+
+# Large generated build artifacts, purged from history 2026-07-04 (see
+# scripts/literature/build_finding_relationships.py, scripts/coverage/,
+# scripts/eval/build_ablation_evidence_packets.py, neural_search/graph/atlas_builder.py,
+# scripts/literature/build_cluster_graph.py, neural_search/ingestion/corpus_kg_linker.py,
+# scripts/generate_annotation_candidates.py for regeneration)
+artifacts/literature/relationships/finding_edges.jsonl
+artifacts/literature/relationships/consensus_summaries.jsonl
+artifacts/literature/relationships/consensus_summaries_qualified.jsonl
+artifacts/literature/relationships/region_cooccurrence.jsonl
+data/reports/coverage/coverage_entries.jsonl
+data/reports/coverage/coverage_states.jsonl
+data/reports/coverage/coverage_completion_worklist.jsonl
+artifacts/ablation_judge/evidence_packets.jsonl
+data/coverage/ledger.duckdb
+data/eval/ablation_corpus_from_packets.jsonl
+artifacts/atlas/atlas_graph.json
+artifacts/graph/cluster_graph.json
+data/kg/dataset_concept_index.jsonl
+data/eval/annotation_candidates.jsonl
 
 # Large model/index/data file types
 *.npy

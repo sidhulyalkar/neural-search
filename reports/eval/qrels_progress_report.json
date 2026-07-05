@@ -1,0 +1,447 @@
+{
+  "generated_at": "2026-06-24T02:22:18.062132+00:00",
+  "summary": {
+    "gold_qrels_rows": 0,
+    "human_adjudicated_rows": 3,
+    "human_review_rows": 10,
+    "silver_diagnostic_rows": 175,
+    "bronze_diagnostic_rows": 319,
+    "canonical_llm_silver_rows": 13654,
+    "canonical_llm_silver_queries": 317,
+    "total_human_labelled_pairs": 13,
+    "unique_queries_human_covered": 4,
+    "pool_size": 914,
+    "unlabelled_pool_pairs": 914
+  },
+  "publishable_target": {
+    "min_queries": 100,
+    "min_pairs": 1500,
+    "min_annotators": 2,
+    "agreement_required": true
+  },
+  "publishable_checklist": {
+    "min_queries_100": false,
+    "min_pairs_1500": false,
+    "min_annotators_2": false,
+    "gold_qrels_non_empty": false,
+    "agreement_stats_available": false
+  },
+  "gaps_to_publishable": [
+    "Need 96 more unique queries annotated (target: 100)",
+    "Need 1487 more labelled pairs (target: 1,500)",
+    "Need >=2 annotators with inter-annotator agreement statistics",
+    "Gold qrels are empty \u2014 adjudication workflow must produce gold labels"
+  ],
+  "sets": {
+    "adjudicated": {
+      "name": "adjudicated (field_state)",
+      "count": 3,
+      "queries_covered": 3,
+      "pairs_per_query": 1.0,
+      "label_distribution": {
+        "partially_relevant": 1,
+        "weakly_relevant": 1,
+        "not_relevant": 1
+      },
+      "hard_negative_count": 1
+    },
+    "reviews": {
+      "name": "human_reviews (field_state)",
+      "count": 10,
+      "queries_covered": 1,
+      "pairs_per_query": 10.0,
+      "label_distribution": {
+        "?": 10
+      },
+      "hard_negative_count": 0
+    },
+    "silver": {
+      "name": "silver_diagnostic",
+      "count": 175,
+      "queries_covered": 12,
+      "pairs_per_query": 14.6,
+      "label_distribution": {
+        "3": 175
+      },
+      "hard_negative_count": 0
+    },
+    "bronze": {
+      "name": "bronze_diagnostic",
+      "count": 319,
+      "queries_covered": 15,
+      "pairs_per_query": 21.3,
+      "label_distribution": {
+        "3": 63,
+        "0": 131,
+        "2": 107,
+        "1": 18
+      },
+      "hard_negative_count": 131
+    },
+    "canonical_llm_silver": {
+      "name": "canonical_llm_silver (single-judge, ablation ladder)",
+      "count": 13654,
+      "queries_covered": 317,
+      "pairs_per_query": 43.1,
+      "label_distribution": {
+        "0": 3311,
+        "1": 5671,
+        "2": 4652,
+        "3": 20
+      },
+      "hard_negative_count": 0
+    }
+  },
+  "next_50_priority_pairs": [
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds004323",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds007436",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "osf:jgxfr",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005588",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005123",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds007486",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:18346733",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "osf:7k5w4",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16965124",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds006576",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:19914113",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds004283",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds001814",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "osf:ap4x7",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "gin:812",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16914534",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16914371",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16912311",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16912773",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16912863",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16903822",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:16913033",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:3419",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005230",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:1501",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds004515",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:1381",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:555",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:17475235",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:1408",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "osf:u8vha",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds003458",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:3396",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:13891951",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "neurovault:1072",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds004103",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005356",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:10969434",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds007179",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds003745",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:17653000",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds000168",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "zenodo:10119627",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds000121",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds000120",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005598",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds005449",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "dandi:001253",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds004920",
+      "dataset_title": "",
+      "score": 0.0
+    },
+    {
+      "query_id": "q_0001",
+      "query_text": "",
+      "dataset_id": "openneuro:ds006707",
+      "dataset_title": "",
+      "score": 0.0
+    }
+  ]
+}

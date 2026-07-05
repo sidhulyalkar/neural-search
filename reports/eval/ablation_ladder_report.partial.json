@@ -1,0 +1,64 @@
+{
+  "rungs": [
+    {
+      "rung": "bm25",
+      "status": "skipped",
+      "metrics": {}
+    },
+    {
+      "rung": "bm25_structured",
+      "status": "skipped",
+      "metrics": {}
+    },
+    {
+      "rung": "dense_bge",
+      "status": "skipped",
+      "metrics": {}
+    },
+    {
+      "rung": "hybrid_rrf",
+      "status": "skipped",
+      "metrics": {}
+    },
+    {
+      "rung": "hybrid_graph",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 101.1,
+      "metrics": {
+        "ndcg@10": 0.8594,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "typed_kg",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 89.9,
+      "metrics": {
+        "ndcg@10": 0.8483,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "typed_kg_qualified",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 89.3,
+      "metrics": {
+        "ndcg@10": 0.8483,
+        "query_count": 317
+      }
+    },
+    {
+      "rung": "full",
+      "status": "ok",
+      "queries_run": 317,
+      "elapsed_s": 0.2,
+      "metrics": {
+        "ndcg@10": 0.8594,
+        "query_count": 317
+      }
+    }
+  ]
+}

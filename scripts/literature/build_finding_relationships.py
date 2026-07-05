@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """Build cross-finding and region co-occurrence relationships from normalized findings.
 
-Produces three JSONL artifacts:
-  - finding_edges.jsonl         (supports / contradicts edges between findings)
-  - region_cooccurrence.jsonl   (region_co_occurs_with edges)
-  - consensus_summaries.jsonl   (per-region direction consensus records)
+Produces four JSONL artifacts:
+  - finding_edges.jsonl              (supports / contradicts edges between findings)
+  - region_cooccurrence.jsonl        (region_co_occurs_with edges)
+  - consensus_summaries.jsonl        (per-region direction consensus records — base tier)
+  - consensus_summaries_qualified.jsonl  (same, qualified by one typed field at a time:
+                                           frequency_band, injury_model, molecular_marker, species)
+
+consensus_summaries.jsonl is unchanged in shape from before qualified tiers existed —
+it has live consumers (apps/api/graph_router.py, build_cluster_graph.py) that assume
+one row per (region, direction, task). The qualified tier is a separate, additive file.
 
 Usage:
     python scripts/literature/build_finding_relationships.py \\
@@ -29,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from neural_search.literature.relationship_builder import (  # noqa: E402
     build_consensus_summaries,
     build_cross_finding_edges,
+    build_qualified_consensus_summaries,
     build_region_cooccurrence_edges,
     write_edges_jsonl,
 )
@@ -90,18 +97,45 @@ def main() -> None:
             fh.write(json.dumps(asdict(r)) + "\n")
     logger.info("Wrote %d consensus records to %s", len(consensus), consensus_path)
 
+    logger.info("Building qualified consensus summaries (per typed-field facet)…")
+    qualified_consensus = build_qualified_consensus_summaries(
+        args.findings,
+        min_papers=args.min_papers,
+    )
+    qualified_consensus_path = args.out_dir / "consensus_summaries_qualified.jsonl"
+    with qualified_consensus_path.open("w") as fh:
+        for r in qualified_consensus:
+            fh.write(json.dumps(asdict(r)) + "\n")
+    logger.info(
+        "Wrote %d qualified consensus records to %s",
+        len(qualified_consensus),
+        qualified_consensus_path,
+    )
+
     # --- Print summary ---
     n_supports = sum(1 for e in finding_edges if e.edge_type == "supports")
     n_contradicts = sum(1 for e in finding_edges if e.edge_type == "contradicts")
+    n_direct_refutation = sum(
+        1 for e in finding_edges if e.contradiction_subtype == "direct_refutation"
+    )
+    n_opposite_direction = sum(
+        1 for e in finding_edges if e.contradiction_subtype == "opposite_direction"
+    )
     strong_consensus = [r for r in consensus if r.consensus_strength >= 0.8 and r.n_papers >= 3]
 
     print("\n=== Relationship Build Summary ===")
     print(f"  Finding edges total:        {len(finding_edges):,}")
     print(f"    supports:                 {n_supports:,}")
     print(f"    contradicts:              {n_contradicts:,}")
+    print(f"      opposite_direction:     {n_opposite_direction:,}")
+    print(f"      direct_refutation:      {n_direct_refutation:,}")
     print(f"  Region co-occurrence edges: {len(region_edges):,}")
-    print(f"  Consensus records:          {len(consensus):,}")
-    print(f"  Strong consensus (≥0.8, ≥3 papers): {len(strong_consensus):,}")
+    print(f"  Consensus records (base):   {len(consensus):,}")
+    print(f"  Strong consensus (>=0.8, >=3 papers): {len(strong_consensus):,}")
+    print(f"  Qualified consensus records: {len(qualified_consensus):,}")
+    for facet_field in sorted({f for r in qualified_consensus for f in r.facet_fields}):
+        n_facet = sum(1 for r in qualified_consensus if facet_field in r.facet_fields)
+        print(f"    by {facet_field}: {n_facet:,}")
 
     if strong_consensus:
         print("\n  Top established findings (strong consensus):")

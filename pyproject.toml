@@ -30,6 +30,7 @@ dependencies = [
   "numpy>=1.26.0",
   "pandas>=2.1.0",
   "duckdb>=0.9.0",
+  "scipy>=1.11.0",
 ]
 
 [project.optional-dependencies]
@@ -42,7 +43,10 @@ dev = [
   "pre-commit>=3.5.0",
   "respx>=0.20.0",
   "networkx>=3.0",
-  "scipy>=1.11.0",
+]
+spectral = [
+  "specparam>=2.0.0",
+  "yasa>=0.6.5",
 ]
 postgres = [
   "pgvector>=0.3",
@@ -59,13 +63,14 @@ embeddings = [
 dense = [
   "sentence-transformers>=2.2.0",
   "turbovec>=0.1.0",
+  "faiss-cpu>=1.7.4",
 ]
 notebooks = [
   "jupyter>=1.0.0",
   "matplotlib>=3.8.0",
 ]
 all = [
-  "neural-search[dev,postgres,redis,embeddings,notebooks]",
+  "neural-search[dev,postgres,redis,embeddings,notebooks,spectral]",
 ]
 
 [project.scripts]
@@ -100,6 +105,18 @@ known-first-party = ["neural_search"]
 "tests/test_search_usefulness_integration.py" = ["E402"]
 "tests/test_sprint1_eval.py" = ["E402"]
 "tests/test_sprint1_pooled_eval.py" = ["E402"]
+"apps/api/main.py" = ["E402"]
+"scripts/eval/build_reanalysis_affordance_report.py" = ["E402"]
+"scripts/eval/match_new_methods_to_old_datasets.py" = ["E402"]
+"scripts/eval/sample_typed_fields_for_audit.py" = ["E402"]
+"scripts/literature/cluster_findings.py" = ["E402"]
+"scripts/literature/detect_contradictions.py" = ["E402"]
+"scripts/literature/ingest_claims_to_kg.py" = ["E402"]
+"scripts/literature/ingest_relationships_to_kg.py" = ["E402"]
+"scripts/literature/normalize_regions.py" = ["E402"]
+"scripts/literature/synthesize_claims.py" = ["E402"]
+"scripts/obsidian/export_claims.py" = ["E402"]
+"scripts/obsidian/export_literature.py" = ["E402"]
 
 [tool.mypy]
 python_version = "3.11"

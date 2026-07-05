@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "qrels_labeled_pairs",
+      "passed": true,
+      "detail": "13654 labeled pairs >= 10000"
+    },
+    {
+      "name": "bm25_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "bm25_structured_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "dense_bge_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "hybrid_rrf_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "hybrid_graph_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "full_query_coverage",
+      "passed": true,
+      "detail": "317 judged queries >= 300"
+    },
+    {
+      "name": "hybrid_rrf_ge_bm25_ndcg@10",
+      "passed": true,
+      "detail": "hybrid_rrf ndcg@10=0.6667; bm25 ndcg@10=0.6566"
+    },
+    {
+      "name": "hybrid_rrf_ge_bm25_mrr",
+      "passed": true,
+      "detail": "hybrid_rrf mrr=0.9209; bm25 mrr=0.8795"
+    },
+    {
+      "name": "hybrid_rrf_ge_bm25_recall@50",
+      "passed": true,
+      "detail": "hybrid_rrf recall@50=0.7455; bm25 recall@50=0.6440"
+    },
+    {
+      "name": "hybrid_graph_ge_hybrid_rrf_ndcg@10",
+      "passed": true,
+      "detail": "hybrid_graph ndcg@10=0.6696; hybrid_rrf ndcg@10=0.6667"
+    },
+    {
+      "name": "hybrid_graph_ge_hybrid_rrf_mrr",
+      "passed": true,
+      "detail": "hybrid_graph mrr=0.9256; hybrid_rrf mrr=0.9209"
+    },
+    {
+      "name": "hybrid_graph_ge_hybrid_rrf_recall@50",
+      "passed": true,
+      "detail": "hybrid_graph recall@50=0.7465; hybrid_rrf recall@50=0.7455"
+    }
+  ],
+  "warnings": [
+    "Dual-judge QWK is not estimable because no pair has two non-error judge labels."
+  ]
+}

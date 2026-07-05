@@ -5,9 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import httpx
 import pytest
+import respx
 
 from neural_search.ingestion.openalex_bulk import (
+    OPENALEX_BASE,
     BulkIngester,
     normalize_bulk_work,
     reconstruct_abstract,
@@ -357,3 +360,142 @@ class TestBulkIngesterRun:
 
         total = ingester.run()
         assert total == 0
+
+
+# ---------------------------------------------------------------------------
+# TestGetWithRetry -- 429/5xx backoff (regression: 2026-06-24 production 429)
+# ---------------------------------------------------------------------------
+
+EMPTY_RESULTS_PAGE = {"results": [], "meta": {"next_cursor": None}}
+
+
+class TestGetWithRetry:
+    @respx.mock
+    def test_succeeds_immediately_on_200(self, tmp_path: Path):
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(
+            return_value=httpx.Response(200, json=EMPTY_RESULTS_PAGE)
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        data = ingester._get_with_retry({})
+
+        assert data == EMPTY_RESULTS_PAGE
+        assert route.call_count == 1
+
+    @respx.mock
+    def test_retries_after_429_then_succeeds(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        data = ingester._get_with_retry({})
+
+        assert data == EMPTY_RESULTS_PAGE
+        assert route.call_count == 2
+
+    @respx.mock
+    def test_retry_wait_is_printed_not_silent(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
+    ):
+        # Regression (2026-06-24): a long Retry-After wait (OpenAlex's rate-limit
+        # window reset took ~426s in production) printed nothing at all, making a
+        # retrying-but-alive process indistinguishable from a hung one.
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429, headers={"Retry-After": "426", "X-RateLimit-Remaining": "0"}),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        captured = capsys.readouterr()
+        assert "Rate limited" in captured.out
+        assert "426" in captured.out
+
+    @respx.mock
+    def test_honors_retry_after_header(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429, headers={"Retry-After": "7"}),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        assert sleeps == [7.0]
+
+    @respx.mock
+    def test_raises_instead_of_sleeping_for_excessive_retry_after(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Regression (2026-06-25 production incident): OpenAlex returned
+        # Retry-After=83503 (~23.2h) and Retry-After=70643 (~19.6h) on separate
+        # checks, a longer-duration (likely daily) quota distinct from the short
+        # burst window. Sleeping that long would hang a foreground process for
+        # most of a day with zero indication anything was wrong.
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            return_value=httpx.Response(
+                429, headers={"Retry-After": "83503", "X-RateLimit-Remaining": "0"}
+            )
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(RuntimeError, match="Retry-After=83503"):
+            ingester._get_with_retry({})
+
+        assert sleeps == []
+
+    @respx.mock
+    def test_exponential_backoff_without_retry_after_header(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        respx.get(f"{OPENALEX_BASE}/works").mock(
+            side_effect=[
+                httpx.Response(429),
+                httpx.Response(503),
+                httpx.Response(200, json=EMPTY_RESULTS_PAGE),
+            ]
+        )
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        ingester._get_with_retry({})
+
+        assert sleeps == [2.0, 4.0]
+
+    @respx.mock
+    def test_raises_after_exhausting_retries(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        respx.get(f"{OPENALEX_BASE}/works").mock(return_value=httpx.Response(429))
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(httpx.HTTPStatusError):
+            ingester._get_with_retry({})
+
+    @respx.mock
+    def test_non_retryable_error_raises_immediately(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr("time.sleep", lambda _s: None)
+        route = respx.get(f"{OPENALEX_BASE}/works").mock(return_value=httpx.Response(404))
+        ingester = BulkIngester(out_dir=tmp_path)
+
+        with pytest.raises(httpx.HTTPStatusError):
+            ingester._get_with_retry({})
+
+        assert route.call_count == 1

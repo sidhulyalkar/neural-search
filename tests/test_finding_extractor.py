@@ -130,6 +130,39 @@ class TestParseFindings:
         findings = parse_findings("W001", None, "[]", "claude-haiku")
         assert findings == []
 
+    def test_no_abstract_leaves_span_fields_none(self) -> None:
+        findings = parse_findings("W2741809807", "10.1038/x", VALID_FINDING_JSON, "claude-haiku")
+        f = findings[0]
+        assert f.char_start is None
+        assert f.char_end is None
+        assert f.sentence_id is None
+        assert f.span_match_method is None
+
+    def test_abstract_with_exact_match_populates_span(self) -> None:
+        abstract = (
+            "Background sentence first. "
+            "Theta oscillations increase during spatial navigation. "
+            "Trailing sentence here."
+        )
+        findings = parse_findings(
+            "W2741809807", "10.1038/x", VALID_FINDING_JSON, "claude-haiku", abstract=abstract
+        )
+        f = findings[0]
+        assert f.char_start is not None
+        assert f.char_end is not None
+        assert f.sentence_id == 1
+        assert f.span_match_method == "exact"
+        assert abstract[f.char_start : f.char_end].lower() == f.finding_text.lower()
+
+    def test_abstract_with_no_overlap_leaves_span_none(self) -> None:
+        abstract = "Completely unrelated text about a different topic entirely."
+        findings = parse_findings(
+            "W2741809807", "10.1038/x", VALID_FINDING_JSON, "claude-haiku", abstract=abstract
+        )
+        f = findings[0]
+        assert f.char_start is None
+        assert f.span_match_method is None
+
     def test_malformed_json_returns_empty(self) -> None:
         findings = parse_findings("W001", None, "not valid json at all", "claude-haiku")
         assert findings == []

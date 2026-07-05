@@ -1,0 +1,329 @@
+# Oscillation Signatures — Extension
+# Adds sleep oscillations, infraslow, sensorimotor rhythms, clinical HFOs,
+# respiration-coupled, olfactory, infraslow, and region-specific unique rhythms.
+# Loaded and merged by methods_router alongside oscillation_signatures.yaml.
+
+oscillation_signatures:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # SLEEP-SPECIFIC OSCILLATIONS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: thalamus
+    frequency_band: spindle
+    frequency_range_hz: [12.0, 15.0]
+    species: [rat, mouse, human]
+    functional_role: "Sleep-dependent memory consolidation; thalamo-cortical synchronization during NREM sleep; spindle density correlates with procedural memory consolidation"
+    condition: "NREM sleep stages 2-3; brief spontaneous bursts lasting 0.5-3s"
+    generator: "Thalamic reticular nucleus (TRN) GABAergic neurons → relay nuclei oscillation; TRN inhibits thalamus in rhythmic bursts"
+    peak_frequency_hz: 13.5
+    duration_ms: [500, 3000]
+    pac_coupling: "Slow oscillation (SO) up-state triggers spindles; spindles temporally coupled to sharp-wave ripples during SO down-to-up transition"
+    key_papers:
+      - "Steriade et al. (1993) — A novel slow (< 1 Hz) oscillation of neocortical neurons in vivo"
+      - "Mölle et al. (2002) — Grouping of spindle activity during slow oscillations in human non-rapid eye movement sleep"
+    topics: [sleep_and_oscillations, episodic_memory, motor_learning]
+    clinical_relevance: "Reduced spindle density in schizophrenia; sleep spindles impaired in autism; spindle amplitude correlates with IQ in healthy adults"
+
+  - region_id: neocortex
+    frequency_band: slow_oscillation
+    frequency_range_hz: [0.5, 1.0]
+    species: [rat, mouse, human]
+    functional_role: "Global synchronization of active (Up) and silent (Down) states during SWS; orchestrates hippocampal ripples and thalamic spindles for systems consolidation"
+    condition: "NREM slow-wave sleep (SWS); also present under anesthesia"
+    generator: "Intrinsic cortical bistability: potassium currents cause down-state; glutamatergic recurrent excitation starts Up-state; propagates from prefrontal to occipital cortex"
+    up_state_duration_ms: [500, 1000]
+    down_state_duration_ms: [200, 500]
+    key_papers:
+      - "Steriade et al. (1993) — Grouping of brain rhythms in corticothalamic systems"
+      - "Massimini et al. (2004) — The sleep slow oscillation as a traveling wave"
+    topics: [sleep_and_oscillations, episodic_memory]
+    pac_coupling: "Up-state initiates thalamic spindles; ripples cluster near spindle troughs — tripartite nesting: SO → spindle → ripple"
+
+  - region_id: neocortex
+    frequency_band: k_complex
+    frequency_range_hz: [0.5, 4.0]
+    species: [human]
+    functional_role: "Sensory-triggered arousal suppression; protects sleep continuity; also spontaneous during NREM stage 2"
+    condition: "External stimuli during NREM sleep; also spontaneous"
+    generator: "Initial sharp negative component from cortical inhibition; followed by 500ms positive wave; may represent single isolated SO"
+    topics: [sleep_and_oscillations]
+    species_note: "Largely defined in humans; equivalent may exist as spontaneous Down-to-Up transitions in rodents"
+
+  - region_id: brainstem_rem_generator
+    frequency_band: pgo_waves
+    frequency_range_hz: [0.5, 5.0]
+    species: [rat, cat]
+    functional_role: "Ponto-geniculo-occipital (PGO) waves during REM sleep; precede saccades in REM; correlate with vivid dreaming"
+    condition: "REM sleep; eye movement generation"
+    generator: "Pedunculopontine tegmentum (PPT) → lateral geniculate nucleus → occipital cortex"
+    topics: [sleep_and_oscillations, emotional_processing]
+    species_note: "Well-studied in cats; identified in rats; assumed homolog in humans"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # INFRASLOW OSCILLATIONS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: neocortex
+    frequency_band: infraslow
+    frequency_range_hz: [0.01, 0.1]
+    species: [human, rat]
+    functional_role: "Modulates power of faster oscillations (alpha, beta, gamma) — nested hierarchy; resting state fluctuations measured with fMRI BOLD (~0.01-0.1 Hz) reflect infraslow electrical activity"
+    condition: "Resting state; sleep; anesthesia"
+    generator: "Possibly glial buffering of extracellular potassium; metabolic oscillations; brainstem arousal fluctuations"
+    pac_coupling: "Infraslow phase modulates amplitude of alpha/beta/gamma (ultra-slow nesting)"
+    key_papers:
+      - "Vanhatalo et al. (2004) — Infraslow oscillations modulate excitability and interictal epileptic activity in the human cortex"
+      - "He et al. (2008) — The temporal structures and functional significance of scale-free brain activity"
+    topics: [spectral_dynamics, sleep_and_oscillations, attention_and_salience]
+    measurement_notes: "Requires DC-coupled amplifiers; standard AC-coupled EEG removes these frequencies"
+
+  - region_id: neocortex
+    frequency_band: fmri_resting_state
+    frequency_range_hz: [0.01, 0.1]
+    species: [human, macaque, rat]
+    functional_role: "Resting-state fMRI BOLD fluctuations reflect spontaneous hemodynamic correlates of neural activity; identify resting-state networks (DMN, salience, frontoparietal)"
+    condition: "Eyes-open or eyes-closed rest; also anesthesia"
+    pac_coupling: "BOLD correlated with infraslow EEG power; BOLD anticorrelated with alpha power"
+    key_papers:
+      - "Biswal et al. (1995) — Functional connectivity in the motor cortex of resting human brain using echo-planar MRI"
+    topics: [spectral_dynamics, attention_and_salience, social_behavior]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # SENSORIMOTOR RHYTHMS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: sensorimotor_cortex
+    frequency_band: mu_rhythm
+    frequency_range_hz: [8.0, 13.0]
+    species: [human]
+    functional_role: "Suppressed during motor actions and observation of others' actions (mirror system); distinct from occipital alpha; linked to action observation system"
+    condition: "At rest over motor regions; desynchronizes during movement observation (not just execution)"
+    generator: "Sensorimotor cortex (C3/C4 electrode locations); NOT the same as visual alpha"
+    key_papers:
+      - "Gastaut (1952) — Étude électrocorticographique de la réactivité des rhythmes rolandiques"
+      - "Pineda (2005) — The functional significance of mu rhythms: translating 'seeing' and 'hearing' into 'doing'"
+    topics: [motor_learning, social_behavior, spectral_dynamics]
+    bci_use: "Mu suppression used as BCI control signal; impaired mu suppression proposed in autism"
+
+  - region_id: sensorimotor_cortex
+    frequency_band: smr
+    frequency_range_hz: [12.0, 15.0]
+    species: [human, cat]
+    functional_role: "Sensorimotor rhythm (SMR); marker of quiet wakefulness and motor readiness suppression; BCI training target"
+    condition: "Quiet alert state; absence of movement"
+    generator: "Somatosensory and motor cortex; first identified as 'sensory motor rhythm' in cats (Sterman)"
+    bci_use: "SMR neurofeedback enhances cognitive performance; used in epilepsy management"
+    topics: [motor_learning, attention_and_salience]
+
+  - region_id: subthalamic_nucleus
+    frequency_band: beta
+    frequency_range_hz: [13.0, 30.0]
+    species: [human, rat, macaque]
+    functional_role: "Pathologically enhanced beta in Parkinson's disease; suppressed by dopaminergic medication and DBS; correlates with motor impairment severity"
+    condition: "Rest and movement preparation (normal: beta desynchronizes; PD: fails to desynchronize)"
+    generator: "Cortico-subthalamo-pallidal loop: M1/SMA → STN → GPe/GPi → thalamus → cortex"
+    key_papers:
+      - "Brown et al. (2001, J Neuroscience) — Dopamine dependency of oscillations between subthalamic nucleus and pallidum in Parkinson's disease"
+      - "de Hemptinne et al. (2015, Nature Neuroscience) — Therapeutic deep brain stimulation reduces cortical phase-amplitude coupling in Parkinson's disease"
+    topics: [spectral_dynamics, motor_learning, neuromodulation]
+    clinical_relevance: "STN beta power used as biomarker for adaptive DBS; ECOG PAC (beta phase × gamma amplitude) improved by DBS"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # OLFACTORY / RESPIRATION-COUPLED
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: olfactory_bulb
+    frequency_band: gamma
+    frequency_range_hz: [30.0, 100.0]
+    species: [rat, mouse]
+    functional_role: "Stimulus-evoked gamma oscillations in olfactory bulb mitral cells; nested within theta respiratory cycle; gamma frequency encodes odor identity"
+    condition: "Odor presentation; nasal airflow (even in absence of odor)"
+    generator: "Mitral cell ↔ granule cell dendrodendritic inhibition; periglomerular interneurons"
+    pac_coupling: "Respiratory theta (2-10 Hz) phase modulates gamma amplitude in OB — respiration as pacemaker"
+    key_papers:
+      - "Bhanu & Gray (1983) — The functional significance of olfactory gamma oscillations"
+    topics: [spectral_dynamics, neural_synchrony]
+
+  - region_id: hippocampus
+    frequency_band: respiratory_theta
+    frequency_range_hz: [2.0, 8.0]
+    species: [mouse, rat]
+    functional_role: "Respiratory-entrained hippocampal oscillations during sniffing; distinct from locomotion-dependent theta; may transmit olfactory context to hippocampus"
+    condition: "Active sniffing; olfactory investigation"
+    generator: "Olfactory bulb → piriform cortex → entorhinal cortex → hippocampus; entrains to respiratory cycle"
+    key_papers:
+      - "Helfrich et al. (2018) — Opposing effects of sulcal and gyral electrodes on contralateral interhemispheric connectivity"
+      - "Karalis & Bhanu (2019) — Breathing coordinates cortico-hippocampal dynamics"
+    topics: [spectral_dynamics, episodic_memory, neural_synchrony]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # CORTICAL MICROCIRCUIT OSCILLATIONS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: neocortex
+    frequency_band: gamma
+    frequency_range_hz: [30.0, 100.0]
+    species: [rat, mouse, human, macaque]
+    functional_role: "Stimulus-driven gamma reflects local cortical activity; broadband high-gamma (70-150 Hz) tracks population spiking; narrowband gamma (30-50 Hz) involves interneuron network resonance (PV interneurons)"
+    condition: "Sensory stimulation; attentional engagement; working memory maintenance"
+    generator: "Fast-spiking PV interneurons → pyramidal cell oscillation via GABA-A; can sustain resonance at 40 Hz"
+    pac_coupling: "Theta phase modulates gamma amplitude (theta-gamma coupling) in hippocampus and PFC"
+    key_papers:
+      - "Sohal et al. (2009) — Parvalbumin neurons and gamma rhythms enhance cortical circuit performance"
+      - "Cardin et al. (2009) — Driving fast-spiking cells induces gamma rhythm and controls sensory responses"
+    topics: [spectral_dynamics, attention_and_salience, working_memory]
+    interneuron_specific:
+      pv_interneurons: "Drive 40 Hz gamma; optogenetic activation of PV cells entrains gamma"
+      sst_interneurons: "Involved in alpha/beta through dendritic inhibition"
+      vip_interneurons: "Disinhibit PV/SST via VIP→SST/PV inhibition"
+
+  - region_id: prefrontal_cortex
+    frequency_band: delta_theta
+    frequency_range_hz: [1.0, 8.0]
+    species: [human]
+    functional_role: "Working memory delay period; theta entrains gamma for item storage; frontal midline theta (Fz) scales with WM load"
+    condition: "Working memory encoding and maintenance delay; arithmetic tasks; sustained attention"
+    key_papers:
+      - "Klimesch et al. (2010) — Alpha, theta oscillations and memory — An analysis of the evidence"
+    topics: [working_memory, cognitive_control, spectral_dynamics]
+
+  - region_id: posterior_parietal_cortex
+    frequency_band: alpha
+    frequency_range_hz: [8.0, 13.0]
+    species: [human]
+    functional_role: "Lateralized alpha suppression over attended hemifield; attention-dependent gating of sensory input; alpha increase = active inhibition"
+    condition: "Spatial attention tasks; covert attention to left vs right hemifield"
+    key_papers:
+      - "Worden et al. (2000) — Anticipatory biasing of visuospatial attention indexed by retinotopically specific α-bank EEG over occipital, parietal, and frontal cortex"
+    topics: [attention_and_salience, spectral_dynamics]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # SUBCORTICAL / BRAINSTEM
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: basolateral_amygdala
+    frequency_band: gamma
+    frequency_range_hz: [30.0, 100.0]
+    species: [rat, mouse]
+    functional_role: "Local computation during threat learning; BLA gamma during CS-US pairing; gamma indexes synaptic strengthening of fear memories"
+    condition: "CS-US pairing during fear acquisition; also during extinction"
+    pac_coupling: "BLA theta (from HPC) modulates BLA gamma during encoding"
+    key_papers:
+      - "Bhanu et al. (2007) — Gamma oscillations in the basolateral amygdala encode fear learning"
+    topics: [fear_and_anxiety, neural_synchrony]
+
+  - region_id: ventral_striatum
+    frequency_band: delta
+    frequency_range_hz: [0.5, 4.0]
+    species: [rat, mouse]
+    functional_role: "NAcc delta oscillations during reward delivery; synchronize with prefrontal delta post-reward"
+    condition: "Reward delivery; reward anticipation; drug administration"
+    key_papers:
+      - "Kalenscher et al. (2010) — Neural oscillations in the rodent frontal system"
+    topics: [reward_learning, spectral_dynamics]
+
+  - region_id: lateral_prefrontal_cortex
+    frequency_band: alpha
+    frequency_range_hz: [8.0, 13.0]
+    species: [human]
+    functional_role: "Maintenance of task rules in working memory; frontal alpha predicts successful inhibition of irrelevant information"
+    condition: "Delayed match-to-sample; anti-saccade; task switching"
+    topics: [working_memory, cognitive_control, attention_and_salience]
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # PATHOLOGICAL / CLINICAL OSCILLATIONS
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: hippocampus
+    frequency_band: hfo_pathological
+    frequency_range_hz: [80.0, 500.0]
+    species: [human, rat]
+    functional_role: "Pathological high-frequency oscillations (HFOs) in epilepsy — ripples (80-200 Hz) and fast ripples (200-500 Hz); generated in seizure onset zones"
+    condition: "Interictal period; seizure onset; resected tissue in epilepsy surgery"
+    generator: "Hypersynchronous bursting in abnormal neural clusters; fast ripples may reflect microseizures"
+    key_papers:
+      - "Bragin et al. (1999) — Hippocampal and entorhinal cortex high-frequency oscillations"
+    topics: [spectral_dynamics, development_and_plasticity]
+    clinical_relevance: "HFO rate used to localize epileptogenic zone for surgical resection; fast ripples more specific than ripples"
+    contrast_with_normal: "Normal ripples: 150-250 Hz, functionally meaningful memory consolidation. Pathological fast ripples: 250-600 Hz, seizure marker"
+
+  - region_id: neocortex
+    frequency_band: burst_suppression
+    frequency_range_hz: [0.1, 1.0]
+    species: [human, rat]
+    functional_role: "Alternating high-amplitude bursts and electrocerebral silence; marker of deep anesthesia, post-cardiac arrest, severe encephalopathy"
+    condition: "Deep anesthesia (propofol, ketamine, barbiturates); hypothermia; severe brain injury"
+    generator: "Near-total GABA-mediated inhibition; brief excitatory breaks when potassium currents recovered"
+    topics: [sleep_and_oscillations, neuromodulation]
+    clinical_relevance: "Burst suppression ratio (BSR) guides anesthesia depth; neonatal burst suppression indicates encephalopathy"
+
+  - region_id: prefrontal_cortex
+    frequency_band: alpha_excess_depression
+    frequency_range_hz: [8.0, 13.0]
+    species: [human]
+    functional_role: "Alpha power asymmetry (L < R frontal) associated with depression and withdrawal motivation; right frontal alpha excess = approach deficit"
+    condition: "Resting state in depressed patients; anxious withdrawal"
+    key_papers:
+      - "Davidson (1998) — Anterior electrophysiological asymmetries, emotion, and depression — Conceptual and methodological conundrums"
+    topics: [emotional_processing, fear_and_anxiety, spectral_dynamics]
+    clinical_relevance: "EEG alpha asymmetry biomarker for antidepressant response; right α > left α predicts good TMS response over DLPFC"
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # CROSS-MODAL / POLYRHYTHMIC
+  # ══════════════════════════════════════════════════════════════════════════
+
+  - region_id: default_mode_network
+    frequency_band: low_frequency_rsn
+    frequency_range_hz: [0.01, 0.1]
+    species: [human, macaque]
+    functional_role: "Default mode network anti-correlates with task-positive (DAN) network; internally directed cognition, mind wandering, autobiographical memory"
+    condition: "Resting state; task-free; passive viewing"
+    key_papers:
+      - "Raichle et al. (2001) — A default mode of brain function"
+    topics: [episodic_memory, social_behavior, attention_and_salience]
+    key_regions: [mPFC, PCC, angular_gyrus, hippocampus, posterior_parietal]
+
+  - region_id: anterior_cingulate_cortex
+    frequency_band: delta_theta
+    frequency_range_hz: [1.0, 8.0]
+    species: [rat, human]
+    functional_role: "Pain oscillations in ACC; delta/theta power increases with pain intensity; synchronized with thalamic oscillations"
+    condition: "Acute pain; chronic pain states; nociceptive stimulation"
+    topics: [emotional_processing, attention_and_salience]
+
+  - region_id: olfactory_bulb
+    frequency_band: beta
+    frequency_range_hz: [15.0, 35.0]
+    species: [rat, mouse]
+    functional_role: "OB beta oscillations during expectation of odor reward; top-down feedback from piriform cortex; appear when animal anticipates odor, not just during odor"
+    condition: "Reward anticipation during odor task; inter-trial intervals"
+    key_papers:
+      - "Kay (2003) — Two species of gamma oscillations in the olfactory bulb — Dependence on behavioral state and synaptic interactions"
+    topics: [reward_learning, spectral_dynamics]
+
+  - region_id: cerebellum
+    frequency_band: theta
+    frequency_range_hz: [3.0, 8.0]
+    species: [rat, human]
+    functional_role: "Cerebellar theta during motor preparation and timing; input from mossy fiber pathway; indexes prediction of sensory outcome"
+    condition: "Motor preparation; timing tasks; prism adaptation learning"
+    topics: [motor_learning, spectral_dynamics]
+
+  - region_id: dorsal_raphe_nucleus
+    frequency_band: theta
+    frequency_range_hz: [4.0, 8.0]
+    species: [rat]
+    functional_role: "Serotonin neuron oscillations entrained by hippocampal theta; 5-HT release modulates hippocampal theta amplitude"
+    condition: "Active exploration; REM sleep"
+    topics: [spectral_dynamics, fear_and_anxiety, sleep_and_oscillations]
+
+  - region_id: locus_coeruleus
+    frequency_band: theta
+    frequency_range_hz: [3.0, 8.0]
+    species: [rat]
+    functional_role: "LC NE neurons burst-fire at theta frequency during novel stimuli; NE release promotes hippocampal long-term potentiation and memory encoding"
+    condition: "Novel stimuli; alerting; high cognitive demand"
+    key_papers:
+      - "Aston-Jones & Bloom (1981) — Activity of norepinephrine-containing locus coeruleus neurons in behaving rats"
+    topics: [attention_and_salience, spectral_dynamics, episodic_memory]

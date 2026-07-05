@@ -1,0 +1,93 @@
+[
+  {
+    "claim_id": "claim_eval_canonical_qrels",
+    "claim": "Canonical labeled qrels are available for qrels-backed retrieval metrics.",
+    "evidence_level": "supported",
+    "evidence": {
+      "queries": 317,
+      "labeled_pairs": 13654,
+      "artifacts": [
+        "data/qrels/qrels.canonical.trec",
+        "data/qrels/qrels.canonical.jsonl"
+      ]
+    }
+  },
+  {
+    "claim_id": "claim_hybrid_rrf_beats_bm25",
+    "claim": "Hybrid RRF improves over BM25 on the labeled qrels aggregate.",
+    "evidence_level": "partially_supported",
+    "evidence": {
+      "ndcg@10_delta": 0.010070055958109947,
+      "mrr_delta": 0.04142053820441138,
+      "recall@50_delta": 0.10145484548282957,
+      "mrr_significant_vs_bm25": true,
+      "ndcg_significant_vs_bm25": false,
+      "artifacts": [
+        "reports/eval/ndcg_report.json",
+        "reports/eval/bootstrap_ci_report.json"
+      ]
+    },
+    "caveat": "NDCG@10 is directionally higher but not significant versus BM25 by the current sign test."
+  },
+  {
+    "claim_id": "claim_hybrid_rrf_beats_dense_bge",
+    "claim": "Hybrid RRF improves over dense BGE on the labeled qrels aggregate.",
+    "evidence_level": "supported",
+    "evidence": {
+      "ndcg@10_delta": 0.09591428347788788,
+      "mrr_delta": 0.03802894902901344,
+      "recall@50_delta": 0.20705306285844738,
+      "ndcg_significant_vs_dense_bge": true,
+      "mrr_significant_vs_dense_bge": true
+    }
+  },
+  {
+    "claim_id": "claim_calibrated_graph_beats_hybrid_rrf",
+    "claim": "Calibrated graph reranking improves over hybrid RRF on the labeled qrels aggregate.",
+    "evidence_level": "supported",
+    "evidence": {
+      "ndcg@10_delta": 0.0029309779203748887,
+      "mrr_delta": 0.004641672733155411,
+      "recall@50_delta": 0.0010632242149479776,
+      "ndcg_significant_vs_hybrid_rrf": true,
+      "mrr_significant_vs_hybrid_rrf": true,
+      "artifacts": [
+        "reports/eval/graph_weight_calibration.json",
+        "reports/eval/relationship_edge_quality.json"
+      ]
+    },
+    "caveat": "Small effect on LLM-judged qrels; calibration and edge quality should be rechecked on independently adjudicated labels."
+  },
+  {
+    "claim_id": "claim_intent_stratification_available",
+    "claim": "Retrieval metrics are stratified by canonical query intent.",
+    "evidence_level": "supported",
+    "evidence": {
+      "systems": [
+        "bm25",
+        "bm25_structured",
+        "dense_bge",
+        "full",
+        "hybrid_graph",
+        "hybrid_rrf"
+      ],
+      "artifacts": [
+        "reports/eval/intent_stratification_report.json"
+      ]
+    },
+    "caveat": "Several non-exploration intent buckets have very small query counts."
+  },
+  {
+    "claim_id": "claim_dual_judge_qwk",
+    "claim": "Dual-judge reliability can be reported with QWK.",
+    "evidence_level": "not_estimable",
+    "evidence": {
+      "pairs_with_two_or_more_judges": 0,
+      "pairwise": {},
+      "artifacts": [
+        "reports/eval/dual_judge_reliability.json"
+      ]
+    },
+    "caveat": "Current labels have no non-error pair judged by two models."
+  }
+]
