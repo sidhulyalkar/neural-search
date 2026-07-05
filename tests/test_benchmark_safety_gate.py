@@ -3,12 +3,11 @@
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.eval.benchmark_safety_gate import (
     GOLD_PATH,
+    ROOT,
     count_lines,
     run_gate,
     scan_report,
@@ -50,15 +49,23 @@ def test_gate_blockers_list_when_gold_empty():
 
 
 def test_scan_report_stale_corpus():
-    """A string with 10,404 should be flagged as stale."""
-    from scripts.eval.benchmark_safety_gate import REPORTS_DIR
-    # Use the known-stale corpus_manifest.json
-    stale_path = REPORTS_DIR / "corpus_manifest.json"
-    if not stale_path.exists():
-        pytest.skip("corpus_manifest.json not found")
-    finding = scan_report(stale_path)
+    """A report referencing the old 10,404-row corpus snapshot should be flagged as stale.
+
+    Uses a synthetic fixture (written inside ROOT, since scan_report() calls
+    path.relative_to(ROOT) internally) rather than the real corpus_manifest.json:
+    that file used to carry a stale 10,404-row corpus_size (fixed 2026-07-05 by
+    refreezing it against the current 7,171-row full_corpus_v09.jsonl), and
+    depending on production data staying wrong made this test fragile to a
+    legitimate data fix.
+    """
+    stale_path = ROOT / "reports" / "eval" / ".tmp_test_stale_scan.json"
+    stale_path.write_text('{"corpus_size": 10404, "note": "legacy snapshot"}', encoding="utf-8")
+    try:
+        finding = scan_report(stale_path)
+    finally:
+        stale_path.unlink(missing_ok=True)
     stale_issues = [i for i in finding["issues"] if i["type"] == "stale_corpus_reference"]
-    assert len(stale_issues) > 0, "corpus_manifest.json should trigger stale_corpus_reference"
+    assert len(stale_issues) > 0, "corpus_size: 10404 should trigger stale_corpus_reference"
 
 
 def test_evidence_status_labels_present():
