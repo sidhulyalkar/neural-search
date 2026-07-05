@@ -83,7 +83,13 @@ class NeuralSearchTurboIndex:
         vecs = vectors.astype(np.float32)
 
         if self._index is not None:
-            self._index.add(ids=ids, vectors=vecs)
+            # The installed turbovec API (IdMapIndex.add_with_ids) only accepts
+            # uint64 external ids, not our string dataset ids -- use each
+            # vector's position in self._ids as its uint64 id and map back to
+            # the string id in search().
+            start = len(self._ids)
+            uint_ids = np.arange(start, start + len(ids), dtype=np.uint64)
+            self._index.add_with_ids(vectors=vecs, ids=uint_ids)
         else:
             self._vecs = vecs if self._vecs is None else np.vstack([self._vecs, vecs])
 
@@ -100,8 +106,19 @@ class NeuralSearchTurboIndex:
         q = query.astype(np.float32)
 
         if self._index is not None:
-            distances, ids = self._index.search(q, k)
-            return list(zip(ids, distances.tolist(), strict=False))
+            # IdMapIndex.search() requires a 2-D (n_queries, dim) batch and
+            # returns (scores, ids) as (n_queries, k) arrays, uint64 ids, with
+            # *descending* similarity scores -- not the ascending-distance
+            # single-query contract this wrapper promises. Reshape/unpack the
+            # single-query batch and convert similarity -> distance the same
+            # way the brute-force fallback below does (distance = 1 - sim) so
+            # both code paths return the same ordering and units.
+            scores, ids = self._index.search(q.reshape(1, -1), k)
+            scores, ids = scores[0], ids[0]
+            return [
+                (self._ids[int(i)], float(1.0 - s))
+                for i, s in zip(ids, scores, strict=True)
+            ]
 
         if self._vecs is None:
             return []
@@ -118,7 +135,7 @@ class NeuralSearchTurboIndex:
         (p / "meta.json").write_text(json.dumps(meta))
 
         if self._index is not None:
-            self._index.save(str(p / "turbovec.bin"))
+            self._index.write(str(p / "turbovec.bin"))
         elif self._vecs is not None:
             np.save(str(p / "fallback_vecs.npy"), self._vecs)
 
@@ -136,7 +153,11 @@ class NeuralSearchTurboIndex:
         fallback_npy = p / "fallback_vecs.npy"
 
         if turbo_bin.exists() and obj._index is not None:
-            obj._index.load(str(turbo_bin))
+            # IdMapIndex.load() is a classmethod that returns a new instance
+            # (there is no in-place instance .load()) -- replace the empty
+            # index __init__ constructed rather than trying to mutate it.
+            from turbovec import IdMapIndex
+            obj._index = IdMapIndex.load(str(turbo_bin))
         elif fallback_npy.exists():
             obj._vecs = np.load(str(fallback_npy))
         elif turbo_bin.exists() and obj._index is None:

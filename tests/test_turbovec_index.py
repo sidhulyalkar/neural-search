@@ -10,8 +10,9 @@ def test_turbovec_import():
 
 def test_index_add_and_search():
     from neural_search.embeddings.turbovec_index import NeuralSearchTurboIndex
-    idx = NeuralSearchTurboIndex(dim=4, bit_width=4)
-    vecs = np.random.randn(10, 4).astype(np.float32)
+    # dim must be a multiple of 8 for the installed turbovec (IdMapIndex) build.
+    idx = NeuralSearchTurboIndex(dim=8, bit_width=4)
+    vecs = np.random.randn(10, 8).astype(np.float32)
     vecs = vecs / np.linalg.norm(vecs, axis=1, keepdims=True)
     ids = [f"ds{i:03d}" for i in range(10)]
     idx.add(ids=ids, vectors=vecs)
@@ -25,8 +26,8 @@ def test_index_add_and_search():
 
 def test_index_save_load(tmp_path):
     from neural_search.embeddings.turbovec_index import NeuralSearchTurboIndex
-    idx = NeuralSearchTurboIndex(dim=4, bit_width=4)
-    vecs = np.eye(4, dtype=np.float32)
+    idx = NeuralSearchTurboIndex(dim=8, bit_width=4)
+    vecs = np.eye(8, dtype=np.float32)[:4]
     ids = ["a", "b", "c", "d"]
     idx.add(ids=ids, vectors=vecs)
 
@@ -54,7 +55,7 @@ def test_invalid_bit_width():
 
 def test_search_empty_index():
     from neural_search.embeddings.turbovec_index import NeuralSearchTurboIndex
-    idx = NeuralSearchTurboIndex(dim=4, bit_width=4)
-    q = np.ones(4, dtype=np.float32)
+    idx = NeuralSearchTurboIndex(dim=8, bit_width=4)
+    q = np.ones(8, dtype=np.float32)
     results = idx.search(q, k=5)
     assert results == []

@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
 
     embed_path = Path(args.embeddings)
     if not embed_path.exists():
-        print(f"DRY RUN — would build turbovec index → {args.output}" if args.dry_run
+        print(f"DRY RUN -- would build turbovec index -> {args.output}" if args.dry_run
               else f"ERROR: embeddings file not found: {embed_path}")
         if not args.dry_run:
             print("Run: python scripts/recompute_embeddings.py --provider dense")
@@ -58,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Loaded embeddings: {len(vecs_by_id)} datasets, dim={dim}")
 
     if args.dry_run:
-        print(f"DRY RUN — would build turbovec index ({len(vecs_by_id)} datasets) → {args.output}")
+        print(f"DRY RUN -- would build turbovec index ({len(vecs_by_id)} datasets) -> {args.output}")
         return 0
 
     # Mean-pool then L2-normalize per dataset
@@ -75,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
 
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     idx.save(args.output)
-    print(f"Built index: {idx.size} datasets → {args.output}")
+    print(f"Built index: {idx.size} datasets -> {args.output}")
     return 0
 
 

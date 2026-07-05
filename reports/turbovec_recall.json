@@ -1,11 +1,11 @@
 {
   "n_queries": 50,
   "k": 50,
-  "mean_recall": 1.0,
-  "p50_latency_ms": 7.24,
-  "p95_latency_ms": 24.47,
-  "index_size": 4366,
+  "mean_recall": 0.8532,
+  "p50_latency_ms": 1.41,
+  "p95_latency_ms": 1.73,
+  "index_size": 7171,
   "dim": 1024,
   "bit_width": 4,
-  "pass": true
+  "pass": false
 }

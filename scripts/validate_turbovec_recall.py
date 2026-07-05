@@ -37,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.dry_run:
-        print(f"DRY RUN — would validate recall@{args.k} for {args.n_queries} queries")
+        print(f"DRY RUN -- would validate recall@{args.k} for {args.n_queries} queries")
         return 0
 
     if not INDEX_PATH.exists():
@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
         recalls.append(shared / args.k)
 
     if not recalls:
-        print("ERROR: no queries evaluated — check index and embeddings file")
+        print("ERROR: no queries evaluated -- check index and embeddings file")
         return 1
 
     mean_recall = float(np.mean(recalls))
