@@ -6,7 +6,7 @@ Neural Search is a technical demo of scientific discovery that understands exper
 
 This is not generic RAG. The system does not retrieve chunks and synthesize an answer as the primary artifact. It retrieves datasets, explains why they match, exposes missing metadata, links literature evidence, and generates dataset cards plus starter notebooks for concrete reuse.
 
-![Search UI placeholder](docs/demo_media/search_ui_placeholder.svg)
+![Search UI](docs/demo_media/search_ui.png)
 
 ## Demo Narrative
 
@@ -17,6 +17,10 @@ Use Neural Search to show five capabilities:
 3. **Metadata plus provenance**: Keep source archive IDs, linked papers, extraction evidence, QA status, and missing metadata visible.
 4. **Dataset cards and notebooks**: Generate reuse cards and starter notebooks instead of only returning links.
 5. **Evaluation surface**: Show benchmark queries, expected labels, top results, warnings, and recommendations.
+
+| Dataset card, provenance, and QA | Ablation-ladder benchmark (NDCG@10) |
+|---|---|
+| ![Dataset card](docs/demo_media/dataset_card.png) | ![Benchmark](docs/demo_media/benchmark_dashboard.svg) |
 
 The future direction is **latent neural-state search**: searching across learned representations of neural population state, task structure, and behavior, while preserving the current ontology and provenance layer as the interpretability scaffold.
 

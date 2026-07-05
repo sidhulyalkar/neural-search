@@ -1,7 +1,15 @@
 # Ingestion
 
 Neural Search ingests source records in two steps: fetch raw payloads for provenance, then normalize
-records into the internal dataset or paper schema.
+records into the internal dataset or paper schema. The live corpus this produces has 7,171 normalized
+records (625 unique datasets) across DANDI, OpenNeuro, NeuroVault, Zenodo, Figshare, NeuroMorpho,
+Allen, GIN, and other sources.
+
+Paper-dataset linking is a separate, multi-source pipeline (`neural_search/literature/`): OpenAlex,
+DataCite, Crossref, PubMed/bioRxiv, and Semantic Scholar each run their own linker
+(`link_corpus_to_*`), writing source-specific JSONL output that `neural_search/graph/paper_node_builder.py`
+merges into real `paper` KG nodes. See [Technical Architecture](technical_architecture.md) for how this
+feeds the knowledge graph, and [Known Limitations](known_limitations.md) for current per-source coverage.
 
 ## CLI
 

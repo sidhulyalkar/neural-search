@@ -1,86 +1,51 @@
 # Evaluation
 
-Neural Search evaluation asks whether search results recover expected scientific labels, not whether generated prose sounds plausible.
+Neural Search evaluation asks whether search results recover expected scientific labels and rank genuinely relevant datasets higher — not whether generated prose sounds plausible.
 
-Benchmark queries live in `data/eval/benchmark_queries.yaml`. Each query defines expected tasks, behaviors, modalities, species, or analysis goals.
+## Canonical Benchmark
 
-## Run Evaluation
+The canonical benchmark (`data/eval/benchmark_queries_canonical.yaml`) has 317 queries with LLM-judged (silver, not gold) relevance labels across dataset search, adversarial constraints, paper linking, affordance matching, graph reasoning, and experimental design.
 
 ```bash
-make benchmark
+python scripts/eval/run_ablation_ladder.py --skip-rungs bm25 bm25_structured dense_bge
 ```
 
-or from the UI:
+This runs the graph-aware rungs and reports NDCG@10 per rung. Current production result:
 
-```text
-/evaluation -> Run Benchmark
-```
+| Rung | NDCG@10 |
+|------|---------|
+| hybrid_graph | 0.8594 |
+| typed_kg | 0.8483 |
+| typed_kg_qualified | 0.8483 |
+| full | 0.8594 |
 
-The benchmark runner writes reports under `data/eval/results/` when run from the CLI. The API also produces an in-process report for the frontend dashboard.
+**Every KG-modifying change must re-run this ladder and confirm the number is unchanged (or the regression is understood and fixed) before being considered done.** This project has caught three real ranking regressions this way — a new densely-populated edge type dominating a generic graph-connectivity feature (twice, different edge types) and a score weight configured speculatively before any real data existed to feed it. A weekly scheduled agent (`benchmark-gatekeeper`, see `artifacts/agents/playbooks/`) now runs this check automatically after any graph change.
 
-## Metrics
+## The Gold Qrels Gap
 
-| Metric | Meaning |
-| --- | --- |
-| Precision@5 | Fraction of top five results with match evidence |
-| Label Recall@10 | Fraction of expected task/modality/behavior labels recovered in top results |
-| Task Match Rate | Expected task label coverage |
-| Modality Match Rate | Expected modality label coverage |
-| Behavior Match Rate | Expected behavior label coverage |
-| Queries With Results | Number of benchmark queries that returned at least one result |
+The 317-query benchmark's labels are LLM-judged, not human-adjudicated. Gold qrels are currently 0 rows. This means: the NDCG@10 numbers above are useful for **regression detection** (did a change make things worse?) but should not yet be cited as a validated retrieval-quality claim. Closing this gap is the highest-priority open item in this project.
 
-The frontend marks a query as passing when:
+## Other Evaluation Surfaces
 
-- Precision@5 is at least 40%.
-- Label recall is at least 50%.
-
-These thresholds are demo thresholds, not scientific acceptance criteria.
-
-## What To Inspect
-
-For each benchmark query, inspect:
-
-- The original query.
-- Expected tasks and modalities.
-- Found tasks and modalities.
-- Top returned datasets.
-- Warnings about missing expected labels.
-- Recommendations generated from repeated misses.
-
-## Current Benchmark Themes
-
-The seed benchmark covers:
-
-- Go/NoGo and response inhibition.
-- Reversal learning and reward omission.
-- Delay discounting.
-- Visual decision-making with Neuropixels.
-- Reaching, ECoG/iEEG, and BCI-oriented data.
-- Choice decoding.
-- Naturalistic vision and arousal.
-- Motor imagery EEG.
-- Seizure monitoring.
-- Social interaction with behavior video.
+- **Coverage reports** (`reports/eval/current_artifact_manifest.json`, regenerated via `scripts/build_artifact_manifest.py`): corpus size, KG node/edge counts by type, paper-link coverage by source, qrels tier counts. This is the single source of truth every other report and the whitepaper's generated statistics are built from — never hand-edit these numbers.
+- **File validation reports** (`reports/top_suggestions_validation_report.md`): which reanalysis suggestions were confirmed by live DANDI/OpenNeuro file inspection vs. which sources have no live validator yet.
+- **KG connectivity audits** (`artifacts/agents/playbooks/kg_connectivity_auditor.md`, run weekly): is every KG-producing module reachable, side-channel-connected, dead, or a stated orphan?
 
 ## Interpreting Failures
 
-A failed benchmark can mean several different things:
+A ranking or coverage gap can mean several different things:
 
 - The ontology lacks a synonym.
-- Demo seed data does not contain a relevant dataset.
+- The corpus genuinely lacks a relevant dataset for that query.
 - Metadata extraction missed a label.
-- Ranking weights underemphasize a useful signal.
-- The query expects an analysis concept that is only weakly represented in metadata.
+- A ranking weight underemphasizes a useful signal.
+- The query expects an analysis concept that's only weakly represented in metadata.
 
-Failures should feed ontology updates, seed-data coverage, extraction improvements, and scoring changes.
+Failures should feed ontology updates, corpus coverage priorities, extraction improvements, and scoring changes — and, where relevant, back into the agent-orchestration ledger so the finding isn't re-derived from scratch next time.
 
 ## Future Evaluation
 
-A stronger evaluation set should add:
-
-- Human relevance judgments per dataset.
-- Query difficulty levels.
-- Source-specific coverage checks.
-- Notebook generation success rates.
-- Dataset-card QA agreement.
-- Latent neural-state retrieval metrics once representation search is added.
+- Human relevance judgments per (query, dataset) pair — the gold-qrels gap above.
+- Dual-judge agreement and adjudication for the silver labels already collected.
+- Source-specific coverage and skew diagnostics on adjudicated labels.
+- Notebook-generation success rates and dataset-card QA agreement as secondary quality signals.
