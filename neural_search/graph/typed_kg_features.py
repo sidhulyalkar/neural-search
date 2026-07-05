@@ -52,7 +52,7 @@ class TypedKGIndex:
         paper_dataset_links_path: Path,
         finding_edges_path: Path,
         qualified_consensus_path: Path | None = None,
-    ) -> "TypedKGIndex":
+    ) -> TypedKGIndex:
         return cls(
             dataset_to_papers=_load_dataset_to_papers(paper_dataset_links_path),
             paper_to_edges=_load_paper_to_edges(finding_edges_path),

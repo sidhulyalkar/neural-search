@@ -25,8 +25,14 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from neural_search.literature.api_client import TransientLookupError, get_or_raise_transient
-from neural_search.literature.api_config import LiteratureAPIConfig, load_literature_api_config
+from neural_search.literature.api_client import (
+    TransientLookupError,
+    get_or_raise_transient,
+)
+from neural_search.literature.api_config import (
+    LiteratureAPIConfig,
+    load_literature_api_config,
+)
 from neural_search.literature.corpus_io import (
     DatasetPaperLink,
     iter_corpus_records,

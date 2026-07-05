@@ -48,10 +48,17 @@ if str(script_dir) not in sys.path:
 from neural_search.graph.builder import build_taxonomy_requirement_subgraph
 from neural_search.graph.evidence_tier_upgrader import apply_file_validation_upgrades
 from neural_search.graph.method_registry_builder import build_method_registry_subgraph
+from neural_search.graph.paper_node_builder import (
+    attach_retraction_status,
+    build_paper_nodes_and_links,
+)
 from neural_search.graph.reanalysis_bridge_builder import build_reanalysis_bridge_edges
 from neural_search.graph.reanalysis_candidates import build_reanalysis_candidate_edges
 from neural_search.graph.reinterpretation_candidate_builder import (
     build_reinterpretation_candidate_edges,
+)
+from neural_search.graph.reprocessing_candidate_builder import (
+    attach_reprocessing_candidate_status,
 )
 from neural_search.graph.schema import (
     GraphEvidence,
@@ -59,13 +66,12 @@ from neural_search.graph.schema import (
     KnowledgeGraphEdge,
     KnowledgeGraphNode,
     make_edge_id,
-    make_node_id,
     resolve_dangling_edges,
     write_graph_json,
 )
-from neural_search.graph.paper_node_builder import attach_retraction_status, build_paper_nodes_and_links
-from neural_search.graph.reprocessing_candidate_builder import attach_reprocessing_candidate_status
-from neural_search.ingestion.allen_connectivity_builder import build_allen_connectivity_kg
+from neural_search.ingestion.allen_connectivity_builder import (
+    build_allen_connectivity_kg,
+)
 from neural_search.ingestion.citation_builder import build_citation_kg_for_graph
 from neural_search.ingestion.concept_builder import build_concept_kg
 from neural_search.ingestion.disorder_builder import build_disorder_kg

@@ -14,8 +14,14 @@ is the exception — see test_scholarpedia_is_self_contained_unlike_the_other_si
 
 from __future__ import annotations
 
-from neural_search.graph.schema import KnowledgeGraph, resolve_dangling_edges, validate_graph
-from neural_search.ingestion.allen_connectivity_builder import build_allen_connectivity_kg
+from neural_search.graph.schema import (
+    KnowledgeGraph,
+    resolve_dangling_edges,
+    validate_graph,
+)
+from neural_search.ingestion.allen_connectivity_builder import (
+    build_allen_connectivity_kg,
+)
 from neural_search.ingestion.concept_builder import build_concept_kg
 from neural_search.ingestion.disorder_builder import build_disorder_kg
 from neural_search.ingestion.hcp_connectivity import build_hcp_kg

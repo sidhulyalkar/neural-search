@@ -15,7 +15,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from neural_search.graph.schema import GraphNode, GraphEdge, KnowledgeGraph
+from neural_search.graph.schema import GraphEdge, GraphNode, KnowledgeGraph
 
 log = logging.getLogger(__name__)
 

@@ -62,8 +62,9 @@ def client(claims_file, monkeypatch):
     from apps.api import claims_router
     monkeypatch.setattr(claims_router, "CLAIMS_PATH", claims_file)
     claims_router._claims_cache = None  # reset cache
-    from apps.api.claims_router import router
     from fastapi import FastAPI
+
+    from apps.api.claims_router import router
     app = FastAPI()
     app.include_router(router)
     return TestClient(app)

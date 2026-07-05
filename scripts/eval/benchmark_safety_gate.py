@@ -204,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
         for w in result["warnings"]:
             print(f"   {w['file']}: {w['type']} - '{w.get('match', '')}'")
 
-    print(f"\nReport written -> reports/eval/benchmark_safety_gate_report.json")
+    print("\nReport written -> reports/eval/benchmark_safety_gate_report.json")
 
     if result["blockers"] and not args.warn_only:
         return 1

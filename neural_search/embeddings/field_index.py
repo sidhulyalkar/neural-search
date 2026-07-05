@@ -274,7 +274,6 @@ def read_field_embedding_cache_faiss(
             "Install it with: pip install faiss-cpu"
         ) from exc
 
-    import numpy as np
 
     index = faiss.read_index(str(Path(faiss_path)))
     n = index.ntotal

@@ -44,6 +44,7 @@ from neural_search.retrieval.query_intent import (
 )
 from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
 from neural_search.schemas import DatasetCardRead, SearchResponse, SearchResult
+from neural_search.search.concept_authority import expand_query_with_concepts
 from neural_search.search.constraints import (
     negative_constraint_violations,
     parse_hard_negative_constraints,
@@ -53,7 +54,6 @@ from neural_search.search.explanation import (
     MatchGroup,
     generate_explanation,
 )
-from neural_search.search.concept_authority import expand_query_with_concepts
 from neural_search.search.field_semantic import (
     field_semantic_score_for_result,
     load_field_semantic_index,

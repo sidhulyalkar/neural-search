@@ -21,9 +21,11 @@ from pydantic import BaseModel, Field
 
 from neural_search.cards import generate_dataset_card_json
 from neural_search.experimentglancer.persistence import load_scene, save_scene
-from neural_search.experimentglancer.schemas import ExperimentGlancerSceneV1
 from neural_search.experimentglancer.scene_builder import build_scene
-from neural_search.experimentglancer.source_resolvers import resolve_dataset_introspection
+from neural_search.experimentglancer.schemas import ExperimentGlancerSceneV1
+from neural_search.experimentglancer.source_resolvers import (
+    resolve_dataset_introspection,
+)
 from neural_search.extraction import extract_dataset_labels
 
 router = APIRouter()

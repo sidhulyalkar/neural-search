@@ -8,7 +8,11 @@ from neural_search.graph.method_registry_builder import (
     build_method_registry_subgraph,
     load_method_registry,
 )
-from neural_search.graph.schema import SUPPORTED_EDGE_TYPES, make_node_id, validate_graph
+from neural_search.graph.schema import (
+    SUPPORTED_EDGE_TYPES,
+    make_node_id,
+    validate_graph,
+)
 
 
 def test_build_method_registry_edges_matches_registry_size():

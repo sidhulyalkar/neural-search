@@ -11,9 +11,13 @@ from pathlib import Path
 
 from neural_search.literature.api_client import TransientLookupError
 from neural_search.literature.corpus_io import DatasetPaperLink
-from neural_search.literature.corpus_io import iter_corpus_records as _iter_corpus_records
+from neural_search.literature.corpus_io import (
+    iter_corpus_records as _iter_corpus_records,
+)
 from neural_search.literature.corpus_io import iter_paper_records as _iter_paper_records
-from neural_search.literature.corpus_io import make_not_found_link as _make_not_found_link
+from neural_search.literature.corpus_io import (
+    make_not_found_link as _make_not_found_link,
+)
 from neural_search.literature.title_match import normalize_title as _normalize_title
 from neural_search.literature.title_match import title_tokens as _title_tokens
 

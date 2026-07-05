@@ -1,16 +1,12 @@
 """Tests for BrainKnow-style co-occurrence baseline."""
-import json
 import sys
 from pathlib import Path
-
-import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.eval.brainknow_baseline import (
     ALL_CONCEPTS,
     CONCEPT_VOCAB,
-    _LABEL_TYPE,
     build_cooccurrence,
     build_graph_json,
     extract_concepts,

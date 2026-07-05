@@ -95,7 +95,9 @@ def test_build_context_brief_reads_manifest_and_registry(tmp_path, monkeypatch):
 
 
 def _last_run(name, ledger_path):
-    from neural_search.agents.ledger import last_run_for_agent as real_last_run_for_agent
+    from neural_search.agents.ledger import (
+        last_run_for_agent as real_last_run_for_agent,
+    )
 
     return real_last_run_for_agent(name, ledger_path=ledger_path)
 

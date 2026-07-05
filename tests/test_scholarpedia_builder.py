@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from neural_search.graph.schema import validate_graph
 from neural_search.ingestion.scholarpedia_builder import (
     SCHOLARPEDIA_CONCEPTS,

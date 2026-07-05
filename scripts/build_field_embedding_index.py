@@ -133,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Loaded {n:,} field embedding records (dim={dim})")
 
     if args.dry_run:
-        print(f"DRY RUN — would write:")
+        print("DRY RUN — would write:")
         print(f"  {faiss_path}  ({n} vectors × {dim} floats)")
         print(f"  {meta_path}   ({n} metadata rows)")
         return 0

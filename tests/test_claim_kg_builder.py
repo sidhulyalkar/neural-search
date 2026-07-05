@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from neural_search.graph.schema import KnowledgeGraph, make_node_id, validate_graph
+from neural_search.graph.schema import KnowledgeGraph, validate_graph
 from neural_search.literature.claim_kg_builder import add_claims_to_graph
 
 

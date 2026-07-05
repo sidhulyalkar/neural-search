@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from neural_search.graph.schema import GraphNode, GraphEdge, KnowledgeGraph
+from neural_search.graph.schema import GraphEdge, GraphNode, KnowledgeGraph
 
 log = logging.getLogger(__name__)
 
@@ -194,8 +194,8 @@ def _find_neurosynth_files() -> dict[str, Path] | None:
 def build_neurosynth_kg() -> KnowledgeGraph:
     """Build KG directly from raw NeuroSynth TSV/NPZ files."""
     try:
-        import pandas as pd
         import numpy as np
+        import pandas as pd
         import scipy.sparse
     except ImportError:
         log.error("pandas / numpy / scipy not installed. Run: pip install pandas numpy scipy")

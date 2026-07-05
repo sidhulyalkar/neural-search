@@ -164,7 +164,9 @@ def load_field_semantic_index(path: str | None) -> FieldSemanticIndex | None:
     meta_path = cache_path.with_name(cache_path.stem + ".meta.jsonl")
     if faiss_path.exists() and meta_path.exists():
         try:
-            from neural_search.embeddings.field_index import read_field_embedding_cache_faiss
+            from neural_search.embeddings.field_index import (
+                read_field_embedding_cache_faiss,
+            )
             records = read_field_embedding_cache_faiss(faiss_path, meta_path)
         except (RuntimeError, Exception):
             records = read_field_embedding_cache(cache_path)

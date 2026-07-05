@@ -72,7 +72,6 @@ from neural_search.eval.neuro_judge.judge import (  # noqa: E402,PLC2701
     _parse_judgment,
 )
 from neural_search.eval.neuro_judge.prompt import build_judge_prompt  # noqa: E402
-
 from scripts.eval.docid import normalize_docid  # noqa: E402
 
 DEFAULT_PACKETS = Path("artifacts/ablation_judge/evidence_packets.jsonl")

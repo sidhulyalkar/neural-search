@@ -228,7 +228,11 @@ if __name__ == "__main__":
     logger.info("Mapped %d ontology regions to Allen CCF IDs", len(mapping))
 
     # Build ontology → atlas edges
-    from neural_search.graph.schema import KnowledgeGraphEdge, make_edge_id, make_node_id
+    from neural_search.graph.schema import (
+        KnowledgeGraphEdge,
+        make_edge_id,
+        make_node_id,
+    )
     ontology_edges: list[KnowledgeGraphEdge] = []
     allen_ids = {s.allen_id for s in all_structures}
     for onto_id, allen_id in mapping.items():

@@ -34,6 +34,11 @@ from neural_search.compare import compare_datasets, generate_comparison_markdown
 from neural_search.corpus.brain_region_index import build_brain_region_index
 from neural_search.evaluation.run_benchmark import run_full_benchmark
 from neural_search.extraction import extract_dataset_labels
+from neural_search.graph.paper_node_builder import get_paper_trust_signals
+from neural_search.graph.reanalysis_candidates import (
+    dataset_node_id as _graph_dataset_node_id,
+)
+from neural_search.graph.search_features import load_graph_if_exists
 from neural_search.ingestion import services as ingestion_services
 from neural_search.ingestion.demo_seed import build_combined_corpus, build_demo_seed
 from neural_search.notebooks import generate_nwb_starter_notebook
@@ -69,9 +74,6 @@ from neural_search.schemas import (
     OntologyTermRead,
     SearchRequest,
 )
-from neural_search.graph.paper_node_builder import get_paper_trust_signals
-from neural_search.graph.reanalysis_candidates import dataset_node_id as _graph_dataset_node_id
-from neural_search.graph.search_features import load_graph_if_exists
 from neural_search.search import search_datasets
 from neural_search.search.field_semantic import load_field_semantic_index
 

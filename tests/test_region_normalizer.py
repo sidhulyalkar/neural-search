@@ -1,11 +1,8 @@
-import json
-import pytest
-from pathlib import Path
 from neural_search.literature.region_normalizer import (
     build_name_index,
     get_parent_chain,
-    normalize_region,
     normalize_finding,
+    normalize_region,
 )
 
 MOCK_STRUCTURES = {

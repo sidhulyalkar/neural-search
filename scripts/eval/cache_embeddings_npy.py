@@ -51,7 +51,9 @@ def build_aggregated(jsonl_path: Path) -> tuple[list[str], np.ndarray]:
     if faiss_path.exists() and meta_path.exists():
         print(f"  Reading FAISS sidecar ({faiss_path.name} + {meta_path.name}) ...")
         try:
-            from neural_search.embeddings.field_index import read_field_embedding_cache_faiss
+            from neural_search.embeddings.field_index import (
+                read_field_embedding_cache_faiss,
+            )
             records = read_field_embedding_cache_faiss(faiss_path, meta_path)
             for rec in records:
                 rid = str(rec.record_id).removeprefix("dataset:")

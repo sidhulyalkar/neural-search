@@ -12,7 +12,11 @@ from neural_search.graph.paper_node_builder import (
     build_paper_nodes_and_links,
     get_paper_trust_signals,
 )
-from neural_search.graph.schema import KnowledgeGraph, KnowledgeGraphEdge, KnowledgeGraphNode
+from neural_search.graph.schema import (
+    KnowledgeGraph,
+    KnowledgeGraphEdge,
+    KnowledgeGraphNode,
+)
 from neural_search.kg.schemas.evidence_tier import EvidenceTier
 
 

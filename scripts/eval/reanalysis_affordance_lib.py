@@ -8,7 +8,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-
 METHOD_REGISTRY: list[dict[str, Any]] = [
     {
         "method": "behavior_aligned_embedding",

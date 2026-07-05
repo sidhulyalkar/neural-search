@@ -32,8 +32,8 @@ from typing import Any
 
 from neural_search.graph.schema import (
     KnowledgeGraph,
-    KnowledgeGraphNode,
     KnowledgeGraphEdge,
+    KnowledgeGraphNode,
     write_graph_jsonl,
 )
 
@@ -94,7 +94,9 @@ def compose_kg(
         log.warning("disorder_builder unavailable: %s", exc)
 
     try:
-        from neural_search.ingestion.allen_connectivity_builder import build_allen_connectivity_kg
+        from neural_search.ingestion.allen_connectivity_builder import (
+            build_allen_connectivity_kg,
+        )
         layers.append(("allen_connectivity", build_allen_connectivity_kg))
     except Exception as exc:
         log.warning("allen_connectivity_builder unavailable: %s", exc)
@@ -112,7 +114,9 @@ def compose_kg(
         log.warning("oscillation_builder unavailable: %s", exc)
 
     try:
-        from neural_search.ingestion.species_homology_builder import build_species_homology_kg
+        from neural_search.ingestion.species_homology_builder import (
+            build_species_homology_kg,
+        )
         layers.append(("species_homology", build_species_homology_kg))
     except Exception as exc:
         log.warning("species_homology_builder unavailable: %s", exc)
@@ -152,7 +156,10 @@ def compose_kg(
     if include_ner:
         try:
             from neural_search.ingestion.ner_builder import (
-                build_ner_kg, load_cached_ner_kg, save_ner_kg, NER_ARTIFACT_PATH,
+                NER_ARTIFACT_PATH,
+                build_ner_kg,
+                load_cached_ner_kg,
+                save_ner_kg,
             )
             cached = load_cached_ner_kg()
             if cached is not None:
@@ -193,7 +200,7 @@ def _summarise(kg: KnowledgeGraph) -> None:
     from collections import Counter
     node_types = Counter(n.node_type for n in kg.nodes.values())
     edge_types = Counter(e.edge_type for e in kg.edges.values())
-    print(f"\n=== Composed KG Summary ===")
+    print("\n=== Composed KG Summary ===")
     print(f"Total nodes: {len(kg.nodes):,}")
     for nt, count in node_types.most_common():
         print(f"  {nt:<30} {count:>6,}")

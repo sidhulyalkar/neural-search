@@ -64,7 +64,6 @@ import yaml
 from neural_search.graph.typed_kg_features import TypedKGIndex, typed_kg_score
 from neural_search.retrieval.dataset_context_bridge import dataset_context_from_record
 from neural_search.retrieval.usefulness_scorer import DatasetContext, score_usefulness
-from neural_search.search.concept_authority import expand_query_with_concepts
 from neural_search.search.sparse import SparseIndex
 
 DEFAULT_CORPUS = Path("data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl")
@@ -412,7 +411,9 @@ def load_field_embeddings(path: Path) -> dict[str, list[float]]:
     meta_path = path.with_name(path.stem + ".meta.jsonl")
     if faiss_path.exists() and meta_path.exists():
         try:
-            from neural_search.embeddings.field_index import read_field_embedding_cache_faiss
+            from neural_search.embeddings.field_index import (
+                read_field_embedding_cache_faiss,
+            )
             records = read_field_embedding_cache_faiss(faiss_path, meta_path)
             sums: dict[str, np.ndarray] = {}
             weights: dict[str, float] = {}
@@ -645,11 +646,12 @@ def rung_hybrid_graph(
     concept_index: dict[str, list[str]] | None = None,
 ) -> list[RunResult]:
     from neural_search.graph.search_features import (
+        _get_alias_index,
+        _neighbor_labels,
         concept_overlap_score,
         graph_context_score,
         region_hierarchy_score,
     )
-    from neural_search.graph.search_features import _get_alias_index, _neighbor_labels
 
     q_ctx = _graph_context_dict(query)
     query_regions: list[str] = q_ctx.get("regions", [])
@@ -705,10 +707,10 @@ def rung_typed_kg(
     CCF region hierarchy scoring.
     """
     from neural_search.graph.search_features import (
-        concept_overlap_score,
-        region_hierarchy_score,
         _get_alias_index,
         _neighbor_labels,
+        concept_overlap_score,
+        region_hierarchy_score,
     )
 
     rung_name = "typed_kg_qualified" if qualified else "typed_kg"
@@ -984,7 +986,9 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as exc:
             print(f"  Warning: graph load failed: {exc}")
         try:
-            from neural_search.ingestion.corpus_kg_linker import load_dataset_concept_index
+            from neural_search.ingestion.corpus_kg_linker import (
+                load_dataset_concept_index,
+            )
             concept_index_path = Path("data/kg/dataset_concept_index.jsonl")
             if concept_index_path.exists():
                 concept_index = load_dataset_concept_index(concept_index_path)

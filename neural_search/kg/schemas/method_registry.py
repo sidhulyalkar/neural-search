@@ -131,7 +131,7 @@ class MethodRegistry(BaseModel):
     links: list[MethodAnalysisLink] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def unique_analysis_families(self) -> "MethodRegistry":
+    def unique_analysis_families(self) -> MethodRegistry:
         families = [link.analysis_family for link in self.links]
         dupes = sorted({f for f in families if families.count(f) > 1})
         if dupes:

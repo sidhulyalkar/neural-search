@@ -504,7 +504,7 @@ def main(argv: list[str] | None = None) -> None:
 
     print(f"✓ Graph   → {_relpath(GRAPH_OUT)}")
     print(f"✓ Summary → {_relpath(SUMMARY_MD)}")
-    print(f"\nTop concept pairs:")
+    print("\nTop concept pairs:")
     for (a, b), w in top_edges[:5]:
         print(f"  {a} ↔ {b}: {w}")
 

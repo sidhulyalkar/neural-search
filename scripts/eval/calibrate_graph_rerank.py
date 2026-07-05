@@ -49,7 +49,7 @@ WEIGHT_PROFILES: dict[str, dict[str, float]] = {
     "default": dict(DEFAULT_GRAPH_SEARCH_WEIGHTS),
     "no_degree": {**DEFAULT_GRAPH_SEARCH_WEIGHTS, "degree": 0.0},
     "query_match_only": {
-        **{key: 0.0 for key in DEFAULT_GRAPH_SEARCH_WEIGHTS},
+        **dict.fromkeys(DEFAULT_GRAPH_SEARCH_WEIGHTS, 0.0),
         "requirement_match": 0.01,
         "analysis_requirement_coverage": 0.015,
         "task_match": 0.03,
@@ -59,7 +59,7 @@ WEIGHT_PROFILES: dict[str, dict[str, float]] = {
         "brain_region_match": 0.02,
     },
     "relationship_only": {
-        **{key: 0.0 for key in DEFAULT_GRAPH_SEARCH_WEIGHTS},
+        **dict.fromkeys(DEFAULT_GRAPH_SEARCH_WEIGHTS, 0.0),
         "relationship_edge": 0.012,
         "reanalysis_edge": 0.018,
     },

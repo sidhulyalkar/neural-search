@@ -9,7 +9,11 @@ found this.
 from __future__ import annotations
 
 from neural_search.graph import search_features
-from neural_search.graph.schema import KnowledgeGraph, KnowledgeGraphEdge, KnowledgeGraphNode
+from neural_search.graph.schema import (
+    KnowledgeGraph,
+    KnowledgeGraphEdge,
+    KnowledgeGraphNode,
+)
 
 
 def test_falls_back_to_building_from_source_when_artifact_missing(monkeypatch, tmp_path):

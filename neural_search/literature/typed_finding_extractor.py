@@ -42,7 +42,7 @@ All extraction is purely rule-based (regex/substring matching) — no model call
 from __future__ import annotations
 
 import re
-from functools import lru_cache
+from functools import cache
 
 # ---------------------------------------------------------------------------
 # Regex helpers
@@ -56,7 +56,7 @@ from functools import lru_cache
 # evicting entries; enrich_finding() on the full ~190K-finding corpus took
 # 30+ minutes as a result. A dedicated unbounded cache, scoped to just this
 # module's patterns, makes each distinct pattern compile exactly once.
-@lru_cache(maxsize=None)
+@cache
 def _compiled(pattern: str) -> re.Pattern[str]:
     return re.compile(pattern, re.IGNORECASE)
 

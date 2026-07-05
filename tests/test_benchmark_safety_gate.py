@@ -1,14 +1,18 @@
 """Tests for the benchmark safety gate."""
-import json
+# Adjust import path
+import sys
 from pathlib import Path
 
 import pytest
 
-# Adjust import path
-import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.eval.benchmark_safety_gate import run_gate, count_lines, scan_report, GOLD_PATH
+from scripts.eval.benchmark_safety_gate import (
+    GOLD_PATH,
+    count_lines,
+    run_gate,
+    scan_report,
+)
 
 
 def test_gate_runs_and_returns_dict():
@@ -47,7 +51,7 @@ def test_gate_blockers_list_when_gold_empty():
 
 def test_scan_report_stale_corpus():
     """A string with 10,404 should be flagged as stale."""
-    from scripts.eval.benchmark_safety_gate import scan_report, REPORTS_DIR
+    from scripts.eval.benchmark_safety_gate import REPORTS_DIR
     # Use the known-stale corpus_manifest.json
     stale_path = REPORTS_DIR / "corpus_manifest.json"
     if not stale_path.exists():

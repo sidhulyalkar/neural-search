@@ -1,4 +1,4 @@
-from neural_search.graph.schema import SUPPORTED_NODE_TYPES, SUPPORTED_EDGE_TYPES
+from neural_search.graph.schema import SUPPORTED_EDGE_TYPES, SUPPORTED_NODE_TYPES
 
 
 def test_claim_node_type_registered():

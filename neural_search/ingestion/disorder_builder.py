@@ -17,7 +17,7 @@ from typing import Any
 
 import yaml
 
-from neural_search.graph.schema import GraphNode, GraphEdge, KnowledgeGraph
+from neural_search.graph.schema import GraphEdge, GraphNode, KnowledgeGraph
 
 log = logging.getLogger(__name__)
 
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     for node in list(kg.nodes.values())[:5]:
         print(f"  {node.label}")
     circuit_edges = [e for e in kg.edges.values() if e.edge_type == "disorder_disrupts_circuit"]
-    print(f"\nSample circuit disruption edges:")
+    print("\nSample circuit disruption edges:")
     for e in circuit_edges[:8]:
         disorder = e.source_node_id.split(":")[-1]
         circuit = e.target_node_id.split(":")[-1]

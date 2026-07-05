@@ -24,7 +24,9 @@ from neural_search.experimentglancer.schemas import (
     SceneSource,
 )
 from neural_search.experimentglancer.serialization import make_scene_id, stable_hash
-from neural_search.experimentglancer.source_resolvers import resolve_dataset_introspection
+from neural_search.experimentglancer.source_resolvers import (
+    resolve_dataset_introspection,
+)
 
 GENERATOR_VERSION = "v0.1.0"
 

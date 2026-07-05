@@ -10,8 +10,7 @@ Usage:
 from __future__ import annotations
 
 import json
-import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -184,8 +183,8 @@ def render_markdown(report: dict) -> str:
         "# Qrels Annotation Progress Report",
         f"\n_Generated: {report['generated_at']}_\n",
         "## Current State\n",
-        f"| Layer | Count |",
-        f"|---|---|",
+        "| Layer | Count |",
+        "|---|---|",
         f"| Gold qrels | {s['gold_qrels_rows']} |",
         f"| Field-state adjudicated | {s['human_adjudicated_rows']} |",
         f"| Field-state reviews | {s['human_review_rows']} |",

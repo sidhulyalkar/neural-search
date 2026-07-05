@@ -2,8 +2,6 @@
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from neural_search.literature.typed_finding_extractor import (
@@ -15,10 +13,10 @@ from neural_search.literature.typed_finding_extractor import (
     extract_comparison_conditions,
     extract_computational_models,
     extract_conditions,
+    extract_connectivity_type,
     extract_decoding_types,
     extract_developmental_stage,
     extract_dimensionality_reduction,
-    extract_connectivity_type,
     extract_effect_scale,
     extract_frequency_bands,
     extract_genetic_tool,
@@ -38,7 +36,6 @@ from neural_search.literature.typed_finding_extractor import (
     extract_temporal_patterns,
     extract_typed_fields,
 )
-
 
 # ---------------------------------------------------------------------------
 # Compiled-pattern cache (perf regression guard: 2026-06-24)

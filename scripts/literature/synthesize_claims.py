@@ -17,6 +17,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 import anthropic
 import yaml
+
 from neural_search.literature.claim_synthesizer import synthesize_claim
 
 INPUT_PATH = REPO_ROOT / "artifacts/claims/finding_clusters.jsonl"
