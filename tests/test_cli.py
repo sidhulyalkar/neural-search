@@ -81,6 +81,50 @@ def test_cli_doctor_outputs_environment_json(capsys):
     assert all(payload["core_dependencies"].values())
     assert payload["source_checkout"] is True
     assert payload["source_assets"]["apps/web/package.json"] is True
+    assert payload["profile"]["profile"]["name"] == "demo"
+    assert payload["profile"]["ready"] is True
+
+
+def test_cli_profile_list_and_check(capsys):
+    assert cli.main(["profile", "list"]) == 0
+    listed = json.loads(capsys.readouterr().out)
+    assert {item["name"] for item in listed["profiles"]} == {
+        "demo",
+        "researcher",
+        "corpus-builder",
+        "evaluator",
+        "full-stack",
+    }
+
+    assert cli.main(["profile", "check", "demo"]) == 0
+    checked = json.loads(capsys.readouterr().out)
+    assert checked["profile"]["name"] == "demo"
+    assert checked["required_artifacts_ready"] is True
+
+
+def test_cli_profile_manifest_writes_file(tmp_path, capsys):
+    output = tmp_path / "demo-manifest.json"
+
+    exit_code = cli.main(
+        ["profile", "manifest", "demo", "--output", str(output)]
+    )
+
+    assert exit_code == 0
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output.read_text(encoding="utf-8"))
+    assert stdout_payload["schema_version"] == 1
+    assert file_payload["profile"] == "demo"
+    assert file_payload["profile_ready"] is True
+    assert file_payload["artifacts"]
+
+
+def test_cli_artifact_status_is_machine_readable(capsys):
+    assert cli.main(["artifacts", "status", "demo_datasets"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["artifacts"][0]["id"] == "demo_datasets"
+    assert payload["artifacts"][0]["kind"] == "committed_fixture"
+    assert payload["artifacts"][0]["exists"] is True
 
 
 def test_cli_version_flag(capsys):

@@ -26,8 +26,13 @@ jobs:
       - name: Verify installed dependency graph
         run: python -m pip check
 
-      - name: Smoke-test CLI environment
-        run: neural-search doctor
+      - name: Smoke-test portable runtime profiles
+        run: |
+          neural-search doctor --profile demo
+          neural-search profile list
+          neural-search profile check demo
+          neural-search profile check evaluator
+          neural-search profile manifest demo --output /tmp/neural-search-demo-manifest.json
 
       - name: Lint
         run: ruff check neural_search apps/api scripts tests
@@ -56,7 +61,7 @@ jobs:
       - name: Build
         run: npm run build
 
-  demo-artifacts:
+  adoption-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,11 +72,31 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Install dependencies
-        run: python -m pip install -e ".[dev]"
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
 
-      - name: Benchmark
-        run: python -m neural_search.evaluation.run_benchmark
+      - name: Follow documented fresh-clone setup
+        run: |
+          python -m pip install --upgrade pip
+          make setup
 
-      - name: Dataset report
-        run: python -m neural_search.reports
+      - name: Validate portable profile
+        run: neural-search profile check demo
+
+      - name: Run complete portable user journey
+        env:
+          NEURAL_SEARCH_DEMO_MODE: "1"
+          NEURAL_SEARCH_PROFILE: demo
+        run: make demo
+
+      - name: Enforce benchmark and report generation
+        env:
+          NEURAL_SEARCH_DEMO_MODE: "1"
+          NEURAL_SEARCH_PROFILE: demo
+        run: |
+          python -m neural_search.evaluation.run_benchmark
+          python -m neural_search.reports
