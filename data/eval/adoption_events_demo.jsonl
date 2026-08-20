@@ -1,0 +1,22 @@
+{"session_id":"study_001","timestamp":"2026-08-01T09:00:00-07:00","event_type":"session_started","metadata":{"participant_role":"computational_neuroscientist"}}
+{"session_id":"study_001","timestamp":"2026-08-01T09:00:15-07:00","event_type":"search_attempt","success":true,"metadata":{"query":"mouse reversal learning photometry"}}
+{"session_id":"study_001","timestamp":"2026-08-01T09:00:20-07:00","event_type":"search_success","success":true}
+{"session_id":"study_001","timestamp":"2026-08-01T09:02:00-07:00","event_type":"dataset_saved","success":true,"dataset_id":"demo:DEMO_DELAY_DISCOUNTING","usefulness":"useful","known_before":false}
+{"session_id":"study_001","timestamp":"2026-08-01T09:04:00-07:00","event_type":"notebook_generated","success":true,"dataset_id":"demo:DEMO_DELAY_DISCOUNTING"}
+{"session_id":"study_001","timestamp":"2026-08-01T09:08:00-07:00","event_type":"notebook_execution","success":true,"dataset_id":"demo:DEMO_DELAY_DISCOUNTING"}
+{"session_id":"study_001","timestamp":"2026-08-01T09:09:00-07:00","event_type":"reuse_decision","dataset_id":"demo:DEMO_DELAY_DISCOUNTING","would_use_for_analysis":"yes"}
+{"session_id":"study_001","timestamp":"2026-08-01T09:10:00-07:00","event_type":"workflow_complete","success":true}
+{"session_id":"study_002","timestamp":"2026-08-01T10:00:00-07:00","event_type":"session_started","metadata":{"participant_role":"methods_developer"}}
+{"session_id":"study_002","timestamp":"2026-08-01T10:00:10-07:00","event_type":"search_attempt","success":true}
+{"session_id":"study_002","timestamp":"2026-08-01T10:00:14-07:00","event_type":"metadata_failure","success":false,"metadata":{"missing":"behavioral_events"}}
+{"session_id":"study_002","timestamp":"2026-08-01T10:01:00-07:00","event_type":"search_attempt","success":true,"metadata":{"action":"broadened query"}}
+{"session_id":"study_002","timestamp":"2026-08-01T10:01:08-07:00","event_type":"search_success","success":true}
+{"session_id":"study_002","timestamp":"2026-08-01T10:03:00-07:00","event_type":"dataset_saved","success":true,"dataset_id":"demo:DEMO_VISUAL_DECISION_NEUROPIXELS","usefulness":"partially_useful","known_before":true}
+{"session_id":"study_002","timestamp":"2026-08-01T10:05:00-07:00","event_type":"notebook_generated","success":true,"dataset_id":"demo:DEMO_VISUAL_DECISION_NEUROPIXELS"}
+{"session_id":"study_002","timestamp":"2026-08-01T10:07:00-07:00","event_type":"notebook_execution","success":false,"dataset_id":"demo:DEMO_VISUAL_DECISION_NEUROPIXELS","metadata":{"reason":"asset unavailable in fixture"}}
+{"session_id":"study_002","timestamp":"2026-08-01T10:08:00-07:00","event_type":"reuse_decision","dataset_id":"demo:DEMO_VISUAL_DECISION_NEUROPIXELS","would_use_for_analysis":"maybe"}
+{"session_id":"study_002","timestamp":"2026-08-01T10:09:00-07:00","event_type":"workflow_complete","success":true}
+{"session_id":"study_003","timestamp":"2026-08-01T11:00:00-07:00","event_type":"session_started","metadata":{"participant_role":"data_curator"}}
+{"session_id":"study_003","timestamp":"2026-08-01T11:00:20-07:00","event_type":"search_attempt","success":true}
+{"session_id":"study_003","timestamp":"2026-08-01T11:00:28-07:00","event_type":"search_success","success":true}
+{"session_id":"study_003","timestamp":"2026-08-01T11:02:00-07:00","event_type":"reuse_decision","dataset_id":"demo:DEMO_POSE_TRACKING_BEHAVIOR","would_use_for_analysis":"no","usefulness":"not_useful","known_before":false}
