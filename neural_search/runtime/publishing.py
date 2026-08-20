@@ -18,10 +18,10 @@ import json
 import os
 import tempfile
 import urllib.parse
+from collections.abc import Iterable
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 from neural_search.runtime.bundles import (
     ArtifactBundle,
