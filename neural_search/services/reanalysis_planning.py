@@ -2,32 +2,20 @@
 
 from __future__ import annotations
 
-import json
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
 from neural_search.graph.reanalysis_bridge_builder import load_dataset_method_evidence
-from neural_search.ingestion.demo_seed import build_demo_seed
 from neural_search.reanalysis import ReanalysisPlan, build_reanalysis_plan
 from neural_search.runtime import artifact_status
+from neural_search.services.corpus_access import (
+    CorpusAccessService,
+    dataset_identity,
+    dataset_lookup_keys,
+)
 from neural_search.services.dataset_search import DatasetSearchService
 from neural_search.services.literature_evidence import LiteratureEvidenceService
-
-
-@lru_cache(maxsize=4)
-def _load_jsonl_cached(path_str: str, mtime_ns: int) -> tuple[dict[str, Any], ...]:
-    del mtime_ns  # cache key only
-    path = Path(path_str)
-    records: list[dict[str, Any]] = []
-    with path.open(encoding="utf-8") as handle:
-        for line in handle:
-            if not line.strip():
-                continue
-            payload = json.loads(line)
-            if isinstance(payload, dict):
-                records.append(payload)
-    return tuple(records)
 
 
 @lru_cache(maxsize=4)
@@ -44,33 +32,6 @@ def _load_method_evidence_cached(
 def _dataset(record: Mapping[str, Any]) -> Mapping[str, Any]:
     nested = record.get("dataset")
     return nested if isinstance(nested, Mapping) else record
-
-
-def _identity(record: Mapping[str, Any]) -> str:
-    dataset = _dataset(record)
-    source = str(dataset.get("source") or record.get("source") or "unknown")
-    source_id = str(
-        dataset.get("source_id")
-        or dataset.get("id")
-        or record.get("source_id")
-        or record.get("dataset_id")
-        or "unknown"
-    )
-    if source_id.startswith(f"{source}:"):
-        return source_id
-    return f"{source}:{source_id}"
-
-
-def _lookup_keys(record: Mapping[str, Any]) -> set[str]:
-    dataset = _dataset(record)
-    values = {
-        _identity(record),
-        str(dataset.get("id") or ""),
-        str(dataset.get("source_id") or ""),
-        str(record.get("dataset_id") or ""),
-        str(record.get("source_id") or ""),
-    }
-    return {value.casefold() for value in values if value}
 
 
 def _values(record: Mapping[str, Any], field_name: str) -> list[str]:
@@ -96,18 +57,20 @@ class ReanalysisPlanningService:
     def __init__(
         self,
         *,
+        corpus_service: CorpusAccessService | None = None,
         search_service: DatasetSearchService | None = None,
         literature_service: LiteratureEvidenceService | None = None,
     ) -> None:
-        self.search_service = search_service or DatasetSearchService()
+        self.corpus_service = corpus_service or CorpusAccessService()
+        self.search_service = search_service or DatasetSearchService(
+            corpus_service=self.corpus_service
+        )
         self.literature_service = literature_service or LiteratureEvidenceService()
 
     def corpus(self) -> tuple[list[dict[str, Any]], str]:
-        status = artifact_status("full_corpus_v09")
-        if status["usable"]:
-            path = Path(status["absolute_path"])
-            return list(_load_jsonl_cached(str(path), path.stat().st_mtime_ns)), "full_corpus_v09"
-        return build_demo_seed(), "demo_fallback"
+        """Use the same profile-aware corpus policy as normal dataset search."""
+
+        return self.corpus_service.load()
 
     def _find_record(
         self,
@@ -116,7 +79,7 @@ class ReanalysisPlanningService:
     ) -> dict[str, Any]:
         wanted = dataset_id.casefold()
         for record in records:
-            if wanted in _lookup_keys(record):
+            if wanted in dataset_lookup_keys(record):
                 return record
         raise ValueError(f"Dataset not found in active corpus: {dataset_id}")
 
@@ -149,23 +112,26 @@ class ReanalysisPlanningService:
             return {}
 
         response = self.search_service.search(query, datasets=records, limit=15)
-        target_keys = _lookup_keys(target)
+        target_keys = dataset_lookup_keys(target)
         precedents: dict[str, list[dict[str, Any]]] = {}
         for result in response.results:
             related: dict[str, Any] | None = None
             result_id = str(result.dataset_id).casefold()
             for record in records:
-                if result_id in _lookup_keys(record):
+                if result_id in dataset_lookup_keys(record):
                     related = record
                     break
-            if related is None or target_keys & _lookup_keys(related):
+            if related is None or target_keys & dataset_lookup_keys(related):
                 continue
-            related_id = _identity(related)
+            related_id = dataset_identity(related)
             evidence = method_evidence.get(related_id) or {}
             if not evidence:
                 continue
             raw_score = float(getattr(result, "score", 0.0) or 0.0)
-            similarity_confidence = min(1.0, raw_score / 100.0 if raw_score > 1 else raw_score)
+            similarity_confidence = min(
+                1.0,
+                raw_score / 100.0 if raw_score > 1 else raw_score,
+            )
             for method_id, method_payload in evidence.items():
                 precedents.setdefault(method_id, []).append(
                     {
@@ -174,20 +140,24 @@ class ReanalysisPlanningService:
                         "confidence": round(similarity_confidence, 4),
                         "paper_openalex_id": method_payload.get("paper_openalex_id"),
                         "summary": (
-                            "A retrieval-neighbor dataset has paper-method evidence for this method. "
-                            "Similarity is a discovery signal, not proof of experimental equivalence."
+                            "A retrieval-neighbor dataset has paper-method evidence for "
+                            "this method. Similarity is a discovery signal, not proof of "
+                            "experimental equivalence."
                         ),
                     }
                 )
         for values in precedents.values():
-            values.sort(key=lambda item: float(item.get("confidence") or 0), reverse=True)
+            values.sort(
+                key=lambda item: float(item.get("confidence") or 0),
+                reverse=True,
+            )
         return precedents
 
     def plan(self, dataset_id: str, *, limit: int = 12) -> dict[str, Any]:
         records, corpus_source = self.corpus()
         target = self._find_record(dataset_id, records)
         all_method_evidence = self._method_evidence()
-        target_evidence = all_method_evidence.get(_identity(target), {})
+        target_evidence = all_method_evidence.get(dataset_identity(target), {})
         precedents = self._precedents(target, records, all_method_evidence)
 
         preliminary = build_reanalysis_plan(
@@ -197,12 +167,13 @@ class ReanalysisPlanningService:
             limit=limit,
         )
         literature_by_method: dict[str, list[dict[str, Any]]] = {}
-        context_terms = " ".join(_values(target, "tasks")[:2] + _values(target, "brain_regions")[:2])
+        context_terms = " ".join(
+            _values(target, "tasks")[:2] + _values(target, "brain_regions")[:2]
+        )
         for candidate in preliminary.candidates[:6]:
             query = f"{candidate.method_label} {context_terms}".strip()
-            literature_by_method[candidate.method_id] = self.literature_service.findings(
-                query,
-                limit=3,
+            literature_by_method[candidate.method_id] = (
+                self.literature_service.findings(query, limit=3)
             )
 
         final_plan: ReanalysisPlan = build_reanalysis_plan(
@@ -214,9 +185,13 @@ class ReanalysisPlanningService:
         )
         payload = final_plan.to_dict()
         payload["corpus_source"] = corpus_source
+        payload["execution_profile"] = self.corpus_service.profile
         payload["evidence_capabilities"] = {
             "paper_method_evidence": bool(all_method_evidence),
-            "literature_findings": bool(artifact_status("literature_findings")["usable"]),
+            "literature_findings": bool(
+                artifact_status("literature_findings")["usable"]
+            ),
             "related_dataset_precedents": bool(precedents),
         }
+        payload["literature_source_state"] = self.literature_service.source_state()
         return payload
