@@ -1,20 +1,63 @@
-.PHONY: install setup dev test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval eval-runs eval-qrels reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
+.PHONY: install install-demo install-researcher install-corpus-builder install-evaluator install-full-stack setup dev profile-list profile-check artifacts-status repro-manifest test test-backend lint format api web demo demo-seed demo-quick demo-search clean docker-up docker-down up benchmark eval eval-runs eval-qrels reports report notebook-generate generate-notebook build corpus-build coverage-depth-build regional-map-build regional-signals-build graph-build graph-reports embeddings-build artifacts-build real-corpus-build real-claims-build real-graph-build real-embeddings-build real-reports real-artifacts-build awareness-report search-intelligence-report corpus-knowledge-plan search-intelligence-plan human-review-queue query-plan-eval promotion-check task23-fixtures-build task23-eval task23-calibration task23-promotion-check release-check release-summary
 
 # ============================================================================
 # SETUP TARGETS
 # ============================================================================
 
-# Install dependencies
-install:
-	pip install -e ".[all]"
-	cd apps/web && npm install
+# Safe default for a fresh clone: portable demo + contributor tooling.
+install: install-demo
 
-# Alias for install
-setup: install
+install-demo:
+	pip install -e ".[dev]"
+	cd apps/web && npm ci
+
+install-researcher:
+	pip install -e ".[researcher]"
+	cd apps/web && npm ci
+
+install-corpus-builder:
+	pip install -e ".[corpus-builder]"
+
+install-evaluator:
+	pip install -e ".[evaluator]"
+
+install-full-stack:
+	pip install -e ".[full-stack]"
+	cd apps/web && npm ci
+
+# Alias for the safe fresh-clone setup.
+setup: install-demo
 
 # Development setup
 dev:
 	pip install -e ".[dev]"
+
+# ============================================================================
+# RUNTIME PROFILES & ARTIFACT CONTRACTS
+# ============================================================================
+
+profile-list:
+	neural-search profile list
+
+profile-check:
+	@if [ -z "$(PROFILE)" ]; then \
+		echo "Usage: make profile-check PROFILE=demo|researcher|corpus-builder|evaluator|full-stack"; \
+		exit 2; \
+	else \
+		neural-search profile check "$(PROFILE)"; \
+	fi
+
+artifacts-status:
+	neural-search artifacts status
+
+repro-manifest:
+	@if [ -z "$(PROFILE)" ]; then \
+		echo "Usage: make repro-manifest PROFILE=demo|researcher|corpus-builder|evaluator|full-stack"; \
+		exit 2; \
+	else \
+		mkdir -p reports/reproducibility; \
+		neural-search profile manifest "$(PROFILE)" --output "reports/reproducibility/$(PROFILE).json"; \
+	fi
 
 # ============================================================================
 # BUILD & TEST TARGETS
@@ -428,9 +471,16 @@ clean-data:
 help:
 	@echo "Neural Search Makefile"
 	@echo ""
-	@echo "SETUP:"
-	@echo "  make setup             Install all dependencies (alias: install)"
-	@echo "  make dev               Install dev dependencies only"
+	@echo "SETUP PROFILES:"
+	@echo "  make setup                 Safe fresh-clone setup (demo + dev tooling)"
+	@echo "  make install-researcher    Real-corpus research/search environment"
+	@echo "  make install-corpus-builder Corpus ingestion/index build environment"
+	@echo "  make install-evaluator     Retrieval/evaluation environment"
+	@echo "  make install-full-stack    Maintainer environment with all optional services"
+	@echo "  make profile-list          Show supported runtime profiles"
+	@echo "  make profile-check PROFILE=demo  Validate dependencies + required artifacts"
+	@echo "  make artifacts-status      Show all registered artifact availability"
+	@echo "  make repro-manifest PROFILE=demo Write a reproducibility manifest"
 	@echo ""
 	@echo "DEMO:"
 	@echo "  make demo              Run full demo with all steps"
