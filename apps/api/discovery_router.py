@@ -31,10 +31,10 @@ class LiteratureV2Request(BaseModel):
 
 @router.post("/search")
 async def search_v2(request: SearchV2Request) -> dict[str, Any]:
-    """Core search response from the transport-independent service boundary."""
+    """Core search response plus the exact corpus context that served it."""
 
     try:
-        response = _dataset_search.search(
+        response, runtime_context = _dataset_search.search_with_context(
             request.query,
             filters=request.filters,
             structured_query=request.structured_query,
@@ -42,8 +42,10 @@ async def search_v2(request: SearchV2Request) -> dict[str, Any]:
             retrieval_config=request.retrieval_config,
         )
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return response.model_dump(mode="json")
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    payload = response.model_dump(mode="json")
+    payload["runtime_context"] = runtime_context
+    return payload
 
 
 @router.post("/literature/search")
