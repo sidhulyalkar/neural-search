@@ -93,9 +93,9 @@ build:
 # SERVER TARGETS
 # ============================================================================
 
-# Run API server
+# Run API server through the composition root.
 api:
-	uvicorn apps.api.main:app --reload --port 8000
+	uvicorn apps.api.application:app --reload --port 8000
 
 # Run web frontend
 web:
