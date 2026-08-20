@@ -2,7 +2,6 @@ from pathlib import Path
 
 from neural_search.evaluation.adoption import evaluate_adoption_file
 
-
 FIXTURE = Path("data/eval/adoption_events_demo.jsonl")
 
 
