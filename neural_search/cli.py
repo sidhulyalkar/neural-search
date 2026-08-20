@@ -33,7 +33,12 @@ from neural_search.runtime import (
     write_lineage,
 )
 from neural_search.runtime.bundles import DEFAULT_INDEX_PATH
-from neural_search.runtime.publishing import build_bundle_manifest, write_bundle_manifest
+from neural_search.runtime.publishing import (
+    add_release_index_entry,
+    build_bundle_manifest,
+    release_index_entry_dict,
+    write_bundle_manifest,
+)
 from neural_search.search import search_datasets
 from neural_search.services import ReanalysisPlanningService
 
@@ -224,6 +229,17 @@ def _add_runtime_commands(subparsers: Any) -> None:
     bundle_parser.add_argument("--output", type=Path, required=True)
     bundle_parser.add_argument("--allow-untracked", action="store_true")
 
+    release_add = artifacts_subparsers.add_parser(
+        "release-add",
+        help=(
+            "Pin an already-hosted bundle manifest into the release index by SHA-256. "
+            "Existing refs are append-only."
+        ),
+    )
+    release_add.add_argument("--manifest", type=Path, required=True)
+    release_add.add_argument("--manifest-url", required=True)
+    release_add.add_argument("--index", type=Path, default=DEFAULT_INDEX_PATH)
+
 
 def _add_workflow_commands(subparsers: Any) -> None:
     reanalysis_parser = subparsers.add_parser(
@@ -384,6 +400,7 @@ def main(argv: list[str] | None = None) -> int:
                                 "version": item.version,
                                 "ref": item.ref,
                                 "manifest_url": item.manifest_url,
+                                "manifest_sha256": item.manifest_sha256,
                                 "compatibility_group": item.compatibility_group,
                                 "deprecated": item.deprecated,
                             }
@@ -428,6 +445,14 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 write_bundle_manifest(args.output, bundle)
                 _print_json({"output": str(args.output), "bundle": bundle.to_dict()})
+                return 0
+            if args.artifacts_command == "release-add":
+                entry = add_release_index_entry(
+                    index_path=args.index,
+                    manifest_path=args.manifest,
+                    manifest_url=args.manifest_url,
+                )
+                _print_json({"release": release_index_entry_dict(entry)})
                 return 0
         if args.command == "reanalysis":
             if args.limit < 1 or args.limit > 30:
