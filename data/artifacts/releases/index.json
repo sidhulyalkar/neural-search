@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
-  "description": "Immutable Neural Search artifact bundle index. Published bundles must point at content-addressed manifests and may not be mutated in place.",
+  "schema_version": 2,
+  "description": "Immutable Neural Search artifact bundle index. Every published release must pin its manifest by SHA-256; manifests in turn pin every artifact by byte size and SHA-256.",
   "bundles": []
 }
