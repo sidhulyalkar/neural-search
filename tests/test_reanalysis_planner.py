@@ -1,6 +1,5 @@
 from neural_search.reanalysis import build_reanalysis_plan
 
-
 EPHYS_RECORD = {
     "dataset_id": "dandi:demo001",
     "source": "dandi",
