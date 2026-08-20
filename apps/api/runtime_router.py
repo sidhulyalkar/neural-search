@@ -23,7 +23,7 @@ async def profiles() -> dict[str, Any]:
 async def runtime_status(
     profile: str | None = Query(default=None),
 ) -> dict[str, Any]:
-    """Report dependency and artifact readiness for one execution profile."""
+    """Report dependency, artifact, and compatibility readiness."""
 
     try:
         return _service.status(profile)
@@ -41,3 +41,25 @@ async def artifacts(
         return _service.artifacts(artifact_id)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/capabilities")
+async def capabilities(
+    profile: str | None = Query(default=None),
+) -> dict[str, Any]:
+    """Return researcher-facing capability availability for one profile."""
+
+    try:
+        return _service.capabilities(profile)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/bundles")
+async def bundles() -> dict[str, Any]:
+    """Return published bundle metadata plus local verified lock state."""
+
+    try:
+        return _service.bundles()
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
