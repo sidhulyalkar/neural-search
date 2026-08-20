@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Immutable Neural Search artifact bundle index. Published bundles must point at content-addressed manifests and may not be mutated in place.",
+  "bundles": []
+}
