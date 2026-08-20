@@ -19,7 +19,6 @@ from neural_search.runtime import (
     PROFILES,
     artifact_status,
     build_reproducibility_manifest,
-    get_profile,
     list_artifacts,
     list_profiles,
     profile_status,
@@ -198,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
             _print_json({"profiles": list_profiles()})
             return 0
         if args.profile_command == "show":
-            _print_json({"profile": get_profile(args.name), "status": profile_status(args.name)})
+            _print_json(profile_status(args.name))
             return 0
         if args.profile_command == "check":
             payload = profile_status(args.name)
