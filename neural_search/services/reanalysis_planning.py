@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from neural_search.graph.reanalysis_bridge_builder import load_dataset_method_evidence
 from neural_search.reanalysis import ReanalysisPlan, build_reanalysis_plan
