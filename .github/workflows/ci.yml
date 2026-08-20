@@ -92,3 +92,11 @@ jobs:
           NEURAL_SEARCH_DEMO_MODE: "1"
           NEURAL_SEARCH_PROFILE: demo
         run: make demo
+
+      - name: Enforce benchmark and report generation
+        env:
+          NEURAL_SEARCH_DEMO_MODE: "1"
+          NEURAL_SEARCH_PROFILE: demo
+        run: |
+          python -m neural_search.evaluation.run_benchmark
+          python -m neural_search.reports
