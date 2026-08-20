@@ -440,12 +440,6 @@ def build_reproducibility_manifest(
     """
 
     status = profile_status(name)
-    artifact_ids = dict.fromkeys(
-        status["profile"][key]
-        for key in ("required_artifacts", "recommended_artifacts", "produced_artifacts")
-    )
-    # ``dict.fromkeys`` above receives tuples as keys when used directly, so flatten
-    # explicitly while preserving declared order.
     ordered_ids: list[str] = []
     for key in ("required_artifacts", "recommended_artifacts", "produced_artifacts"):
         for artifact_id in status["profile"][key]:
