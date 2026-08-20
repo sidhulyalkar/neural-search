@@ -12,8 +12,12 @@ const navLinks = [
   { path: '/atlas', label: 'Atlas' },
   { path: '/methods', label: 'Methods' },
   { path: '/disorders', label: 'Disorders' },
-  { path: '/graph', label: 'Knowledge Graph' },
+  { path: '/labs/neatlabs', label: 'Lab Demo' },
+  { path: '/demo', label: 'Demo' },
+  { path: '/graph', label: 'KG' },
+  { path: '/ontology', label: 'Ontology' },
   { path: '/coverage', label: 'Coverage' },
+  { path: '/reports', label: 'Reports' },
   { path: '/evaluation', label: 'Evaluation' },
   { path: '/system', label: 'System' },
 ]
