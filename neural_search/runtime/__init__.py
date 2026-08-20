@@ -21,12 +21,14 @@ from neural_search.runtime.catalog import (
     ArtifactSpec,
     ExecutionProfile,
     artifact_status,
-    build_reproducibility_manifest,
     capability_status,
-    compatibility_status,
     get_profile,
     list_artifacts,
     list_profiles,
+)
+from neural_search.runtime.health import (
+    build_reproducibility_manifest,
+    compatibility_status,
     profile_status,
 )
 from neural_search.runtime.lineage import (
