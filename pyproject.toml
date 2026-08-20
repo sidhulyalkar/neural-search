@@ -31,6 +31,7 @@ classifiers = [
 dependencies = [
   "fastapi>=0.104.0",
   "uvicorn[standard]>=0.24.0",
+  "python-dotenv>=1.0.0",
   "pydantic>=2.5.0",
   "pydantic-settings>=2.1.0",
   "SQLAlchemy>=2.0",
@@ -88,8 +89,20 @@ notebooks = [
   "jupyter>=1.0.0",
   "matplotlib>=3.8.0",
 ]
-all = [
+researcher = [
+  "neural-search[embeddings,notebooks]",
+]
+corpus-builder = [
+  "neural-search[dev,dense]",
+]
+evaluator = [
+  "neural-search[dev]",
+]
+full-stack = [
   "neural-search[dev,postgres,redis,dense,notebooks,spectral]",
+]
+all = [
+  "neural-search[full-stack]",
 ]
 
 [project.scripts]
