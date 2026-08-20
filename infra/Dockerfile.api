@@ -13,12 +13,14 @@ COPY pyproject.toml ./
 COPY neural_search/ ./neural_search/
 RUN pip install --no-cache-dir -e ".[postgres,redis]"
 
-# Copy application code and data
+# Copy application code and portable data. Large/generated research artifacts
+# can be mounted separately and selected with NEURAL_SEARCH_PROFILE.
 COPY apps/api ./apps/api
 COPY data ./data
 
-# Set Python path
 ENV PYTHONPATH=/app
+ENV NEURAL_SEARCH_PROFILE=demo
 
-# Run the API
-CMD ["uvicorn", "apps.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run through the composition root so new routers/services do not need to be
+# coupled back into the legacy apps.api.main module.
+CMD ["uvicorn", "apps.api.application:app", "--host", "0.0.0.0", "--port", "8000"]
