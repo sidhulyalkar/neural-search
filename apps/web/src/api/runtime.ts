@@ -69,6 +69,7 @@ export type BundleState = {
     version: string
     ref: string
     manifest_url: string
+    manifest_sha256: string | null
     compatibility_group: string | null
     deprecated: boolean
   }>
@@ -79,8 +80,10 @@ export type BundleState = {
   }
   verification: {
     valid: boolean
+    verification_mode: 'stat_checkpoint' | 'sha256' | string
     artifacts: Array<Record<string, unknown>>
   }
+  verification_note: string
 }
 
 export type ReanalysisEvidence = {
@@ -123,7 +126,9 @@ export type ReanalysisPlan = {
   warnings: string[]
   evidence_policy: string
   corpus_source: string
+  execution_profile?: string
   evidence_capabilities: Record<string, boolean>
+  literature_source_state?: Record<string, unknown>
 }
 
 export type AdoptionEvent = {
