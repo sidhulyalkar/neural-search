@@ -15,10 +15,11 @@ import json
 import math
 import statistics
 from collections import defaultdict
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -35,7 +36,7 @@ class AdoptionEvent:
     schema_version: int = 1
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "AdoptionEvent":
+    def from_dict(cls, payload: Mapping[str, Any]) -> AdoptionEvent:
         event = cls(
             session_id=str(payload["session_id"]),
             timestamp=str(payload["timestamp"]),
@@ -143,7 +144,7 @@ def evaluate_adoption_events(events: Iterable[AdoptionEvent]) -> dict[str, Any]:
     """Compute workflow-level adoption metrics from researcher sessions."""
 
     event_list = sorted(
-        list(events),
+        events,
         key=lambda event: (event.session_id, _parse_timestamp(event.timestamp)),
     )
     by_session: dict[str, list[AdoptionEvent]] = defaultdict(list)
