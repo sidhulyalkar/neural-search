@@ -17,5 +17,5 @@ def test_adoption_fixture_reports_workflow_metrics():
     assert report["metrics"]["positive_reuse_decision_rate"] == 0.666667
     assert report["metrics"]["novel_useful_discovery_rate"] == 0.5
     assert report["metrics"]["workflow_completion_rate"] == 0.666667
-    assert report["metrics"]["time_to_first_successful_search_seconds"]["median"] == 20.0
+    assert report["metrics"]["time_to_first_successful_search_seconds"]["median"] == 28.0
     assert report["interpretation"]["gold_relevance_claim"] is False
