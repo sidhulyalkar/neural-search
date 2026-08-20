@@ -25,10 +25,11 @@ import shutil
 import tempfile
 import urllib.parse
 import urllib.request
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
-from typing import Any, Mapping
+from typing import Any
 
 from neural_search.runtime.lineage import (
     ArtifactLineage,
@@ -70,7 +71,7 @@ class BundleArtifact:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "BundleArtifact":
+    def from_dict(cls, payload: Mapping[str, Any]) -> BundleArtifact:
         return cls(
             artifact_id=str(payload["artifact_id"]),
             relative_path=str(payload["relative_path"]),
@@ -129,7 +130,7 @@ class ArtifactBundle:
         return f"{self.name}@{self.version}"
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "ArtifactBundle":
+    def from_dict(cls, payload: Mapping[str, Any]) -> ArtifactBundle:
         artifacts = tuple(
             BundleArtifact.from_dict(item) for item in list(payload.get("artifacts") or [])
         )
@@ -206,7 +207,7 @@ class ReleaseIndex:
     description: str | None = None
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "ReleaseIndex":
+    def from_dict(cls, payload: Mapping[str, Any]) -> ReleaseIndex:
         schema_version = int(payload.get("schema_version", 1))
         if schema_version not in {1, 2}:
             raise ValueError("Unsupported release index schema")
@@ -507,7 +508,6 @@ def _download_artifact(
         try:
             destination.chmod(0o444)
         except OSError:
-            # Read-only is a defense-in-depth convenience, not a portability contract.
             pass
     finally:
         try:
@@ -643,8 +643,6 @@ def fetch_bundle(
 
     resolved_lock = (lock_path or default_lock_path()).expanduser().resolve()
     lock = _load_lock(resolved_lock)
-    # Re-installing the same bundle name at a new version is a replacement, not
-    # an additive union. Remove stale artifact pins from the old bundle first.
     lock["artifacts"] = {
         artifact_id: item
         for artifact_id, item in dict(lock.get("artifacts") or {}).items()
