@@ -7,6 +7,7 @@ They never mutate artifacts, rebuild indexes, or disclose secret values.
 from __future__ import annotations
 
 import os
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -27,7 +28,7 @@ def _default_profile() -> str:
 
 
 @router.get("/profiles")
-async def profiles() -> dict:
+async def profiles() -> dict[str, Any]:
     """List supported execution profiles and the active profile name."""
 
     return {
@@ -39,7 +40,7 @@ async def profiles() -> dict:
 @router.get("/status")
 async def runtime_status(
     profile: str | None = Query(default=None),
-) -> dict:
+) -> dict[str, Any]:
     """Report dependency and artifact readiness for one execution profile."""
 
     selected = (profile or _default_profile()).strip().lower()
@@ -54,7 +55,7 @@ async def runtime_status(
 @router.get("/artifacts")
 async def artifacts(
     artifact_id: str | None = Query(default=None),
-) -> dict:
+) -> dict[str, Any]:
     """Inspect the artifact registry without reading artifact contents."""
 
     if artifact_id is not None:
