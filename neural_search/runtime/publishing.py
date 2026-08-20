@@ -14,7 +14,7 @@ import tempfile
 import urllib.parse
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Iterable
 
 from neural_search.runtime.bundles import ArtifactBundle, BundleArtifact
 from neural_search.runtime.catalog import ARTIFACTS, artifact_status
@@ -90,7 +90,7 @@ def build_bundle_manifest(
                         digest.update(chunk)
                 sha256 = digest.hexdigest()
             artifact_version = spec.version or version
-            lineage_id = make_lineage_id(artifact_id, artifact_version, sha256)
+            lineage_id = make_lineage_id(artifact_id, artifact_version, str(sha256))
             derived_from = {}
 
         if spec.derived_from:
