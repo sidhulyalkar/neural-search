@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use Neural Search in research, please cite the repository and the accompanying paper when available."
+title: "Neural Search: experiment-aware discovery for reusable neuroscience datasets"
+type: software
+authors:
+  - family-names: "Hulyalkar"
+    given-names: "Sidharth"
+repository-code: "https://github.com/sidhulyalkar/neural-search"
+url: "https://github.com/sidhulyalkar/neural-search"
+license: MIT
+version: 0.1.0
+date-released: 2026-08-19
+keywords:
+  - neuroscience
+  - dataset search
+  - knowledge graphs
+  - data reuse
+  - scientific retrieval
