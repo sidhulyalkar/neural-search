@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ReactNode } from 'react'
+import { CapabilityStrip } from './CapabilityStrip'
 
 interface LayoutProps {
   children: ReactNode
@@ -7,16 +8,14 @@ interface LayoutProps {
 
 const navLinks = [
   { path: '/', label: 'Search', exact: true },
+  { path: '/reanalysis', label: 'Reanalysis' },
   { path: '/atlas', label: 'Atlas' },
   { path: '/methods', label: 'Methods' },
   { path: '/disorders', label: 'Disorders' },
-  { path: '/labs/neatlabs', label: 'Lab Demo' },
-  { path: '/demo', label: 'Demo' },
   { path: '/graph', label: 'Knowledge Graph' },
-  { path: '/ontology', label: 'Ontology' },
   { path: '/coverage', label: 'Coverage' },
-  { path: '/reports', label: 'Reports' },
   { path: '/evaluation', label: 'Evaluation' },
+  { path: '/system', label: 'System' },
 ]
 
 export function Layout({ children }: LayoutProps) {
@@ -26,21 +25,21 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col bg-neural-950 text-neural-100">
       <header className="border-b border-neural-800/50 sticky top-0 z-50 bg-neural-950/95 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-3 gap-4">
             <Link
               to="/"
-              className="font-mono text-sm font-medium text-neural-200 tracking-tight hover:text-white transition-colors"
+              className="font-mono text-sm font-medium text-neural-200 tracking-tight hover:text-white transition-colors flex-shrink-0"
             >
               neural search
             </Link>
 
-            <nav className="flex items-center">
+            <nav className="flex items-center overflow-x-auto">
               {navLinks.map((link, i) => {
                 const isActive = link.exact
                   ? location.pathname === link.path
                   : location.pathname === link.path || location.pathname.startsWith(link.path + '/')
                 return (
-                  <span key={link.path} className="flex items-center">
+                  <span key={link.path} className="flex items-center flex-shrink-0">
                     {i > 0 && (
                       <span className="text-neural-700 mx-1 text-xs select-none">/</span>
                     )}
@@ -59,6 +58,7 @@ export function Layout({ children }: LayoutProps) {
               })}
             </nav>
           </div>
+          <CapabilityStrip />
         </div>
       </header>
 
