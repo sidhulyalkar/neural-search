@@ -15,6 +15,15 @@ from neural_search.evaluation.run_benchmark import main as benchmark_main
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL, seed_demo_database
 from neural_search.ingestion.services import ingest_source
 from neural_search.reports.dataset_compilation import main as report_main
+from neural_search.runtime import (
+    PROFILES,
+    artifact_status,
+    build_reproducibility_manifest,
+    get_profile,
+    list_artifacts,
+    list_profiles,
+    profile_status,
+)
 from neural_search.search import search_datasets
 
 
@@ -27,7 +36,7 @@ def _package_version() -> str:
         return "0.1.0"
 
 
-def _doctor_payload() -> dict[str, Any]:
+def _doctor_payload(profile_name: str = "demo") -> dict[str, Any]:
     """Collect lightweight diagnostics without requiring external services."""
 
     core_modules = ("fastapi", "pydantic", "yaml", "numpy", "pandas")
@@ -55,7 +64,13 @@ def _doctor_payload() -> dict[str, Any]:
             assets[relative_path] = (source_root / relative_path).exists()
 
     python_supported = sys.version_info >= (3, 11)
-    healthy = python_supported and all(core.values()) and all(assets.values())
+    selected_profile = profile_status(profile_name)
+    healthy = (
+        python_supported
+        and all(core.values())
+        and all(assets.values())
+        and selected_profile["ready"]
+    )
     return {
         "healthy": healthy,
         "neural_search_version": _package_version(),
@@ -66,7 +81,71 @@ def _doctor_payload() -> dict[str, Any]:
         "core_dependencies": core,
         "optional_dependencies": optional,
         "source_assets": assets,
+        "profile": selected_profile,
     }
+
+
+def _add_runtime_commands(subparsers: Any) -> None:
+    doctor_parser = subparsers.add_parser(
+        "doctor",
+        help="Check the local environment for a supported execution profile.",
+    )
+    doctor_parser.add_argument(
+        "--profile",
+        choices=list(PROFILES),
+        default="demo",
+        help="Execution profile to validate (default: demo).",
+    )
+
+    profile_parser = subparsers.add_parser(
+        "profile",
+        help="Inspect execution profiles and create reproducibility manifests.",
+    )
+    profile_subparsers = profile_parser.add_subparsers(
+        dest="profile_command",
+        required=True,
+    )
+    profile_subparsers.add_parser("list", help="List supported execution profiles.")
+
+    show_parser = profile_subparsers.add_parser("show", help="Show one profile contract.")
+    show_parser.add_argument("name", choices=list(PROFILES))
+
+    check_parser = profile_subparsers.add_parser(
+        "check",
+        help="Validate dependencies and required artifacts for a profile.",
+    )
+    check_parser.add_argument("name", choices=list(PROFILES))
+
+    manifest_parser = profile_subparsers.add_parser(
+        "manifest",
+        help="Build a reproducibility manifest for a profile.",
+    )
+    manifest_parser.add_argument("name", choices=list(PROFILES))
+    manifest_parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Optional path to write the JSON manifest; stdout is always available.",
+    )
+
+    artifacts_parser = subparsers.add_parser(
+        "artifacts",
+        help="Inspect the first-class artifact registry.",
+    )
+    artifacts_subparsers = artifacts_parser.add_subparsers(
+        dest="artifacts_command",
+        required=True,
+    )
+    artifacts_subparsers.add_parser("list", help="List registered artifact contracts.")
+    status_parser = artifacts_subparsers.add_parser(
+        "status",
+        help="Inspect artifact availability.",
+    )
+    status_parser.add_argument(
+        "artifact_ids",
+        nargs="*",
+        help="Artifact IDs to inspect; omit to inspect all registered artifacts.",
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -87,10 +166,7 @@ def main(argv: list[str] | None = None) -> int:
     search_parser.add_argument("query")
     search_parser.add_argument("--limit", type=int, default=10)
 
-    subparsers.add_parser(
-        "doctor",
-        help="Check the local Python environment and source-checkout assets.",
-    )
+    _add_runtime_commands(subparsers)
     subparsers.add_parser("benchmark", help="Run the retrieval benchmark.")
     subparsers.add_parser("report", help="Generate the dataset compilation report.")
 
@@ -114,9 +190,39 @@ def main(argv: list[str] | None = None) -> int:
         _print_json(response.model_dump(mode="json"))
         return 0
     if args.command == "doctor":
-        payload = _doctor_payload()
+        payload = _doctor_payload(args.profile)
         _print_json(payload)
         return 0 if payload["healthy"] else 1
+    if args.command == "profile":
+        if args.profile_command == "list":
+            _print_json({"profiles": list_profiles()})
+            return 0
+        if args.profile_command == "show":
+            _print_json({"profile": get_profile(args.name), "status": profile_status(args.name)})
+            return 0
+        if args.profile_command == "check":
+            payload = profile_status(args.name)
+            _print_json(payload)
+            return 0 if payload["ready"] else 1
+        if args.profile_command == "manifest":
+            payload = build_reproducibility_manifest(args.name)
+            if args.output is not None:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(
+                    json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n",
+                    encoding="utf-8",
+                )
+            _print_json(payload)
+            return 0 if payload["profile_ready"] else 1
+    if args.command == "artifacts":
+        if args.artifacts_command == "list":
+            _print_json({"artifacts": list_artifacts()})
+            return 0
+        if args.artifacts_command == "status":
+            artifact_ids = args.artifact_ids or [item["id"] for item in list_artifacts()]
+            payload = [artifact_status(artifact_id) for artifact_id in artifact_ids]
+            _print_json({"artifacts": payload})
+            return 0
     if args.command == "benchmark":
         return benchmark_main(remainder)
     if args.command == "report":
