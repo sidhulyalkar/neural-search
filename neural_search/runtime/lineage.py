@@ -1,6 +1,6 @@
 """Content-addressed lineage metadata for Neural Search artifacts.
 
-Lineage sidecars make generated scientific assets auditable.  A file existing at
+Lineage sidecars make generated scientific assets auditable. A file existing at
 an expected path is not sufficient evidence that it belongs to the corpus or
 configuration currently in use; the sidecar records the content digest and the
 exact lineage IDs of its parents.
@@ -19,6 +19,19 @@ from typing import Any, Mapping
 
 SIDECAR_FILENAME = ".neural-search-artifact.json"
 SIDECAR_SUFFIX = ".neural-search.json"
+_LINEAGE_PREFIX = "sha256:"
+
+
+def _valid_sha256(value: str) -> bool:
+    return len(value) == 64 and all(
+        character in "0123456789abcdef" for character in value.lower()
+    )
+
+
+def _valid_lineage_id(value: str) -> bool:
+    return value.startswith(_LINEAGE_PREFIX) and _valid_sha256(
+        value[len(_LINEAGE_PREFIX) :]
+    )
 
 
 @dataclass(frozen=True)
@@ -38,11 +51,11 @@ class ArtifactLineage:
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> "ArtifactLineage":
-        return cls(
+        lineage = cls(
             artifact_id=str(payload["artifact_id"]),
             artifact_version=str(payload["artifact_version"]),
             lineage_id=str(payload["lineage_id"]),
-            content_sha256=str(payload["content_sha256"]),
+            content_sha256=str(payload["content_sha256"]).lower(),
             created_at=str(payload["created_at"]),
             compatibility_group=(
                 str(payload["compatibility_group"])
@@ -57,6 +70,39 @@ class ArtifactLineage:
             metadata=dict(payload.get("metadata") or {}),
             schema_version=int(payload.get("schema_version", 1)),
         )
+        lineage.validate()
+        return lineage
+
+    def validate(self) -> None:
+        if self.schema_version != 1:
+            raise ValueError(
+                f"Unsupported artifact lineage schema: {self.schema_version}"
+            )
+        if not self.artifact_id.strip() or not self.artifact_version.strip():
+            raise ValueError("Lineage artifact_id and artifact_version must be non-empty")
+        if not _valid_sha256(self.content_sha256):
+            raise ValueError(f"Invalid lineage content SHA-256 for {self.artifact_id}")
+        expected = make_lineage_id(
+            self.artifact_id,
+            self.artifact_version,
+            self.content_sha256,
+        )
+        if self.lineage_id != expected:
+            raise ValueError(
+                f"Lineage identity mismatch for {self.artifact_id}: "
+                "lineage_id does not match artifact/version/content"
+            )
+        try:
+            parsed = datetime.fromisoformat(self.created_at.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise ValueError("Lineage created_at must be ISO-8601") from exc
+        if parsed.tzinfo is None:
+            raise ValueError("Lineage created_at must include a timezone")
+        for parent_id, parent_lineage in self.derived_from.items():
+            if not parent_id.strip() or not _valid_lineage_id(parent_lineage):
+                raise ValueError(
+                    f"Invalid parent lineage declaration for {self.artifact_id}: {parent_id!r}"
+                )
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -79,7 +125,7 @@ def _hash_file(path: Path) -> str:
 
 
 def hash_path(path: Path) -> str:
-    """Hash a file or a directory tree deterministically.
+    """Hash a file or directory tree deterministically.
 
     Directory identities include relative paths and bytes, and deliberately
     exclude lineage sidecars so writing metadata cannot change the content
@@ -93,7 +139,9 @@ def hash_path(path: Path) -> str:
 
     digest = hashlib.sha256()
     for candidate in sorted(p for p in path.rglob("*") if p.is_file()):
-        if candidate.name == SIDECAR_FILENAME or candidate.name.endswith(SIDECAR_SUFFIX):
+        if candidate.name == SIDECAR_FILENAME or candidate.name.endswith(
+            SIDECAR_SUFFIX
+        ):
             continue
         relative = candidate.relative_to(path).as_posix().encode("utf-8")
         digest.update(len(relative).to_bytes(8, "big"))
@@ -104,11 +152,17 @@ def hash_path(path: Path) -> str:
     return digest.hexdigest()
 
 
-def make_lineage_id(artifact_id: str, artifact_version: str, content_sha256: str) -> str:
+def make_lineage_id(
+    artifact_id: str,
+    artifact_version: str,
+    content_sha256: str,
+) -> str:
     """Build a stable lineage identifier from artifact identity and content."""
 
-    payload = f"{artifact_id}\0{artifact_version}\0{content_sha256}".encode()
-    return "sha256:" + hashlib.sha256(payload).hexdigest()
+    payload = (
+        f"{artifact_id}\0{artifact_version}\0{content_sha256.lower()}".encode()
+    )
+    return _LINEAGE_PREFIX + hashlib.sha256(payload).hexdigest()
 
 
 def read_lineage(path: Path) -> ArtifactLineage | None:
@@ -117,7 +171,7 @@ def read_lineage(path: Path) -> ArtifactLineage | None:
         return None
     try:
         payload = json.loads(metadata_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+    except (OSError, json.JSONDecodeError):
         return None
     if not isinstance(payload, dict):
         return None
@@ -160,7 +214,11 @@ def write_lineage(
     lineage = ArtifactLineage(
         artifact_id=artifact_id,
         artifact_version=artifact_version,
-        lineage_id=make_lineage_id(artifact_id, artifact_version, content_sha256),
+        lineage_id=make_lineage_id(
+            artifact_id,
+            artifact_version,
+            content_sha256,
+        ),
         content_sha256=content_sha256,
         created_at=datetime.now(UTC).isoformat(),
         compatibility_group=compatibility_group,
@@ -168,13 +226,15 @@ def write_lineage(
         derived_from=dict(derived_from or {}),
         metadata=dict(metadata or {}),
     )
+    lineage.validate()
     _atomic_json_write(sidecar_path(path), lineage.to_dict())
     return lineage
 
 
 def write_lineage_record(path: Path, lineage: ArtifactLineage) -> None:
-    """Write a pre-verified lineage record, used by immutable bundle installs."""
+    """Write a validated pre-verified lineage record for bundle installs."""
 
+    lineage.validate()
     _atomic_json_write(sidecar_path(path), lineage.to_dict())
 
 
@@ -188,6 +248,11 @@ def validate_lineage(
     """Validate content identity and declared parent relationships."""
 
     issues: list[str] = []
+    try:
+        lineage.validate()
+    except ValueError as exc:
+        issues.append(f"invalid_lineage:{exc}")
+
     if verify_content:
         try:
             actual_sha = hash_path(path)
