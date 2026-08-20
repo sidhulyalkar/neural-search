@@ -94,18 +94,19 @@ export function SystemPage() {
         </div>
 
         <div className="card">
-          <h2 className="text-lg font-semibold mb-3">Verified bundle lock</h2>
+          <h2 className="text-lg font-semibold mb-3">Pinned bundle integrity</h2>
           {bundles.isLoading ? (
             <p className="text-xs text-neural-600">Checking local bundle lock…</p>
           ) : bundles.data ? (
             <>
               <p className={`font-mono text-sm mb-2 ${bundles.data.verification.valid ? 'text-accent-emerald' : 'text-red-300'}`}>
-                {bundles.data.verification.valid ? 'verified' : 'verification failed'}
+                {bundles.data.verification.valid ? 'unchanged since verification' : 'verification required'}
               </p>
               <p className="text-xs text-neural-500 break-all">{bundles.data.lock.lock_path}</p>
               <p className="text-xs text-neural-600 mt-2">
                 {Object.keys(bundles.data.lock.bundles || {}).length} pinned bundles · {bundles.data.available_bundles.length} published releases
               </p>
+              <p className="text-[11px] text-neural-700 mt-3">{bundles.data.verification_note}</p>
             </>
           ) : (
             <p className="text-xs text-neural-600">Bundle state is unavailable.</p>
