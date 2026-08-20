@@ -6,10 +6,14 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from neural_search.search import search_datasets
+from neural_search.services.corpus_access import CorpusAccessService
 
 
 class DatasetSearchService:
     """Transport-independent orchestration around the core retrieval engine."""
+
+    def __init__(self, *, corpus_service: CorpusAccessService | None = None) -> None:
+        self.corpus_service = corpus_service or CorpusAccessService()
 
     def search(
         self,
@@ -27,11 +31,14 @@ class DatasetSearchService:
             )
         if limit < 1 or limit > 200:
             raise ValueError("limit must be between 1 and 200")
+        active_datasets = datasets
+        if active_datasets is None:
+            active_datasets, _ = self.corpus_service.load()
         return search_datasets(
             query=query,
             filters=filters or {},
             structured_query=structured_query,
-            datasets=datasets,
+            datasets=active_datasets,
             limit=limit,
             retrieval_config=retrieval_config,
         )
