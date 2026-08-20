@@ -43,6 +43,7 @@ class ArtifactSpec:
     description: str
     producer: str | None = None
     repair_command: str | None = None
+    requires_content: bool = False
 
 
 @dataclass(frozen=True)
@@ -106,15 +107,18 @@ ARTIFACTS: dict[str, ArtifactSpec] = {
         path="data/raw",
         kind="generated_local",
         description="Downloaded source payloads used to rebuild the full normalized corpus.",
-        producer="source-specific scripts under scripts/corpus/",
+        producer="source-specific acquisition scripts under scripts/corpus/",
+        requires_content=True,
     ),
     "full_corpus_v09": ArtifactSpec(
         id="full_corpus_v09",
         path="data/corpus/normalized/combined_corpus.jsonl/full_corpus_v09.jsonl",
         kind="generated_local",
-        description="Current flat normalized multi-source dataset corpus.",
-        producer="scripts/corpus/build_full_corpus.py",
-        repair_command="python scripts/corpus/build_full_corpus.py",
+        description=(
+            "Current flat normalized multi-source dataset corpus. Building it requires "
+            "source payloads to have been acquired first."
+        ),
+        producer="scripts/corpus/build_full_corpus.py after source acquisition",
     ),
     "production_graph": ArtifactSpec(
         id="production_graph",
@@ -190,10 +194,7 @@ PROFILES: dict[str, ExecutionProfile] = {
         ),
         install_extra="researcher",
         required_modules=_CORE_MODULES + ("sentence_transformers", "nbformat"),
-        required_artifacts=(
-            "behavioral_ontology",
-            "full_corpus_v09",
-        ),
+        required_artifacts=("behavioral_ontology", "full_corpus_v09"),
         recommended_artifacts=(
             "production_graph",
             "dense_field_embeddings",
@@ -248,10 +249,7 @@ PROFILES: dict[str, ExecutionProfile] = {
         ),
         install_extra="evaluator",
         required_modules=_CORE_MODULES + ("pytest", "networkx"),
-        required_artifacts=(
-            "canonical_benchmark_queries",
-            "canonical_qrels",
-        ),
+        required_artifacts=("canonical_benchmark_queries", "canonical_qrels"),
         recommended_artifacts=(
             "ablation_corpus",
             "production_graph",
@@ -278,12 +276,7 @@ PROFILES: dict[str, ExecutionProfile] = {
         ),
         install_extra="full-stack",
         required_modules=_CORE_MODULES
-        + (
-            "sentence_transformers",
-            "networkx",
-            "redis",
-            "psycopg",
-        ),
+        + ("sentence_transformers", "networkx", "redis", "psycopg"),
         required_artifacts=(
             "behavioral_ontology",
             "full_corpus_v09",
@@ -335,7 +328,9 @@ def get_profile(name: str) -> ExecutionProfile:
         return PROFILES[name]
     except KeyError as exc:
         choices = ", ".join(PROFILES)
-        raise ValueError(f"Unknown execution profile {name!r}; choose one of: {choices}") from exc
+        raise ValueError(
+            f"Unknown execution profile {name!r}; choose one of: {choices}"
+        ) from exc
 
 
 def list_artifacts() -> list[dict[str, Any]]:
@@ -348,6 +343,10 @@ def _artifact_path(spec: ArtifactSpec) -> Path:
     return PROJECT_ROOT / spec.path
 
 
+def _directory_has_file(path: Path) -> bool:
+    return any(candidate.is_file() for candidate in path.rglob("*"))
+
+
 def artifact_status(artifact_id: str) -> dict[str, Any]:
     """Inspect one registered artifact without mutating the checkout."""
 
@@ -358,21 +357,38 @@ def artifact_status(artifact_id: str) -> dict[str, Any]:
 
     path = _artifact_path(spec)
     exists = path.exists()
+    usable = exists
     payload: dict[str, Any] = {
         **asdict(spec),
         "exists": exists,
+        "usable": usable,
         "absolute_path": str(path),
     }
+
     if exists:
         stat = path.stat()
-        payload["is_directory"] = path.is_dir()
+        is_directory = path.is_dir()
+        payload["is_directory"] = is_directory
         payload["size_bytes"] = stat.st_size if path.is_file() else None
         payload["modified_at"] = datetime.fromtimestamp(stat.st_mtime, tz=UTC).isoformat()
-        payload["state"] = "present"
+
+        if path.is_file() and stat.st_size == 0:
+            usable = False
+        elif is_directory and spec.requires_content and not _directory_has_file(path):
+            usable = False
+
+        payload["usable"] = usable
+        if usable:
+            payload["state"] = "present"
+        elif spec.kind in {"committed_fixture", "frozen_evaluation"}:
+            payload["state"] = "empty_portable_asset"
+        else:
+            payload["state"] = "empty_generated_asset"
     elif spec.kind in {"committed_fixture", "frozen_evaluation"}:
         payload["state"] = "missing_portable_asset"
     else:
         payload["state"] = "missing_generated_asset"
+
     return payload
 
 
@@ -390,9 +406,9 @@ def profile_status(name: str) -> dict[str, Any]:
         artifact_status(artifact_id) for artifact_id in profile.recommended_artifacts
     ]
     produced = [artifact_status(artifact_id) for artifact_id in profile.produced_artifacts]
-    required_ready = all(item["exists"] for item in required)
+    required_ready = all(item["usable"] for item in required)
     dependencies_ready = all(modules.values())
-    missing_required = [item for item in required if not item["exists"]]
+    missing_required = [item for item in required if not item["usable"]]
     missing_modules = [module for module, present in modules.items() if not present]
     remediation = [
         item["repair_command"]
