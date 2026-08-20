@@ -1,5 +1,5 @@
-from pathlib import Path
 import tomllib
+from pathlib import Path
 
 
 def test_execution_profile_extras_do_not_self_reference_package():
