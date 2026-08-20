@@ -10,23 +10,26 @@ Prerequisites:
 - Node.js 20+
 - Git
 
-Create a virtual environment, install the development dependencies, and install the frontend:
+Create a virtual environment and follow the same portable setup path CI uses:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 python -m pip install --upgrade pip
-python -m pip install -e ".[dev]"
-cd apps/web
-npm ci
-cd ../..
+make setup
+neural-search profile check demo
 ```
 
-Run the built-in environment check:
+For specialized work, install the matching profile instead of every optional dependency:
 
 ```bash
-neural-search doctor
+make install-researcher
+make install-corpus-builder
+make install-evaluator
+make install-full-stack
 ```
+
+See `docs/execution_profiles.md` before adding a dependency to the base package or changing what a profile requires.
 
 ## Before opening a pull request
 
@@ -39,6 +42,8 @@ bash scripts/quality_gate.sh
 At minimum, changes should keep these checks green:
 
 ```bash
+neural-search profile check demo
+neural-search profile check evaluator
 ruff check neural_search apps/api scripts tests
 pytest -q
 cd apps/web && npm run build && npm run lint
@@ -51,29 +56,74 @@ If your change affects retrieval, ranking, normalization, knowledge-graph constr
 Neural Search distinguishes engineering behavior from scientific claims. Please follow these rules:
 
 1. Do not turn weak/silver/heuristic evidence into gold or expert-validated evidence through naming alone.
-2. Do not weaken benchmark assertions simply to make CI pass. If an artifact is genuinely unavailable in a clean checkout, skip or mark that condition explicitly and document why.
+2. Do not weaken benchmark assertions simply to make CI pass. If an artifact is genuinely unavailable in a clean checkout, classify that dependency explicitly and document why.
 3. Keep provenance. New derived fields should record enough source information to be auditable.
 4. Prefer deterministic transformations for ontology normalization and metadata cleanup when possible.
 5. If a metric changes, state whether the change comes from code, corpus state, qrels, model configuration, or regenerated artifacts.
 6. Avoid committing secrets, private datasets, large generated caches, or machine-specific paths.
+7. A green engineering gate is not evidence that a scientific claim improved. Retrieval/scientific changes require the appropriate benchmark, ablation, audit, or calibration evidence.
+
+## Execution-profile rules
+
+The supported operating modes are `demo`, `researcher`, `corpus-builder`, `evaluator`, and `full-stack`.
+
+When adding a dependency or runtime assumption:
+
+- put a package in the base dependency set only if portable/core functionality imports it directly;
+- prefer a named profile extra for specialized infrastructure;
+- keep `demo` runnable without production corpora, GPUs, Postgres, Redis, or network access;
+- keep the portable evaluator contract limited to committed evaluation inputs;
+- do not make `researcher` or `full-stack` silently fall back to scientifically mismatched artifact revisions;
+- update `neural_search/runtime/catalog.py`, tests, and `docs/execution_profiles.md` when profile semantics change.
+
+## Data and artifact rules
+
+The repository contains committed fixtures, frozen evaluation inputs, generated local research assets, and derived reports. `neural_search/runtime/catalog.py` is the first-class capability contract for these assets.
+
+If a new durable artifact affects a user-facing or scientific capability:
+
+1. register it with a stable ID, expected path, lifecycle kind, and purpose;
+2. identify the profile for which it is required, recommended, or produced;
+3. provide a repair command only if one canonical command really reconstructs the expected artifact;
+4. add tests showing that portable profiles remain portable;
+5. include the artifact in reproducibility/reporting surfaces when it can alter scientific results.
+
+Do not assume every corpus, embedding cache, graph export, literature file, or DuckDB database is present in a fresh clone. Read operations must not silently create empty production-looking assets just to satisfy existence checks.
+
+See `docs/artifact_registry.md` for the lifecycle model.
+
+## API and service boundaries
+
+New API work should use `apps/api/application.py` as the composition boundary. Avoid adding unrelated orchestration to the already-large `apps/api/main.py`.
+
+As legacy endpoints are modified, prefer extracting a user-goal-oriented application service that can be called independently of FastAPI. Keep retrieval, graph, literature, and evaluation logic inside their domain modules rather than HTTP routers.
+
+See `docs/architecture/service_boundaries.md` for migration rules.
 
 ## Pull request scope
 
 Keep PRs reviewable. A good PR explains:
 
 - the user or scientific problem being solved;
+- the execution profile(s) affected;
 - the implementation approach;
 - tests and evaluation performed;
 - any data or artifact regeneration required;
+- scientific/evidence-tier impact;
 - known limitations or follow-up work.
 
-For changes that alter public APIs, CLI behavior, configuration, or contributor workflows, update the README or relevant documentation in the same PR.
+For changes that alter public APIs, CLI behavior, configuration, artifact contracts, or contributor workflows, update the README or relevant documentation in the same PR.
 
-## Data and generated artifacts
+## Reproducibility
 
-The repository contains a mix of committed fixtures, reports, and references to locally generated large artifacts. Do not assume every large corpus, embedding cache, graph export, or DuckDB file is present in a fresh clone.
+For changes that depend on nontrivial artifact state, include or reference a profile manifest:
 
-Code and tests should fail with actionable messages or skip explicitly when optional local artifacts are absent. They should not silently create an empty production-looking artifact as a side effect of a read operation.
+```bash
+neural-search profile manifest evaluator \
+  --output reports/reproducibility/evaluator.json
+```
+
+A manifest can describe an incomplete environment too. The important property is that absence and version state are visible rather than implicit.
 
 ## Security
 
