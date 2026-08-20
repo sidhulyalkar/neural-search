@@ -14,6 +14,8 @@ import { MethodsKGPage } from './pages/MethodsKGPage'
 import { DisorderMapPage } from './pages/DisorderMapPage'
 import { KnowledgeExplorerPage } from './pages/KnowledgeExplorerPage'
 import { ExperimentGlancerPage } from './pages/ExperimentGlancerPage'
+import { ReanalysisPage } from './pages/ReanalysisPage'
+import { SystemPage } from './pages/SystemPage'
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
         <Route path="/" element={<SearchPage />} />
         <Route path="/search" element={<ResultsPage />} />
         <Route path="/datasets/:id" element={<DatasetPage />} />
+        <Route path="/reanalysis" element={<ReanalysisPage />} />
+        <Route path="/reanalysis/:id" element={<ReanalysisPage />} />
+        <Route path="/system" element={<SystemPage />} />
         <Route path="/ontology" element={<OntologyPage />} />
         <Route path="/reports" element={<ReportsPage />} />
         <Route path="/evaluation" element={<EvaluationPage />} />

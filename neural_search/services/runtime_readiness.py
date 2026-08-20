@@ -1,21 +1,23 @@
-"""Application service for execution-profile and artifact readiness.
-
-This module is deliberately independent of FastAPI so CLIs, notebooks, agents,
-workers, and HTTP routers can share the same capability semantics.
-"""
+"""Application service for execution-profile, artifact, and capability readiness."""
 
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any
 
 from neural_search.runtime import (
     PROFILES,
     artifact_status,
+    capability_status,
     list_artifacts,
     list_profiles,
+    load_release_index,
+    lock_snapshot,
+    locked_artifact_integrity,
     profile_status,
 )
+from neural_search.runtime.bundles import DEFAULT_INDEX_PATH
 
 
 class RuntimeReadinessService:
@@ -42,4 +44,37 @@ class RuntimeReadinessService:
             return {"artifacts": [artifact_status(artifact_id)]}
         return {
             "artifacts": [artifact_status(item["id"]) for item in list_artifacts()]
+        }
+
+    def capabilities(self, profile: str | None = None) -> dict[str, Any]:
+        selected = (profile or self.active_profile()).strip().lower()
+        if selected not in PROFILES:
+            raise ValueError(f"Unknown execution profile: {selected}")
+        return capability_status(selected)
+
+    def bundles(self) -> dict[str, Any]:
+        """Return release/pin state without hashing multi-GB files per HTTP request."""
+
+        index_path = Path(os.getenv("NEURAL_SEARCH_ARTIFACT_INDEX") or DEFAULT_INDEX_PATH)
+        index = load_release_index(index_path, allow_local_files=True)
+        return {
+            "index_path": str(index_path),
+            "available_bundles": [
+                {
+                    "name": entry.name,
+                    "version": entry.version,
+                    "ref": entry.ref,
+                    "manifest_url": entry.manifest_url,
+                    "manifest_sha256": entry.manifest_sha256,
+                    "compatibility_group": entry.compatibility_group,
+                    "deprecated": entry.deprecated,
+                }
+                for entry in index.bundles
+            ],
+            "lock": lock_snapshot(),
+            "verification": locked_artifact_integrity(),
+            "verification_note": (
+                "HTTP status uses the last SHA-verified stat checkpoint. Run "
+                "`neural-search artifacts verify` for an explicit full-byte SHA-256 pass."
+            ),
         }

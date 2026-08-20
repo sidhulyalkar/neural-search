@@ -26,6 +26,12 @@ ENV/
 env/
 .venv/
 
+# Neural Search local runtime state
+.neural-search/
+*.neural-search.json
+.neural-search-artifact.json
+artifacts/frontend/adoption_events.jsonl
+
 # IDE
 .idea/
 .vscode/

@@ -90,19 +90,65 @@ notebooks = [
   "matplotlib>=3.8.0",
 ]
 researcher = [
-  "neural-search[embeddings,notebooks]",
+  "sentence-transformers>=2.2.0",
+  "jupyter>=1.0.0",
+  "matplotlib>=3.8.0",
 ]
 corpus-builder = [
-  "neural-search[dev,dense]",
+  "networkx>=3.0",
+  "sentence-transformers>=2.2.0",
+  "turbovec>=0.1.0",
+  "faiss-cpu>=1.7.4",
 ]
 evaluator = [
-  "neural-search[dev]",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "networkx>=3.0",
 ]
 full-stack = [
-  "neural-search[dev,postgres,redis,dense,notebooks,spectral]",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "ruff>=0.1.0",
+  "mypy>=1.6.0",
+  "pre-commit>=3.5.0",
+  "respx>=0.20.0",
+  "networkx>=3.0",
+  "pgvector>=0.3",
+  "psycopg[binary]>=3.1",
+  "asyncpg>=0.29.0",
+  "redis>=5.0.0",
+  "rq>=1.15.0",
+  "sentence-transformers>=2.2.0",
+  "turbovec>=0.1.0",
+  "faiss-cpu>=1.7.4",
+  "jupyter>=1.0.0",
+  "matplotlib>=3.8.0",
+  "specparam>=2.0.0",
+  "yasa>=0.6.5",
 ]
 all = [
-  "neural-search[full-stack]",
+  "pytest>=8.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "ruff>=0.1.0",
+  "mypy>=1.6.0",
+  "pre-commit>=3.5.0",
+  "respx>=0.20.0",
+  "networkx>=3.0",
+  "pgvector>=0.3",
+  "psycopg[binary]>=3.1",
+  "asyncpg>=0.29.0",
+  "redis>=5.0.0",
+  "rq>=1.15.0",
+  "sentence-transformers>=2.2.0",
+  "turbovec>=0.1.0",
+  "faiss-cpu>=1.7.4",
+  "jupyter>=1.0.0",
+  "matplotlib>=3.8.0",
+  "specparam>=2.0.0",
+  "yasa>=0.6.5",
 ]
 
 [project.scripts]
