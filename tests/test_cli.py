@@ -1,3 +1,7 @@
+import json
+
+import pytest
+
 from neural_search import cli
 
 
@@ -65,3 +69,23 @@ def test_cli_search_outputs_json(capsys):
 
     assert exit_code == 0
     assert '"query": "go/nogo calcium imaging"' in capsys.readouterr().out
+
+
+def test_cli_doctor_outputs_environment_json(capsys):
+    exit_code = cli.main(["doctor"])
+
+    assert exit_code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["healthy"] is True
+    assert payload["python_supported"] is True
+    assert all(payload["core_dependencies"].values())
+    assert payload["source_checkout"] is True
+    assert payload["source_assets"]["apps/web/package.json"] is True
+
+
+def test_cli_version_flag(capsys):
+    with pytest.raises(SystemExit) as exc_info:
+        cli.main(["--version"])
+
+    assert exc_info.value.code == 0
+    assert capsys.readouterr().out.startswith("neural-search ")
