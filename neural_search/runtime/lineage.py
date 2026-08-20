@@ -12,10 +12,11 @@ import hashlib
 import json
 import os
 import tempfile
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 SIDECAR_FILENAME = ".neural-search-artifact.json"
 SIDECAR_SUFFIX = ".neural-search.json"
@@ -50,7 +51,7 @@ class ArtifactLineage:
     schema_version: int = 1
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "ArtifactLineage":
+    def from_dict(cls, payload: Mapping[str, Any]) -> ArtifactLineage:
         lineage = cls(
             artifact_id=str(payload["artifact_id"]),
             artifact_version=str(payload["artifact_version"]),
