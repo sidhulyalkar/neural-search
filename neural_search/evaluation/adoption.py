@@ -38,7 +38,7 @@ class AdoptionEvent:
     schema_version: int = 1
 
     @classmethod
-    def from_dict(cls, payload: Mapping[str, Any]) -> "AdoptionEvent":
+    def from_dict(cls, payload: Mapping[str, Any]) -> AdoptionEvent:
         event = cls(
             session_id=str(payload["session_id"]),
             timestamp=str(payload["timestamp"]),
@@ -326,8 +326,6 @@ def evaluate_adoption_events(events: Iterable[AdoptionEvent]) -> dict[str, Any]:
                 sessions_with_useful_dataset,
                 total_sessions,
             ),
-            # Legacy names are retained, but now mean the bounded fraction of sessions
-            # with at least one corresponding event rather than events/session.
             "save_rate_per_session": _ratio(sessions_with_save, total_sessions),
             "notebook_generation_rate_per_session": _ratio(
                 sessions_with_notebook_generation,
