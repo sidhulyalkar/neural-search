@@ -100,6 +100,7 @@ def test_cli_profile_list_and_check(capsys):
     checked = json.loads(capsys.readouterr().out)
     assert checked["profile"]["name"] == "demo"
     assert checked["required_artifacts_ready"] is True
+    assert "capabilities" in checked
 
 
 def test_cli_profile_manifest_writes_file(tmp_path, capsys):
@@ -112,10 +113,11 @@ def test_cli_profile_manifest_writes_file(tmp_path, capsys):
     assert exit_code == 0
     stdout_payload = json.loads(capsys.readouterr().out)
     file_payload = json.loads(output.read_text(encoding="utf-8"))
-    assert stdout_payload["schema_version"] == 1
+    assert stdout_payload["schema_version"] == 2
     assert file_payload["profile"] == "demo"
     assert file_payload["profile_ready"] is True
     assert file_payload["artifacts"]
+    assert "artifact_lock" in file_payload
 
 
 def test_cli_artifact_status_is_machine_readable(capsys):
@@ -125,6 +127,35 @@ def test_cli_artifact_status_is_machine_readable(capsys):
     assert payload["artifacts"][0]["id"] == "demo_datasets"
     assert payload["artifacts"][0]["kind"] == "committed_fixture"
     assert payload["artifacts"][0]["exists"] is True
+    assert "lineage_state" in payload["artifacts"][0]
+
+
+def test_cli_artifact_release_index_is_portable(capsys):
+    assert cli.main(["artifacts", "releases"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload == {"bundles": []}
+
+
+def test_cli_empty_artifact_lock_verifies(capsys, tmp_path):
+    lock = tmp_path / "missing-lock.json"
+    assert cli.main(["artifacts", "verify", "--lock", str(lock)]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["valid"] is True
+    assert payload["artifacts"] == []
+
+
+def test_cli_adoption_report_is_machine_readable(capsys):
+    assert cli.main(
+        [
+            "adoption",
+            "report",
+            "--events",
+            "data/eval/adoption_events_demo.jsonl",
+        ]
+    ) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["sessions"] == 3
+    assert payload["interpretation"]["gold_relevance_claim"] is False
 
 
 def test_cli_version_flag(capsys):
