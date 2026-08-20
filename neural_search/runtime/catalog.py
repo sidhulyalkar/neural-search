@@ -83,7 +83,7 @@ ARTIFACTS: dict[str, ArtifactSpec] = {
         id="canonical_benchmark_queries",
         path="data/eval/benchmark_queries_canonical.yaml",
         kind="frozen_evaluation",
-        description="Canonical retrieval benchmark queries.",
+        description="Canonical retrieval benchmark queries committed with the repository.",
     ),
     "canonical_qrels": ArtifactSpec(
         id="canonical_qrels",
@@ -94,8 +94,12 @@ ARTIFACTS: dict[str, ArtifactSpec] = {
     "ablation_corpus": ArtifactSpec(
         id="ablation_corpus",
         path="data/eval/ablation_corpus_from_packets.jsonl",
-        kind="frozen_evaluation",
-        description="Frozen evaluation corpus used by the retrieval ablation ladder.",
+        kind="generated_local",
+        description=(
+            "Evaluation corpus derived from evidence packets for the full retrieval "
+            "ablation ladder; not expected in a fresh clone."
+        ),
+        producer="evaluation evidence-packet pipeline",
     ),
     "raw_corpus_inputs": ArtifactSpec(
         id="raw_corpus_inputs",
@@ -238,17 +242,21 @@ PROFILES: dict[str, ExecutionProfile] = {
     "evaluator": ExecutionProfile(
         name="evaluator",
         description=(
-            "Reproduce retrieval experiments, qrels metrics, ablations, confidence "
-            "intervals, calibration, and scientific regression gates."
+            "Reproduce portable retrieval checks and, when local assets are available, "
+            "run full qrels metrics, ablations, confidence intervals, calibration, and "
+            "scientific regression gates."
         ),
         install_extra="evaluator",
         required_modules=_CORE_MODULES + ("pytest", "networkx"),
         required_artifacts=(
             "canonical_benchmark_queries",
             "canonical_qrels",
-            "ablation_corpus",
         ),
-        recommended_artifacts=("production_graph", "dense_field_embeddings"),
+        recommended_artifacts=(
+            "ablation_corpus",
+            "production_graph",
+            "dense_field_embeddings",
+        ),
         produced_artifacts=("current_artifact_manifest",),
         commands=(
             "python -m pip install -e '.[evaluator]'",
@@ -257,8 +265,8 @@ PROFILES: dict[str, ExecutionProfile] = {
             "python scripts/build_artifact_manifest.py",
         ),
         resource_notes=(
-            "The portable benchmark can run without rebuilding the production corpus.",
-            "Full dense/graph ablations require their generated local artifacts.",
+            "Canonical benchmark queries and qrels are committed for a portable baseline.",
+            "Full dense/graph ablations require generated local evaluation artifacts.",
             "Do not promote silver/LLM judgments to human-gold claims.",
         ),
     ),
@@ -287,6 +295,7 @@ PROFILES: dict[str, ExecutionProfile] = {
             "paper_dataset_links",
             "canonical_benchmark_queries",
             "canonical_qrels",
+            "ablation_corpus",
             "current_artifact_manifest",
         ),
         produced_artifacts=(),
