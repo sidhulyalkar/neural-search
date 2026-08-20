@@ -4,18 +4,25 @@ Neural Search keeps code, small fixtures, and canonical evaluation inputs in Git
 
 ## The contract
 
-A published bundle is immutable. Its manifest records:
+A published release is immutable at **two levels**.
+
+The release index pins:
 
 - bundle name and version;
-- a compatibility group such as `corpus:v09`;
-- each artifact ID and runtime destination;
+- immutable HTTPS manifest URL;
+- SHA-256 of the manifest itself;
+- compatibility group such as `corpus:v09`.
+
+The pinned bundle manifest then records:
+
+- each artifact ID and cache-relative destination;
 - HTTPS source URL;
 - exact byte size and SHA-256 digest;
 - artifact version and content-addressed lineage ID;
 - parent lineage IDs for derived artifacts;
 - optional source commit and metadata.
 
-Changing any bytes requires a new artifact digest and therefore a new lineage ID. Published manifests and object URLs must not be edited in place.
+Changing either the manifest bytes or any artifact bytes requires a new release version. A stable `name@version` must never be edited in place.
 
 The repository ships `data/artifacts/releases/index.json` as the release-index contract. It is intentionally empty until actual immutable objects are published. Do not add fake URLs to make the UI look complete.
 
@@ -37,6 +44,8 @@ Both locations can be overridden with `NEURAL_SEARCH_ARTIFACT_CACHE` and `NEURAL
 
 The lock is local state and is ignored by Git. Reproducibility manifests embed a snapshot of the lock so experiment outputs can record what was installed without committing the workstation cache.
 
+Each installed artifact also records the size and modification time observed during SHA verification. Normal runtime resolution uses that inexpensive checkpoint. If the file changes afterward, Neural Search refuses to resolve it from the bundle lock until it is re-verified.
+
 ## Fetch and verify
 
 List published releases:
@@ -45,11 +54,15 @@ List published releases:
 neural-search artifacts releases
 ```
 
-Install one immutable bundle:
+Once a real release has been published, install it with its immutable ref, for example:
 
 ```bash
 neural-search artifacts fetch neural-search-researcher@0.9.2
 ```
+
+The example above is illustrative until that ref actually appears in `artifacts releases`.
+
+For normal release-index fetching, Neural Search verifies the **manifest SHA-256 first**, then verifies every artifact declared by that manifest.
 
 The downloader:
 
@@ -59,22 +72,25 @@ The downloader:
 4. streams the file into a temporary path;
 5. verifies SHA-256 before installation;
 6. atomically replaces the destination;
-7. writes the lineage sidecar;
-8. updates the local artifact lock.
+7. writes a validated lineage sidecar;
+8. records a verified stat checkpoint in the local artifact lock;
+9. removes stale pins from an older version of the same bundle.
 
-Re-verify every pinned file later:
+Re-hash every pinned file explicitly:
 
 ```bash
 neural-search artifacts verify
 ```
 
-Inspect pins:
+Inspect pins without a full multi-gigabyte re-hash:
 
 ```bash
 neural-search artifacts lock
 ```
 
-Local-file sources exist only for controlled tests or institutional mirrors and must be explicitly enabled for artifact bytes with `--allow-local-files`.
+The `/system` runtime page also uses the lightweight verified stat checkpoint. It does not claim to have re-hashed all artifact bytes on every page load.
+
+Local-file manifest/artifact sources exist only for controlled tests or institutional mirrors and must be explicitly enabled with `--allow-local-files`. Passing `--manifest` directly is a testing/mirror escape hatch: artifact bytes are still pinned by that manifest, but the manifest is not considered an indexed immutable release unless it is also added to the release index with its own digest.
 
 ## Content-addressed lineage
 
@@ -90,7 +106,9 @@ Directories use:
 <directory>/.neural-search-artifact.json
 ```
 
-A lineage sidecar records the artifact's content digest plus exact parent lineage IDs. For example:
+A lineage sidecar records the artifact's content digest plus exact parent lineage IDs. The lineage ID is itself deterministically derived from artifact ID, artifact version, and content SHA-256. Malformed or internally inconsistent lineage records are rejected.
+
+For example:
 
 ```text
 raw source payloads
@@ -117,6 +135,8 @@ neural-search artifacts stamp dense_field_embeddings --version 0.9
 
 Portable committed fixtures usually do not need sidecars because Git already provides immutable identity.
 
+If the artifact bytes change after stamping, bundle publication fails. Rebuild/review the output and stamp a new lineage rather than reusing stale provenance.
+
 ## Compatibility semantics
 
 Neural Search distinguishes four situations:
@@ -128,7 +148,7 @@ Neural Search distinguishes four situations:
 
 The second case is important for distribution. A researcher should not need all raw archive downloads merely to use a verified normalized-corpus release. The lineage reference remains auditable even when the parent bytes are remote.
 
-## Publish a bundle manifest
+## Publish a bundle
 
 First upload immutable artifact bytes to the chosen HTTPS origin. Then build a manifest from locally stamped artifacts:
 
@@ -142,9 +162,19 @@ neural-search artifacts bundle-build \
   --output releases/neural-search-researcher-0.9.2.json
 ```
 
-The command refuses unusable artifacts, directory artifacts that have not been archived, unstamped artifacts by default, missing required parent declarations, and compatibility-group conflicts.
+The command refuses unusable artifacts, directory artifacts that have not been archived, unstamped artifacts by default, changed bytes with stale lineage, missing required parent declarations, version conflicts, and compatibility-group conflicts.
 
-Once the manifest itself is hosted immutably, add its URL to `data/artifacts/releases/index.json` in a normal reviewed PR.
+Upload the manifest itself to an immutable HTTPS location. Then pin it in the repository release index:
+
+```bash
+neural-search artifacts release-add \
+  --manifest releases/neural-search-researcher-0.9.2.json \
+  --manifest-url https://example.org/neural-search/manifests/neural-search-researcher-0.9.2.json
+```
+
+`release-add` computes the manifest SHA-256, writes release-index schema v2, and refuses to mutate an existing `name@version`. If a release must change, increment its version.
+
+Commit the updated `data/artifacts/releases/index.json` through a normal reviewed PR.
 
 ## Reproducibility manifests
 
