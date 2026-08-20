@@ -144,6 +144,8 @@ def run_demo() -> int:
     # Step 5: Run benchmark queries
     print()
     print_step(5, "Running benchmark evaluation...")
+    passed: int | None = None
+    total: int | None = None
     try:
         report = run_full_benchmark(datasets=demo_data)
         passed = sum(1 for q in report.queries if q.label_recall_at_10 >= 0.5)
@@ -209,7 +211,7 @@ def run_demo() -> int:
     print()
     print_step(8, "Running demo search...")
     demo_query = "Find reversal learning datasets with reward omission"
-    results = search_datasets(demo_query, {}, demo_data, limit=5)
+    results = search_datasets(demo_query, {}, datasets=demo_data, limit=5)
     print_success(f"Search: \"{demo_query}\"")
     for i, result in enumerate(results.results[:3], 1):
         why = result.why_matched[0] if result.why_matched else "keyword match"
@@ -223,7 +225,10 @@ def run_demo() -> int:
     print(f"  {Colors.GREEN}✓{Colors.RESET} Datasets indexed: {len(demo_data)}")
     print(f"  {Colors.GREEN}✓{Colors.RESET} Cards generated: {cards_generated}")
     print(f"  {Colors.GREEN}✓{Colors.RESET} Notebook created: {output_path.name}")
-    print(f"  {Colors.GREEN}✓{Colors.RESET} Benchmark passed: {passed}/{total} queries")
+    if passed is not None and total is not None:
+        print(f"  {Colors.GREEN}✓{Colors.RESET} Benchmark passed: {passed}/{total} queries")
+    else:
+        print(f"  {Colors.YELLOW}!{Colors.RESET} Benchmark unavailable; see warning above")
     print()
     print(f"  {Colors.DIM}Completed in {elapsed:.1f}s{Colors.RESET}")
 
