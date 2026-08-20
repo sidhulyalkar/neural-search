@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
 from neural_search.ingestion.demo_seed import build_demo_seed
-from neural_search.runtime import artifact_status
+from neural_search.runtime import PROFILES, artifact_status
 
 
 @lru_cache(maxsize=4)
@@ -59,17 +60,56 @@ def dataset_lookup_keys(record: Mapping[str, Any]) -> set[str]:
 
 
 class CorpusAccessService:
-    """Resolve verified real-corpus assets with a deterministic demo fallback."""
+    """Resolve the real corpus with an explicit, profile-aware demo policy."""
 
-    def load(self) -> tuple[list[dict[str, Any]], str]:
+    def __init__(
+        self,
+        *,
+        profile: str | None = None,
+        allow_demo_fallback: bool | None = None,
+    ) -> None:
+        configured = (profile or os.getenv("NEURAL_SEARCH_PROFILE", "demo")).strip().lower()
+        self.profile = configured if configured in PROFILES else "demo"
+        self.allow_demo_fallback = allow_demo_fallback
+
+    def _fallback_allowed(self, override: bool | None) -> bool:
+        if override is not None:
+            return override
+        if self.allow_demo_fallback is not None:
+            return self.allow_demo_fallback
+        return self.profile == "demo"
+
+    def load(
+        self,
+        *,
+        allow_demo_fallback: bool | None = None,
+    ) -> tuple[list[dict[str, Any]], str]:
         status = artifact_status("full_corpus_v09")
         if status["usable"]:
             path = Path(status["absolute_path"])
-            return list(_load_jsonl(str(path), path.stat().st_mtime_ns)), "full_corpus_v09"
-        return build_demo_seed(), "demo_fallback"
+            return (
+                list(_load_jsonl(str(path), path.stat().st_mtime_ns)),
+                "full_corpus_v09",
+            )
 
-    def find(self, dataset_id: str) -> tuple[dict[str, Any], str]:
-        records, source = self.load()
+        if self._fallback_allowed(allow_demo_fallback):
+            return build_demo_seed(), "demo_fallback"
+
+        raise ValueError(
+            "The active execution profile requires the real dataset corpus, but "
+            "`full_corpus_v09` is unavailable. Run `neural-search profile check "
+            f"{self.profile}` for exact readiness, install a published researcher "
+            "artifact bundle when available, or build the corpus locally. Neural Search "
+            "will not silently substitute demo data for a research-profile query."
+        )
+
+    def find(
+        self,
+        dataset_id: str,
+        *,
+        allow_demo_fallback: bool | None = None,
+    ) -> tuple[dict[str, Any], str]:
+        records, source = self.load(allow_demo_fallback=allow_demo_fallback)
         wanted = dataset_id.casefold()
         for record in records:
             if wanted in dataset_lookup_keys(record):
