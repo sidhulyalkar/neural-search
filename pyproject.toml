@@ -1,17 +1,30 @@
 [project]
 name = "neural-search"
 version = "0.1.0"
-description = "Experiment-aware semantic discovery for neural and behavioral datasets."
+description = "Experiment-aware semantic discovery for reusable neuroscience datasets, literature, and methods."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "Neural Search Team"}
+    {name = "Sidharth Hulyalkar"}
 ]
-keywords = ["neuroscience", "search", "NWB", "BIDS", "DANDI", "OpenNeuro"]
+keywords = [
+  "neuroscience",
+  "scientific-search",
+  "dataset-discovery",
+  "knowledge-graphs",
+  "data-reuse",
+  "NWB",
+  "BIDS",
+  "DANDI",
+  "OpenNeuro",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering",
 ]
 
@@ -32,6 +45,12 @@ dependencies = [
   "duckdb>=0.9.0",
   "scipy>=1.11.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/sidhulyalkar/neural-search"
+Repository = "https://github.com/sidhulyalkar/neural-search"
+Issues = "https://github.com/sidhulyalkar/neural-search/issues"
+Documentation = "https://github.com/sidhulyalkar/neural-search/tree/main/docs"
 
 [project.optional-dependencies]
 dev = [
@@ -70,7 +89,7 @@ notebooks = [
   "matplotlib>=3.8.0",
 ]
 all = [
-  "neural-search[dev,postgres,redis,embeddings,notebooks,spectral]",
+  "neural-search[dev,postgres,redis,dense,notebooks,spectral]",
 ]
 
 [project.scripts]
