@@ -5,6 +5,11 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
+from neural_search.software.adjudication import (
+    AdjudicationCheck,
+    AdjudicationDisposition,
+    FindingAdjudication,
+)
 from neural_search.software.contribution import (
     ContributionChannel,
     ContributionPacket,
@@ -94,7 +99,30 @@ def _upstream_ready_finding() -> tuple[AuditFinding, VerificationRun]:
     return finding, verification
 
 
-def test_contribution_packet_requires_policy_review_and_human_approval() -> None:
+def _surviving_adjudication() -> FindingAdjudication:
+    check_names = [
+        "documentation",
+        "tests",
+        "history",
+        "existing_issues",
+        "existing_pull_requests",
+        "release_notes",
+        "algorithm_reference",
+    ]
+    return FindingAdjudication(
+        adjudication_id="a1",
+        hypothesis_id="h1",
+        independent_reviewer_run_ids=["review-run-2"],
+        checks=[
+            AdjudicationCheck(name=name, completed=True, evidence_refs=[f"evidence:{name}"])
+            for name in check_names
+        ],
+        disposition=AdjudicationDisposition.SURVIVES,
+        rationale="Independent review found no documented or historical explanation.",
+    )
+
+
+def test_contribution_packet_requires_policy_review_adjudication_and_human_approval() -> None:
     finding, verification = _upstream_ready_finding()
     reviewed = {
         name: f"https://example.test/{name.lower()}"
@@ -111,6 +139,7 @@ def test_contribution_packet_requires_policy_review_and_human_approval() -> None
     packet = ContributionPacket(
         finding=finding,
         verifications=[verification],
+        adjudication=_surviving_adjudication(),
         policy=policy,
         executive_summary="A verified discrepancy exists under a narrow condition.",
         affected_code=["module.py:function"],
