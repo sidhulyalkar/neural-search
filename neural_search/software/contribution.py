@@ -7,6 +7,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
+from neural_search.software.adjudication import FindingAdjudication
 from neural_search.software.schema import AuditFinding, AuditState, VerificationRun
 
 
@@ -49,6 +50,7 @@ class ContributionPolicy(BaseModel):
 class ContributionPacket(BaseModel):
     finding: AuditFinding
     verifications: list[VerificationRun]
+    adjudication: FindingAdjudication
     policy: ContributionPolicy
     executive_summary: str
     mathematical_or_algorithmic_rationale: str | None = None
@@ -71,6 +73,10 @@ class ContributionPacket(BaseModel):
             raise ValueError("contribution packet requires an upstream-ready finding")
         if not self.verifications:
             raise ValueError("contribution packet requires executable verification")
+        if self.adjudication.hypothesis_id != self.finding.hypothesis_id:
+            raise ValueError("adjudication must review the finding's hypothesis")
+        if not self.adjudication.survived:
+            raise ValueError("contribution packet requires a hypothesis that survived adjudication")
         if self.policy.missing_required_documents:
             missing = ", ".join(self.policy.missing_required_documents)
             raise ValueError(f"contribution policy review is incomplete: {missing}")
