@@ -6,13 +6,24 @@ from typing import Any
 
 import httpx
 
-from neural_search.inference.schemas import InferenceRequest, ModelProfile, ProviderSettings
+from neural_search.inference.schemas import (
+    EmbeddingRequest,
+    InferenceRequest,
+    ModelProfile,
+    ProviderSettings,
+    RerankRequest,
+)
 
 
 class OpenAICompatibleProvider:
     """Small, dependency-light client for OpenAI-compatible model servers."""
 
-    def __init__(self, settings: ProviderSettings, *, transport: httpx.BaseTransport | None = None):
+    def __init__(
+        self,
+        settings: ProviderSettings,
+        *,
+        transport: httpx.BaseTransport | None = None,
+    ) -> None:
         self.settings = settings
         headers = {"Content-Type": "application/json", **settings.extra_headers}
         if settings.api_key:
@@ -39,15 +50,25 @@ class OpenAICompatibleProvider:
         return {
             "healthy": True,
             "provider": self.settings.name,
-            "models": [item.get("id") for item in payload.get("data", []) if isinstance(item, dict)],
+            "models": [
+                item.get("id")
+                for item in payload.get("data", [])
+                if isinstance(item, dict)
+            ],
         }
 
     def generate(self, request: InferenceRequest, profile: ModelProfile) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": profile.model,
             "messages": [message.model_dump() for message in request.messages],
-            "temperature": request.temperature if request.temperature is not None else profile.temperature,
-            "max_tokens": request.max_tokens if request.max_tokens is not None else profile.max_tokens,
+            "temperature": (
+                request.temperature
+                if request.temperature is not None
+                else profile.temperature
+            ),
+            "max_tokens": (
+                request.max_tokens if request.max_tokens is not None else profile.max_tokens
+            ),
         }
         if request.tools:
             payload["tools"] = request.tools
@@ -74,4 +95,57 @@ class OpenAICompatibleProvider:
             "usage": data.get("usage", {}),
             "tool_calls": message.get("tool_calls") or [],
             "raw": data,
+        }
+
+    def embed(self, request: EmbeddingRequest, profile: ModelProfile) -> dict[str, Any]:
+        """Call the OpenAI/NVIDIA-compatible `/v1/embeddings` endpoint."""
+
+        payload: dict[str, Any] = {
+            "model": profile.model,
+            "input": request.inputs,
+            "input_type": request.input_type,
+            "truncate": request.truncate,
+        }
+        if request.dimensions is not None:
+            payload["dimensions"] = request.dimensions
+        response = self._client.post("/v1/embeddings", json=payload)
+        response.raise_for_status()
+        data = response.json()
+        rows = sorted(data.get("data", []), key=lambda row: int(row.get("index", 0)))
+        return {
+            "vectors": [row.get("embedding", []) for row in rows],
+            "model": data.get("model", profile.model),
+            "usage": data.get("usage", {}),
+            "raw": data,
+            "payload": payload,
+        }
+
+    def rerank(self, request: RerankRequest, profile: ModelProfile) -> dict[str, Any]:
+        """Call NVIDIA NeMo Retriever Reranking NIM `/v1/ranking`."""
+
+        payload: dict[str, Any] = {
+            "model": profile.model,
+            "query": {"text": request.query},
+            "passages": [{"text": passage} for passage in request.passages],
+            "truncate": request.truncate,
+        }
+        response = self._client.post("/v1/ranking", json=payload)
+        response.raise_for_status()
+        data = response.json()
+        rankings = []
+        for rank in data.get("rankings", []):
+            index = int(rank["index"])
+            rankings.append(
+                {
+                    "index": index,
+                    "score": float(rank.get("logit", rank.get("score", 0.0))),
+                    "passage": request.passages[index],
+                }
+            )
+        return {
+            "rankings": rankings,
+            "model": data.get("model", profile.model),
+            "usage": data.get("usage", {}),
+            "raw": data,
+            "payload": payload,
         }
