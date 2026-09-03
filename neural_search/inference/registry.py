@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import os
 
-from neural_search.inference.schemas import InferenceCapability, ModelProfile, ProviderSettings
+from neural_search.inference.schemas import (
+    InferenceCapability,
+    ModelProfile,
+    ProviderSettings,
+)
 
 
 class InferenceRegistry:
