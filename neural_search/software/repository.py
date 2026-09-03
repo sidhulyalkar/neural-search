@@ -1,5 +1,7 @@
 """Deterministic local repository inventory for scientific software audits."""
 
+# ruff: noqa: I001
+
 from __future__ import annotations
 
 import hashlib
