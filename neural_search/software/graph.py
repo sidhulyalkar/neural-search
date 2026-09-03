@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
-from neural_search.graph.schema import KnowledgeGraphEdge, KnowledgeGraphNode, make_edge_id, make_node_id
+from neural_search.graph.schema import (
+    SUPPORTED_EDGE_TYPES,
+    SUPPORTED_NODE_TYPES,
+    KnowledgeGraphEdge,
+    KnowledgeGraphNode,
+    make_edge_id,
+    make_node_id,
+)
 from neural_search.software.schema import (
     AuditFinding,
     AuditHypothesis,
@@ -12,6 +19,41 @@ from neural_search.software.schema import (
     SoftwareRelease,
     VerificationRun,
 )
+
+SOFTWARE_NODE_TYPES = {
+    "software_package",
+    "software_release",
+    "software_component",
+    "audit_hypothesis",
+    "verification_run",
+    "software_audit_finding",
+    "maintainer_decision",
+}
+
+SOFTWARE_EDGE_TYPES = {
+    "software_package_has_release",
+    "software_package_has_component",
+    "software_release_contains_component",
+    "paper_uses_software",
+    "paper_uses_software_component",
+    "software_component_implements_method",
+    "audit_hypothesis_concerns_component",
+    "software_audit_finding_supported_by_verification",
+    "software_audit_finding_affects_release",
+    "paper_exposed_to_software_finding",
+    "dataset_reanalysis_candidate_for_software_finding",
+    "maintainer_decision_adjudicates_finding",
+}
+
+
+def register_software_graph_schema() -> None:
+    """Register the additive software vocabulary with the shared KG schema sets."""
+
+    SUPPORTED_NODE_TYPES.update(SOFTWARE_NODE_TYPES)
+    SUPPORTED_EDGE_TYPES.update(SOFTWARE_EDGE_TYPES)
+
+
+register_software_graph_schema()
 
 
 def package_node(record: SoftwarePackage) -> KnowledgeGraphNode:
@@ -86,9 +128,16 @@ def maintainer_decision_node(record: MaintainerDecision) -> KnowledgeGraphNode:
     )
 
 
-def relation(source: KnowledgeGraphNode, edge_type: str, target: KnowledgeGraphNode, **properties: object) -> KnowledgeGraphEdge:
+def relation(
+    source: KnowledgeGraphNode,
+    edge_type: str,
+    target: KnowledgeGraphNode,
+    **properties: object,
+) -> KnowledgeGraphEdge:
     """Create a stable provenance relationship between software graph nodes."""
 
+    if edge_type not in SOFTWARE_EDGE_TYPES:
+        raise ValueError(f"unsupported software graph edge type: {edge_type}")
     return KnowledgeGraphEdge(
         edge_id=make_edge_id(source.node_id, edge_type, target.node_id),
         source_node_id=source.node_id,
