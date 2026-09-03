@@ -13,11 +13,13 @@ from typing import Any
 
 from neural_search.evaluation.run_benchmark import main as benchmark_main
 from neural_search.inference import (
+    EmbeddingRequest,
     InferenceCapability,
     InferenceMessage,
     InferenceRegistry,
     InferenceRequest,
     InferenceService,
+    RerankRequest,
 )
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL, seed_demo_database
 from neural_search.ingestion.services import ingest_source
@@ -76,15 +78,20 @@ def _doctor_payload() -> dict[str, Any]:
     }
 
 
-def _configure_inference_cli(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _configure_inference_cli(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     models_parser = subparsers.add_parser("models", help="Inspect configured inference models.")
     models_subparsers = models_parser.add_subparsers(dest="models_command", required=True)
     models_subparsers.add_parser("list", help="List provider and capability configuration.")
     models_subparsers.add_parser("doctor", help="Probe configured inference endpoints.")
 
     inference_parser = subparsers.add_parser("inference", help="Run provider-neutral inference.")
-    inference_subparsers = inference_parser.add_subparsers(dest="inference_command", required=True)
-    run_parser = inference_subparsers.add_parser("run", help="Run a single inference request.")
+    inference_subparsers = inference_parser.add_subparsers(
+        dest="inference_command",
+        required=True,
+    )
+    run_parser = inference_subparsers.add_parser("run", help="Run a generation request.")
     run_parser.add_argument("prompt")
     run_parser.add_argument(
         "--capability",
@@ -95,6 +102,35 @@ def _configure_inference_cli(subparsers: argparse._SubParsersAction[argparse.Arg
     run_parser.add_argument("--system")
     run_parser.add_argument("--input-revision")
     run_parser.add_argument("--prompt-template")
+
+    embed_parser = inference_subparsers.add_parser(
+        "embed",
+        help="Generate retrieval embeddings through the configured embedding NIM.",
+    )
+    embed_parser.add_argument("text", nargs="+")
+    embed_parser.add_argument("--profile")
+    embed_parser.add_argument("--input-type", choices=["query", "passage"], default="passage")
+    embed_parser.add_argument("--truncate", default="END")
+    embed_parser.add_argument("--dimensions", type=int)
+    embed_parser.add_argument("--input-revision")
+
+    rerank_parser = inference_subparsers.add_parser(
+        "rerank",
+        help="Rerank passages through the configured reranking NIM.",
+    )
+    rerank_parser.add_argument("query")
+    rerank_parser.add_argument("passage", nargs="+")
+    rerank_parser.add_argument("--profile")
+    rerank_parser.add_argument("--truncate", default="END")
+    rerank_parser.add_argument("--input-revision")
+
+
+def _inference_metadata(args: argparse.Namespace) -> dict[str, str]:
+    values = {
+        "input_revision": getattr(args, "input_revision", None),
+        "prompt_template": getattr(args, "prompt_template", None),
+    }
+    return {key: value for key, value in values.items() if value is not None}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -167,26 +203,42 @@ def main(argv: list[str] | None = None) -> int:
             service.close()
     if args.command == "inference":
         registry = InferenceRegistry.from_env()
-        messages: list[InferenceMessage] = []
-        if args.system:
-            messages.append(InferenceMessage(role="system", content=args.system))
-        messages.append(InferenceMessage(role="user", content=args.prompt))
-        request = InferenceRequest(
-            messages=messages,
-            capability=InferenceCapability(args.capability),
-            model_profile=args.profile,
-            metadata={
-                key: value
-                for key, value in {
-                    "input_revision": args.input_revision,
-                    "prompt_template": args.prompt_template,
-                }.items()
-                if value is not None
-            },
-        )
         service = InferenceService(registry)
         try:
-            result = service.generate(request)
+            if args.inference_command == "embed":
+                result = service.embed(
+                    EmbeddingRequest(
+                        inputs=args.text,
+                        model_profile=args.profile,
+                        input_type=args.input_type,
+                        truncate=args.truncate,
+                        dimensions=args.dimensions,
+                        metadata=_inference_metadata(args),
+                    )
+                )
+            elif args.inference_command == "rerank":
+                result = service.rerank(
+                    RerankRequest(
+                        query=args.query,
+                        passages=args.passage,
+                        model_profile=args.profile,
+                        truncate=args.truncate,
+                        metadata=_inference_metadata(args),
+                    )
+                )
+            else:
+                messages: list[InferenceMessage] = []
+                if args.system:
+                    messages.append(InferenceMessage(role="system", content=args.system))
+                messages.append(InferenceMessage(role="user", content=args.prompt))
+                result = service.generate(
+                    InferenceRequest(
+                        messages=messages,
+                        capability=InferenceCapability(args.capability),
+                        model_profile=args.profile,
+                        metadata=_inference_metadata(args),
+                    )
+                )
             _print_json(result.model_dump(mode="json"))
             return 0
         finally:
