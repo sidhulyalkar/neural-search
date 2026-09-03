@@ -12,6 +12,13 @@ from pathlib import Path
 from typing import Any
 
 from neural_search.evaluation.run_benchmark import main as benchmark_main
+from neural_search.inference import (
+    InferenceCapability,
+    InferenceMessage,
+    InferenceRegistry,
+    InferenceRequest,
+    InferenceService,
+)
 from neural_search.ingestion.demo_seed import DEFAULT_DATABASE_URL, seed_demo_database
 from neural_search.ingestion.services import ingest_source
 from neural_search.reports.dataset_compilation import main as report_main
@@ -69,6 +76,27 @@ def _doctor_payload() -> dict[str, Any]:
     }
 
 
+def _configure_inference_cli(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    models_parser = subparsers.add_parser("models", help="Inspect configured inference models.")
+    models_subparsers = models_parser.add_subparsers(dest="models_command", required=True)
+    models_subparsers.add_parser("list", help="List provider and capability configuration.")
+    models_subparsers.add_parser("doctor", help="Probe configured inference endpoints.")
+
+    inference_parser = subparsers.add_parser("inference", help="Run provider-neutral inference.")
+    inference_subparsers = inference_parser.add_subparsers(dest="inference_command", required=True)
+    run_parser = inference_subparsers.add_parser("run", help="Run a single inference request.")
+    run_parser.add_argument("prompt")
+    run_parser.add_argument(
+        "--capability",
+        choices=[capability.value for capability in InferenceCapability],
+        default=InferenceCapability.CHAT.value,
+    )
+    run_parser.add_argument("--profile")
+    run_parser.add_argument("--system")
+    run_parser.add_argument("--input-revision")
+    run_parser.add_argument("--prompt-template")
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run the Neural Search CLI."""
 
@@ -93,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     subparsers.add_parser("benchmark", help="Run the retrieval benchmark.")
     subparsers.add_parser("report", help="Generate the dataset compilation report.")
+    _configure_inference_cli(subparsers)
 
     ingest_parser = subparsers.add_parser("ingest", help="Ingest live source records.")
     ingest_subparsers = ingest_parser.add_subparsers(dest="source", required=True)
@@ -121,6 +150,47 @@ def main(argv: list[str] | None = None) -> int:
         return benchmark_main(remainder)
     if args.command == "report":
         return report_main(remainder)
+    if args.command == "models":
+        registry = InferenceRegistry.from_env()
+        if args.models_command == "list":
+            _print_json(registry.describe())
+            return 0
+        service = InferenceService(registry)
+        try:
+            if not registry.providers:
+                _print_json({"healthy": False, "error": "no inference providers configured"})
+                return 1
+            payload = service.health()
+            _print_json(payload)
+            return 0 if payload["healthy"] else 1
+        finally:
+            service.close()
+    if args.command == "inference":
+        registry = InferenceRegistry.from_env()
+        messages: list[InferenceMessage] = []
+        if args.system:
+            messages.append(InferenceMessage(role="system", content=args.system))
+        messages.append(InferenceMessage(role="user", content=args.prompt))
+        request = InferenceRequest(
+            messages=messages,
+            capability=InferenceCapability(args.capability),
+            model_profile=args.profile,
+            metadata={
+                key: value
+                for key, value in {
+                    "input_revision": args.input_revision,
+                    "prompt_template": args.prompt_template,
+                }.items()
+                if value is not None
+            },
+        )
+        service = InferenceService(registry)
+        try:
+            result = service.generate(request)
+            _print_json(result.model_dump(mode="json"))
+            return 0
+        finally:
+            service.close()
     if args.command == "ingest":
         result = ingest_source(
             args.source,
