@@ -6,7 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from neural_search.software.repository import inventory_repository, read_source_component
+from neural_search.software.repository import (
+    inventory_repository,
+    read_source_component,
+)
 
 
 def test_repository_inventory_hashes_source_and_policy_files(tmp_path: Path) -> None:
