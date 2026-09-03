@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import hashlib
-import subprocess
 from pathlib import Path
+import subprocess
 
 from pydantic import BaseModel, Field
 
@@ -77,7 +77,8 @@ def inventory_repository(
     """Inventory text-like source files without interpreting model output.
 
     The inventory follows the local checkout supplied by the researcher and excludes
-    `.git`, virtual environments, generated build directories, and oversized files.
+    symlinks, `.git`, virtual environments, generated build directories, and oversized
+    files.
     """
 
     root = root.resolve()
@@ -88,6 +89,8 @@ def inventory_repository(
     files: list[RepositoryFile] = []
     total_bytes = 0
     for path in sorted(root.rglob("*")):
+        if path.is_symlink():
+            continue
         if not path.is_file() or ignored_parts.intersection(path.relative_to(root).parts):
             continue
         if path.suffix.lower() not in suffixes:
@@ -109,7 +112,7 @@ def inventory_repository(
     policies: dict[str, str] = {}
     for relative in DEFAULT_POLICY_FILES:
         candidate = root / relative
-        if candidate.is_file():
+        if candidate.is_file() and not candidate.is_symlink():
             policies[relative] = hashlib.sha256(candidate.read_bytes()).hexdigest()
 
     return RepositorySnapshot(
