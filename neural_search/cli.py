@@ -91,6 +91,7 @@ def main(argv: list[str] | None = None) -> int:
         "doctor",
         help="Check the local Python environment and source-checkout assets.",
     )
+    subparsers.add_parser("decoder-study", help="Evaluate neural decoder transfer protocols.")
     subparsers.add_parser("benchmark", help="Run the retrieval benchmark.")
     subparsers.add_parser("report", help="Generate the dataset compilation report.")
 
@@ -117,6 +118,10 @@ def main(argv: list[str] | None = None) -> int:
         payload = _doctor_payload()
         _print_json(payload)
         return 0 if payload["healthy"] else 1
+    if args.command == "decoder-study":
+        from neural_search.decoder_generalization.__main__ import main as decoder_main
+
+        return decoder_main(remainder)
     if args.command == "benchmark":
         return benchmark_main(remainder)
     if args.command == "report":

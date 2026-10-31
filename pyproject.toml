@@ -63,6 +63,9 @@ dev = [
   "respx>=0.20.0",
   "networkx>=3.0",
 ]
+decoder = [
+  "moabb>=1.1",
+]
 spectral = [
   "specparam>=2.0.0",
   "yasa>=0.6.5",

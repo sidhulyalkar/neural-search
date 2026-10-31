@@ -102,6 +102,28 @@ make web
 
 Open `http://localhost:5173`. The Vite development server proxies `/api` and `/healthz` to the backend on `http://localhost:8000`.
 
+## Neural decoder generalization pilot
+
+A new evidence-first study runner compares **within-session**, **cross-session**,
+and **cross-subject** transfer using a deterministic log-variance + shrinkage-LDA
+baseline. It includes partition leakage checks, fold-level confusion matrices,
+dataset fingerprints, and reproducible JSON reports.
+
+```bash
+neural-search decoder-study --source synthetic \
+  --output reports/decoder_generalization/synthetic.json
+
+# Optional public EEG study; downloads data if not cached
+pip install -e '.[decoder]'
+neural-search decoder-study --source moabb --subjects 1 2 3 \
+  --output reports/decoder_generalization/bnci2014_001.json
+```
+
+Read [decoder generalization pilot](docs/decoder_generalization_pilot.md) for
+scope, scientific limitations, required dataset review, and next evaluations.
+Synthetic scores and descriptive shifts are **not causal evidence** of real
+neural-decoder failure mechanisms.
+
 ## Optional capabilities
 
 Install only what you need. This keeps the first setup much smaller and makes missing research infrastructure explicit.
