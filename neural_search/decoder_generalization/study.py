@@ -75,7 +75,7 @@ def build_folds(
                 if len(labels) < 2 or any(np.sum(y[indices] == c) < 3 for c in labels):
                     continue
                 random = np.random.default_rng(seed)
-                splits = [list() for _ in range(3)]
+                splits = [[] for _ in range(3)]
                 for label in labels:
                     class_indices = random.permutation(indices[y[indices] == label])
                     for k, portion in enumerate(np.array_split(class_indices, 3)):
@@ -161,7 +161,7 @@ def _score(y_true: np.ndarray, y_pred: np.ndarray, labels: np.ndarray) -> dict[s
     recalls = [
         confusion[k][k] / sum(row)
         for k, row in enumerate(confusion)
-        if (total := sum(row)) > 0
+        if sum(row) > 0
     ]
     return {
         "balanced_accuracy": round(float(np.mean(recalls)), 6),
@@ -208,9 +208,9 @@ def run_study(
     for fold in build_folds(dataset, protocols, seed=seed):
         if np.intersect1d(fold.train, fold.test).size:
             raise ValueError("Split leakage: overlapping trial indices")
-        if set(trial_hashes[k] for k in fold.train) & set(
+        if {trial_hashes[k] for k in fold.train} & {
             trial_hashes[k] for k in fold.test
-        ):
+        }:
             raise ValueError(
                 f"Split leakage: identical trial content across train/test in {fold.key}"
             )
