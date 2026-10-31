@@ -45,7 +45,19 @@ pytest -q tests/test_decoder_generalization.py
 ```
 
 The synthetic generator deliberately introduces channel-gain and
-subject-dependent changes to exercise the pipeline. Its results **must
+subject-dependent changes to exercise the pipeline. To inject a known,
+non-biological channel-layout failure and test whether cross-session
+generalization degrades, run:
+
+```bash
+neural-search decoder-study --source synthetic \
+  --synthetic-shift channel_swap \
+  --output reports/decoder_generalization/synthetic_channel_swap.json
+```
+
+The swapped-channel scenario is a controlled synthetic fault injection:
+it models an inconsistent channel mapping, **not** biological learning
+or subject-specific neural nonstationarity. Its results **must
 not** be interpreted as empirical neural generalization evidence.
 
 ## Real publicly available data (explicit network access)
@@ -99,7 +111,7 @@ search, pretrained component, subject-ID feature, or use of test data for
 train-fitted scaling or covariance.
 
 Per fold: group IDs, train/test counts, confusion matrix, accuracy,
-balanced accuracy, and a descriptive standardized mean feature shift.
+balanced accuracy, descriptive aggregate standardized mean feature shift,\nand retrospective class-conditional feature shift (computed using test\nlabels **after** prediction, not used for model fitting).
 The report includes same-subject within-session references and
 cross-session gaps, exact-trial leakage checks, a content fingerprint,
 elapsed time, model parameters, and limitations.

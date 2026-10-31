@@ -153,6 +153,29 @@ def _fit_predict(
     return prediction, labels, standardized_shift
 
 
+def _conditional_shift(
+    train_x: np.ndarray,
+    train_y: np.ndarray,
+    test_x: np.ndarray,
+    test_y: np.ndarray,
+) -> float:
+    """Label-conditioned log-variance shift for POST-HOC diagnosis only.
+
+    Test labels are used exclusively in this diagnostic, NEVER by the
+    classifier or in any train-fitted preprocessing statistic.
+    """
+    train_features = _features(train_x)
+    test_features = _features(test_x)
+    scale = np.std(train_features, axis=0)
+    scale = np.where(scale < 1e-9, 1.0, scale)
+    comparisons = []
+    for label in sorted(set(train_y) & set(test_y)):
+        a = np.mean(train_features[train_y == label], axis=0)
+        b = np.mean(test_features[test_y == label], axis=0)
+        comparisons.append(float(np.mean(np.abs((b - a) / scale))))
+    return float(np.mean(comparisons)) if comparisons else 0.0
+
+
 def _score(y_true: np.ndarray, y_pred: np.ndarray, labels: np.ndarray) -> dict[str, Any]:
     confusion = [
         [int(np.sum((y_true == a) & (y_pred == b))) for b in labels]
@@ -241,6 +264,10 @@ def run_study(
         record.update(
             status="evaluated",
             feature_shift_z=round(shift, 6),
+            class_conditional_shift_z=round(
+                _conditional_shift(x[fold.train], train_y, x[fold.test], test_y),
+                6,
+            ),
             **_score(test_y, predicted, labels),
         )
         rows.append(record)
@@ -298,7 +325,8 @@ def run_study(
         "cautions": [
             "Synthetic results do not establish performance on real neural data.",
             "Within-session folds, cross-session folds, and cross-subject folds differ in their training samples; gaps are descriptive, not causal.",
-            "Feature shift is not a validated neural mechanism or a distribution-shift significance test.",
+            "Feature shifts are descriptive, not validated neural mechanisms or significance tests.",
+            "Class-conditional shift uses test labels AFTER prediction solely for retrospective diagnosis.",
             "Inspect subject-level variation and label balance before interpreting aggregate results.",
         ],
     }

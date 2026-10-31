@@ -9,11 +9,13 @@ import numpy as np
 from neural_search.decoder_generalization.study import TrialDataset
 
 
-def synthetic_dataset(*, seed: int = 17) -> TrialDataset:
+def synthetic_dataset(*, seed: int = 17, shift: str = "gain") -> TrialDataset:
     """Deterministic toy epochs with subject and session shifts.
 
     Never treat this fixture as evidence for any empirical neuroscience claim.
     """
+    if shift not in {"gain", "channel_swap"}:
+        raise ValueError("Unknown synthetic shift mode")
     rng = np.random.default_rng(seed)
     xs: list[np.ndarray] = []
     ys: list[str] = []
@@ -30,6 +32,8 @@ def synthetic_dataset(*, seed: int = 17) -> TrialDataset:
                     trial[channel] += (1.5 + 0.15 * subject) * carrier
                     if session:
                         trial = trial * np.array([0.75, 1.3, 1.0, 0.9, 1.1, 1.0])[:, None]
+                        if shift == "channel_swap":
+                            trial[[0, 1]] = trial[[1, 0]]
                     xs.append(trial)
                     ys.append(label)
                     subjects.append(f"s{subject + 1}")
@@ -39,7 +43,7 @@ def synthetic_dataset(*, seed: int = 17) -> TrialDataset:
         y=np.asarray(ys),
         subject=np.asarray(subjects),
         session=np.asarray(sessions),
-        source=f"synthetic_shift_v1_seed_{seed}",
+        source=f"synthetic_shift_v1_{shift}_seed_{seed}",
     )
 
 

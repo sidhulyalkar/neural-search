@@ -26,6 +26,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--protocol", choices=(*PROTOCOLS, "all"), default="all")
     parser.add_argument("--seed", type=int, default=17)
     parser.add_argument(
+        "--synthetic-shift", choices=("gain", "channel_swap"), default="gain"
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path("reports/decoder_generalization/pilot.json"),
@@ -38,7 +41,7 @@ def main(argv: list[str] | None = None) -> int:
     elif args.source == "moabb":
         dataset = load_bnci2014_001(args.subjects)
     else:
-        dataset = synthetic_dataset(seed=args.seed)
+        dataset = synthetic_dataset(seed=args.seed, shift=args.synthetic_shift)
     protocols = PROTOCOLS if args.protocol == "all" else (args.protocol,)
     report = run_study(dataset, protocols=protocols, seed=args.seed)
     args.output.parent.mkdir(parents=True, exist_ok=True)

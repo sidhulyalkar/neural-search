@@ -106,3 +106,21 @@ def test_cli_writes_reproducible_json(tmp_path):
     assert payload["summary"]["cross_subject"]["folds"] == 4
     assert payload["schema_version"] == "1.0"
     assert payload["evidence_status"] == "diagnostic_association_only"
+
+
+def test_known_channel_swap_exposes_conditional_shift_and_transfer_failure():
+    gain = run_study(synthetic_dataset(seed=17, shift="gain"), seed=17)
+    swapped = run_study(synthetic_dataset(seed=17, shift="channel_swap"), seed=17)
+    assert (
+        swapped["summary"]["cross_session"]["mean_balanced_accuracy"]
+        < gain["summary"]["cross_session"]["mean_balanced_accuracy"] - 0.2
+    )
+    assert (
+        swapped["summary"]["within_session"]["mean_balanced_accuracy"]
+        > swapped["summary"]["cross_session"]["mean_balanced_accuracy"] + 0.2
+    )
+    assert all(
+        "class_conditional_shift_z" in r
+        for r in swapped["results"]
+        if r["status"] == "evaluated"
+    )
