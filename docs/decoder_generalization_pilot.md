@@ -9,12 +9,13 @@ How much does performance of a fixed, simple EEG decoder change when it
 encounters a new trial (same subject/session), another recording session
 (same subject), or a previously unseen subject?
 
-Three evaluation protocols address different generalization questions:
+Four evaluation protocols address different generalization questions:
 
 | Protocol | Training / testing | Interpretable as |
 | --- | --- | --- |
 | within_session | stratified held-out trials inside each subject-session | performance on unseen trials of the same recording session |
-| within_session_runout | train on other recording runs in one session, test on a held-out run | run-blocked transfer within the target session |\n| cross_session | train on other sessions of a subject, evaluate on one wholly withheld session | transfer to a new session of a known person |
+| within_session_runout | train on other recording runs in one session, test on a held-out run | run-blocked transfer within the target session |
+| cross_session | train on other sessions of a subject, evaluate on one wholly withheld session | transfer to a new session of a known person |
 | cross_subject | train on other subjects, evaluate on one wholly withheld subject | zero-shot transfer to an unseen person |
 
 These protocols use different training sets and are **not** a controlled
@@ -60,6 +61,30 @@ it models an inconsistent channel mapping, **not** biological learning
 or subject-specific neural nonstationarity. Its results **must
 not** be interpreted as empirical neural generalization evidence.
 
+## Synthetic causal positive control: known channel-map repair
+
+The synthetic `channel_swap` experiment intentionally changes the
+mapping of channels 0 and 1 in session 2. It should cause cross-session
+performance to degrade while preserving a good same-session baseline.
+
+We can **causally demonstrate this synthetic failure mechanism** because
+the source generator tells us exactly which channel mapping changed.
+Repair is label-blind and applies the known inverse permutation:
+
+```bash
+neural-search decoder-study --source synthetic --synthetic-shift channel_swap \
+  --output reports/decoder_generalization/fault.json
+
+neural-search decoder-study --source synthetic --synthetic-shift channel_swap \
+  --synthetic-oracle-repair \
+  --output reports/decoder_generalization/repaired.json
+```
+
+This is an *oracle positive control*, not a real-data channel-map
+inference algorithm. It must not be used to infer which channels moved
+in a real experiment. Any actual montage correction must use
+independently verified acquisition metadata.
+
 ## Real publicly available data (explicit network access)
 
 ```bash
@@ -82,6 +107,20 @@ with subject/session metadata. Preprocessing associated with epoch
 creation comes from MOABB; all **learned decoder standardization and
 regularized covariance** is fit separately on training partitions.
 If changing the paradigm, version the preprocessing contract.
+
+### Public EEG artifact generation on GitHub Actions
+
+The separate workflow `.github/workflows/decoder-public-eeg.yml`
+allows a human to trigger an opt-in public-data run for subject 1 or
+subjects 1–3, generating JSON metrics, installed dependency versions,
+and a source/commit manifest. It never runs automatically in PR CI.
+
+**GitHub's workflow_dispatch UI normally requires the workflow to be
+present on the default branch.** Before merging, run the commands above
+locally against this feature branch. The workflow may consume GitHub
+Actions minutes and network bandwidth, and does not certify the science.
+Its output still requires inspection, independent replication and
+review.
 
 ## Custom epoched neural data
 

@@ -98,3 +98,26 @@ def load_bnci2014_001(subjects: list[int]) -> TrialDataset:
         run=metadata["run"].astype(str).to_numpy(),
         source="moabb:BNCI2014_001:LeftRightImagery",
     )
+
+
+def repair_known_synthetic_channel_map(dataset: TrialDataset) -> TrialDataset:
+    """Undo an ORACLE-KNOWN channel swap, without using trial labels.
+
+    Intended only as a synthetic causal positive control. It is NOT a
+    data-driven channel alignment method and must never be applied to
+    unknown real-world mappings.
+    """
+    if not dataset.source.startswith("synthetic_shift_v1_channel_swap_"):
+        raise ValueError("Oracle repair accepts only the channel_swap fixture")
+    mask = np.asarray(dataset.session).astype(str) == "session2"
+    x = np.asarray(dataset.X).copy()
+    order = [1, 0, *range(2, x.shape[1])]
+    x[mask] = x[mask][:, order, :]
+    return TrialDataset(
+        X=x,
+        y=dataset.y,
+        subject=dataset.subject,
+        session=dataset.session,
+        run=dataset.run,
+        source=f"{dataset.source}:oracle_channel_map_repaired",
+    )

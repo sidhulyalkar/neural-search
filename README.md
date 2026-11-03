@@ -104,8 +104,8 @@ Open `http://localhost:5173`. The Vite development server proxies `/api` and `/h
 
 ## Neural decoder generalization pilot
 
-A new evidence-first study runner compares **within-session**, **cross-session**,
-, **run-heldout**, and **cross-subject** transfer using a deterministic log-variance + shrinkage-LDA
+A new evidence-first study runner compares **within-session**, **run-heldout**,
+**cross-session**, and **cross-subject** transfer using a deterministic log-variance + shrinkage-LDA
 baseline. It includes subject-clustered uncertainty and partition leakage checks, fold-level confusion matrices,
 dataset fingerprints, and reproducible JSON reports.
 
@@ -118,6 +118,9 @@ pip install -e '.[decoder]'
 neural-search decoder-study --source moabb --subjects 1 2 3 \
   --output reports/decoder_generalization/bnci2014_001.json
 ```
+
+The pilot also includes an oracle-known synthetic channel-map repair
+experiment and a manually triggered public-EEG artifact workflow.
 
 Read [decoder generalization pilot](docs/decoder_generalization_pilot.md) for
 scope, scientific limitations, required dataset review, and next evaluations.

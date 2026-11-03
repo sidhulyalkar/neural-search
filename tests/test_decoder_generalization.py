@@ -11,6 +11,7 @@ from neural_search.decoder_generalization.__main__ import main
 from neural_search.decoder_generalization.sources import (
     load_bnci2014_001,
     load_npz,
+    repair_known_synthetic_channel_map,
     synthetic_dataset,
 )
 from neural_search.decoder_generalization.study import (
@@ -189,3 +190,30 @@ def test_bootstrap_insufficient_subjects_is_explicit():
         "insufficient_independent_subjects"
     )
     assert report["subject_clustered_uncertainty"]["ci95"] is None
+
+
+def test_known_channel_mapping_repair_recovers_generalization():
+    baseline = run_study(synthetic_dataset(seed=17, shift="gain"), seed=17)
+    affected = run_study(synthetic_dataset(seed=17, shift="channel_swap"), seed=17)
+    fixed = run_study(
+        repair_known_synthetic_channel_map(
+            synthetic_dataset(seed=17, shift="channel_swap")
+        ),
+        seed=17,
+    )
+    before = affected["summary"]["cross_session"]["mean_balanced_accuracy"]
+    after = fixed["summary"]["cross_session"]["mean_balanced_accuracy"]
+    baseline_score = baseline["summary"]["cross_session"]["mean_balanced_accuracy"]
+    assert after > before + 0.2
+    assert after == baseline_score
+    assert fixed["dataset"]["source"].endswith(":oracle_channel_map_repaired")
+
+
+def test_oracle_repair_refuses_unrelated_data(tmp_path):
+    with pytest.raises(ValueError, match="only the channel_swap"):
+        repair_known_synthetic_channel_map(synthetic_dataset(shift="gain"))
+    with pytest.raises(SystemExit):
+        main([
+            "--source", "npz", "--npz", str(tmp_path / "missing.npz"),
+            "--synthetic-oracle-repair",
+        ])

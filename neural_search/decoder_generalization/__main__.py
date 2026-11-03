@@ -11,6 +11,7 @@ from pathlib import Path
 from neural_search.decoder_generalization.sources import (
     load_bnci2014_001,
     load_npz,
+    repair_known_synthetic_channel_map,
     synthetic_dataset,
 )
 from neural_search.decoder_generalization.study import PROTOCOLS, run_study
@@ -29,11 +30,19 @@ def main(argv: list[str] | None = None) -> int:
         "--synthetic-shift", choices=("gain", "channel_swap"), default="gain"
     )
     parser.add_argument(
+        "--synthetic-oracle-repair", action="store_true",
+        help="Oracle-known channel-map repair on synthetic channel_swap data only",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path("reports/decoder_generalization/pilot.json"),
     )
     args = parser.parse_args(argv)
+    if args.synthetic_oracle_repair and not (
+        args.source == "synthetic" and args.synthetic_shift == "channel_swap"
+    ):
+        parser.error("Oracle repair requires synthetic channel_swap data")
     if args.source == "npz":
         if args.npz is None:
             parser.error("--source npz requires --npz PATH")
@@ -42,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
         dataset = load_bnci2014_001(args.subjects)
     else:
         dataset = synthetic_dataset(seed=args.seed, shift=args.synthetic_shift)
+        if args.synthetic_oracle_repair:
+            dataset = repair_known_synthetic_channel_map(dataset)
     protocols = PROTOCOLS if args.protocol == "all" else (args.protocol,)
     report = run_study(dataset, protocols=protocols, seed=args.seed)
     args.output.parent.mkdir(parents=True, exist_ok=True)
