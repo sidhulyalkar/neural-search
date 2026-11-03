@@ -14,7 +14,7 @@ Three evaluation protocols address different generalization questions:
 | Protocol | Training / testing | Interpretable as |
 | --- | --- | --- |
 | within_session | stratified held-out trials inside each subject-session | performance on unseen trials of the same recording session |
-| cross_session | train on other sessions of a subject, evaluate on one wholly withheld session | transfer to a new session of a known person |
+| within_session_runout | train on other recording runs in one session, test on a held-out run | run-blocked transfer within the target session |\n| cross_session | train on other sessions of a subject, evaluate on one wholly withheld session | transfer to a new session of a known person |
 | cross_subject | train on other subjects, evaluate on one wholly withheld subject | zero-shot transfer to an unseen person |
 
 These protocols use different training sets and are **not** a controlled
@@ -90,7 +90,7 @@ Provide an `.npz` with:
 - `X`: numeric finite `(trial, channel, time)`, each trial a separate epoch;
 - `y`: labels, one per trial;
 - `subject`: stable subject identifiers, one per trial;
-- `session`: stable session identifiers, one per trial.
+- `session`: stable session identifiers, one per trial.\n- `run` (optional): stable recording run ID within a subject and session, one per trial. Required for the run-heldout protocol.
 
 Avoid object/pickled arrays. A source-specific preparation script
 should independently audit acquisition, channel references, event
@@ -126,6 +126,31 @@ significance across multiple datasets.
 reflect acquisition configuration, artifacts, protocol differences,
 session drift, or preprocessing.
 
+## Run-blocked evaluation and statistical uncertainty
+
+MOABB includes `subject`, `session` and `run` metadata. The pilot now
+also evaluates `within_session_runout`, which trains on the remaining runs
+of one session and tests on an entirely held-out recording run. This
+reduces the risk that adjacent trials from the same run make a random
+within-session split look overly optimistic.
+
+For each cross-session evaluation, its reference score is the mean
+run-heldout score from **that same target session**, not a mixture of
+different sessions. If run metadata is unavailable, the pilot reports
+an explicit fallback to stratified trial-level within-session CV.
+
+The report also includes a subject-clustered percentile bootstrap
+interval for the **descriptive** difference between this within-session
+reference and the cross-session score. Resampling uses subjects, not
+correlated sessions or folds, as the independent unit. An interval is
+withheld when fewer than three subjects are evaluable. With a small
+number of subjects, bootstrap intervals can be too narrow; interpret
+them as exploratory and not as significance tests or causal effects.
+
+The within-session, held-run, cross-session and cross-subject protocols
+still differ in their training data amounts. The gap must not be
+attributed to drift without a matched training-size sensitivity analysis.
+
 ## Baseline acceptance gates
 
 1. Every held-out fold must exclude the evaluated session or subject
@@ -134,7 +159,7 @@ session drift, or preprocessing.
 3. Repeated seeded runs reproduce the same fold-level metrics and content hash.
 4. Human review confirms label mapping, session boundaries, channels,
    preprocessing and epoch provenance for each real dataset.
-5. Report subject-level paired gaps, not just a pooled accuracy number.
+5. Report same-target-session reference gaps, subject-clustered intervals, and individual participant scores, not just pooled averages.
 6. An empirical neuroscience claim requires independent real-data
    replication and a stronger baseline than this initial log-variance LDA.
 
@@ -144,7 +169,7 @@ session drift, or preprocessing.
    generate independent human-reviewed dataset cards.
 2. Compare CSP+LDA, filter-bank CSP, regularized covariance/tangent-space,
    and a lightweight EEGNet under equal data and tuning budgets.
-3. Add recording/run boundaries and overlapping-window/near-duplicate
+3. Validate recording/run boundaries and implement overlapping-window/near-duplicate
    leakage detection. Validate that preprocessing never learns from held-out
    sessions or subjects.
 4. Pre-register candidate explanations: class-prior shift, spectral

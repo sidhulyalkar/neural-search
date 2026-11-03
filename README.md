@@ -105,8 +105,8 @@ Open `http://localhost:5173`. The Vite development server proxies `/api` and `/h
 ## Neural decoder generalization pilot
 
 A new evidence-first study runner compares **within-session**, **cross-session**,
-and **cross-subject** transfer using a deterministic log-variance + shrinkage-LDA
-baseline. It includes partition leakage checks, fold-level confusion matrices,
+, **run-heldout**, and **cross-subject** transfer using a deterministic log-variance + shrinkage-LDA
+baseline. It includes subject-clustered uncertainty and partition leakage checks, fold-level confusion matrices,
 dataset fingerprints, and reproducible JSON reports.
 
 ```bash

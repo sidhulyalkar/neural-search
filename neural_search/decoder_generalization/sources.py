@@ -21,12 +21,13 @@ def synthetic_dataset(*, seed: int = 17, shift: str = "gain") -> TrialDataset:
     ys: list[str] = []
     subjects: list[str] = []
     sessions: list[str] = []
+    runs: list[str] = []
     t = np.linspace(0, 1, 128, endpoint=False)
     carrier = np.sin(2 * np.pi * 11 * t)
     for subject in range(4):
         for session in range(2):
             for label in ("left", "right"):
-                for _ in range(36):
+                for trial_index in range(36):
                     trial = rng.normal(0, 0.75, (6, 128))
                     channel = 0 if label == "left" else 1
                     trial[channel] += (1.5 + 0.15 * subject) * carrier
@@ -38,11 +39,13 @@ def synthetic_dataset(*, seed: int = 17, shift: str = "gain") -> TrialDataset:
                     ys.append(label)
                     subjects.append(f"s{subject + 1}")
                     sessions.append(f"session{session + 1}")
+                    runs.append(f"run{trial_index // 9 + 1}")
     return TrialDataset(
         X=np.stack(xs),
         y=np.asarray(ys),
         subject=np.asarray(subjects),
         session=np.asarray(sessions),
+        run=np.asarray(runs),
         source=f"synthetic_shift_v1_{shift}_seed_{seed}",
     )
 
@@ -58,7 +61,8 @@ def load_npz(path: str | Path) -> TrialDataset:
         y = np.asarray(data["y"])
         subject = np.asarray(data["subject"])
         session = np.asarray(data["session"])
-    return TrialDataset(x, y, subject, session, source=f"npz:{file.name}")
+        run = np.asarray(data["run"]) if "run" in data.files else None
+    return TrialDataset(x, y, subject, session, source=f"npz:{file.name}", run=run)
 
 
 def load_bnci2014_001(subjects: list[int]) -> TrialDataset:
@@ -83,7 +87,7 @@ def load_bnci2014_001(subjects: list[int]) -> TrialDataset:
     x, labels, metadata = paradigm.get_data(
         dataset=BNCI2014_001(), subjects=subjects
     )
-    for key in ("subject", "session"):
+    for key in ("subject", "session", "run"):
         if key not in metadata.columns:
             raise ValueError(f"MOABB metadata missing required group: {key}")
     return TrialDataset(
@@ -91,5 +95,6 @@ def load_bnci2014_001(subjects: list[int]) -> TrialDataset:
         y=np.asarray(labels).astype(str),
         subject=metadata["subject"].astype(str).to_numpy(),
         session=metadata["session"].astype(str).to_numpy(),
+        run=metadata["run"].astype(str).to_numpy(),
         source="moabb:BNCI2014_001:LeftRightImagery",
     )

@@ -26,11 +26,16 @@ def test_group_splits_enforce_subject_and_session_boundaries():
     assert sum(f.protocol == "cross_subject" for f in folds) == 4
     assert sum(f.protocol == "cross_session" for f in folds) == 8
     assert sum(f.protocol == "within_session" for f in folds) == 24
+    assert sum(f.protocol == "within_session_runout" for f in folds) == 32
     for f in folds:
         assert not set(f.train) & set(f.test)
         if f.protocol == "cross_session":
             assert set(d.subject[f.train]) == set(d.subject[f.test])
             assert not set(d.session[f.train]) & set(d.session[f.test])
+        if f.protocol == "within_session_runout":
+            assert set(d.subject[f.train]) == set(d.subject[f.test])
+            assert set(d.session[f.train]) == set(d.session[f.test])
+            assert not set(d.run[f.train]) & set(d.run[f.test])
         if f.protocol == "cross_subject":
             assert not set(d.subject[f.train]) & set(d.subject[f.test])
         if f.protocol == "within_session":
@@ -44,12 +49,24 @@ def test_determinism_and_diagnostics():
     r2 = run_study(d, seed=31)
     for report in (r1, r2):
         assert report["summary"]["within_session"]["folds"] == 24
+        assert report["summary"]["within_session_runout"]["folds"] == 32
+        assert report["dataset"]["has_run_metadata"]
         assert report["summary"]["cross_session"]["folds"] == 8
         assert report["summary"]["cross_subject"]["folds"] == 4
         assert len(report["paired_within_to_cross_session_gaps"]) == 8
+        assert {
+            r["reference_protocol"]
+            for r in report["paired_within_to_cross_session_gaps"]
+        } == {"within_session_runout"}
+        assert report["subject_clustered_uncertainty"]["n_subjects"] == 4
+        assert report["subject_clustered_uncertainty"]["ci95"] is not None
         assert all(0 <= row["balanced_accuracy"] <= 1 for row in report["results"] if row["status"] == "evaluated")
         assert all("feature_shift_z" in row for row in report["results"] if row["status"] == "evaluated")
     assert r1["results"] == r2["results"]
+    assert (
+        r1["subject_clustered_uncertainty"]
+        == r2["subject_clustered_uncertainty"]
+    )
     assert r1["dataset"]["fingerprint_sha256"] == r2["dataset"]["fingerprint_sha256"]
 
 
@@ -88,10 +105,13 @@ def test_missing_group_support_is_explicitly_skipped():
 def test_npz_roundtrip_without_pickle(tmp_path):
     d = synthetic_dataset()
     path = tmp_path / "epochs.npz"
-    np.savez_compressed(path, X=d.X, y=d.y, subject=d.subject, session=d.session)
+    np.savez_compressed(
+        path, X=d.X, y=d.y, subject=d.subject, session=d.session, run=d.run
+    )
     loaded = load_npz(path)
     assert np.array_equal(loaded.X, d.X)
     assert loaded.source == "npz:epochs.npz"
+    assert np.array_equal(loaded.run, d.run)
 
 
 def test_public_adapter_validates_subjects_without_download():
@@ -124,3 +144,48 @@ def test_known_channel_swap_exposes_conditional_shift_and_transfer_failure():
         for r in swapped["results"]
         if r["status"] == "evaluated"
     )
+
+
+def test_comparisons_use_same_heldout_session_reference():
+    report = run_study(synthetic_dataset(seed=22), seed=22)
+    within = {}
+    for row in report["results"]:
+        if row["status"] == "evaluated" and row["protocol"] == "within_session_runout":
+            key = "/".join(row["key"].split("/")[:2])
+            within.setdefault(key, []).append(row["balanced_accuracy"])
+    for gap in report["paired_within_to_cross_session_gaps"]:
+        expected = float(np.mean(within[gap["held_out"]]))
+        assert abs(gap["within_session_reference"] - expected) < 1e-5
+        assert gap["subject"] == gap["held_out"].split("/")[0]
+
+
+def test_missing_run_metadata_remains_explicit_and_uses_less_robust_baseline():
+    d = synthetic_dataset()
+    without_runs = TrialDataset(d.X, d.y, d.subject, d.session, d.source)
+    report = run_study(without_runs)
+    assert report["summary"]["within_session_runout"]["folds"] == 0
+    assert not report["dataset"]["has_run_metadata"]
+    assert all(
+        gap["reference_protocol"] == "within_session"
+        for gap in report["paired_within_to_cross_session_gaps"]
+    )
+
+
+def test_run_metadata_shape_is_validated():
+    d = synthetic_dataset()
+    with pytest.raises(ValueError, match="run must contain"):
+        TrialDataset(d.X, d.y, d.subject, d.session, d.source, run=d.run[:-1])
+
+
+def test_bootstrap_insufficient_subjects_is_explicit():
+    d = synthetic_dataset()
+    selected = np.isin(d.subject, ["s1", "s2"])
+    limited = TrialDataset(
+        d.X[selected], d.y[selected], d.subject[selected],
+        d.session[selected], d.source, run=d.run[selected],
+    )
+    report = run_study(limited)
+    assert report["subject_clustered_uncertainty"]["status"] == (
+        "insufficient_independent_subjects"
+    )
+    assert report["subject_clustered_uncertainty"]["ci95"] is None
