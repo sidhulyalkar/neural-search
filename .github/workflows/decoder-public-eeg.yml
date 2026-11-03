@@ -1,0 +1,82 @@
+name: Public EEG decoder transfer study (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      cohort:
+        description: "Public BNCI2014_001 subject subset; download is opt-in"
+        required: true
+        type: choice
+        default: subjects-1-3
+        options:
+          - subject-1
+          - subjects-1-3
+
+permissions:
+  contents: read
+
+jobs:
+  real-eeg:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install pinned-source research dependencies
+        run: python -m pip install -e ".[decoder]"
+
+      - name: Run public EEG held-run and cross-session pilot
+        env:
+          COHORT: ${{ inputs.cohort }}
+        run: |
+          set -euo pipefail
+          if [ "$COHORT" = "subject-1" ]; then
+            SUBJECTS="1"
+          elif [ "$COHORT" = "subjects-1-3" ]; then
+            SUBJECTS="1 2 3"
+          else
+            echo "Unsupported cohort" >&2
+            exit 2
+          fi
+          mkdir -p reports/decoder_generalization
+          python -m neural_search.decoder_generalization \
+            --source moabb --subjects $SUBJECTS \
+            --output reports/decoder_generalization/bnci2014_001.json
+          python -m pip freeze > reports/decoder_generalization/environment.txt
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          report = json.loads(Path(
+              "reports/decoder_generalization/bnci2014_001.json"
+          ).read_text())
+          assert report["dataset"]["source"].startswith("moabb:BNCI2014_001")
+          assert report["summary"]["cross_session"]["folds"] >= 1
+          assert report["dataset"]["has_run_metadata"]
+          manifest = {
+              "git_sha": os.environ["GITHUB_SHA"],
+              "cohort": os.environ["COHORT"],
+              "artifact": "bnci2014_001.json",
+              "data_source": report["dataset"]["source"],
+              "dataset_sha256": report["dataset"]["fingerprint_sha256"],
+              "human_review_status": "not_reviewed",
+              "scientific_status": "pilot_unverified",
+          }
+          Path("reports/decoder_generalization/run_manifest.json").write_text(
+              json.dumps(manifest, indent=2) + "\n"
+          )
+          PY
+
+      - name: Upload reproducibility bundle (not a scientific certification)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: decoder-public-eeg-${{ inputs.cohort }}-${{ github.run_id }}
+          path: reports/decoder_generalization/
+          retention-days: 14
+          if-no-files-found: warn
