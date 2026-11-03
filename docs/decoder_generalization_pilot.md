@@ -222,6 +222,13 @@ attributed to drift without a matched training-size sensitivity analysis.
 7. Report paired uncertainty across independent subjects, failure cases,
    reproducibility capsules, and actual compute/energy/cost telemetry.
 
+The CLI report includes `execution.source_loading_seconds` (including
+optional MOABB downloads/preprocessing), `execution.evaluation_seconds`,
+and `execution.total_before_artifact_write_seconds`. This distinguishes
+loading from repeated model fitting. The actual monetary cost is
+`null` until provider billing, GitHub Actions usage, or local electricity
+and depreciation are measured. No dollar figure is fabricated.
+
 ## Resource and cost expectations
 
 Synthetic mode: CPU only, usually seconds on a recent laptop for hundreds

@@ -126,6 +126,11 @@ def test_cli_writes_reproducible_json(tmp_path):
     payload = json.loads(output.read_text())
     assert payload["summary"]["cross_subject"]["folds"] == 4
     assert payload["schema_version"] == "1.0"
+    assert payload["execution"]["source_loading_seconds"] >= 0
+    assert payload["execution"]["total_before_artifact_write_seconds"] >= (
+        payload["execution"]["evaluation_seconds"]
+    )
+    assert payload["execution"]["billing_cost_usd"] is None
     assert payload["evidence_status"] == "diagnostic_association_only"
 
 

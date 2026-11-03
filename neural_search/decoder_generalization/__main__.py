@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
 
 from neural_search.decoder_generalization.sources import (
@@ -39,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
         default=Path("reports/decoder_generalization/pilot.json"),
     )
     args = parser.parse_args(argv)
+    started = time.perf_counter()
     if args.synthetic_oracle_repair and not (
         args.source == "synthetic" and args.synthetic_shift == "channel_swap"
     ):
@@ -53,8 +55,23 @@ def main(argv: list[str] | None = None) -> int:
         dataset = synthetic_dataset(seed=args.seed, shift=args.synthetic_shift)
         if args.synthetic_oracle_repair:
             dataset = repair_known_synthetic_channel_map(dataset)
+    source_loading_seconds = time.perf_counter() - started
     protocols = PROTOCOLS if args.protocol == "all" else (args.protocol,)
     report = run_study(dataset, protocols=protocols, seed=args.seed)
+    report["execution"] = {
+        "source_loading_seconds": round(source_loading_seconds, 3),
+        "evaluation_seconds": report["elapsed_seconds"],
+        "total_before_artifact_write_seconds": round(
+            time.perf_counter() - started, 3
+        ),
+        "paid_model_calls": 0,
+        "paid_gpu_jobs": 0,
+        "billing_cost_usd": None,
+        "billing_note": (
+            "Measured wall time is not a monetary cost estimate. "
+            "Local and GitHub Actions compute/network charges are not metered."
+        ),
+    }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     # Atomic replace prevents a killed run leaving a partial JSON result.
     with tempfile.NamedTemporaryFile(
@@ -70,6 +87,7 @@ def main(argv: list[str] | None = None) -> int:
         "source": report["dataset"]["source"],
         "summary": report["summary"],
         "elapsed_seconds": report["elapsed_seconds"],
+        "execution": report["execution"],
         "evidence_status": report["evidence_status"],
     }, indent=2))
     return 0
